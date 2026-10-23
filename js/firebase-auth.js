@@ -227,17 +227,24 @@ async function checkAndInitializeSession() {
     if (data && data.valid && data.session) {
       window.APP_SESSION = {
         sessionId: data.session.sessionId,
+        idToken: data.session.idToken || (window.APP_SESSION && window.APP_SESSION.idToken) || (typeof sessionStorage !== "undefined" && sessionStorage.getItem("idToken")) || "",
         uid: data.session.uid,
         email: data.session.email
       };
       if (data.session.sessionId) {
         sessionStorage.setItem("sessionId", data.session.sessionId);
       }
+      if (data.session.idToken) {
+        sessionStorage.setItem("idToken", data.session.idToken);
+      }
       if (data.session.uid) {
         sessionStorage.setItem("userUid", data.session.uid);
       }
       if (data.session.email) {
         sessionStorage.setItem("loggedInUser", data.session.email);
+      }
+      if (window.RBAC && typeof window.RBAC.refreshQuietly === "function") {
+        window.RBAC.refreshQuietly();
       }
     }
 

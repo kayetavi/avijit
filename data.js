@@ -11,10 +11,16 @@ const data = {
 if (typeof window !== "undefined") {
   window.data = data;
 
-  // Asynchronously loads all damage mechanisms from backend
-  window.loadDamageMechanismsData = async function(callback) {
+  // Asynchronously loads all damage mechanisms from backend (live Firestore)
+  window.loadDamageMechanismsData = async function(callback, forceLive = false) {
+    if (typeof window.refreshDamageMechanisms === "function") {
+      const res = await window.refreshDamageMechanisms(forceLive);
+      if (typeof callback === "function") callback(window.data);
+      return window.data;
+    }
     try {
-      const response = await fetch("/api/damage-mechanisms", {
+      const url = forceLive ? "/api/damage-mechanisms?refresh=1" : "/api/damage-mechanisms";
+      const response = await fetch(url, {
         headers: { "Accept": "application/json" }
       });
       if (!response.ok) throw new Error(`HTTP error ${response.status}`);

@@ -298,11 +298,15 @@ window.login = async function () {
     // ✅ Initialize global APP_SESSION and store session in sessionStorage (Zero LocalStorage Architecture)
     window.APP_SESSION = {
       sessionId: data.sessionId,
+      idToken: data.idToken || "",
       email: data.email,
       uid: data.uid || "",
       rbac: data.rbac || null
     };
     sessionStorage.setItem("sessionId", data.sessionId);
+    if (data.idToken) {
+      sessionStorage.setItem("idToken", data.idToken);
+    }
     sessionStorage.setItem("loggedInUser", data.email);
     const usernameUpper = data.email.split("@")[0].toUpperCase();
     sessionStorage.setItem("usernameUpper", usernameUpper);

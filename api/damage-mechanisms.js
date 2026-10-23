@@ -182,10 +182,16 @@ function normalizeStr(str) {
   return String(str || "").toLowerCase().replace(/[^a-z0-9]/g, "").trim();
 }
 
+let cachedMechanismsTimestamp = 0;
+const MECHANISMS_CACHE_TTL = 15000; // 15s TTL for fresh real-time Firestore sync
+
 // Fetch all damage mechanisms dynamically based on active Firebase Project
-export async function getAllDamageMechanisms() {
+export async function getAllDamageMechanisms(options = {}) {
   const activeProj = getActiveProjectConfig();
-  if (cachedMechanisms && cachedMechanismsProjectId === activeProj.projectId) {
+  const isExpired = Date.now() - cachedMechanismsTimestamp > MECHANISMS_CACHE_TTL;
+  const forceRefresh = options?.refresh === true || options?.live === true;
+
+  if (!forceRefresh && !isExpired && cachedMechanisms && cachedMechanismsProjectId === activeProj.projectId) {
     return cachedMechanisms;
   }
 
@@ -209,23 +215,24 @@ export async function getAllDamageMechanisms() {
               name = docSnap.id;
             }
           }
+          const existing = mechs[name] || {};
           mechs[name] = {
             id: docSnap.id,
-            code: d.code || docSnap.id,
+            code: d.code || existing.code || docSnap.id,
             name: name,
-            category: d.category || "API 571 Damage Mechanism",
-            description: d.description || "",
-            affectedMaterials: d.affectedMaterials || d.materials || "",
-            criticalFactors: d.criticalFactors || "",
-            affectedUnits: d.affectedUnits || "",
-            appearance: d.appearance || "",
-            mitigation: d.mitigation || "",
-            inspection: d.inspection || "",
-            temperatureComparison: d.temperatureComparison || "",
-            imagePath: d.imagePath || getMechanismMicrograph(name, d.code || docSnap.id),
-            isCustom: d.isCustom !== undefined ? d.isCustom : false,
+            category: d.category || existing.category || "API 571 Damage Mechanism",
+            description: d.description || existing.description || "",
+            affectedMaterials: d.affectedMaterials || d.materials || existing.affectedMaterials || "",
+            criticalFactors: d.criticalFactors || existing.criticalFactors || "",
+            affectedUnits: d.affectedUnits || existing.affectedUnits || "",
+            appearance: d.appearance || existing.appearance || "",
+            mitigation: d.mitigation || existing.mitigation || "",
+            inspection: d.inspection || existing.inspection || "",
+            temperatureComparison: d.temperatureComparison || existing.temperatureComparison || "",
+            imagePath: d.imagePath || existing.imagePath || getMechanismMicrograph(name, d.code || docSnap.id),
+            isCustom: d.isCustom !== undefined ? d.isCustom : (existing.isCustom || false),
             projectId: activeProj.projectId,
-            updatedAt: d.updatedAt ? (d.updatedAt.toMillis ? d.updatedAt.toMillis() : d.updatedAt) : Date.now()
+            updatedAt: d.updatedAt ? (d.updatedAt.toMillis ? d.updatedAt.toMillis() : d.updatedAt) : (existing.updatedAt || Date.now())
           };
         });
       } else {
@@ -254,7 +261,20 @@ export async function getAllDamageMechanisms() {
     console.warn(`Firestore read for ${activeProj.projectId}:`, err.message);
   }
 
-  // 2. Fallback to master baseline catalog if mechs is still empty
+  // Include any local custom mechanisms if present
+  try {
+    const customFilePath = path.resolve(__dirname, "../data/secure/custom_damage_mechanisms.json");
+    if (fs.existsSync(customFilePath)) {
+      const customs = JSON.parse(fs.readFileSync(customFilePath, "utf8")) || {};
+      for (const [cName, cVal] of Object.entries(customs)) {
+        if (!mechs[cName]) {
+          mechs[cName] = { ...cVal, isCustom: true };
+        }
+      }
+    }
+  } catch (e) {}
+
+  // 2. Fallback to master baseline catalog only if mechs is still empty
   if (Object.keys(mechs).length === 0) {
     try {
       const { fullCatalog } = await import("../scripts/seed_api571_mechanisms.js");
@@ -263,8 +283,6 @@ export async function getAllDamageMechanisms() {
       console.warn("Failed to load fullCatalog fallback:", e.message);
     }
   }
-
-
 
   // Ensure all 24 micrographs are linked across catalog
   for (const [name, val] of Object.entries(mechs)) {
@@ -276,6 +294,7 @@ export async function getAllDamageMechanisms() {
 
   cachedMechanisms = mechs;
   cachedMechanismsProjectId = activeProj.projectId;
+  cachedMechanismsTimestamp = Date.now();
   return mechs;
 }
 
@@ -347,7 +366,8 @@ export default async function handler(req, res) {
       return res.status(404).json({ success: false, activeProject: activeProj.projectId, error: `Damage mechanism '${name || code}' not found` });
     }
 
-    const allMechs = await getAllDamageMechanisms();
+    const isForceRefresh = req.query.refresh === "true" || req.query.refresh === "1" || req.query.live === "true" || req.query.live === "1";
+    const allMechs = await getAllDamageMechanisms({ refresh: isForceRefresh });
 
     // Query search / Filter / Synonym Resolver
     if (search) {

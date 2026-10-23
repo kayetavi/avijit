@@ -4,6 +4,47 @@
 // ============================================================================
 
 (function () {
+  // Install global fetch auth interceptor immediately so early /api/rbac and /api/admin requests include server token & session headers
+  if (typeof window !== "undefined" && typeof window.fetch === "function" && !window.__fetchAuthIntercepted) {
+    const originalFetch = window.fetch.bind(window);
+    window.__fetchAuthIntercepted = true;
+    window.fetch = async function (input, init = {}) {
+      try {
+        const urlStr = typeof input === "string" ? input : (input && input.url ? input.url : "");
+        const isApiCall = urlStr.startsWith("/api/") || urlStr.includes("/api/");
+        if (isApiCall) {
+          const headers = new Headers(init.headers || (typeof input !== "string" && input?.headers ? input.headers : {}));
+          const sessionId = (window.APP_SESSION && window.APP_SESSION.sessionId) ||
+                            (typeof sessionStorage !== "undefined" && sessionStorage.getItem("sessionId")) || "";
+          const uid = (window.APP_SESSION && window.APP_SESSION.uid) ||
+                      (typeof sessionStorage !== "undefined" && sessionStorage.getItem("userUid")) || "";
+          const idToken = (window.APP_SESSION && window.APP_SESSION.idToken) ||
+                          (typeof sessionStorage !== "undefined" && sessionStorage.getItem("idToken")) || "";
+
+          if (sessionId && !headers.has("x-session-id")) {
+            headers.set("x-session-id", sessionId);
+          }
+          if (uid && !headers.has("x-user-uid")) {
+            headers.set("x-user-uid", uid);
+          }
+          if (!headers.has("Authorization")) {
+            if (idToken) {
+              headers.set("Authorization", `Bearer ${idToken}`);
+            } else if (sessionId) {
+              headers.set("Authorization", `Bearer ${sessionId}`);
+            }
+          }
+          init = {
+            ...init,
+            headers,
+            credentials: init.credentials || "include"
+          };
+        }
+      } catch (e) {}
+      return originalFetch(input, init);
+    };
+  }
+
   window.RBAC = {
     userEmail: "",
     role: "engineer",
@@ -17,13 +58,66 @@
     syncChannel: null,
     _syncListenersInstalled: false,
 
+    getAuthHeaders() {
+      const headers = {};
+      try {
+        const sessionId = (window.APP_SESSION && window.APP_SESSION.sessionId) ||
+                          (typeof sessionStorage !== "undefined" && sessionStorage.getItem("sessionId")) || "";
+        const uid = (window.APP_SESSION && window.APP_SESSION.uid) ||
+                    (typeof sessionStorage !== "undefined" && sessionStorage.getItem("userUid")) || "";
+        const idToken = (window.APP_SESSION && window.APP_SESSION.idToken) ||
+                        (typeof sessionStorage !== "undefined" && sessionStorage.getItem("idToken")) || "";
+        if (sessionId) headers["x-session-id"] = sessionId;
+        if (uid) headers["x-user-uid"] = uid;
+        if (idToken) {
+          headers["Authorization"] = `Bearer ${idToken}`;
+        } else if (sessionId) {
+          headers["Authorization"] = `Bearer ${sessionId}`;
+        }
+      } catch (e) {}
+      return headers;
+    },
+
     getUserEmail() {
       try {
         if (typeof firebase !== "undefined" && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.email) {
           return firebase.auth().currentUser.email.toLowerCase().trim();
         }
       } catch (e) {}
-      return (window.currentLoggedInEmail || "").toLowerCase().trim();
+      try {
+        if (window.APP_SESSION && window.APP_SESSION.email) {
+          return String(window.APP_SESSION.email).toLowerCase().trim();
+        }
+      } catch (e) {}
+      if (window.currentLoggedInEmail) {
+        return String(window.currentLoggedInEmail).toLowerCase().trim();
+      }
+      try {
+        if (typeof sessionStorage !== "undefined") {
+          const sEmail = sessionStorage.getItem("loggedInUser");
+          if (sEmail) return String(sEmail).toLowerCase().trim();
+        }
+      } catch (e) {}
+      try {
+        if (typeof localStorage !== "undefined") {
+          const lEmail = localStorage.getItem("loggedInUser");
+          if (lEmail) return String(lEmail).toLowerCase().trim();
+        }
+      } catch (e) {}
+      return "";
+    },
+
+    getLayoutConfig() {
+      if (typeof window.getActiveLayoutConfig === "function") {
+        return window.getActiveLayoutConfig() || {};
+      }
+      if (window.layoutConfig) return window.layoutConfig;
+      if (window.adminPanel && window.adminPanel.layoutConfig) return window.adminPanel.layoutConfig;
+      try {
+        const cached = typeof sessionStorage !== "undefined" ? sessionStorage.getItem("cached_layout_config") : null;
+        if (cached) return JSON.parse(cached) || {};
+      } catch (e) {}
+      return {};
     },
 
     broadcastUpdate(targetEmail) {
@@ -35,6 +129,22 @@
         };
         if (this.syncChannel) {
           this.syncChannel.postMessage(payload);
+        }
+      } catch (e) {}
+    },
+
+    broadcastLayoutUpdate(config) {
+      try {
+        const payload = {
+          type: "LAYOUT_UPDATED",
+          config: config || window.layoutConfig || null,
+          timestamp: Date.now()
+        };
+        if (this.syncChannel) {
+          this.syncChannel.postMessage(payload);
+        }
+        if (typeof localStorage !== "undefined") {
+          localStorage.setItem("layout_sync_event", JSON.stringify({ timestamp: Date.now() }));
         }
       } catch (e) {}
     },
@@ -54,6 +164,16 @@
               if (!data.targetEmail || data.targetEmail === myEmail || this.isSuperAdmin || this.role === "admin") {
                 this.refreshQuietly();
               }
+            } else if (data && data.type === "LAYOUT_UPDATED") {
+              if (data.config) {
+                window.layoutConfig = data.config;
+                if (window.adminPanel) window.adminPanel.layoutConfig = data.config;
+                if (typeof window.applyPublishedSidebarLayout === "function") {
+                  window.applyPublishedSidebarLayout(data.config);
+                }
+              } else {
+                this.refreshQuietly();
+              }
             }
           };
         } catch (e) {}
@@ -69,6 +189,19 @@
               this.refreshQuietly();
             }
           } catch (err) {}
+        } else if (e.key === "layout_sync_event" && e.newValue) {
+          fetch("/api/admin?action=get_layout_config")
+            .then(r => r.ok ? r.json() : null)
+            .then(resData => {
+              if (resData && resData.config) {
+                window.layoutConfig = resData.config;
+                if (window.adminPanel) window.adminPanel.layoutConfig = resData.config;
+                if (typeof window.applyPublishedSidebarLayout === "function") {
+                  window.applyPublishedSidebarLayout(resData.config);
+                }
+              }
+            })
+            .catch(() => {});
         }
       });
 
@@ -99,7 +232,33 @@
       this.userEmail = email;
 
       try {
-        const res = await fetch(`/api/rbac?action=get_my_permissions&email=${encodeURIComponent(email)}&_t=${Date.now()}`);
+        const [res, layoutRes] = await Promise.all([
+          fetch(`/api/rbac?action=get_my_permissions&email=${encodeURIComponent(email)}&_t=${Date.now()}`, {
+            headers: this.getAuthHeaders(),
+            credentials: "include"
+          }),
+          fetch(`/api/admin?action=get_layout_config&_t=${Date.now()}`).catch(() => null)
+        ]);
+
+        let layoutChanged = false;
+        if (layoutRes && layoutRes.ok) {
+          try {
+            const layoutData = await layoutRes.json();
+            if (layoutData && layoutData.config) {
+              if (JSON.stringify(window.layoutConfig) !== JSON.stringify(layoutData.config)) {
+                layoutChanged = true;
+              }
+              window.layoutConfig = layoutData.config;
+              if (window.adminPanel) window.adminPanel.layoutConfig = layoutData.config;
+              try {
+                if (typeof sessionStorage !== "undefined") {
+                  sessionStorage.setItem("cached_layout_config", JSON.stringify(layoutData.config));
+                }
+              } catch (e) {}
+            }
+          } catch (e) {}
+        }
+
         if (!res.ok) return;
         const data = await res.json();
         this.lastSyncTime = Date.now();
@@ -137,9 +296,12 @@
           }));
         } catch (e) {}
 
-        if (roleChanged || allowedChanged || subsChanged || navChanged) {
+        if (roleChanged || allowedChanged || subsChanged || navChanged || layoutChanged) {
           if (typeof window.injectAllCategories === "function") {
             window.injectAllCategories();
+          }
+          if (typeof window.applyPublishedSidebarLayout === "function") {
+            window.applyPublishedSidebarLayout(window.layoutConfig);
           }
           this.renderRoleBadge();
           this.updatePrefilterCss();
@@ -164,7 +326,10 @@
       this.setupSyncListeners();
 
       try {
-        const res = await fetch(`/api/rbac?action=get_my_permissions&email=${encodeURIComponent(email)}&_t=${Date.now()}`);
+        const res = await fetch(`/api/rbac?action=get_my_permissions&email=${encodeURIComponent(email)}&_t=${Date.now()}`, {
+          headers: this.getAuthHeaders(),
+          credentials: "include"
+        });
         if (!res.ok) throw new Error("Failed to fetch live RBAC permissions from server.");
         const data = await res.json();
         this.lastSyncTime = Date.now();
@@ -177,6 +342,21 @@
         this.authorizedNavigation = Array.isArray(data.authorizedNavigation) ? data.authorizedNavigation : [];
         this.initialized = true;
 
+        try {
+          if (typeof sessionStorage !== "undefined") {
+            sessionStorage.setItem("cached_rbac_permissions", JSON.stringify({
+              email: email || data.email || "",
+              role: this.role,
+              isSuperAdmin: this.isSuperAdmin,
+              allowedModules: this.allowedModules,
+              subsections: this.subsections,
+              availableModules: this.availableModules,
+              authorizedNavigation: this.authorizedNavigation,
+              syncedAt: this.lastSyncTime
+            }));
+          }
+        } catch (e) {}
+
         // Fetch layout config into in-memory window.layoutConfig
         try {
           const layoutRes = await fetch(`/api/admin?action=get_layout_config`);
@@ -184,12 +364,20 @@
             const layoutData = await layoutRes.json();
             if (layoutData && layoutData.config) {
               window.layoutConfig = layoutData.config;
+              try {
+                if (typeof sessionStorage !== "undefined") {
+                  sessionStorage.setItem("cached_layout_config", JSON.stringify(layoutData.config));
+                }
+              } catch (e) {}
             }
           }
         } catch (lErr) {}
 
         if (typeof window.injectAllCategories === "function") {
           window.injectAllCategories();
+        }
+        if (typeof window.applyPublishedSidebarLayout === "function" && window.layoutConfig) {
+          window.applyPublishedSidebarLayout(window.layoutConfig);
         }
 
         this.renderRoleBadge();
@@ -199,16 +387,20 @@
         this.applySidebarVisibility();
         if (document.body) document.body.classList.add("rbac-ready");
       } catch (err) {
-        console.error("Live RBAC connection required:", err);
-        if (document.body) {
-          document.body.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#0f172a;color:#f8fafc;font-family:sans-serif;text-align:center;padding:2rem;">
-            <div style="font-size:3rem;margin-bottom:1rem;">⚠️</div>
-            <h1 style="font-size:1.5rem;font-weight:bold;margin-bottom:0.5rem;">Live Server Connection Required</h1>
-            <p style="color:#94a3b8;max-width:500px;margin-bottom:1.5rem;">Unable to establish a secure real-time connection to the backend server. Offline access and cached fallbacks are strictly disabled by security policy.</p>
-            <button onclick="window.location.reload()" style="background:#3b82f6;color:white;border:none;padding:0.75rem 1.5rem;border-radius:0.375rem;font-weight:600;cursor:pointer;">Retry Connection</button>
-          </div>`;
+        console.warn("RBAC initialization fallback triggered:", err);
+        this.initialized = true;
+        if (typeof window.injectAllCategories === "function") {
+          window.injectAllCategories();
         }
-        throw err;
+        if (typeof window.applyPublishedSidebarLayout === "function" && window.layoutConfig) {
+          window.applyPublishedSidebarLayout(window.layoutConfig);
+        }
+        this.renderRoleBadge();
+        this.updatePrefilterCss();
+        this.applyPermissionGuards();
+        this.updateAdminMenuVisibility();
+        this.applySidebarVisibility();
+        if (document.body) document.body.classList.add("rbac-ready");
       }
     },
 
@@ -443,7 +635,7 @@
       const isAdmin = this.isSuperAdmin || this.role === "admin";
       document.body.classList.toggle("is-admin", isAdmin);
 
-      if (isAdmin) {
+      if (isAdmin || this.hasModuleAccess("adminControlCenter")) {
         window.loadAdminPanelOnDemand().then(() => {
           if (window.adminPanel && typeof window.adminPanel.init === "function") {
             window.adminPanel.init();
@@ -592,6 +784,7 @@
             return original.apply(this, args);
           };
           wrapped.__rbacWrapped = true;
+          wrapped.__apmUrlSyncHooked = true;
           window[func] = wrapped;
         }
       });
@@ -739,77 +932,69 @@
         }
         
         // Global helper: determines module visibility using Layout & Navigation Builder settings as single source of truth
-        if (typeof window.isModuleLayoutVisible !== "function") {
-          window.isModuleLayoutVisible = function(modId, config) {
-            let cfg = config || window.layoutConfig || (window.adminPanel && window.adminPanel.layoutConfig);
-            if (!cfg) {
-              try {
-                const cached = typeof sessionStorage !== "undefined" ? sessionStorage.getItem("cached_layout_config") : null;
-                if (cached) cfg = JSON.parse(cached);
-              } catch (e) {}
-            }
-            if (!cfg || !Array.isArray(cfg.sidebarModules)) return true;
-            const list = cfg.sidebarModules;
+        window.isModuleLayoutVisible = function(modId, config) {
+          let cfg = config || window.layoutConfig || (window.adminPanel && window.adminPanel.layoutConfig);
+          if (!cfg) {
+            try {
+              const cached = typeof sessionStorage !== "undefined" ? sessionStorage.getItem("cached_layout_config") : null;
+              if (cached) cfg = JSON.parse(cached);
+            } catch (e) {}
+          }
+          if (!cfg || !Array.isArray(cfg.sidebarModules)) return true;
+          const list = cfg.sidebarModules;
 
-            // 1. Exact direct match
-            const direct = list.find(m => m.id === modId);
-            if (direct) return direct.visible !== false;
+          const normFn = typeof window.normalizeSidebarModuleId === "function"
+            ? window.normalizeSidebarModuleId
+            : (id => id);
+          const canonModId = normFn(modId);
 
-            // 2. Child-to-Parent / Hierarchy mappings
-            const PARENT_MAP = {
-              corrosionRate: "api581",
-              api571Criteria: "api581",
-              fluidSelector: "api581",
-              inventoryCalc: "api581",
-              inspectionConfidence: "api581",
-              toxicCalc: "api581",
-              cofCalculator: "api581",
-              qpofCalculator: "api581",
-              corrosionCalc: "api581",
-              damageMechanisms: "damageExplorer",
-              remainingLife: "api570",
-              designThickness: "thicknessCalc",
-              b313: "thicknessCalc",
-              asmeB31_3: "thicknessCalc",
-              simplePiping: "thicknessCalc",
-              asmeSectionVIII: "thicknessCalc",
-              pipeThickness: "thicknessCalc",
-              structuralThickness: "thicknessCalc",
-              crackingMechanism: "cracking",
-              tools: "adminControlCenter",
-              appDamage: "adminControlCenter",
-              appStream: "adminControlCenter",
-              appStress: "adminControlCenter",
-              appOverview: "adminControlCenter",
-              userManagement: "adminControlCenter",
-              rbacPermissions: "adminControlCenter",
-              sysDiagnostics: "adminControlCenter",
-              layoutBuilder: "adminControlCenter",
-              masterData: "adminControlCenter"
-            };
+          // 1. Canonical or direct match (first occurrence wins)
+          const direct = list.find(m => m && (normFn(m.id) === canonModId || m.id === modId));
+          if (direct) return direct.visible !== false;
 
-            const parentId = PARENT_MAP[modId];
-            if (parentId) {
-              const parentMod = list.find(m => m.id === parentId);
-              if (parentMod) return parentMod.visible !== false;
-            }
-
-            // 3. Reverse alias match
-            const REVERSE_MAP = {
-              damageExplorer: "damageMechanisms",
-              api570: "remainingLife",
-              cracking: "crackingMechanism",
-              adminControlCenter: "tools"
-            };
-            const revId = REVERSE_MAP[modId];
-            if (revId) {
-              const revMod = list.find(m => m.id === revId);
-              if (revMod) return revMod.visible !== false;
-            }
-
-            return true;
+          // 2. Child-to-Parent / Hierarchy mappings
+          const PARENT_MAP = {
+            corrosionRate: "api581",
+            api571Criteria: "api581",
+            fluidSelector: "api581",
+            inventoryCalc: "api581",
+            inspectionConfidence: "api581",
+            toxicCalc: "api581",
+            cofCalculator: "api581",
+            qpofCalculator: "api581",
+            corrosionCalc: "api581",
+            damageMechanisms: "damageExplorer",
+            remainingLife: "api570",
+            designThickness: "thicknessCalc",
+            b313: "thicknessCalc",
+            asmeB31_3: "thicknessCalc",
+            simplePiping: "thicknessCalc",
+            asmeSectionVIII: "thicknessCalc",
+            pipeThickness: "thicknessCalc",
+            structuralThickness: "thicknessCalc",
+            crackingMechanism: "crackingMechanism",
+            cracking: "crackingMechanism",
+            tools: "adminControlCenter",
+            appDamage: "adminControlCenter",
+            appStream: "adminControlCenter",
+            appStress: "adminControlCenter",
+            appOverview: "adminControlCenter",
+            userManagement: "adminControlCenter",
+            rbacPermissions: "adminControlCenter",
+            sysDiagnostics: "adminControlCenter",
+            layoutBuilder: "adminControlCenter",
+            masterData: "adminControlCenter"
           };
-        }
+
+          const parentId = PARENT_MAP[modId] || PARENT_MAP[canonModId];
+          if (parentId) {
+            const canonParent = normFn(parentId);
+            const parentMod = list.find(m => m && (normFn(m.id) === canonParent || m.id === parentId));
+            if (parentMod) return parentMod.visible !== false;
+          }
+
+          return true;
+        };
 
         // Global helper: determines whether a Home Dashboard welcome card should be visible
         window.isWelcomeCardVisible = function(modId, config, userRole, hasAccessFn) {
@@ -1360,7 +1545,8 @@ window.loadAdminPanelOnDemand = async function () {
   window._loadingAdminPanelPromise = (async () => {
     try {
       const isAdmin = window.RBAC && (window.RBAC.isSuperAdmin || window.RBAC.role === "admin");
-      if (!isAdmin) {
+      const hasToolsAccess = window.RBAC && typeof window.RBAC.hasModuleAccess === "function" && window.RBAC.hasModuleAccess("adminControlCenter");
+      if (!isAdmin && !hasToolsAccess) {
         console.warn("[RBAC] User is not authorized to load admin panel bundle.");
         return false;
       }

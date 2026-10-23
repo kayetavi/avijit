@@ -1162,13 +1162,13 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" crossorigin="anonymous"></script>
 
   <!-- 🔐 Single Protected & Minified Application Engine (Bundles calculation tools & logic) -->
-  <script src="assets/app-engine.min.js?v=20261009_sidebar_fix_v2"></script>
+  <script src="assets/app-engine.min.js?v=20261023_sidebar_fix_v3"></script>
   <!-- Direct load for Modular Dashboard Architecture -->
-  <script src="js/dashboard-shell.js?v=20261009_modular"></script>
-  <script src="js/damage-explorer.js?v=20261009_modular"></script>
-  <script src="js/corrosion-rate.js?v=20261009_modular"></script>
-  <script src="js/rbac.js?v=20261009_sidebar_fix_v2"></script>
-  <script src="js/recent-tabs.js?v=20261009_sidebar_fix_v2"></script>
+  <script src="js/dashboard-shell.js?v=20261023_sidebar_fix_v3"></script>
+  <script src="js/damage-explorer.js?v=20261023_sidebar_fix_v3"></script>
+  <script src="js/corrosion-rate.js?v=20261023_sidebar_fix_v3"></script>
+  <script src="js/rbac.js?v=20261023_sidebar_fix_v3"></script>
+  <script src="js/recent-tabs.js?v=20261023_sidebar_fix_v3"></script>
   <script src="periodic-table.js?v=20261002_stream_ingest_v5"></script>
   <script src="unit-converter.js?v=20261002_stream_ingest_v5"></script>
   <script src="stream-comparator.js?v=20261002_stream_ingest_v5"></script>
@@ -1425,7 +1425,8 @@
           url: "templates/view-admin-1000.html",
           showFn: "showAdminPanelTab",
           lifecycle: function () {
-            if (window.adminPanel && typeof window.adminPanel.loadAll === "function") {
+            if (window.adminPanel && typeof window.adminPanel.loadAll === "function" &&
+                (typeof window.adminPanel.isAdmin !== "function" || window.adminPanel.isAdmin())) {
               window.adminPanel.loadAll();
             }
           }
@@ -2315,7 +2316,7 @@
         // A. Wrap global tab functions with automatic on-demand template loading
         Object.keys(FUNCTION_TO_HASH).forEach(function (fnName) {
           var targetHash = FUNCTION_TO_HASH[fnName];
-          if (typeof window[fnName] === "function" && !window[fnName].__apmUrlSyncHooked) {
+          if (typeof window[fnName] === "function" && !window[fnName].__apmUrlSyncHooked && !window[fnName].__rbacWrapped) {
             var origFn = window[fnName];
             var mappedEnt = null;
             Object.keys(MODULE_TEMPLATES).forEach(function (k) {

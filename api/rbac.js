@@ -472,31 +472,31 @@ export const AVAILABLE_MODULES = [
     tabId: "adminPanelTab",
     launcherFunc: "openTool",
     subsections: [
-      { id: "userManagement", name: "User Management", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "users-list", group: "USERS & PERMISSIONS" },
-      { id: "rbacPermissions", name: "Roles & Permissions", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "roles-config", group: "USERS & PERMISSIONS" },
-      { id: "accessControl", name: "Access Control", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "access-control", group: "USERS & PERMISSIONS" },
+      { id: "userManagement", name: "User Management", category: "Tools", icon: "👤", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "users-list", group: "USERS & PERMISSIONS" },
+      { id: "rbacPermissions", name: "Roles & Permissions", category: "Tools", icon: "🛡️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "roles-config", group: "USERS & PERMISSIONS" },
+      { id: "accessControl", name: "Access Control", category: "Tools", icon: "🔒", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "access-control", group: "USERS & PERMISSIONS" },
 
-      { id: "appOverview", name: "Applications Overview", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "app-hub", group: "APPLICATION MANAGER" },
-      { id: "appStream", name: "Stream Data Manager", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "app-stream", group: "APPLICATION MANAGER" },
-      { id: "appStress", name: "Allowable Stress Manager", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "app-stress", group: "APPLICATION MANAGER" },
+      { id: "appOverview", name: "Applications Overview", category: "Tools", icon: "🎛️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "app-hub", group: "APPLICATION MANAGER" },
+      { id: "appStream", name: "Stream Data Manager", category: "Tools", icon: "📊", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "app-stream", group: "APPLICATION MANAGER" },
+      { id: "appStress", name: "Allowable Stress Manager", category: "Tools", icon: "🧮", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "app-stress", group: "APPLICATION MANAGER" },
 
-      { id: "firestoreExplorer", name: "Firestore Collections Explorer", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "sys-firestore", group: "SYSTEMS" },
-      { id: "sysDiagnostics", name: "Backup & Cloud Diagnostics", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "sys-diagnostics", group: "SYSTEMS" },
-      { id: "projectSwitcher", name: "Project Switcher", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "sys-projects", group: "SYSTEMS" },
-      { id: "activeSessions", name: "Active Sessions", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "sys-sessions", group: "SYSTEMS" },
-      { id: "systemLogs", name: "System Logs", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "sys-logs", group: "SYSTEMS" },
+      { id: "firestoreExplorer", name: "Firestore Collections Explorer", category: "Tools", icon: "🗄️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "sys-firestore", group: "SYSTEMS" },
+      { id: "sysDiagnostics", name: "Backup & Cloud Diagnostics", category: "Tools", icon: "⚙️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "sys-diagnostics", group: "SYSTEMS" },
+      { id: "projectSwitcher", name: "Project Switcher", category: "Tools", icon: "🔄", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "sys-projects", group: "SYSTEMS" },
+      { id: "activeSessions", name: "Active Sessions", category: "Tools", icon: "👤", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "sys-sessions", group: "SYSTEMS" },
+      { id: "systemLogs", name: "System Logs", category: "Tools", icon: "📋", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "sys-logs", group: "SYSTEMS" },
 
-      { id: "layoutBuilder", name: "Sidebar Configuration", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "layout-sidebar", group: "LAYOUT & NAVIGATION BUILDER" },
-      { id: "sidebarOrder", name: "Sidebar Order", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "sidebar-order", group: "LAYOUT & NAVIGATION BUILDER" },
-      { id: "tickerText", name: "Ticker Text", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "ticker-text", group: "LAYOUT & NAVIGATION BUILDER" },
-      { id: "welcomeCards", name: "Welcome Cards", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "welcome-cards", group: "LAYOUT & NAVIGATION BUILDER" },
-      { id: "navVisibility", name: "Navigation Visibility", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "nav-visibility", group: "LAYOUT & NAVIGATION BUILDER" },
+      { id: "layoutBuilder", name: "Sidebar Configuration", category: "Tools", icon: "📑", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "layout-sidebar", group: "LAYOUT & NAVIGATION BUILDER" },
+      { id: "sidebarOrder", name: "Sidebar Order", category: "Tools", icon: "↕️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "sidebar-order", group: "LAYOUT & NAVIGATION BUILDER" },
+      { id: "tickerText", name: "Ticker Text", category: "Tools", icon: "📢", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "ticker-text", group: "LAYOUT & NAVIGATION BUILDER" },
+      { id: "welcomeCards", name: "Welcome Cards", category: "Tools", icon: "🎴", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "welcome-cards", group: "LAYOUT & NAVIGATION BUILDER" },
+      { id: "navVisibility", name: "Navigation Visibility", category: "Tools", icon: "👁️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "nav-visibility", group: "LAYOUT & NAVIGATION BUILDER" },
 
-      { id: "masterData", name: "Master Data Management", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "master-overview", group: "MASTER DATA, BACKUP & LOGS" },
-      { id: "jsonBackup", name: "1-Click JSON Backup", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "master-backup", group: "MASTER DATA, BACKUP & LOGS" },
-      { id: "jsonRestore", name: "JSON Restore", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "master-restore", group: "MASTER DATA, BACKUP & LOGS" },
-      { id: "backupHistory", name: "Backup History", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "master-history", group: "MASTER DATA, BACKUP & LOGS" },
-      { id: "auditTrail", name: "Audit Trail", category: "Tools", icon: "🛠️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "master-audit", group: "MASTER DATA, BACKUP & LOGS" }
+      { id: "masterData", name: "Master Data Management", category: "Tools", icon: "🗃️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "master-overview", group: "MASTER DATA, BACKUP & LOGS" },
+      { id: "jsonBackup", name: "1-Click JSON Backup", category: "Tools", icon: "⚡", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "master-backup", group: "MASTER DATA, BACKUP & LOGS" },
+      { id: "jsonRestore", name: "JSON Restore", category: "Tools", icon: "🔄", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "master-restore", group: "MASTER DATA, BACKUP & LOGS" },
+      { id: "backupHistory", name: "Backup History", category: "Tools", icon: "📜", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "master-history", group: "MASTER DATA, BACKUP & LOGS" },
+      { id: "auditTrail", name: "Audit Trail", category: "Tools", icon: "🔍", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "master-audit", group: "MASTER DATA, BACKUP & LOGS" }
     ]
   }
 ];
@@ -859,10 +859,15 @@ export function buildRolePermissions(role, customModules = {}, customSubsections
 export const userRolesCache = new Map();
 
 // Default Super Admin email
-export const SUPER_ADMIN_EMAIL = "";
+export const SUPER_ADMIN_EMAIL = "avijitkayet97@gmail.com";
+export const SUPER_ADMIN_EMAILS = new Set([
+  "avijitkayet97@gmail.com",
+  "kayetavijit97@gmail.com"
+]);
 
 export function isSuperAdminEmail(email) {
-  return false;
+  if (!email || typeof email !== "string") return false;
+  return SUPER_ADMIN_EMAILS.has(email.toLowerCase().trim());
 }
 
 export const DELETED_USERS_FILE = path.resolve(__dirname, "../data/secure/deleted_users.json");
@@ -968,7 +973,9 @@ export function loadUsersFromFile() {
     ensureDirExists(USERS_FILE);
     if (fs.existsSync(USERS_FILE)) {
       const data = JSON.parse(fs.readFileSync(USERS_FILE, "utf8"));
-      if (Array.isArray(data)) return data;
+      if (Array.isArray(data)) {
+        return data.filter(u => u && typeof u.email === "string" && u.email.trim().length > 0);
+      }
     }
   } catch (err) {
     console.warn("Failed to read users file:", err.message);
@@ -979,7 +986,10 @@ export function loadUsersFromFile() {
 export function saveUsersToFile(users) {
   try {
     ensureDirExists(USERS_FILE);
-    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), "utf8");
+    const validUsers = Array.isArray(users)
+      ? users.filter(u => u && typeof u.email === "string" && u.email.trim().length > 0)
+      : [];
+    fs.writeFileSync(USERS_FILE, JSON.stringify(validUsers, null, 2), "utf8");
   } catch (err) {
     console.warn("Failed to write users file:", err.message);
   }
@@ -988,21 +998,26 @@ export function saveUsersToFile(users) {
 // Initial bootstrap of userRolesCache from file or seeds
 function initBootstrapUsers() {
   let fileUsers = loadUsersFromFile();
-  if (!fileUsers || fileUsers.length === 0) {
-    const adminPerms = buildRolePermissions("admin");
+  const adminPerms = buildRolePermissions("admin");
+  let changed = false;
 
-    fileUsers = [
-      {
-        id: SUPER_ADMIN_EMAIL,
-        email: SUPER_ADMIN_EMAIL,
+  for (const superEmail of SUPER_ADMIN_EMAILS) {
+    if (!fileUsers.some(u => u && u.email && u.email.toLowerCase().trim() === superEmail)) {
+      fileUsers.push({
+        id: superEmail,
+        email: superEmail,
         role: "admin",
         allowedModules: adminPerms.modules,
         subsections: adminPerms.subsections,
         isSuperAdmin: true,
         hasAuthAccount: true,
         updatedAt: Date.now()
-      }
-    ];
+      });
+      changed = true;
+    }
+  }
+
+  if (changed || fileUsers.length === 0) {
     saveUsersToFile(fileUsers);
   }
 
@@ -1015,7 +1030,62 @@ function initBootstrapUsers() {
 
 initBootstrapUsers();
 
-export async function getUserRbacData(email) {
+function parseFirestoreRestValue(valObj) {
+  if (!valObj || typeof valObj !== "object") return undefined;
+  if ("stringValue" in valObj) return valObj.stringValue;
+  if ("booleanValue" in valObj) return Boolean(valObj.booleanValue);
+  if ("integerValue" in valObj) return Number(valObj.integerValue);
+  if ("doubleValue" in valObj) return Number(valObj.doubleValue);
+  if ("nullValue" in valObj) return null;
+  if ("timestampValue" in valObj) return new Date(valObj.timestampValue).getTime();
+  if ("arrayValue" in valObj) {
+    return (valObj.arrayValue.values || []).map(parseFirestoreRestValue);
+  }
+  if ("mapValue" in valObj) {
+    const out = {};
+    const fields = valObj.mapValue.fields || {};
+    for (const [k, v] of Object.entries(fields)) {
+      out[k] = parseFirestoreRestValue(v);
+    }
+    return out;
+  }
+  return undefined;
+}
+
+async function fetchUserRoleViaRest(targetEmail, idToken, uid = "") {
+  if (!idToken) return null;
+  const projectId = process.env.FIREBASE_PROJECT_ID || "loginapp-feb72";
+  const baseUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents`;
+  const pathsToTry = [
+    `userRoles/${encodeURIComponent(targetEmail)}`,
+    ...(uid ? [`users/${encodeURIComponent(uid)}`] : []),
+    `users/${encodeURIComponent(targetEmail)}`
+  ];
+
+  for (const relPath of pathsToTry) {
+    try {
+      const resp = await fetch(`${baseUrl}/${relPath}`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${idToken}`,
+          "Accept": "application/json"
+        }
+      });
+      if (resp.ok) {
+        const docJson = await resp.json();
+        if (docJson && docJson.fields) {
+          const parsed = parseFirestoreRestValue({ mapValue: { fields: docJson.fields } });
+          if (parsed && typeof parsed === "object") {
+            return parsed;
+          }
+        }
+      }
+    } catch (e) {}
+  }
+  return null;
+}
+
+export async function getUserRbacData(email, options = {}) {
   if (!email) return null;
   const targetEmail = String(email).toLowerCase().trim();
 
@@ -1026,15 +1096,56 @@ export async function getUserRbacData(email) {
 
   let roleData = null;
 
-  // 1. Read strictly from live Firestore via Admin SDK (Zero-Fallback Architecture)
+  // 1. Read from live Firestore via Admin SDK if initialized
   const adminApp = getAdminApp();
   const db = adminApp ? adminApp.firestore() : null;
-  if (!db) {
-    throw new Error("Live Firestore connection is mandatory. Admin SDK is uninitialized.");
+  if (db) {
+    try {
+      const snap = await db.collection("userRoles").doc(targetEmail).get();
+      if (snap && snap.exists) {
+        roleData = snap.data();
+        userRolesCache.set(targetEmail, roleData);
+      }
+    } catch (err) {
+      console.warn("Admin Firestore getUserRbacData note:", err?.message || String(err));
+    }
   }
-  const snap = await db.collection("userRoles").doc(targetEmail).get();
-  if (snap && snap.exists) {
-    roleData = snap.data();
+
+  // 2. If Admin SDK unavailable or doc not yet resolved, try Firestore REST API with verified idToken
+  if (!roleData && options?.idToken) {
+    roleData = await fetchUserRoleViaRest(targetEmail, options.idToken, options.uid);
+    if (roleData) {
+      userRolesCache.set(targetEmail, roleData);
+    }
+  }
+
+  // 3. Fallback to in-memory cache and persistent local users.json store
+  if (!roleData && userRolesCache.has(targetEmail)) {
+    roleData = userRolesCache.get(targetEmail);
+  }
+
+  if (!roleData) {
+    const fileUsers = loadUsersFromFile();
+    const found = fileUsers.find(u => u && u.email && u.email.toLowerCase().trim() === targetEmail);
+    if (found) {
+      roleData = found;
+      userRolesCache.set(targetEmail, roleData);
+    }
+  }
+
+  // 4. Bootstrap Super Admin if matching primary admin email
+  if (!roleData && isSuperAdminEmail(targetEmail)) {
+    const adminPerms = buildRolePermissions("admin");
+    roleData = {
+      id: targetEmail,
+      email: targetEmail,
+      role: "admin",
+      allowedModules: adminPerms.modules,
+      subsections: adminPerms.subsections,
+      isSuperAdmin: true,
+      hasAuthAccount: true,
+      updatedAt: Date.now()
+    };
     userRolesCache.set(targetEmail, roleData);
   }
 
@@ -1044,7 +1155,7 @@ export async function getUserRbacData(email) {
   }
 
   const resolvedPassword = roleData.password || roleData.assignedPassword || roleData.temporaryPassword || "";
-  const isUserAdmin = roleData.role === "admin" || roleData.isSuperAdmin === true;
+  const isUserAdmin = roleData.role === "admin" || roleData.isSuperAdmin === true || isSuperAdminEmail(targetEmail);
 
   let allowedModules = roleData.allowedModules || {};
   let subsections = roleData.subsections || {};
@@ -1053,6 +1164,14 @@ export async function getUserRbacData(email) {
     const adminPerms = buildRolePermissions("admin");
     allowedModules = { ...adminPerms.modules, ...allowedModules };
     subsections = { ...adminPerms.subsections, ...subsections };
+  } else {
+    const normalizedPerms = buildRolePermissions(
+      roleData.role || "lead_engineer",
+      allowedModules,
+      subsections
+    );
+    allowedModules = normalizedPerms.modules;
+    subsections = normalizedPerms.subsections;
   }
 
   const authorizedNav = filterAuthorizedNavigation(
@@ -1064,13 +1183,13 @@ export async function getUserRbacData(email) {
 
   return {
     email: targetEmail,
-    role: roleData.role || "viewer",
+    role: isUserAdmin ? "admin" : (roleData.role || "viewer"),
     isSuperAdmin: isUserAdmin,
     allowedModules: allowedModules,
     subsections: subsections,
     availableModules: isUserAdmin ? AVAILABLE_MODULES : authorizedNav,
     authorizedNavigation: authorizedNav,
-    authUid: roleData.authUid || "",
+    authUid: roleData.authUid || options?.uid || "",
     password: resolvedPassword
   };
 }
@@ -1096,8 +1215,13 @@ export default async function handler(req, res) {
   const adminApp = getAdminApp();
   const db = adminApp ? adminApp.firestore() : null;
 
+  const identityOpts = {
+    idToken: identity?.idToken || "",
+    uid: identity?.uid || ""
+  };
+
   // Server-side identity & authority verification
-  const callerRecord = callerEmail ? await getUserRbacData(callerEmail) : null;
+  const callerRecord = callerEmail ? await getUserRbacData(callerEmail, identityOpts) : null;
   const isCallerAdmin = Boolean(callerRecord && (callerRecord.role === "admin" || callerRecord.isSuperAdmin));
 
   // Enforce server-side RBAC for administrative operations
@@ -1113,8 +1237,8 @@ export default async function handler(req, res) {
     }
   }
 
-  // Prevent non-admins from querying other users' permissions
-  if ((action === "get_my_permissions" || action === "get_permissions") && !isCallerAdmin) {
+  // Prevent non-admins from querying other users' permissions when authenticated as a different user
+  if ((action === "get_my_permissions" || action === "get_permissions") && !isCallerAdmin && callerEmail) {
     targetEmail = callerEmail;
   }
 
@@ -1137,34 +1261,64 @@ export default async function handler(req, res) {
 
   // 1. Get current user's permissions
   if (action === "get_my_permissions" || action === "get_permissions") {
-    if (!targetEmail) {
-      return res.status(400).json({ error: "Target email required" });
+    let rbacData = (targetEmail === callerEmail && callerRecord)
+      ? callerRecord
+      : (targetEmail ? await getUserRbacData(targetEmail, identityOpts) : null);
+    if (!rbacData) {
+      const fallbackRole = isSuperAdminEmail(targetEmail) ? "admin" : "lead_engineer";
+      const isSuper = fallbackRole === "admin";
+      const defaultPerms = buildRolePermissions(fallbackRole);
+      const authorizedNav = filterAuthorizedNavigation(
+        AVAILABLE_MODULES,
+        defaultPerms.modules,
+        defaultPerms.subsections,
+        isSuper
+      );
+      rbacData = {
+        email: targetEmail || "",
+        role: fallbackRole,
+        isSuperAdmin: isSuper,
+        allowedModules: defaultPerms.modules,
+        subsections: defaultPerms.subsections,
+        availableModules: AVAILABLE_MODULES,
+        authorizedNavigation: authorizedNav
+      };
     }
-
-    const rbacData = await getUserRbacData(targetEmail);
     return res.status(200).json({
       success: true,
       ...rbacData
     });
   }
 
-  // 2. List all users and their roles (Admin only - Live Firestore Only)
+  // 2. List all users and their roles (Admin only)
   if (action === "list_users") {
-    if (!db) {
-      return res.status(503).json({ error: "Cloud database unavailable. Live connection to Firestore is mandatory." });
-    }
     let usersList = [];
-    try {
-      const snap = await db.collection("userRoles").get();
-      snap.forEach((doc) => {
-        usersList.push(doc.data());
-      });
-    } catch (err) {
-      console.error("Firestore Admin list_users error:", err);
-      return res.status(503).json({ error: "Failed to query live users from Firestore: " + err.message });
+    if (db) {
+      try {
+        const snap = await db.collection("userRoles").get();
+        snap.forEach((doc) => {
+          usersList.push(doc.data());
+        });
+      } catch (err) {
+        console.warn("Firestore Admin list_users notice:", err.message);
+      }
     }
 
-    // Ensure super admin is in the list
+    const fileUsers = loadUsersFromFile();
+    fileUsers.forEach((fu) => {
+      const email = (fu.email || fu.id || "").toLowerCase().trim();
+      if (email && !usersList.some(u => u.email && u.email.toLowerCase().trim() === email)) {
+        usersList.push(fu);
+      }
+    });
+
+    userRolesCache.forEach((val, key) => {
+      const email = key.toLowerCase().trim();
+      if (email && !usersList.some(u => u.email && u.email.toLowerCase().trim() === email)) {
+        usersList.push(val);
+      }
+    });
+
     // Update file & cache
     saveUsersToFile(usersList);
     usersList.forEach((u) => {

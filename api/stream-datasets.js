@@ -25,6 +25,9 @@ export default async function handler(req, res) {
     // GET: List all datasets or fetch single by ID from Live Firestore
     // -------------------------------------------------------------
     if (method === "GET") {
+      res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+      res.setHeader("Pragma", "no-cache");
+      res.setHeader("Expires", "0");
       const { id } = req.query || {};
 
       if (id) {

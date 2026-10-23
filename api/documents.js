@@ -1,63 +1,121 @@
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { getAdminFirestore } from "./firebaseAdmin.js";
+import { getFirestoreDb } from "./firestoreClient.js";
+import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const LOCAL_DOCS_FILE = path.resolve(__dirname, "../data/secure/ccd_documents.json");
+
+function loadLocalDocs() {
+  try {
+    if (fs.existsSync(LOCAL_DOCS_FILE)) {
+      const parsed = JSON.parse(fs.readFileSync(LOCAL_DOCS_FILE, "utf8"));
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch (e) {}
+  return [];
+}
+
+function saveLocalDocs(docs) {
+  try {
+    const dir = path.dirname(LOCAL_DOCS_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(LOCAL_DOCS_FILE, JSON.stringify(docs, null, 2), "utf8");
+  } catch (e) {}
+}
 
 export default async function handler(req, res) {
   res.setHeader("Content-Type", "application/json");
 
   try {
     const adminDb = getAdminFirestore();
+    const clientDb = getFirestoreDb();
     const method = req.method.toUpperCase();
 
     // GET /api/documents
     if (method === "GET") {
-      if (!adminDb) {
-        return res.status(503).json({ error: "Live Firestore database connection required." });
+      if (adminDb) {
+        try {
+          const snapshot = await adminDb.collection("documents").get();
+          const docs = [];
+          snapshot.forEach((d) => docs.push({ id: d.id, ...d.data() }));
+          return res.status(200).json(docs);
+        } catch (err) {
+          console.warn("Admin Firestore documents fetch note:", err.message);
+        }
       }
-      try {
-        const snapshot = await adminDb.collection("documents").get();
-        const docs = [];
-        snapshot.forEach((d) => docs.push({ id: d.id, ...d.data() }));
-        return res.status(200).json(docs);
-      } catch (err) {
-        console.error("Firestore documents fetch error:", err.message);
-        return res.status(503).json({ error: `Firestore fetch error: ${err.message}` });
+      if (clientDb) {
+        try {
+          const snapshot = await getDocs(collection(clientDb, "documents"));
+          if (!snapshot.empty) {
+            const docs = [];
+            snapshot.forEach((d) => docs.push({ id: d.id, ...d.data() }));
+            return res.status(200).json(docs);
+          }
+        } catch (err) {
+          console.warn("Client Firestore documents fetch note:", err.message);
+        }
       }
+      return res.status(200).json(loadLocalDocs());
     }
 
     // POST /api/documents or /api/documents/upload
     if (method === "POST") {
-      if (!adminDb) {
-        return res.status(503).json({ error: "Live Firestore database connection required." });
-      }
       const data = req.body || {};
       const docId = data.id || `doc_${Date.now()}`;
       data.id = docId;
       data.lastSavedDate = new Date().toISOString().split("T")[0];
       data.lastModifiedDateTime = new Date().toISOString();
 
-      try {
-        await adminDb.collection("documents").doc(docId).set(data, { merge: true });
-        return res.status(200).json({ success: true, id: docId, document: data });
-      } catch (err) {
-        console.error("Firestore save failed:", err.message);
-        return res.status(503).json({ error: `Firestore save failed: ${err.message}` });
+      // Persist locally first
+      const localDocs = loadLocalDocs();
+      const idx = localDocs.findIndex(d => d && d.id === docId);
+      if (idx >= 0) localDocs[idx] = { ...localDocs[idx], ...data };
+      else localDocs.push(data);
+      saveLocalDocs(localDocs);
+
+      if (adminDb) {
+        try {
+          await adminDb.collection("documents").doc(docId).set(data, { merge: true });
+        } catch (err) {
+          console.warn("Admin Firestore save note:", err.message);
+        }
+      } else if (clientDb) {
+        try {
+          await setDoc(doc(clientDb, "documents", docId), data, { merge: true });
+        } catch (err) {
+          console.warn("Client Firestore save note:", err.message);
+        }
       }
+
+      return res.status(200).json({ success: true, id: docId, document: data });
     }
 
     // DELETE /api/documents/:id
     if (method === "DELETE") {
-      if (!adminDb) {
-        return res.status(503).json({ error: "Live Firestore database connection required." });
-      }
       const id = req.path.split("/").pop();
-      try {
-        if (id && id !== "documents") {
-          await adminDb.collection("documents").doc(id).delete();
+      if (id && id !== "documents") {
+        const localDocs = loadLocalDocs().filter(d => d && d.id !== id);
+        saveLocalDocs(localDocs);
+
+        if (adminDb) {
+          try {
+            await adminDb.collection("documents").doc(id).delete();
+          } catch (err) {
+            console.warn("Admin Firestore delete note:", err.message);
+          }
+        } else if (clientDb) {
+          try {
+            await deleteDoc(doc(clientDb, "documents", id));
+          } catch (err) {
+            console.warn("Client Firestore delete note:", err.message);
+          }
         }
-        return res.status(200).json({ success: true, deletedId: id });
-      } catch (err) {
-        console.error("Firestore delete failed:", err.message);
-        return res.status(503).json({ error: `Firestore delete failed: ${err.message}` });
       }
+      return res.status(200).json({ success: true, deletedId: id });
     }
 
     return res.status(405).json({ error: "Method Not Allowed" });

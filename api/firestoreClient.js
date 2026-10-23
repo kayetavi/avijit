@@ -7,7 +7,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { initializeApp, getApps, getApp, deleteApp } from "firebase/app";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import {
   getAdminApp,
@@ -297,5 +297,11 @@ export {
   getAdminApp,
   getAdminFirestore,
   isAdminConfigured,
-  getAdminStatus
+  getAdminStatus,
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  getDocs,
+  deleteDoc
 };

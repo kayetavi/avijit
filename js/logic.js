@@ -598,46 +598,60 @@ window.showRPTUDashboard = showRPTUDashboard;
     if (!categoryList) return;
 
     categoryList.onclick = function(e) {
+      if (!e || !e.target || typeof e.target.closest !== "function") return;
+
+      // Ignore clicks on the inline filter box or filter toggle button inside API 571 Damage Mechanisms
+      if (e.target.closest(".category-filter-icon") || e.target.closest(".category-inline-filter")) {
+        return;
+      }
+
       const leafLink = e.target.closest('a[data-mod-id], a[data-sub-id], .sidebar-tab-link, a.sidebar-nav-link, li[data-rbac-module] a, #categoryList a');
       const trigger = e.target.closest('.toggle-arrow, .arrow, .category, .subcategory, [data-accordion-trigger], .category-title');
 
-      // A. Actionable Leaf Tab Navigation
+      // A. Actionable Leaf Tab Navigation (or single-action category link)
       if (leafLink) {
         const parentLi = leafLink.closest('li');
-        const modId = leafLink.getAttribute('data-mod-id') || parentLi?.getAttribute('data-rbac-module') || leafLink.closest('[data-rbac-module]')?.getAttribute('data-rbac-module') || '';
-        const subId = leafLink.getAttribute('data-sub-id') || parentLi?.getAttribute('data-rbac-sub') || modId;
+        const subList = parentLi ? parentLi.querySelector(':scope > ul.mechanisms, :scope > ul.subcategory-list, :scope > ul') : null;
 
-        // If this is a damage mechanism item link
-        if (!modId && !subId) {
-          if (parentLi) {
-            const mechName = (leafLink.textContent || '').trim();
-            if (mechName && typeof window.showMechanismDetails === 'function') {
-              e.preventDefault();
-              e.stopPropagation();
-              document.querySelectorAll('#categoryList a').forEach(a => a.classList.remove('active-link'));
-              leafLink.classList.add('active-link');
-              window.showMechanismDetails(mechName, null);
-              if (typeof window.closeMobileSidebar === 'function') window.closeMobileSidebar();
-              return;
+        // If the link is inside an accordion header that actually has child items, treat it as an accordion toggle
+        if (leafLink.closest('.category, .subcategory') && subList && subList.children.length > 0) {
+          // Fall through to B (Accordion Header / Category Click)
+        } else {
+          const modId = leafLink.getAttribute('data-mod-id') || parentLi?.getAttribute('data-rbac-module') || leafLink.closest('[data-rbac-module]')?.getAttribute('data-rbac-module') || '';
+          const subId = leafLink.getAttribute('data-sub-id') || parentLi?.getAttribute('data-rbac-sub') || modId;
+
+          // If this is a damage mechanism item link
+          if (!modId && !subId) {
+            if (parentLi) {
+              const mechName = (leafLink.textContent || '').trim();
+              if (mechName && typeof window.showMechanismDetails === 'function') {
+                e.preventDefault();
+                e.stopPropagation();
+                document.querySelectorAll('#categoryList a').forEach(a => a.classList.remove('active-link'));
+                leafLink.classList.add('active-link');
+                window.showMechanismDetails(mechName, null);
+                if (typeof window.closeMobileSidebar === 'function') window.closeMobileSidebar();
+                return;
+              }
             }
           }
-        }
 
-        if (modId || subId) {
-          e.preventDefault();
-          e.stopPropagation();
+          if (modId || subId) {
+            e.preventDefault();
+            e.stopPropagation();
 
-          document.querySelectorAll("#categoryList a").forEach(a => a.classList.remove("active-link"));
-          leafLink.classList.add("active-link");
+            document.querySelectorAll("#categoryList a").forEach(a => a.classList.remove("active-link"));
+            leafLink.classList.add("active-link");
 
-          if (typeof window.activateSidebarModule === 'function') {
-            window.activateSidebarModule(modId, subId);
+            if (typeof window.activateSidebarModule === 'function') {
+              window.activateSidebarModule(modId, subId, true);
+            }
+
+            if (typeof window.closeMobileSidebar === 'function') {
+              window.closeMobileSidebar();
+            }
+            return;
           }
-
-          if (typeof window.closeMobileSidebar === 'function') {
-            window.closeMobileSidebar();
-          }
-          return;
         }
       }
 
@@ -649,31 +663,202 @@ window.showRPTUDashboard = showRPTUDashboard;
         const parentLi = trigger.closest('li');
         if (!parentLi) return;
 
-        const subList = parentLi.querySelector('ul.mechanisms, ul.subcategory-list, ul');
-        const modId = parentLi.getAttribute('data-rbac-module');
+        const subList = parentLi.querySelector(':scope > ul.mechanisms, :scope > ul.subcategory-list, :scope > ul') || parentLi.querySelector('ul.mechanisms, ul.subcategory-list, ul');
+        const modId = trigger.getAttribute('data-mod-id') || parentLi.getAttribute('data-rbac-module') || '';
+        const subId = trigger.getAttribute('data-sub-id') || parentLi.getAttribute('data-rbac-sub') || modId;
 
-        if (subList) {
-          const isHidden = window.getComputedStyle(subList).display === 'none';
+        if (subList && subList.children.length > 0) {
+          const isHidden = window.getComputedStyle(subList).display === 'none' || subList.style.display === 'none';
           subList.style.display = isHidden ? 'block' : 'none';
 
-          const arrow = parentLi.querySelector('.arrow, .toggle-arrow');
+          const headerEl = trigger.closest('.category, .subcategory') || parentLi;
+          const arrow = headerEl.querySelector('.arrow, .toggle-arrow');
           if (arrow) {
             arrow.textContent = isHidden ? '▾' : '▸';
           }
-
-          // Expand accordion and load primary module in background WITHOUT auto-closing the drawer
-          if (modId && typeof window.activateSidebarModule === 'function') {
-            window.activateSidebarModule(modId, modId, false);
-          }
         } else if (modId && typeof window.activateSidebarModule === 'function') {
-          window.activateSidebarModule(modId, modId, true);
+          const innerLink = parentLi.querySelector('a');
+          if (innerLink) {
+            document.querySelectorAll("#categoryList a").forEach(a => a.classList.remove("active-link"));
+            innerLink.classList.add("active-link");
+          }
+          window.activateSidebarModule(modId, subId || modId, true);
+          if (typeof window.closeMobileSidebar === 'function') {
+            window.closeMobileSidebar();
+          }
         }
       }
     };
   }
   window.initSidebarNavigationClicks = initSidebarNavigationClicks;
 
+  const DEFAULT_SIDEBAR_MODULES = [
+    {
+      id: "api581",
+      name: "API 581 Risk-Based Inspection",
+      icon: "📊",
+      category: "Risk & Inspection",
+      subsections: [
+        { id: "api571Criteria", name: "API 571 Damage Mechanism Screening", icon: "🔎", launcherFunc: "showCriteriaTab", tabId: "a571-criteriaTab" },
+        { id: "corrosionRate", name: "Corrosion Rate Estimator", icon: "📉", launcherFunc: "showCorrosionFullTab", tabId: "corrosionFullTab" },
+        { id: "fluidSelector", name: "Representative Fluid Selector", icon: "💧", launcherFunc: "showFluidSelectorTab", tabId: "fluidSelectorTab" },
+        { id: "inventoryCalc", name: "Equipment Inventory Calculator", icon: "🛢️", launcherFunc: "showInventoryTab", tabId: "inventoryTab" },
+        { id: "inspectionConfidence", name: "Inspection Confidence & Effectiveness", icon: "🎯", launcherFunc: "showINSPECTIONCONFIDENCETab", tabId: "inspectionconfidenceTab" },
+        { id: "toxicCalc", name: "Toxic Fluid Consequence (% Calculation)", icon: "☠️", launcherFunc: "showTOXIC_CALCULATIONTab", tabId: "TOXIC_CALCULATIONTab" },
+        {
+          id: "quantitativeGroup",
+          name: "Quantitative",
+          icon: "📐",
+          isGroup: true,
+          children: [
+            { id: "cofCalculator", name: "Risk Calculator_COF", icon: "💥", launcherFunc: "showcof_calculatorTab", tabId: "cof_calculatorTab" },
+            { id: "qpofCalculator", name: "Risk Calculator_POF", icon: "📈", launcherFunc: "showQPOF_calculatorTab", tabId: "QPOF_calculatorTab" }
+          ]
+        },
+        {
+          id: "semiQuantitativeGroup",
+          name: "Semi Quantitative",
+          icon: "⚖️",
+          isGroup: true,
+          children: [
+            { id: "corrosionCalc", name: "Risk Calculator", icon: "🧮", launcherFunc: "showCORROSION_CALCULATIONTab", tabId: "CORROSION_CALCULATIONTab" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "api570",
+      name: "API 570 Remaining Life",
+      icon: "⏱️",
+      category: "Integrity & Piping",
+      subsections: []
+    },
+    {
+      id: "thicknessCalc",
+      name: "Design Thickness (ASME)",
+      icon: "📐",
+      category: "Mechanical Design",
+      subsections: [
+        {
+          id: "processPipingGroup",
+          name: "Process Piping",
+          icon: "🔧",
+          isGroup: true,
+          children: [
+            { id: "asmeB31_3", name: "ASME B31.3 Advanced", icon: "⚙️", launcherFunc: "showASMEB31_3Tab", tabId: "ASMEB31_3Tab" },
+            { id: "simplePiping", name: "Simple Formula (PD / 2SE)", icon: "📏", launcherFunc: "showSimplePipingTab", tabId: "simplePipingTab" }
+          ]
+        },
+        { id: "asmeSectionVIII", name: "Pressure Vessel (ASME Sec VIII Div 1)", icon: "🛢️", launcherFunc: "showASMESECTIONVIIIDIV1Tab", tabId: "ASMESECTIONVIIIDIV1Tab" },
+        { id: "pipeThickness", name: "Piping Schedule & Thickness Chart", icon: "📋", launcherFunc: "showpipeThicknessTab", tabId: "pipeThicknessTab" },
+        { id: "structuralThickness", name: "Structural Minimum Thickness (API 574)", icon: "🏗️", launcherFunc: "showStructuralThicknessTab", tabId: "structuralThicknessTab" }
+      ]
+    },
+    {
+      id: "crackingMechanism",
+      name: "Cracking Mechanism Finder",
+      icon: "⚡",
+      category: "Damage Screening",
+      subsections: []
+    },
+    {
+      id: "bkStress",
+      name: "Allowable Stress & Material Data",
+      icon: "🔩",
+      category: "Materials",
+      subsections: []
+    },
+    {
+      id: "streamComparator",
+      name: "Stream Comparator (HMB)",
+      icon: "⚖️",
+      category: "Process Engineering",
+      subsections: []
+    },
+    {
+      id: "chemicalSuite",
+      name: "Chemistry & Chemical Suite",
+      icon: "🧪",
+      category: "Process Engineering",
+      subsections: []
+    },
+    {
+      id: "unitConverter",
+      name: "Plant & Integrity Unit Converters",
+      icon: "🔄",
+      category: "Utilities",
+      subsections: []
+    },
+    {
+      id: "processFlow",
+      name: "Process Flow Diagrams (PFD)",
+      icon: "🏭",
+      category: "Diagrams",
+      subsections: [
+        { id: "cduVdu", name: "CDU / VDU Distillation Unit", icon: "🛢️", launcherFunc: "showCDUVDUTab" },
+        { id: "atmospheric", name: "Hydroprocessing Unit (HCU)", icon: "🔥", launcherFunc: "showPROCESSFLOWDIAGRAMSTab" },
+        { id: "msp", name: "Motor Spirit Production (MSP)", icon: "⛽", launcherFunc: "showMSPTab" },
+        { id: "h2u", name: "Hydrogen Generation Unit (H2U)", icon: "💨", launcherFunc: "showH2UTab" }
+      ]
+    },
+    {
+      id: "rptu",
+      name: "RPTU Telemetry Dashboard",
+      icon: "📡",
+      category: "Telemetry",
+      subsections: []
+    },
+    {
+      id: "ccdAI",
+      name: "CCD AI Platform",
+      icon: "🤖",
+      category: "Integrity Management",
+      subsections: []
+    }
+  ];
 
+  function normalizeSidebarModuleId(rawId) {
+    if (!rawId) return "";
+    const id = String(rawId).trim();
+    if (id === "cracking" || id === "crackingMechanism") return "crackingMechanism";
+    if (
+      id === "damage" ||
+      id === "damageMechanisms" ||
+      id === "damageMechanism" ||
+      id === "damageCatalog" ||
+      id === "api571" ||
+      id === "api571DamageMechanisms" ||
+      id === "damageExplorer"
+    ) {
+      return "damageExplorer";
+    }
+    if (id === "remainingLife" || id === "api570") return "api570";
+    if (id === "designThickness" || id === "b313" || id === "thicknessCalc") return "thicknessCalc";
+    if (id === "tools" || id === "adminControlCenter") return "adminControlCenter";
+    if (id === "stream" || id === "streamData" || id === "streamComparator") return "streamComparator";
+    return id;
+  }
+  window.normalizeSidebarModuleId = normalizeSidebarModuleId;
+
+  function getActiveLayoutConfig(overrideCfg) {
+    if (overrideCfg && typeof overrideCfg === "object") return overrideCfg;
+    if (window.layoutConfig && typeof window.layoutConfig === "object") return window.layoutConfig;
+    if (window.adminPanel && window.adminPanel.layoutConfig && typeof window.adminPanel.layoutConfig === "object") {
+      return window.adminPanel.layoutConfig;
+    }
+    try {
+      const cached = typeof sessionStorage !== "undefined" ? sessionStorage.getItem("cached_layout_config") : null;
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && typeof parsed === "object") {
+          window.layoutConfig = parsed;
+          return parsed;
+        }
+      }
+    } catch (e) {}
+    return null;
+  }
+  window.getActiveLayoutConfig = getActiveLayoutConfig;
 
   function renderServerDrivenSidebar(authorizedNavigation) {
     const categoryList = document.getElementById("categoryList");
@@ -682,12 +867,79 @@ window.showRPTUDashboard = showRPTUDashboard;
     initSidebarNavigationClicks();
 
     const rbacNav = window.RBAC?.authorizedNavigation;
-    const layoutNav = window.layoutConfig?.sidebarModules;
-    const navModules = (authorizedNavigation && Array.isArray(authorizedNavigation) && authorizedNavigation.length > 0)
-      ? authorizedNavigation
-      : (Array.isArray(rbacNav) && rbacNav.length > 0 ? rbacNav : (Array.isArray(layoutNav) && layoutNav.length > 0 ? layoutNav : []));
+    const rbacAvail = window.RBAC?.availableModules;
+    const layoutCfg = getActiveLayoutConfig();
+    const layoutNav = layoutCfg?.sidebarModules;
 
-    if (!Array.isArray(navModules) || navModules.length === 0) return;
+    const rawNavModules = (authorizedNavigation && Array.isArray(authorizedNavigation) && authorizedNavigation.length > 0)
+      ? authorizedNavigation
+      : (Array.isArray(rbacNav) && rbacNav.length > 0
+          ? rbacNav
+          : (Array.isArray(rbacAvail) && rbacAvail.length > 0
+              ? rbacAvail
+              : (Array.isArray(layoutNav) && layoutNav.length > 0 ? layoutNav : DEFAULT_SIDEBAR_MODULES)));
+
+    if (!Array.isArray(rawNavModules) || rawNavModules.length === 0) return;
+
+    // Build canonical layout lookup map (preserving first occurrence order)
+    const layoutMap = new Map();
+    if (Array.isArray(layoutNav)) {
+      layoutNav.forEach((lm, idx) => {
+        if (!lm || !lm.id) return;
+        const canonId = normalizeSidebarModuleId(lm.id);
+        if (canonId && !layoutMap.has(canonId)) {
+          layoutMap.set(canonId, {
+            ...lm,
+            id: canonId,
+            orderIndex: idx
+          });
+        }
+      });
+    }
+
+    // Deduplicate and merge navModules withDEFAULT_SIDEBAR_MODULES subsections and layoutMap overrides
+    const seenNavIds = new Set();
+    const mergedModules = [];
+    rawNavModules.forEach((m, origIdx) => {
+      if (!m || !m.id) return;
+      const canonId = normalizeSidebarModuleId(m.id);
+      if (!canonId || seenNavIds.has(canonId)) return;
+      seenNavIds.add(canonId);
+
+      const defMod = DEFAULT_SIDEBAR_MODULES.find(d => normalizeSidebarModuleId(d.id) === canonId) || {};
+      const lMod = layoutMap.get(canonId) || {};
+
+      mergedModules.push({
+        ...defMod,
+        ...m,
+        id: canonId,
+        name: lMod.label || m.name || m.label || defMod.name || canonId,
+        label: lMod.label || m.label || m.name || defMod.name || canonId,
+        icon: lMod.icon || m.icon || defMod.icon || "",
+        visible: lMod.visible !== undefined ? lMod.visible !== false : (m.visible !== false),
+        subsections: Array.isArray(m.subsections) && m.subsections.length > 0
+          ? m.subsections
+          : (Array.isArray(defMod.subsections) ? defMod.subsections : []),
+        _sortOrder: lMod.orderIndex !== undefined ? lMod.orderIndex : (1000 + origIdx)
+      });
+    });
+
+    // Ensure damageExplorer has a slot in mergedModules so its configured position is respected
+    if (!seenNavIds.has("damageExplorer")) {
+      const lDmg = layoutMap.get("damageExplorer");
+      mergedModules.push({
+        id: "damageExplorer",
+        name: lDmg?.label || "API 571 Damage Mechanisms",
+        label: lDmg?.label || "API 571 Damage Mechanisms",
+        icon: lDmg?.icon || "🛡️",
+        visible: lDmg ? lDmg.visible !== false : true,
+        subsections: [],
+        _sortOrder: lDmg?.orderIndex !== undefined ? lDmg.orderIndex : -1
+      });
+      seenNavIds.add("damageExplorer");
+    }
+
+    mergedModules.sort((a, b) => a._sortOrder - b._sortOrder);
 
     // Preserve open states of Level 1 and Level 2 accordions before re-rendering
     const openStates = new Set();
@@ -699,38 +951,72 @@ window.showRPTUDashboard = showRPTUDashboard;
       }
     });
 
-    categoryList.innerHTML = "";
+    // Preserve existing API 571 Damage Mechanism item if present so it isn't lost on re-render
+    const existingDamageCat = categoryList.querySelector("li.category-toggle:not([id^='rbac_cat_']), li[data-rbac-module='damageExplorer']:not([id^='rbac_cat_'])");
 
-    navModules.forEach(mod => {
+    categoryList.innerHTML = "";
+    let damageCatAppended = false;
+
+    mergedModules.forEach(mod => {
       if (!mod || !mod.id) return;
 
+      if (mod.id === "damageExplorer") {
+        if (existingDamageCat) {
+          const titleSpan = existingDamageCat.querySelector(".category > .category-title");
+          if (titleSpan && mod.label) {
+            let cleanLabel = String(mod.label).trim();
+            if (mod.icon && cleanLabel.startsWith(mod.icon)) {
+              cleanLabel = cleanLabel.substring(mod.icon.length).trim();
+            }
+            titleSpan.textContent = `${mod.icon ? mod.icon + " " : ""}${cleanLabel}`.trim();
+          }
+          if (mod.visible === false) {
+            existingDamageCat.style.setProperty("display", "none", "important");
+            existingDamageCat.setAttribute("data-rbac-hidden", "true");
+          }
+          categoryList.appendChild(existingDamageCat);
+          damageCatAppended = true;
+        }
+        return;
+      }
+
       const li = document.createElement("li");
-      li.id = `rbac_cat_${mod.id}`;
+      li.id = mod.id === "adminControlCenter" ? "rbac_cat_tools" : `rbac_cat_${mod.id}`;
       li.setAttribute("data-rbac-module", mod.id);
 
+      let cleanModTitle = String(mod.label || mod.name || mod.id).trim();
+      if (mod.icon && cleanModTitle.startsWith(mod.icon)) {
+        cleanModTitle = cleanModTitle.substring(mod.icon.length).trim();
+      }
       const iconStr = mod.icon ? `${mod.icon} ` : "";
+      const modTitle = cleanModTitle;
       const isModOpen = openStates.has(li.id);
       const arrowChar = isModOpen ? "▾" : "▸";
       const displayStyle = isModOpen ? "block" : "none";
 
-      const subs = Array.isArray(mod.subsections) ? mod.subsections : [];
+      let subs = Array.isArray(mod.subsections) ? mod.subsections : [];
+      if (subs.length === 0 && (!window.RBAC || !window.RBAC.initialized)) {
+        const defMod = DEFAULT_SIDEBAR_MODULES.find(d => normalizeSidebarModuleId(d.id) === mod.id);
+        if (defMod && Array.isArray(defMod.subsections)) {
+          subs = defMod.subsections;
+        }
+      }
 
       if (subs.length === 0) {
         // Level 1 single action item without sub-accordions
         li.innerHTML = `
-          <span class="category">
-            <a href="javascript:void(0)" data-mod-id="${mod.id}" data-sub-id="${mod.id}" class="sidebar-nav-link" style="color: inherit; text-decoration: none; display: flex; align-items: center; width: 100%;">
-              <span class="category-title">${iconStr}${mod.name}</span>
+          <span class="category" data-mod-id="${mod.id}" data-sub-id="${mod.id}" role="button" tabindex="0">
+            <a href="javascript:void(0)" data-mod-id="${mod.id}" data-sub-id="${mod.id}" class="sidebar-nav-link" style="color: inherit; text-decoration: none; display: flex; align-items: center; width: 100%; pointer-events: auto;">
+              <span class="category-title">${iconStr}${modTitle}</span>
             </a>
           </span>
         `;
       } else {
-        // Level 1 Accordion Header - Make title a clickable link that activates module and toggles category
-        const firstSubId = subs[0]?.id || mod.id;
+        // Level 1 Accordion Header
         let innerHTML = `
-          <span class="category" data-accordion-trigger="true">
+          <span class="category" data-accordion-trigger="true" data-mod-id="${mod.id}" role="button" tabindex="0">
             <span class="arrow toggle-arrow">${arrowChar}</span>
-            <span class="category-title">${iconStr}${mod.name}</span>
+            <span class="category-title">${iconStr}${modTitle}</span>
           </span>
         `;
 
@@ -770,7 +1056,7 @@ window.showRPTUDashboard = showRPTUDashboard;
           const tabAttr = sub.tabId ? ` data-tab-id="${sub.tabId}"` : "";
           subItemsHtml += `
             <li data-rbac-module="${mod.id}" data-rbac-sub="${sub.id}">
-              <a href="javascript:void(0)" data-mod-id="${mod.id}" data-sub-id="${sub.id}"${tabAttr} class="sidebar-nav-link">${subIcon}${sub.name}</a>
+              <a href="javascript:void(0)" data-mod-id="${mod.id}" data-sub-id="${sub.id}"${tabAttr} class="sidebar-nav-link" style="pointer-events: auto;">${subIcon}${sub.name}</a>
             </li>
           `;
         });
@@ -784,7 +1070,7 @@ window.showRPTUDashboard = showRPTUDashboard;
             const tabAttr = child.tabId ? ` data-tab-id="${child.tabId}"` : "";
             grpItemsHtml += `
               <li data-rbac-module="${mod.id}" data-rbac-sub="${child.id}"${toolAttr}>
-                <a href="javascript:void(0)" data-mod-id="${mod.id}" data-sub-id="${child.id}"${tabAttr} class="sidebar-nav-link">${childIcon}${child.name}</a>
+                <a href="javascript:void(0)" data-mod-id="${mod.id}" data-sub-id="${child.id}"${tabAttr} class="sidebar-nav-link" style="pointer-events: auto;">${childIcon}${child.name}</a>
               </li>
             `;
           });
@@ -797,7 +1083,7 @@ window.showRPTUDashboard = showRPTUDashboard;
 
           subItemsHtml += `
             <li data-rbac-subcategory="${grpStateKey}" data-group-id="${grpStateKey}" class="subcategory-item" style="list-style: none;">
-              <span class="subcategory" data-accordion-trigger="true">
+              <span class="subcategory" data-accordion-trigger="true" role="button" tabindex="0">
                 <span class="arrow toggle-arrow">${grpArrowChar}</span>
                 <span class="category-title">${grpIconStr}${grp.name}</span>
               </span>
@@ -817,23 +1103,169 @@ window.showRPTUDashboard = showRPTUDashboard;
         li.innerHTML = innerHTML;
       }
 
+      if (mod.visible === false) {
+        li.style.setProperty("display", "none", "important");
+        li.setAttribute("data-rbac-hidden", "true");
+      }
+
       categoryList.appendChild(li);
     });
+
+    if (existingDamageCat && !damageCatAppended) {
+      categoryList.insertBefore(existingDamageCat, categoryList.firstChild);
+    }
 
     ensureAllSidebarArrows();
 
     if (window.data && window.data["Damage Mechanism"] && typeof window.loadCategories === "function") {
       window.loadCategories(window.data);
+    } else if (layoutCfg && typeof window.applyPublishedSidebarLayout === "function") {
+      window.applyPublishedSidebarLayout(layoutCfg);
     }
   }
   window.renderServerDrivenSidebar = renderServerDrivenSidebar;
+
+  function applyPublishedSidebarLayout(config) {
+    const cfg = getActiveLayoutConfig(config);
+    if (!cfg || window.__isApplyingSidebarLayout) return;
+
+    window.layoutConfig = cfg;
+    try {
+      if (typeof sessionStorage !== "undefined") {
+        sessionStorage.setItem("cached_layout_config", JSON.stringify(cfg));
+      }
+    } catch (e) {}
+
+    // 1. Ticker bar synchronization
+    const scrollText = document.getElementById("scrollText");
+    const scrollContainer = document.querySelector(".scroll-container");
+    if (scrollText && cfg.tickerText && cfg.tickerText.trim()) {
+      let rawUser = (window.RBAC && window.RBAC.userEmail) || (window.APP_SESSION && window.APP_SESSION.email) || (typeof sessionStorage !== "undefined" ? (sessionStorage.getItem("usernameUpper") || sessionStorage.getItem("loggedInUser")) : "") || "";
+      const uName = (rawUser.includes("@") ? rawUser.split("@")[0] : rawUser).trim().toUpperCase();
+      scrollText.textContent = (uName && /\{user(?:name)?\}/i.test(cfg.tickerText))
+        ? cfg.tickerText.replace(/\{user(?:name)?\}/gi, uName)
+        : cfg.tickerText;
+      if (cfg.tickerUrgency === "critical") {
+        scrollText.style.color = "#ef4444";
+        scrollText.style.fontWeight = "bold";
+      } else if (cfg.tickerUrgency === "urgent") {
+        scrollText.style.color = "#f59e0b";
+        scrollText.style.fontWeight = "bold";
+      } else {
+        scrollText.style.color = "";
+        scrollText.style.fontWeight = "";
+      }
+    }
+    if (scrollContainer) {
+      scrollContainer.style.display = cfg.tickerEnabled !== false ? "block" : "none";
+    }
+
+    // 2. Reorder #categoryList and synchronize custom labels, icons, and visibility
+    const categoryList = document.getElementById("categoryList");
+    if (categoryList && categoryList.children.length > 0 && Array.isArray(cfg.sidebarModules)) {
+      const isUserAdmin = Boolean(window.RBAC && (window.RBAC.isSuperAdmin || window.RBAC.role === "admin"));
+      const directLis = Array.from(categoryList.children);
+      const targetOrderedLis = [];
+      const seenCanonIds = new Set();
+
+      cfg.sidebarModules.forEach(rawMod => {
+        if (!rawMod || !rawMod.id) return;
+        const canonId = normalizeSidebarModuleId(rawMod.id);
+        if (!canonId || seenCanonIds.has(canonId)) return;
+        seenCanonIds.add(canonId);
+
+        const rbacAllowed = isUserAdmin || (window.RBAC && typeof window.RBAC.hasModuleAccess === "function" ? window.RBAC.hasModuleAccess(canonId) : true);
+        const shouldShow = rawMod.visible !== false && rbacAllowed;
+
+        let matchedLi = null;
+        if (canonId === "damageExplorer") {
+          const dmgLis = directLis.filter(li => (li.classList.contains("category-toggle") && !li.id) || li.getAttribute("data-rbac-module") === "damageExplorer");
+          dmgLis.forEach(dLi => {
+            if (!shouldShow) {
+              dLi.style.setProperty("display", "none", "important");
+              dLi.setAttribute("data-rbac-hidden", "true");
+            } else {
+              dLi.style.removeProperty("display");
+              dLi.removeAttribute("data-rbac-hidden");
+            }
+            if (!targetOrderedLis.includes(dLi)) {
+              targetOrderedLis.push(dLi);
+            }
+          });
+          matchedLi = dmgLis[0] || null;
+        } else {
+          matchedLi = directLis.find(li => {
+            const liMod = normalizeSidebarModuleId(li.getAttribute("data-rbac-module") || (li.id ? li.id.replace(/^rbac_cat_/, "") : ""));
+            return liMod === canonId;
+          });
+          if (matchedLi) {
+            if (!shouldShow) {
+              matchedLi.style.setProperty("display", "none", "important");
+              matchedLi.setAttribute("data-rbac-hidden", "true");
+            } else {
+              matchedLi.style.removeProperty("display");
+              matchedLi.removeAttribute("data-rbac-hidden");
+            }
+            if (!targetOrderedLis.includes(matchedLi)) {
+              targetOrderedLis.push(matchedLi);
+            }
+          }
+        }
+
+        if (matchedLi && rawMod.label) {
+          const catHeader = matchedLi.querySelector(".category");
+          if (catHeader) {
+            const titleSpan = catHeader.querySelector(".category-title");
+            const iconPrefix = rawMod.icon ? (rawMod.icon + " ") : "";
+            let labelText = String(rawMod.label || "").trim();
+            if (rawMod.icon && labelText.startsWith(rawMod.icon)) {
+              labelText = labelText.substring(rawMod.icon.length).trim();
+            }
+            const displayTitle = (iconPrefix + labelText).trim();
+            if (titleSpan && titleSpan.textContent !== displayTitle) {
+              titleSpan.textContent = displayTitle;
+            }
+          }
+        }
+      });
+
+      const currentChildren = Array.from(categoryList.children);
+      let orderDiffers = currentChildren.length !== targetOrderedLis.length;
+      if (!orderDiffers) {
+        for (let i = 0; i < targetOrderedLis.length; i++) {
+          if (currentChildren[i] !== targetOrderedLis[i]) {
+            orderDiffers = true;
+            break;
+          }
+        }
+      }
+
+      if (orderDiffers && targetOrderedLis.length > 0) {
+        window.__isApplyingSidebarLayout = true;
+        const frag = document.createDocumentFragment();
+        targetOrderedLis.forEach(li => frag.appendChild(li));
+        directLis.forEach(li => {
+          if (!targetOrderedLis.includes(li)) frag.appendChild(li);
+        });
+        categoryList.appendChild(frag);
+        window.__isApplyingSidebarLayout = false;
+      }
+
+      ensureAllSidebarArrows();
+    }
+
+    if (window.RBAC && window.RBAC.initialized && typeof window.RBAC.applySidebarVisibility === "function") {
+      window.RBAC.applySidebarVisibility();
+    }
+  }
+  window.applyPublishedSidebarLayout = applyPublishedSidebarLayout;
 
 function showCCDAITab() {
   document.querySelectorAll(".tab-content").forEach(t => t.style.display = "none");
   const mechTitle = document.getElementById("selectedMechanismTitle");
   if (mechTitle) mechTitle.style.display = "none";
   hideWelcomePanel();
-  hideAllMainPanels();
+  if (typeof hideAllMainPanels === "function") hideAllMainPanels();
 
   // Ensure fullscreen admin console mode is deactivated so tool renders in main dashboard
   document.body.classList.remove("admin-mode-active", "non-admin-tool-mode", "tool-direct-view");
@@ -846,7 +1278,7 @@ function showCCDAITab() {
 
   // Highlight CCD AI Platform in main sidebar
   document.querySelectorAll("#categoryList a").forEach(a => a.classList.remove("active-link"));
-  const link = document.querySelector('#rbac_cat_ccdAI li[data-rbac-sub="ccdAiPlatform"] a');
+  const link = document.querySelector('#rbac_cat_ccdAI a') || document.querySelector('a[data-mod-id="ccdAI"]');
   if (link) link.classList.add("active-link");
 
   if (window.recentTabs && typeof window.recentTabs.addTab === "function") {
@@ -860,43 +1292,71 @@ function openCCDAIPlatform() {
 }
 window.openCCDAIPlatform = openCCDAIPlatform;
 
-
-
 function showStreamComparatorTab() {
+  hideMechanismDetails();
   document.querySelectorAll(".tab-content").forEach(t => t.style.display = "none");
   const mechTitle = document.getElementById("selectedMechanismTitle");
   if (mechTitle) mechTitle.style.display = "none";
   hideWelcomePanel();
-  hideAllMainPanels();
+  if (typeof hideAllMainPanels === "function") hideAllMainPanels();
 
-  // Ensure fullscreen admin console mode is deactivated so tool renders in main dashboard
   document.body.classList.remove("admin-mode-active", "non-admin-tool-mode", "tool-direct-view");
 
   const tab = document.getElementById("streamComparatorTab");
+  const init = () => {
+    if (window.StreamComparator && typeof window.StreamComparator.init === "function") {
+      window.StreamComparator.init();
+    }
+  };
   if (tab) {
     tab.style.display = "block";
+    init();
     tab.scrollIntoView({ behavior: "smooth", block: "start" });
+  } else if (typeof window.TemplateManager !== "undefined" && typeof window.TemplateManager.load === "function") {
+    window.TemplateManager.load("1010", function () {
+      const loaded = document.getElementById("streamComparatorTab");
+      if (loaded) loaded.style.display = "block";
+      hideWelcomePanel();
+      init();
+    });
   }
 
-  // Highlight standalone Stream Comparator in main sidebar
   document.querySelectorAll("#categoryList a").forEach(a => a.classList.remove("active-link"));
-  const link = document.querySelector('#rbac_cat_streamComparator li[data-rbac-sub="streamComparatorMain"] a');
+  const link = document.querySelector('#rbac_cat_streamComparator a') || document.querySelector('a[data-mod-id="streamComparator"]');
   if (link) link.classList.add("active-link");
 }
 window.showStreamComparatorTab = showStreamComparatorTab;
 
 function showUnitConverterTab() {
+  hideMechanismDetails();
   document.querySelectorAll(".tab-content").forEach(t => t.style.display = "none");
   const mechTitle = document.getElementById("selectedMechanismTitle");
   if (mechTitle) mechTitle.style.display = "none";
   hideWelcomePanel();
-  hideAllMainPanels();
+  if (typeof hideAllMainPanels === "function") hideAllMainPanels();
 
   const tab = document.getElementById("unitConverterTab");
+  const init = () => {
+    if (window.UnitConverter && typeof window.UnitConverter.init === "function") {
+      window.UnitConverter.init();
+    }
+  };
   if (tab) {
     tab.style.display = "block";
+    init();
     tab.scrollIntoView({ behavior: "smooth", block: "start" });
+  } else if (typeof window.TemplateManager !== "undefined" && typeof window.TemplateManager.load === "function") {
+    window.TemplateManager.load("1090", function () {
+      const loaded = document.getElementById("unitConverterTab");
+      if (loaded) loaded.style.display = "block";
+      hideWelcomePanel();
+      init();
+    });
   }
+
+  document.querySelectorAll("#categoryList a").forEach(a => a.classList.remove("active-link"));
+  const link = document.querySelector('#rbac_cat_unitConverter a') || document.querySelector('a[data-mod-id="unitConverter"]');
+  if (link) link.classList.add("active-link");
 }
 window.showUnitConverterTab = showUnitConverterTab;
 
@@ -995,11 +1455,21 @@ window.openTool = function (viewId) {
   const toolLink = document.querySelector(`#rbac_cat_tools li[data-rbac-sub="${subKey}"] a`);
   if (toolLink) toolLink.classList.add("active-link");
 
-  // Directly open assigned tool dashboard
-  if (typeof window.showAdminPanelTab === "function") {
-    window.showAdminPanelTab(viewId);
-  } else if (window.adminPanel && typeof window.adminPanel.navigateTo === "function") {
-    window.adminPanel.navigateTo(viewId);
+  // Directly open assigned tool dashboard (load admin-panel.js on demand if not yet loaded)
+  const triggerToolOpen = () => {
+    if (typeof window.showAdminPanelTab === "function") {
+      window.showAdminPanelTab(viewId);
+    } else if (window.adminPanel && typeof window.adminPanel.navigateTo === "function") {
+      window.adminPanel.navigateTo(viewId);
+    }
+  };
+
+  if (typeof window.showAdminPanelTab === "function" || (window.adminPanel && typeof window.adminPanel.navigateTo === "function")) {
+    triggerToolOpen();
+  } else if (typeof window.loadAdminPanelOnDemand === "function") {
+    window.loadAdminPanelOnDemand().then(() => {
+      triggerToolOpen();
+    });
   }
 
   if (typeof window.closeMobileSidebar === "function") {
@@ -1347,36 +1817,68 @@ function injectAllCategories() {
 }
 window.injectAllCategories = injectAllCategories;
 
-  // Pre-fetch damage mechanisms from secure backend API (idempotent / window scoped)
-  window._damageMechanismsPromise = window._damageMechanismsPromise || (async () => {
-    if (typeof window !== "undefined" && window.data && window.data["Damage Mechanism"] && Object.keys(window.data["Damage Mechanism"]).length > 0) {
-      return window.data;
-    }
+  // Global Live Damage Mechanisms synchronizer from Cloud Firestore
+  window.refreshDamageMechanisms = async function (forceLive = true) {
     try {
-      const res = await fetch("/api/damage-mechanisms");
+      const url = forceLive ? "/api/damage-mechanisms?refresh=1" : "/api/damage-mechanisms";
+      const res = await fetch(url, { headers: { "Accept": "application/json" } });
       if (res.ok) {
         const json = await res.json();
         const mechs = json["Damage Mechanism"] || json.mechanisms || json;
-        if (typeof window !== "undefined") {
+        if (mechs && typeof mechs === "object") {
           window.data = window.data || {};
           window.data["Damage Mechanism"] = mechs;
           window.damageMechanisms = Object.assign(window.damageMechanisms || {}, mechs);
           for (const [k, v] of Object.entries(mechs)) {
             if (v && v.code) window.damageMechanisms[String(v.code)] = v;
           }
+          if (typeof window.loadCategories === "function") {
+            window.loadCategories(window.data);
+          }
+          // Refresh active open damage mechanism view if visible
+          const titleEl = document.getElementById("selectedMechanismTitle");
+          if (titleEl && titleEl.style.display !== "none") {
+            const currentName = (titleEl.textContent || "").trim();
+            if (currentName && mechs[currentName] && typeof window.showMechanismDetails === "function") {
+              window.showMechanismDetails(currentName, mechs[currentName]);
+            }
+          }
+          return { "Damage Mechanism": mechs };
         }
-        return { "Damage Mechanism": mechs };
       }
     } catch (err) {
-      console.warn("Could not load damage mechanisms from secure backend API:", err);
+      console.warn("[refreshDamageMechanisms] Live sync notice:", err);
     }
     return window.data || { "Damage Mechanism": {} };
+  };
+
+  // Pre-fetch damage mechanisms from secure backend API (idempotent / window scoped)
+  window._damageMechanismsPromise = window._damageMechanismsPromise || (async () => {
+    if (typeof window !== "undefined" && window.data && window.data["Damage Mechanism"] && Object.keys(window.data["Damage Mechanism"]).length > 0) {
+      return window.data;
+    }
+    return await window.refreshDamageMechanisms(false);
   })();
 
-  window.addEventListener("DOMContentLoaded", async () => {  
-    // 3. Apply published layout configuration from server
+  const initSidebarOnBoot = async () => {
+    initSidebarNavigationClicks();
+    injectAllCategories();
+
+    // 3. Apply published layout configuration from server for all users
     if (window.adminPanel && typeof window.adminPanel.loadAndApplyPublishedLayoutConfig === "function") {
       window.adminPanel.loadAndApplyPublishedLayoutConfig();
+    } else {
+      fetch("/api/admin?action=get_layout_config")
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (data && data.config) {
+            window.layoutConfig = data.config;
+            if (typeof window.applyPublishedSidebarLayout === "function") {
+              window.applyPublishedSidebarLayout(data.config);
+            }
+          }
+        })
+        .catch(() => {});
     }
 
     // 4. Asynchronously load damage mechanisms without disrupting DOM positions
@@ -1384,12 +1886,18 @@ window.injectAllCategories = injectAllCategories;
       ? window.data
       : await window._damageMechanismsPromise;
     if (mechData && typeof loadCategories === "function") {
-      loadCategories(mechData);  
+      loadCategories(mechData);
     }
 
     // Ensure all arrows are properly set
     ensureAllSidebarArrows();
-  });
+  };
+
+  if (document.readyState === "loading") {
+    window.addEventListener("DOMContentLoaded", initSidebarOnBoot);
+  } else {
+    initSidebarOnBoot();
+  }
 
 
 // ✅ NEW FUNCTION (IMPORTANT)

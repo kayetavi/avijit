@@ -19,7 +19,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const ul = document.createElement("ul");
     ul.style.display = "none";
 
-    catSpan.addEventListener("click", () => {
+    catSpan.addEventListener("click", (e) => {
+      if (e && typeof e.stopPropagation === "function") e.stopPropagation();
       ul.style.display = ul.style.display === "none" ? "block" : "none";
     });
 
@@ -30,10 +31,14 @@ document.addEventListener("DOMContentLoaded", function () {
       link.textContent = child.name;
       link.onclick = (e) => {
         if (e && typeof e.preventDefault === "function") e.preventDefault();
+        if (e && typeof e.stopPropagation === "function") e.stopPropagation();
         if (typeof window.navigateToApmRecord === "function") {
           window.navigateToApmRecord({ dm: child.name });
         } else {
           window.location.hash = "#0;ent=571;dm=" + encodeURIComponent(child.name);
+        }
+        if (typeof window.closeMobileSidebar === "function") {
+          window.closeMobileSidebar();
         }
       };
       childLi.appendChild(link);

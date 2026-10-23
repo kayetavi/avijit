@@ -39,36 +39,39 @@ export const REPRESENTATIVE_FLUIDS_DATABASE = [
 
 async function getRepresentativeFluids() {
   const adminDb = getAdminFirestore();
-  if (!adminDb) {
-    throw new Error("Live Firestore connection is mandatory. Cloud database is unavailable.");
-  }
-  const snap = await adminDb.collection("representativeFluids").get();
-  if (!snap.empty) {
-    const fluids = [];
-    snap.forEach(d => {
-      const data = d.data();
-      if (data && Array.isArray(data.row)) {
-        fluids.push(data.row);
+  if (adminDb) {
+    try {
+      const snap = await adminDb.collection("representativeFluids").get();
+      if (!snap.empty) {
+        const fluids = [];
+        snap.forEach(d => {
+          const data = d.data();
+          if (data && Array.isArray(data.row)) {
+            fluids.push(data.row);
+          }
+        });
+        if (fluids.length > 0) {
+          return fluids;
+        }
+      } else {
+        // Auto-seed into Firestore if empty
+        for (let i = 0; i < REPRESENTATIVE_FLUIDS_DATABASE.length; i++) {
+          const row = REPRESENTATIVE_FLUIDS_DATABASE[i];
+          const id = `fluid_${i}_${encodeURIComponent(row[0])}`;
+          await adminDb.collection("representativeFluids").doc(id).set({
+            row,
+            code: row[0],
+            name: row[1],
+            updatedAt: Date.now()
+          }, { merge: true });
+        }
+        return REPRESENTATIVE_FLUIDS_DATABASE;
       }
-    });
-    if (fluids.length > 0) {
-      return fluids;
+    } catch (err) {
+      console.warn("[Representative Fluids] Firestore fetch notice, using baseline catalog:", err.message);
     }
-  } else {
-    // Auto-seed into Firestore if empty
-    for (let i = 0; i < REPRESENTATIVE_FLUIDS_DATABASE.length; i++) {
-      const row = REPRESENTATIVE_FLUIDS_DATABASE[i];
-      const id = `fluid_${i}_${encodeURIComponent(row[0])}`;
-      await adminDb.collection("representativeFluids").doc(id).set({
-        row,
-        code: row[0],
-        name: row[1],
-        updatedAt: Date.now()
-      }, { merge: true });
-    }
-    return REPRESENTATIVE_FLUIDS_DATABASE;
   }
-  return [];
+  return REPRESENTATIVE_FLUIDS_DATABASE;
 }
 
 export default async function handler(req, res) {

@@ -5,19 +5,22 @@
 window._stressInterpolationCache = window._stressInterpolationCache || {};
 window._stressMetadataCache = window._stressMetadataCache || { years: [], hierarchy: {} };
 
-// Reusable Database Accessor
+// Reusable Database Accessor (Prioritizes full live Firestore tree in window.bkStressData)
 function bkGetStressDatabase() {
-    if (typeof window !== 'undefined' && window._stressMetadataCache && window._stressMetadataCache.years.length > 0) {
-        return window._stressMetadataCache.hierarchy;
-    }
     if (typeof window !== 'undefined' && window.bkStressData && Object.keys(window.bkStressData).length > 0) {
         return window.bkStressData;
+    }
+    if (typeof window !== 'undefined' && window._stressMetadataCache && window._stressMetadataCache.years.length > 0) {
+        return window._stressMetadataCache.hierarchy;
     }
     return null;
 }
 
 // Reusable Year Extractor
 function bkGetAvailableYears() {
+    if (typeof window !== 'undefined' && window.bkStressData && Object.keys(window.bkStressData).length > 0) {
+        return Object.keys(window.bkStressData);
+    }
     if (window._stressMetadataCache && window._stressMetadataCache.years.length > 0) {
         return window._stressMetadataCache.years;
     }
@@ -25,40 +28,45 @@ function bkGetAvailableYears() {
     return db ? Object.keys(db) : [];
 }
 
-// Reusable Material Extractor for a Given Year
+// Reusable Material Extractor for a Given Year (with fuzzy matching)
 function bkGetMaterialsForYear(year) {
-    if (window._stressMetadataCache && window._stressMetadataCache.hierarchy[year]) {
-        return Object.keys(window._stressMetadataCache.hierarchy[year]);
-    }
     const db = bkGetStressDatabase();
-    if (!db || !year || !db[year]) return [];
-    return Object.keys(db[year]);
+    if (!db) return [];
+    const actualYear = Object.keys(db).find(y => String(y).trim() === String(year).trim()) || Object.keys(db)[0];
+    if (!actualYear || !db[actualYear]) return [];
+    return Object.keys(db[actualYear]);
 }
 
-// Reusable Grade Extractor for a Given Year and Material
+// Reusable Grade Extractor for a Given Year and Material (with fuzzy matching)
 function bkGetGradesForMaterial(year, material) {
-    if (window._stressMetadataCache && window._stressMetadataCache.hierarchy[year]?.[material]) {
-        return Object.keys(window._stressMetadataCache.hierarchy[year][material]);
-    }
     const db = bkGetStressDatabase();
-    if (!db || !year || !material || !db[year] || !db[year][material]) return [];
-    return Object.keys(db[year][material]);
+    if (!db || !year || !material) return [];
+    const actualYear = Object.keys(db).find(y => String(y).trim() === String(year).trim()) || Object.keys(db)[0];
+    if (!actualYear || !db[actualYear]) return [];
+    const yearData = db[actualYear];
+    const matClean = String(material).trim().toLowerCase();
+    const actualMat = Object.keys(yearData).find(m => m.trim().toLowerCase() === matClean || m.trim().toLowerCase().includes(matClean) || matClean.includes(m.trim().toLowerCase())) || Object.keys(yearData)[0];
+    if (!actualMat || !yearData[actualMat]) return [];
+    return Object.keys(yearData[actualMat]);
 }
 
-// Reusable Thickness Checker for a Given Year, Material, and Grade
+// Reusable Thickness Checker for a Given Year, Material, and Grade (with fuzzy matching)
 function bkGetThicknessForGrade(year, material, grade) {
-    if (window._stressMetadataCache && window._stressMetadataCache.hierarchy[year]?.[material]?.[grade]) {
-        const info = window._stressMetadataCache.hierarchy[year][material][grade];
-        return {
-            hasThickness: !!info.hasThickness,
-            thicknessList: info.thicknessList || []
-        };
-    }
     const db = bkGetStressDatabase();
-    if (!db || !year || !material || !grade || !db[year]?.[material]?.[grade]) {
+    if (!db || !year || !material || !grade) {
         return { hasThickness: false, thicknessList: [] };
     }
-    const gradeData = db[year][material][grade];
+    const actualYear = Object.keys(db).find(y => String(y).trim() === String(year).trim()) || Object.keys(db)[0];
+    if (!actualYear || !db[actualYear]) return { hasThickness: false, thicknessList: [] };
+    const yearData = db[actualYear];
+    const matClean = String(material).trim().toLowerCase();
+    const actualMat = Object.keys(yearData).find(m => m.trim().toLowerCase() === matClean || m.trim().toLowerCase().includes(matClean) || matClean.includes(m.trim().toLowerCase())) || Object.keys(yearData)[0];
+    if (!actualMat || !yearData[actualMat]) return { hasThickness: false, thicknessList: [] };
+    const matData = yearData[actualMat];
+    const gradeClean = String(grade).trim().toLowerCase();
+    const actualGrade = Object.keys(matData).find(g => g.trim().toLowerCase() === gradeClean || g.trim().toLowerCase().includes(gradeClean) || gradeClean.includes(g.trim().toLowerCase())) || Object.keys(matData)[0];
+    if (!actualGrade || !matData[actualGrade]) return { hasThickness: false, thicknessList: [] };
+    const gradeData = matData[actualGrade];
     const thicknessList = Object.keys(gradeData).filter(k => k.includes('mm'));
     return {
         hasThickness: thicknessList.length > 0,
@@ -66,14 +74,153 @@ function bkGetThicknessForGrade(year, material, grade) {
     };
 }
 
+// Helper to resolve target temperature map from live Firestore tree with fuzzy matching
+function bkResolveGradeTempNode(year, material, grade, thickness) {
+    if (typeof window === 'undefined' || !window.bkStressData) return null;
+    const db = window.bkStressData;
+    const actualYear = Object.keys(db).find(y => String(y).trim() === String(year).trim()) || Object.keys(db)[0];
+    if (!actualYear || !db[actualYear]) return null;
+    const yearData = db[actualYear];
+
+    const matClean = String(material || '').trim().toLowerCase();
+    const actualMat = Object.keys(yearData).find(m => m.trim().toLowerCase() === matClean || m.trim().toLowerCase().includes(matClean) || matClean.includes(m.trim().toLowerCase())) || Object.keys(yearData)[0];
+    if (!actualMat || !yearData[actualMat]) return null;
+    const matData = yearData[actualMat];
+
+    const gradeClean = String(grade || '').trim().toLowerCase();
+    const actualGrade = Object.keys(matData).find(g => g.trim().toLowerCase() === gradeClean || g.trim().toLowerCase().includes(gradeClean) || gradeClean.includes(g.trim().toLowerCase())) || Object.keys(matData)[0];
+    if (!actualGrade || !matData[actualGrade]) return null;
+    const gradeData = matData[actualGrade];
+
+    const cleanTh = (!thickness || thickness === '__NOT_REQUIRED__') ? '' : String(thickness).trim();
+    const thicknessKeys = Object.keys(gradeData).filter(k => k.includes('mm'));
+
+    let targetNode = gradeData;
+    if (thicknessKeys.length > 0) {
+        if (cleanTh && gradeData[cleanTh]) {
+            targetNode = gradeData[cleanTh];
+        } else if (cleanTh) {
+            const matchTh = thicknessKeys.find(tk => tk.toLowerCase().includes(cleanTh.toLowerCase()) || cleanTh.toLowerCase().includes(tk.toLowerCase()));
+            targetNode = matchTh ? gradeData[matchTh] : gradeData[thicknessKeys[0]];
+        } else {
+            targetNode = gradeData[thicknessKeys[0]];
+        }
+    }
+    if (!targetNode || typeof targetNode !== 'object') return null;
+    return targetNode;
+}
+
+// Synchronous interpolation against live Firestore data in window.bkStressData
+function bkInterpolateFromLiveTree(year, material, grade, temp, thickness) {
+    const targetNode = bkResolveGradeTempNode(year, material, grade, thickness);
+    if (!targetNode) return null;
+
+    const temps = Object.keys(targetNode)
+        .map(t => parseFloat(t))
+        .filter(n => !isNaN(n))
+        .sort((a, b) => a - b);
+
+    if (temps.length === 0) return null;
+
+    const minTemp = temps[0];
+    const maxTemp = temps[temps.length - 1];
+    const tempNum = parseFloat(temp);
+
+    if (tempNum < minTemp || tempNum > maxTemp) {
+        return {
+            success: false,
+            errorType: 'temp_out_of_range',
+            minTemp,
+            maxTemp,
+            message: `Temperature ${tempNum}°C is outside the available dataset range (${minTemp}°C to ${maxTemp}°C).`
+        };
+    }
+
+    const extractEntry = (raw) => {
+        if (raw && typeof raw === 'object') {
+            return {
+                stress: raw['Allowable Stress'] !== undefined ? Number(raw['Allowable Stress']) : Number(raw.stress || 0),
+                yield: Number(raw.yield || 0),
+                tensile: Number(raw.tensile || 0)
+            };
+        }
+        return { stress: Number(raw || 0), yield: 0, tensile: 0 };
+    };
+
+    if (temps.includes(tempNum)) {
+        const exactRaw = targetNode[tempNum] !== undefined ? targetNode[tempNum] : targetNode[String(tempNum)];
+        const exact = extractEntry(exactRaw);
+        return {
+            success: true,
+            interpolated: false,
+            stress: Number(exact.stress.toFixed(2)),
+            yield: Number(exact.yield.toFixed(2)),
+            tensile: Number(exact.tensile.toFixed(2)),
+            minTemp,
+            maxTemp
+        };
+    }
+
+    let lower, upper;
+    for (let i = 0; i < temps.length - 1; i++) {
+        if (temps[i] <= tempNum && tempNum <= temps[i + 1]) {
+            lower = temps[i];
+            upper = temps[i + 1];
+            break;
+        }
+    }
+
+    if (lower === undefined || upper === undefined) return null;
+
+    const low = extractEntry(targetNode[lower] !== undefined ? targetNode[lower] : targetNode[String(lower)]);
+    const high = extractEntry(targetNode[upper] !== undefined ? targetNode[upper] : targetNode[String(upper)]);
+    const ratio = (tempNum - lower) / (upper - lower);
+
+    return {
+        success: true,
+        interpolated: true,
+        stress: Number((low.stress + (high.stress - low.stress) * ratio).toFixed(2)),
+        yield: Number((low.yield + (high.yield - low.yield) * ratio).toFixed(2)),
+        tensile: Number((low.tensile + (high.tensile - low.tensile) * ratio).toFixed(2)),
+        minTemp,
+        maxTemp
+    };
+}
+
 // Reusable Temperature Range Extractor
 function bkGetTemperatureRange(year, material, grade, thickness) {
+    const targetNode = bkResolveGradeTempNode(year, material, grade, thickness);
+    if (targetNode) {
+        const temps = Object.keys(targetNode)
+            .map(t => parseFloat(t))
+            .filter(n => !isNaN(n))
+            .sort((a, b) => a - b);
+        if (temps.length > 0) {
+            return { minTemp: temps[0], maxTemp: temps[temps.length - 1] };
+        }
+    }
     return { minTemp: -29, maxTemp: 815 };
+}
+
+function notifyAllAutoStressEvaluators() {
+    if (typeof window.evaluateB313AutoStress === 'function') {
+        window.evaluateB313AutoStress(true);
+    }
+    if (typeof window.evaluateSimpleAutoStress === 'function') {
+        window.evaluateSimpleAutoStress(true);
+    }
+    if (typeof window.evaluateQuickTestQuery === 'function') {
+        window.evaluateQuickTestQuery();
+    }
+    if (typeof window.bkEvaluateStandaloneLookup === 'function') {
+        window.bkEvaluateStandaloneLookup();
+    }
 }
 
 // Core Interpolation Function (Delegates to Server API with Client Cache)
 async function bkGetClosestTemperatureDataAsync(year, material, grade, temp, thickness) {
-    const key = `${year}_${material}_${grade}_${thickness || ''}_${temp}`;
+    const cleanTh = (!thickness || thickness === '__NOT_REQUIRED__') ? '' : String(thickness).trim();
+    const key = `${year}_${material}_${grade}_${cleanTh}_${temp}`;
     if (window._stressInterpolationCache[key]) {
         return window._stressInterpolationCache[key];
     }
@@ -82,21 +229,32 @@ async function bkGetClosestTemperatureDataAsync(year, material, grade, temp, thi
         const res = await fetch("/api/stress-data/interpolate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ year, material, grade, thickness, temperatureC: temp })
+            body: JSON.stringify({ year, material, grade, thickness: cleanTh, temperatureC: temp })
         });
-        if (res.ok) {
-            const data = await res.json();
-            if (data && data.success) {
-                const result = {
-                    stress: data.stress,
-                    yield: data.yield,
-                    tensile: data.tensile,
-                    minTemp: data.minTemp,
-                    maxTemp: data.maxTemp
-                };
-                window._stressInterpolationCache[key] = result;
-                return result;
-            }
+        const data = await res.json().catch(() => null);
+        if (res.ok && data && data.success) {
+            const result = {
+                success: true,
+                stress: data.stress,
+                yield: data.yield,
+                tensile: data.tensile,
+                minTemp: data.minTemp,
+                maxTemp: data.maxTemp
+            };
+            window._stressInterpolationCache[key] = result;
+            notifyAllAutoStressEvaluators();
+            return result;
+        } else if (data && !data.success) {
+            const errResult = {
+                success: false,
+                errorType: data.errorType || 'not_found',
+                minTemp: data.minTemp,
+                maxTemp: data.maxTemp,
+                message: data.error || 'Unable to determine Allowable Stress.'
+            };
+            window._stressInterpolationCache[key] = errResult;
+            notifyAllAutoStressEvaluators();
+            return errResult;
         }
     } catch (e) {
         console.warn("Server stress interpolation error:", e);
@@ -105,19 +263,20 @@ async function bkGetClosestTemperatureDataAsync(year, material, grade, temp, thi
 }
 
 function bkGetClosestTemperatureData(year, material, grade, temp, thickness) {
-    const key = `${year}_${material}_${grade}_${thickness || ''}_${temp}`;
-    if (window._stressInterpolationCache[key]) {
-        return window._stressInterpolationCache[key];
+    // 1. Direct synchronous calculation from live Firestore tree in window.bkStressData
+    const liveRes = bkInterpolateFromLiveTree(year, material, grade, temp, thickness);
+    if (liveRes) {
+        return liveRes.success ? liveRes : null;
     }
-    // Asynchronous trigger to populate cache
-    bkGetClosestTemperatureDataAsync(year, material, grade, temp, thickness).then(res => {
-        if (res && typeof window.calculateB313AutoFields === 'function') {
-            window.calculateB313AutoFields();
-        }
-        if (res && typeof window.calculateSimpleAutoFields === 'function') {
-            window.calculateSimpleAutoFields();
-        }
-    });
+
+    const cleanTh = (!thickness || thickness === '__NOT_REQUIRED__') ? '' : String(thickness).trim();
+    const key = `${year}_${material}_${grade}_${cleanTh}_${temp}`;
+    if (window._stressInterpolationCache[key]) {
+        const cached = window._stressInterpolationCache[key];
+        return cached.success !== false ? cached : null;
+    }
+    // 2. Asynchronous trigger to populate cache and re-evaluate all active calculators
+    bkGetClosestTemperatureDataAsync(year, material, grade, temp, cleanTh);
     return null;
 }
 
@@ -138,27 +297,32 @@ function bkLookupAllowableStress(year, material, grade, temp, thickness) {
         };
     }
 
-    const key = `${year}_${material}_${grade}_${thickness || ''}_${temp}`;
-    if (window._stressInterpolationCache[key]) {
-        const cached = window._stressInterpolationCache[key];
-        return {
-            success: true,
-            stress: cached.stress,
-            yield: cached.yield,
-            tensile: cached.tensile,
-            minTemp: cached.minTemp,
-            maxTemp: cached.maxTemp
-        };
+    // 1. First compute synchronously from live Firestore data in window.bkStressData
+    const liveRes = bkInterpolateFromLiveTree(year, material, grade, temp, thickness);
+    if (liveRes) {
+        return liveRes;
     }
 
-    // Trigger async fetch to server
-    bkGetClosestTemperatureDataAsync(year, material, grade, temp, thickness);
+    // 2. Check interpolation cache
+    const cleanTh = (!thickness || thickness === '__NOT_REQUIRED__') ? '' : String(thickness).trim();
+    const key = `${year}_${material}_${grade}_${cleanTh}_${temp}`;
+    if (window._stressInterpolationCache[key]) {
+        return window._stressInterpolationCache[key];
+    }
+
+    // 3. Trigger async fetch to server (and re-evaluate calculators once resolved)
+    bkGetClosestTemperatureDataAsync(year, material, grade, temp, cleanTh);
+
+    // Also ensure full live Firestore dataset is hydrated if empty
+    if ((!window.bkStressData || Object.keys(window.bkStressData).length === 0) && typeof window.refreshStressDataFromCloud === 'function') {
+        window.refreshStressDataFromCloud();
+    }
 
     return {
         success: false,
         pending: true,
         errorType: 'fetching',
-        message: 'Fetching allowable stress from server...'
+        message: 'Syncing live Allowable Stress from Cloud Firestore...'
     };
 }
 
@@ -490,40 +654,60 @@ function initBkStressStandaloneUI() {
         });
     }
 
+    function bkEvaluateStandaloneLookup() {
+        const curYSel = document.getElementById('bkYearSelect') || ySel;
+        const curMSel = document.getElementById('bkMaterialSelect') || mSel;
+        const curGSel = document.getElementById('bkGradeSelect') || gSel;
+        const curThSel = document.getElementById('bkThicknessSelect') || thSel;
+        const curTempInput = document.getElementById('bkTemperatureInput') || tempInput;
+        const curOutDiv = document.getElementById('bkOutputDiv') || outDiv;
+        const curStressVal = document.getElementById('bkStressValue') || stressVal;
+        const curYieldVal = document.getElementById('bkYieldStrength') || yieldVal;
+        const curTensileVal = document.getElementById('bkTensileStrength') || tensileVal;
+        const curWarn = document.querySelector('.bk-warning') || warn;
+
+        if (!curTempInput || curTempInput.value === '') return;
+        const temp = parseFloat(curTempInput.value);
+        const year = curYSel ? curYSel.value : '';
+        const material = curMSel ? curMSel.value : '';
+        const grade = curGSel ? curGSel.value : '';
+        const thickness = (curThSel && !curThSel.disabled) ? curThSel.value : null;
+
+        const lookup = bkLookupAllowableStress(year, material, grade, temp, thickness);
+        if (lookup && lookup.pending) {
+            return;
+        }
+
+        const data = lookup && lookup.success ? lookup : bkGetClosestTemperatureData(year, material, grade, temp, thickness);
+
+        if (!data || data.stress === undefined) {
+            if (curOutDiv) curOutDiv.style.display = 'none';
+            if (curWarn) curWarn.style.display = 'block';
+            curTempInput.classList.add('shake', 'error');
+            setTimeout(() => curTempInput.classList.remove('shake', 'error'), 500);
+        } else {
+            if (curWarn) curWarn.style.display = 'none';
+            if (curStressVal) curStressVal.textContent = data.stress;
+            if (curYieldVal) curYieldVal.textContent = data.yield !== undefined ? data.yield : 'N/A';
+            if (curTensileVal) curTensileVal.textContent = data.tensile !== undefined ? data.tensile : 'N/A';
+
+            if (curStressVal) {
+                const isDark = document.documentElement.classList.contains('dark-mode') || document.body.classList.contains('dark-mode');
+                if (isDark) {
+                    curStressVal.style.color = data.stress < 100 ? '#4ade80' : data.stress < 200 ? '#fbbf24' : '#f87171';
+                } else {
+                    curStressVal.style.color = data.stress < 100 ? '#16a34a' : data.stress < 200 ? '#d97706' : '#dc2626';
+                }
+                curStressVal.style.fontWeight = '700';
+            }
+            if (curOutDiv) curOutDiv.style.display = 'block';
+        }
+    }
+    window.bkEvaluateStandaloneLookup = bkEvaluateStandaloneLookup;
+
     if (tempInput && !tempInput.dataset.bkBound) {
         tempInput.dataset.bkBound = 'true';
-        tempInput.addEventListener('input', () => {
-            const temp = parseFloat(tempInput.value);
-            const year = ySel ? ySel.value : '';
-            const material = mSel ? mSel.value : '';
-            const grade = gSel ? gSel.value : '';
-            const thickness = (thSel && !thSel.disabled) ? thSel.value : null;
-
-            const data = bkGetClosestTemperatureData(year, material, grade, temp, thickness);
-
-            if (!data) {
-                if (outDiv) outDiv.style.display = 'none';
-                if (warn) warn.style.display = 'block';
-                tempInput.classList.add('shake', 'error');
-                setTimeout(() => tempInput.classList.remove('shake', 'error'), 500);
-            } else {
-                if (warn) warn.style.display = 'none';
-                if (stressVal) stressVal.textContent = data.stress;
-                if (yieldVal) yieldVal.textContent = data.yield !== undefined ? data.yield : 'N/A';
-                if (tensileVal) tensileVal.textContent = data.tensile !== undefined ? data.tensile : 'N/A';
-
-                if (stressVal) {
-                    const isDark = document.documentElement.classList.contains('dark-mode') || document.body.classList.contains('dark-mode');
-                    if (isDark) {
-                        stressVal.style.color = data.stress < 100 ? '#4ade80' : data.stress < 200 ? '#fbbf24' : '#f87171';
-                    } else {
-                        stressVal.style.color = data.stress < 100 ? '#16a34a' : data.stress < 200 ? '#d97706' : '#dc2626';
-                    }
-                    stressVal.style.fontWeight = '700';
-                }
-                if (outDiv) outDiv.style.display = 'block';
-            }
-        });
+        tempInput.addEventListener('input', bkEvaluateStandaloneLookup);
     }
 
     if (typeof bkPopulateYears === 'function') {
@@ -546,12 +730,28 @@ window.initBkStressStandaloneUI = initBkStressStandaloneUI;
 // Initial bind if elements exist
 initBkStressStandaloneUI();
 
-// Pre-fetch and synchronize stress data from secure backend API / Firebase Cloud Database
+// Pre-fetch and synchronize full live stress data from Firebase Cloud Firestore via backend API
 async function fetchStressDataFromApi() {
     try {
-        const res = await fetch('/api/stress-data/metadata?_t=' + Date.now());
-        if (res.ok) {
-            const json = await res.json();
+        const [fullRes, metaRes] = await Promise.all([
+            fetch('/api/stress-data?_t=' + Date.now(), {
+                headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache' }
+            }),
+            fetch('/api/stress-data/metadata?_t=' + Date.now(), {
+                headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache' }
+            })
+        ]);
+
+        if (fullRes.ok) {
+            const fullJson = await fullRes.json();
+            if (fullJson && typeof fullJson === 'object' && Object.keys(fullJson).length > 0) {
+                window.bkStressData = fullJson;
+                window._stressInterpolationCache = {};
+            }
+        }
+
+        if (metaRes.ok) {
+            const json = await metaRes.json();
             if (json && json.years) {
                 window._stressMetadataCache = {
                     years: json.years,
@@ -560,8 +760,11 @@ async function fetchStressDataFromApi() {
                 return window._stressMetadataCache;
             }
         }
+        if (window.bkStressData && Object.keys(window.bkStressData).length > 0) {
+            return { years: Object.keys(window.bkStressData), hierarchy: window.bkStressData };
+        }
     } catch (err) {
-        console.warn("Could not load fresh stress metadata from API:", err);
+        console.warn("Could not load fresh stress data from API:", err);
     }
     return null;
 }

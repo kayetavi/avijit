@@ -102,13 +102,14 @@ export function getAdminRtdb() {
   return null;
 }
 
-export async function saveSession(sessionId, uid, email, deviceId = "Web Browser") {
+export async function saveSession(sessionId, uid, email, deviceId = "Web Browser", idToken = "") {
   const now = Date.now();
   const sessionData = {
     sessionId,
     uid,
     email: (email || "").toLowerCase().trim(),
     deviceId,
+    idToken: idToken || "",
     timestamp: now,
     createdAt: now,
     lastActive: now,
@@ -150,8 +151,8 @@ export async function saveSession(sessionId, uid, email, deviceId = "Web Browser
 }
 
 // Alias for standard createSession contract compatibility
-export async function createSession(sessionId, uid, email, deviceId = "Web Browser") {
-  return await saveSession(sessionId, uid, email, deviceId);
+export async function createSession(sessionId, uid, email, deviceId = "Web Browser", idToken = "") {
+  return await saveSession(sessionId, uid, email, deviceId, idToken);
 }
 
 // Alias for standard getSession contract compatibility
@@ -165,13 +166,22 @@ export async function getSession(sessionId, uid) {
 }
 
 export async function validateSession(sessionId, uid, email = "") {
-  if (!sessionId && !uid) {
+  const cleanEmail = (email || "").toLowerCase().trim();
+  if (!sessionId && !uid && !cleanEmail) {
     return { valid: false, reason: "missing_session_id" };
   }
   const now = Date.now();
 
   // 1. Check in-memory first
   let mem = (sessionId && memorySessions.get(sessionId)) || (uid && memorySessions.get(uid));
+  if (!mem && !sessionId && cleanEmail) {
+    for (const s of memorySessions.values()) {
+      if (s && s.email && s.email.toLowerCase().trim() === cleanEmail && !isSessionExpired(s, SESSION_TTL)) {
+        mem = s;
+        break;
+      }
+    }
+  }
   if (mem) {
     const expired = isSessionExpired(mem, SESSION_TTL);
     if (expired) {
@@ -203,6 +213,15 @@ export async function validateSession(sessionId, uid, email = "") {
   // 2. Check disk session cache
   const diskSessions = readDiskSessions();
   let diskMem = (sessionId && diskSessions[sessionId]) || (uid && diskSessions[uid]);
+  if (!diskMem && !sessionId && cleanEmail) {
+    for (const k of Object.keys(diskSessions)) {
+      const s = diskSessions[k];
+      if (s && s.email && s.email.toLowerCase().trim() === cleanEmail && !isSessionExpired(s, SESSION_TTL)) {
+        diskMem = s;
+        break;
+      }
+    }
+  }
   if (diskMem) {
     const expired = isSessionExpired(diskMem, SESSION_TTL);
     if (expired) {
@@ -364,6 +383,7 @@ export async function verifyServerIdentity(req) {
             verified: true,
             email: decoded.email.toLowerCase().trim(),
             uid: decoded.uid,
+            idToken: token,
             authMethod: "firebase_admin_token"
           };
         }
@@ -389,6 +409,7 @@ export async function verifyServerIdentity(req) {
           verified: true,
           email: u.email.toLowerCase().trim(),
           uid: u.localId,
+          idToken: token,
           authMethod: "firebase_id_token"
         };
       }
@@ -426,6 +447,7 @@ export async function verifyServerIdentity(req) {
         verified: true,
         email: sessionRes.email.toLowerCase().trim(),
         uid: sessionRes.session?.uid || uid,
+        idToken: sessionRes.session?.idToken || (isJwt ? token : ""),
         authMethod: "server_session",
         session: sessionRes.session
       };
@@ -441,6 +463,7 @@ export async function verifyServerIdentity(req) {
         verified: true,
         email: sessionRes.email.toLowerCase().trim(),
         uid: sessionRes.session?.uid || uid,
+        idToken: sessionRes.session?.idToken || (isJwt ? token : ""),
         authMethod: "server_session_email_recovery",
         session: sessionRes.session
       };

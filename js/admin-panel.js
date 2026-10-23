@@ -465,6 +465,11 @@
     },
 
     navigateTo(viewId) {
+      if (viewId === "sidebar-order") viewId = "layout-order";
+      else if (viewId === "ticker-text") viewId = "layout-ticker";
+      else if (viewId === "welcome-cards") viewId = "layout-welcome";
+      else if (viewId === "nav-visibility") viewId = "layout-visibility";
+
       if (!this.isAdmin() && window.RBAC && typeof window.RBAC.hasSectionAccess === "function") {
         const adminModule = (this.availableModules || []).find(m => m.id === "adminControlCenter") ||
                             (window.RBAC?.authorizedNavigation || []).find(m => m.id === "adminControlCenter");
@@ -481,9 +486,15 @@
           else if (viewId === "roles-config" || viewId === "permission-matrix") reqSub = "rbacPermissions";
           else if (viewId === "access-control") reqSub = "accessControl";
           else if (viewId === "app-hub") reqSub = "appOverview";
-          else if (viewId === "app-cracking" || viewId === "app-damage") reqSub = "appCracking";
+          else if (viewId === "app-damage") reqSub = "appDamage";
+          else if (viewId === "app-cracking") reqSub = "appCracking";
           else if (viewId === "app-stream") reqSub = "appStream";
           else if (viewId === "app-stress") reqSub = "appStress";
+          else if (viewId === "layout-sidebar") reqSub = "layoutBuilder";
+          else if (viewId === "layout-order") reqSub = "sidebarOrder";
+          else if (viewId === "layout-ticker") reqSub = "tickerText";
+          else if (viewId === "layout-welcome") reqSub = "welcomeCards";
+          else if (viewId === "layout-visibility") reqSub = "navVisibility";
           else reqSub = viewId;
         }
 
@@ -496,7 +507,12 @@
             (window.RBAC.subsections?.adminControlCenter?.appStream === true) ||
             (window.RBAC.subsections?.adminControlCenter?.["app-stream"] === true)
           )) ||
-          (reqSub === "appCracking" && (window.RBAC.hasSectionAccess("adminControlCenter", "appCracking") || window.RBAC.hasSectionAccess("adminControlCenter", "app-cracking") || window.RBAC.hasSectionAccess("adminControlCenter", "appDamage"))) ||
+          ((reqSub === "appDamage" || reqSub === "appCracking") && (
+            window.RBAC.hasSectionAccess("adminControlCenter", "appDamage") ||
+            window.RBAC.hasSectionAccess("adminControlCenter", "app-damage") ||
+            window.RBAC.hasSectionAccess("adminControlCenter", "appCracking") ||
+            window.RBAC.hasSectionAccess("adminControlCenter", "app-cracking")
+          )) ||
           (reqSub === "appStress" && (window.RBAC.hasSectionAccess("adminControlCenter", "appStress") || window.RBAC.hasSectionAccess("adminControlCenter", "app-stress")))
         );
 
@@ -572,7 +588,7 @@
       else if (viewId === "access-control") this.renderAccessControlTable();
       else if (viewId === "app-hub") this.updateAppHubBadges();
       else if (viewId === "app-cracking") { if (typeof window.showCrackingMechanismTab === "function") window.showCrackingMechanismTab(); }
-      else if (viewId === "app-damage") { if (typeof window.showCrackingMechanismTab === "function") window.showCrackingMechanismTab(); else this.loadDamageMechanisms(); }
+      else if (viewId === "app-damage") { this.loadDamageMechanisms(); }
       else if (viewId === "app-stream") this.loadStreamDatasetsAdmin();
       else if (viewId === "app-stress") this.loadStressManagerAdmin();
       else if (viewId === "sys-firestore") this.loadFirestoreCollection(this.selectedCollection);
@@ -2323,7 +2339,7 @@
       const callerEmail = this.getCallerEmail();
       let rawCatalog = null;
 
-      const data = await this.safeFetch(`/api/admin?action=get_damage_mechanisms&callerEmail=${encodeURIComponent(callerEmail)}`);
+      const data = await this.safeFetch(`/api/admin?action=get_damage_mechanisms&refresh=1&callerEmail=${encodeURIComponent(callerEmail)}`);
       if (data && data.success && data.mechanisms) {
         rawCatalog = data.mechanisms;
       }
@@ -3309,6 +3325,9 @@
         this.closeDamageMechModal();
         alert(`✅ Damage Mechanism "${name}" successfully saved and updated across all modules!`);
         await this.loadDamageMechanisms();
+        if (typeof window.refreshDamageMechanisms === "function") {
+          try { await window.refreshDamageMechanisms(true); } catch (e) {}
+        }
       } catch (err) {
         alert(`Error saving mechanism: ${err.message}`);
       } finally {
@@ -3544,6 +3563,9 @@
 
         alert(`Mechanism "${mechName}" updated.`);
         await this.loadDamageMechanisms();
+        if (typeof window.refreshDamageMechanisms === "function") {
+          try { await window.refreshDamageMechanisms(true); } catch (e) {}
+        }
       } catch (err) {
         alert(`Delete failed: ${err.message}`);
       }
@@ -3695,6 +3717,9 @@
         this.closeBulkImportModal();
         alert(`🎉 ${data.message || "Mechanisms imported successfully!"}`);
         await this.loadDamageMechanisms();
+        if (typeof window.refreshDamageMechanisms === "function") {
+          try { await window.refreshDamageMechanisms(true); } catch (e) {}
+        }
       } catch (err) {
         alert(`Bulk import error: ${err.message}`);
       } finally {
@@ -4718,6 +4743,9 @@
     },
 
     async loadStressManagerAdmin() {
+      if (typeof window.refreshStressDataFromCloud === "function") {
+        await window.refreshStressDataFromCloud();
+      }
       if (typeof window.renderYearManagerList === "function") {
         window.renderYearManagerList();
       }
@@ -4726,9 +4754,6 @@
       }
       if (typeof window.initStressDataLoaderEvents === "function") {
         window.initStressDataLoaderEvents();
-      }
-      if (typeof window.refreshStressDataFromCloud === "function") {
-        window.refreshStressDataFromCloud();
       }
 
       // Enforce granular action & tab permissions
@@ -4939,7 +4964,11 @@
         if (!res.ok) throw new Error(data.error || "Import failed");
 
         this.showToast(`🎉 ${data.message || "Stress records committed to Firestore!"}`, "success");
-        document.getElementById("admStressCommitBox").style.display = "none";
+        const commitEl = document.getElementById("admStressCommitBox");
+        if (commitEl) commitEl.style.display = "none";
+        if (typeof window.refreshStressDataFromCloud === "function") {
+          await window.refreshStressDataFromCloud();
+        }
         this.switchStressAdminSubtab("year");
       } catch (err) {
         this.showToast(`Error: ${err.message}`, "error");
@@ -5397,12 +5426,14 @@
       if (!this.layoutConfig?.sidebarModules?.[idx]) return;
       this.layoutConfig.sidebarModules[idx].label = val;
       this.renderLayoutPreview();
+      this.applyLayoutConfigToDashboard(this.layoutConfig);
     },
 
     onSidebarItemIconChange(idx, val) {
       if (!this.layoutConfig?.sidebarModules?.[idx]) return;
       this.layoutConfig.sidebarModules[idx].icon = val;
       this.renderLayoutPreview();
+      this.applyLayoutConfigToDashboard(this.layoutConfig);
     },
 
     getFormattedUserPrefix() {
@@ -5543,6 +5574,11 @@
         this.applyLayoutConfigToDashboard(this.layoutConfig);
         this.renderLayoutBuilderControls();
 
+        // Broadcast layout update across open browser tabs
+        if (window.RBAC && typeof window.RBAC.broadcastLayoutUpdate === "function") {
+          window.RBAC.broadcastLayoutUpdate(this.layoutConfig);
+        }
+
         this.showToast("🎉 Layout configuration and welcome cards successfully saved & published to live dashboard!", "success");
       } catch (err) {
         this.showToast(`Failed to publish layout: ${err.message}`, "error");
@@ -5551,6 +5587,39 @@
 
     applyLayoutConfigToDashboard(config) {
       if (!config || window.__isApplyingSidebarLayout) return;
+
+      const normFn = typeof window.normalizeSidebarModuleId === "function"
+        ? window.normalizeSidebarModuleId
+        : (id => {
+            if (!id) return "";
+            const s = String(id).trim();
+            if (s === "cracking" || s === "crackingMechanism") return "crackingMechanism";
+            if (["damage", "damageMechanisms", "damageMechanism", "damageCatalog", "api571", "api571DamageMechanisms", "damageExplorer"].includes(s)) return "damageExplorer";
+            if (s === "remainingLife" || s === "api570") return "api570";
+            if (s === "designThickness" || s === "b313" || s === "thicknessCalc") return "thicknessCalc";
+            if (s === "tools" || s === "adminControlCenter") return "adminControlCenter";
+            if (s === "stream" || s === "streamData" || s === "streamComparator") return "streamComparator";
+            return s;
+          });
+
+      // Normalize and deduplicate sidebarModules in-memory so legacy aliases never overwrite canonical items
+      if (Array.isArray(config.sidebarModules)) {
+        const seenCanon = new Set();
+        const cleanMods = [];
+        config.sidebarModules.forEach(m => {
+          if (!m || !m.id) return;
+          const canonId = normFn(m.id);
+          if (!canonId || seenCanon.has(canonId)) return;
+          seenCanon.add(canonId);
+          cleanMods.push({
+            ...m,
+            id: canonId
+          });
+        });
+        cleanMods.forEach((m, i) => { m.order = i + 1; });
+        config.sidebarModules = cleanMods;
+      }
+
       window.layoutConfig = config;
       try { if (typeof sessionStorage !== "undefined") sessionStorage.setItem("cached_layout_config", JSON.stringify(config)); } catch (e) {}
 
@@ -5590,7 +5659,7 @@
       if (config.sidebarModules && Array.isArray(config.sidebarModules)) {
         // A. Toggle visibility with strict RBAC enforcement via generic data-rbac-module attributes
         config.sidebarModules.forEach(m => {
-          const modId = m.id;
+          const modId = normFn(m.id);
           const selector = `#categoryList li[data-rbac-module="${modId}"], #categoryList [data-rbac-module="${modId}"], #rbac_cat_${modId}${modId === 'adminControlCenter' ? ', #rbac_cat_tools' : ''}${modId === 'damageExplorer' ? ', #categoryList li.category-toggle:not([id^="rbac_cat_"])' : ''}${modId === 'thicknessCalc' ? ', #rbac_cat_designThickness' : ''}`;
           const elements = document.querySelectorAll(selector);
           const rbacAllowed = isUserAdmin || (window.RBAC && typeof window.RBAC.hasModuleAccess === "function" ? window.RBAC.hasModuleAccess(modId) : true);
@@ -5607,7 +5676,7 @@
           });
 
           // Special sub-item filtering for Tools category
-          if (m.id === "adminControlCenter") {
+          if (modId === "adminControlCenter") {
             const toolsEl = document.getElementById("rbac_cat_tools");
             if (toolsEl) {
               if (!shouldShow) {
@@ -5648,9 +5717,10 @@
           const targetOrderedLis = [];
 
           config.sidebarModules.forEach(m => {
+            const modId = normFn(m.id);
             let matchedLi = null;
 
-            if (m.id === "damageExplorer" || m.id === "damageMechanisms") {
+            if (modId === "damageExplorer") {
               const dmgLis = directLis.filter(li => (li.classList.contains("category-toggle") && !li.id) || li.getAttribute("data-rbac-module") === "damageExplorer");
               const isAllowedDmg = isUserAdmin || (window.RBAC && typeof window.RBAC.hasModuleAccess === "function" ? window.RBAC.hasModuleAccess("damageExplorer") : true);
               const shouldShowDmg = m.visible !== false && isAllowedDmg;
@@ -5668,40 +5738,17 @@
               });
               matchedLi = dmgLis[0] || null;
             } else {
-              matchedLi = directLis.find(li => li.id === `rbac_cat_${m.id}` || li.id === `rbac_cat_${m.id === 'cracking' ? 'crackingMechanism' : m.id}` || (m.id === "adminControlCenter" && li.id === "rbac_cat_tools"));
-              if (!matchedLi) matchedLi = directLis.find(li => li.getAttribute("data-rbac-module") === m.id || li.getAttribute("data-rbac-module") === (m.id === "cracking" ? "crackingMechanism" : (m.id === "crackingMechanism" ? "cracking" : m.id)));
-              if (!matchedLi) {
-                if (m.id === "thicknessCalc" || m.id === "designThickness" || m.id === "b313") {
-                  matchedLi = directLis.find(li => li.id === "rbac_cat_thicknessCalc" || li.id === "rbac_cat_designThickness" || li.getAttribute("data-rbac-module") === "thicknessCalc");
-                } else if (m.id === "cracking" || m.id === "crackingMechanism") {
-                  matchedLi = directLis.find(li => li.id === "rbac_cat_cracking" || li.id === "rbac_cat_crackingMechanism" || li.getAttribute("data-rbac-module") === "crackingMechanism" || li.getAttribute("data-rbac-module") === "cracking");
-                } else if (m.id === "bkStress") {
-                  matchedLi = directLis.find(li => li.id === "rbac_cat_bkStress" || li.getAttribute("data-rbac-module") === "bkStress");
-                } else if (m.id === "streamComparator") {
-                  matchedLi = directLis.find(li => li.id === "rbac_cat_streamComparator" || li.getAttribute("data-rbac-module") === "streamComparator");
-                } else if (m.id === "chemicalSuite") {
-                  matchedLi = directLis.find(li => li.id === "rbac_cat_chemicalSuite" || li.getAttribute("data-rbac-module") === "chemicalSuite");
-                } else if (m.id === "unitConverter") {
-                  matchedLi = directLis.find(li => li.id === "rbac_cat_unitConverter" || li.getAttribute("data-rbac-module") === "unitConverter");
-                } else if (m.id === "processFlow") {
-                  matchedLi = directLis.find(li => li.id === "rbac_cat_processFlow" || li.getAttribute("data-rbac-module") === "processFlow");
-                } else if (m.id === "rptu") {
-                  matchedLi = directLis.find(li => li.id === "rbac_cat_rptu" || li.getAttribute("data-rbac-module") === "rptu");
-                } else if (m.id === "ccdAI") {
-                  matchedLi = directLis.find(li => li.id === "rbac_cat_ccdAI" || li.getAttribute("data-rbac-module") === "ccdAI");
-                } else if (m.id === "api570" || m.id === "remainingLife") {
-                  matchedLi = directLis.find(li => li.id === "rbac_cat_api570" || li.getAttribute("data-rbac-module") === "api570");
-                } else if (m.id === "api581") {
-                  matchedLi = directLis.find(li => li.id === "rbac_cat_api581" || li.getAttribute("data-rbac-module") === "api581");
-                }
-              }
+              matchedLi = directLis.find(li => {
+                const liMod = normFn(li.getAttribute("data-rbac-module") || (li.id ? li.id.replace(/^rbac_cat_/, "") : ""));
+                return liMod === modId;
+              });
 
               if (matchedLi && !targetOrderedLis.includes(matchedLi)) {
                 targetOrderedLis.push(matchedLi);
               }
             }
 
-            // Apply custom label and icon cleanly in-place
+            // Apply custom label and icon cleanly in-place without clobbering inner <a class="sidebar-nav-link">
             if (matchedLi && m.label) {
               const catHeader = matchedLi.querySelector(".category");
               if (catHeader) {
@@ -5712,6 +5759,7 @@
                   labelText = labelText.substring(m.icon.length).trim();
                 }
                 const displayTitle = (iconPrefix + labelText).trim();
+                const hasSubList = !!matchedLi.querySelector("ul.mechanisms, ul.subcategory-list, ul");
 
                 let arrowSpan = catHeader.querySelector(".arrow");
                 let currentArrow = (arrowSpan && arrowSpan.textContent.trim()) ? arrowSpan.textContent.trim() : "▸";
@@ -5720,14 +5768,21 @@
                   if (titleSpan.textContent !== displayTitle) {
                     titleSpan.textContent = displayTitle;
                   }
-                  if (!arrowSpan) {
+                  if (hasSubList && !arrowSpan) {
                     const newArrow = document.createElement("span");
                     newArrow.className = "arrow";
                     newArrow.textContent = currentArrow;
                     catHeader.insertBefore(newArrow, catHeader.firstChild);
                   }
                 } else {
-                  catHeader.innerHTML = `<span class="arrow">${currentArrow}</span><span class="category-title">${displayTitle}</span>`;
+                  const innerAnchor = catHeader.querySelector("a");
+                  if (innerAnchor) {
+                    innerAnchor.innerHTML = `<span class="category-title">${displayTitle}</span>`;
+                  } else if (hasSubList) {
+                    catHeader.innerHTML = `<span class="arrow">${currentArrow}</span><span class="category-title">${displayTitle}</span>`;
+                  } else {
+                    catHeader.innerHTML = `<a href="javascript:void(0)" data-mod-id="${modId}" data-sub-id="${modId}" class="sidebar-nav-link" style="color: inherit; text-decoration: none; display: flex; align-items: center; width: 100%; pointer-events: auto;"><span class="category-title">${displayTitle}</span></a>`;
+                  }
                 }
               }
             }
@@ -5834,6 +5889,9 @@
               this.layoutConfig = data.config;
               this.renderLayoutBuilderControls();
               this.applyLayoutConfigToDashboard(this.layoutConfig);
+              if (window.RBAC && typeof window.RBAC.broadcastLayoutUpdate === "function") {
+                window.RBAC.broadcastLayoutUpdate(this.layoutConfig);
+              }
               this.showToast("Layout restored to system defaults.", "info");
             }
           } catch (e) {

@@ -1,12 +1,21 @@
-import { FIREBASE_CONFIG } from "./firestoreClient.js";
+import { FIREBASE_CONFIG, getFirebaseAuth } from "./firestoreClient.js";
 import { getAdminFirestore } from "./firebaseAdmin.js";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import admin from "firebase-admin";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import crypto from "crypto";
 import { saveSession, getAdminApp } from "./sessionStore.js";
-import { getUserRbacData, isUserDeleted, isSuperAdminEmail } from "./rbac.js";
+import {
+  getUserRbacData,
+  isUserDeleted,
+  isSuperAdminEmail,
+  buildRolePermissions,
+  userRolesCache,
+  loadUsersFromFile,
+  saveUsersToFile
+} from "./rbac.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -97,15 +106,35 @@ export default async function handler(req, res) {
   try {
     let authenticatedUid = null;
     let verifiedEmail = cleanEmail;
+    let verifiedIdToken = idToken || null;
 
     // 1. If client already verified via Firebase Auth and provided idToken
-    if (idToken && resolvedAdminApp) {
-      try {
-        const decoded = await resolvedAdminApp.auth().verifyIdToken(idToken);
-        authenticatedUid = decoded.uid;
-        verifiedEmail = sanitizeInput((decoded.email || cleanEmail).toLowerCase());
-      } catch (tokenErr) {
-        console.info("ID token verification note:", tokenErr?.message);
+    if (idToken) {
+      if (resolvedAdminApp) {
+        try {
+          const decoded = await resolvedAdminApp.auth().verifyIdToken(idToken);
+          authenticatedUid = decoded.uid;
+          verifiedEmail = sanitizeInput((decoded.email || cleanEmail).toLowerCase());
+        } catch (tokenErr) {
+          console.info("ID token verification note:", tokenErr?.message);
+        }
+      }
+      if (!authenticatedUid) {
+        for (const apiKey of AUTH_KEYS) {
+          try {
+            const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ idToken })
+            });
+            const data = await resp.json();
+            if (resp.ok && data?.users && data.users.length > 0) {
+              authenticatedUid = data.users[0].localId;
+              verifiedEmail = sanitizeInput((data.users[0].email || cleanEmail).toLowerCase());
+              break;
+            }
+          } catch (e) {}
+        }
       }
     }
 
@@ -123,15 +152,10 @@ export default async function handler(req, res) {
         });
       }
 
-      // 2. Check if user exists in the database
-      const userRbac = await getUserRbacData(cleanEmail);
-      if (!userRbac) {
-        return res.status(404).json({
-          error: "This email is not registered in the system. Please contact the Administrator to create an account."
-        });
-      }
+      // 2. Check if user exists in database / cache
+      let userRbac = await getUserRbacData(cleanEmail);
 
-      // 3. Authenticate password for registered user
+      // 3. Authenticate password for user
       let isPasswordCorrect = false;
       let matchedViaFirebase = false;
 
@@ -140,14 +164,64 @@ export default async function handler(req, res) {
         isPasswordCorrect = true;
       }
 
-      // Check B: Firebase Authentication REST API (e.g. user updated password via email reset link)
+      // Check B: Firebase Authentication REST API (primary cloud auth & password reset link sync)
       if (!isPasswordCorrect) {
         const authResult = await verifyWithFirebaseAuth(cleanEmail, password);
         if (authResult.success) {
           isPasswordCorrect = true;
           matchedViaFirebase = true;
           authenticatedUid = authResult.uid;
+          verifiedIdToken = authResult.idToken || null;
+
+          // Sign in server-side Firebase Client Auth so getFirestoreDb() is authenticated
+          try {
+            const clientAuth = getFirebaseAuth();
+            if (clientAuth) {
+              signInWithEmailAndPassword(clientAuth, cleanEmail, password).catch(() => {});
+            }
+          } catch (e) {}
+
+          // Refresh userRbac using the verified Firebase ID token
+          const liveRbac = await getUserRbacData(cleanEmail, {
+            idToken: verifiedIdToken,
+            uid: authenticatedUid
+          });
+          if (liveRbac) {
+            userRbac = liveRbac;
+          } else {
+            // Valid Firebase Auth user on loginapp-feb72 without local cache entry yet
+            const assignedRole = isSuperAdminEmail(cleanEmail) ? "admin" : "lead_engineer";
+            const perms = buildRolePermissions(assignedRole);
+            const newRecord = {
+              id: cleanEmail,
+              email: cleanEmail,
+              role: assignedRole,
+              allowedModules: perms.modules,
+              subsections: perms.subsections,
+              isSuperAdmin: assignedRole === "admin",
+              authUid: authenticatedUid,
+              password: password,
+              hasAuthAccount: true,
+              updatedAt: Date.now()
+            };
+            userRolesCache.set(cleanEmail, newRecord);
+            const currentUsers = loadUsersFromFile();
+            if (!currentUsers.some(u => u && u.email && u.email.toLowerCase().trim() === cleanEmail)) {
+              currentUsers.push(newRecord);
+              saveUsersToFile(currentUsers);
+            }
+            userRbac = await getUserRbacData(cleanEmail, {
+              idToken: verifiedIdToken,
+              uid: authenticatedUid
+            });
+          }
         }
+      }
+
+      if (!userRbac) {
+        return res.status(404).json({
+          error: "This email is not registered in the system. Please contact the Administrator to create an account."
+        });
       }
 
       if (isPasswordCorrect) {
@@ -157,6 +231,17 @@ export default async function handler(req, res) {
         // If user logged in with a new password from Firebase Auth (reset link), sync to database
         if (matchedViaFirebase && userRbac && userRbac.password !== password) {
           userRbac.password = password;
+          const cached = userRolesCache.get(cleanEmail) || {};
+          userRolesCache.set(cleanEmail, { ...cached, email: cleanEmail, password, updatedAt: Date.now() });
+          try {
+            const fileUsers = loadUsersFromFile();
+            const idx = fileUsers.findIndex(u => u && u.email && u.email.toLowerCase().trim() === cleanEmail);
+            if (idx >= 0) {
+              fileUsers[idx].password = password;
+              fileUsers[idx].updatedAt = Date.now();
+              saveUsersToFile(fileUsers);
+            }
+          } catch (e) {}
           try {
             const adminDb = getAdminFirestore();
             if (adminDb) {
@@ -181,7 +266,10 @@ export default async function handler(req, res) {
 
     let rbacData = null;
     try {
-      rbacData = await getUserRbacData(verifiedEmail);
+      rbacData = await getUserRbacData(verifiedEmail, {
+        idToken: verifiedIdToken,
+        uid: authenticatedUid
+      });
     } catch (rbacErr) {
       console.warn("RBAC lookup warning during login:", rbacErr?.message || String(rbacErr));
     }
@@ -193,7 +281,7 @@ export default async function handler(req, res) {
     }
 
     // 3. Save active session to memory and Firestore userSessions
-    await saveSession(sessionId, authenticatedUid, verifiedEmail, sanitizeInput(deviceId || "Web Browser"));
+    await saveSession(sessionId, authenticatedUid, verifiedEmail, sanitizeInput(deviceId || "Web Browser"), verifiedIdToken || "");
 
     // Also persist session directly to Firestore using unified client
     try {
@@ -223,6 +311,7 @@ export default async function handler(req, res) {
     return res.status(200).json({
       message: "Login successful",
       sessionId,
+      idToken: verifiedIdToken || "",
       email: verifiedEmail,
       uid: authenticatedUid,
       rbac: rbacData

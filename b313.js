@@ -1275,11 +1275,29 @@ function initB313AutoStressFields(force = false, preferredYear = null, preferred
     ? window.bkGetAvailableYears()
     : (window.bkStressData ? Object.keys(window.bkStressData) : []);
 
-  if (!years || years.length === 0) return;
+  if (!years || years.length === 0 || !window.bkStressData || Object.keys(window.bkStressData).length === 0) {
+    if (!window._b313FetchingStress) {
+      window._b313FetchingStress = true;
+      fetch("/api/stress-data?_t=" + Date.now(), {
+        headers: { "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache" }
+      })
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          window._b313FetchingStress = false;
+          if (data && typeof data === "object" && Object.keys(data).length > 0) {
+            window.bkStressData = data;
+            window._stressInterpolationCache = {};
+            initB313AutoStressFields(true, preferredYear, preferredMaterial, preferredGrade, preferredTemp);
+          }
+        })
+        .catch(() => { window._b313FetchingStress = false; });
+    }
+    if (!years || years.length === 0) return;
+  }
 
   let curYear = preferredYear ? String(preferredYear).trim() : yearSelect.value;
   if (!curYear || !years.includes(curYear)) {
-    curYear = years.includes("2022") ? "2022" : years[0];
+    curYear = years.includes("2020") ? "2020" : (years.includes("2022") ? "2022" : years[years.length - 1]);
   }
 
   yearSelect.innerHTML = '<option value="">-- Select Year --</option>';
@@ -1617,6 +1635,14 @@ function evaluateB313AutoStress(isLiveUpdate = false) {
     : null;
 
   if (!lookup || !lookup.success) {
+    if (lookup && lookup.pending) {
+      if (msgEl) {
+        msgEl.style.display = "block";
+        msgEl.style.color = "#2563eb";
+        msgEl.innerHTML = "⏳ Syncing live Allowable Stress from Cloud Firestore...";
+      }
+      return;
+    }
     if (msgEl) {
       msgEl.style.display = "block";
       msgEl.style.color = "#dc2626";
@@ -1645,7 +1671,7 @@ function evaluateB313AutoStress(isLiveUpdate = false) {
           <span id="b313_autoStressDisplay" style="font-size: 18px; font-weight: 800; color: #15803d;">${lookup.stress}</span>
           <span style="font-size: 13px; font-weight: 600; color: #166534;">MPa</span>
           <span class="live-sync-badge" style="background: #16a34a; color: #ffffff; padding: 2px 7px; border-radius: 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.3px; display: inline-flex; align-items: center; gap: 4px;">
-            ⚡ LIVE DB (${year})
+            ⚡ LIVE FIRESTORE (${year})
           </span>
         </div>
         <div style="font-size: 12px; color: #334155; display: flex; gap: 14px;">

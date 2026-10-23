@@ -24,10 +24,16 @@ export function invalidateDamageMechanismsCache() {
 
 
 
+let cachedDamageMechanismsTimestamp = 0;
+const DAMAGE_MECHS_CACHE_TTL = 15000; // 15s TTL for fresh real-time Firestore sync
+
 // Fetch Damage Mechanisms from Firebase Cloud Firestore with local cache
-export async function getDamageMechanisms() {
+export async function getDamageMechanisms(options = {}) {
   const activeProj = getActiveProjectConfig();
-  if (cachedDamageMechanisms && cachedDamageMechanismsProjectId === activeProj.projectId) {
+  const isExpired = Date.now() - cachedDamageMechanismsTimestamp > DAMAGE_MECHS_CACHE_TTL;
+  const forceRefresh = options?.refresh === true || options?.live === true;
+
+  if (!forceRefresh && !isExpired && cachedDamageMechanisms && cachedDamageMechanismsProjectId === activeProj.projectId) {
     return cachedDamageMechanisms;
   }
 
@@ -51,23 +57,24 @@ export async function getDamageMechanisms() {
               mechName = docSnap.id;
             }
           }
+          const existing = mechs[mechName] || {};
           mechs[mechName] = {
             id: docSnap.id,
-            code: d.code || docSnap.id,
+            code: d.code || existing.code || docSnap.id,
             name: mechName,
-            category: d.category || mechs[mechName]?.category || "API 571 Damage Mechanism",
-            description: d.description || "",
-            affectedMaterials: d.affectedMaterials || d.materials || "",
-            criticalFactors: d.criticalFactors || "",
-            affectedUnits: d.affectedUnits || "",
-            appearance: d.appearance || "",
-            mitigation: d.mitigation || "",
-            inspection: d.inspection || "",
-            temperatureComparison: d.temperatureComparison || "",
-            imagePath: d.imagePath || "",
-            isCustom: d.isCustom !== undefined ? d.isCustom : false,
+            category: d.category || existing.category || "API 571 Damage Mechanism",
+            description: d.description || existing.description || "",
+            affectedMaterials: d.affectedMaterials || d.materials || existing.affectedMaterials || "",
+            criticalFactors: d.criticalFactors || existing.criticalFactors || "",
+            affectedUnits: d.affectedUnits || existing.affectedUnits || "",
+            appearance: d.appearance || existing.appearance || "",
+            mitigation: d.mitigation || existing.mitigation || "",
+            inspection: d.inspection || existing.inspection || "",
+            temperatureComparison: d.temperatureComparison || existing.temperatureComparison || "",
+            imagePath: d.imagePath || existing.imagePath || "",
+            isCustom: d.isCustom !== undefined ? d.isCustom : (existing.isCustom || false),
             projectId: activeProj.projectId,
-            updatedAt: d.updatedAt ? (d.updatedAt.toMillis ? d.updatedAt.toMillis() : d.updatedAt) : Date.now()
+            updatedAt: d.updatedAt ? (d.updatedAt.toMillis ? d.updatedAt.toMillis() : d.updatedAt) : (existing.updatedAt || Date.now())
           };
         });
       } else {
@@ -96,7 +103,20 @@ export async function getDamageMechanisms() {
     console.warn(`Firestore fetch notice for damage mechanisms in ${activeProj.projectId}:`, err.message);
   }
 
-  // Fallback to master baseline catalog if mechs is still empty
+  // Include any local custom mechanisms if present
+  try {
+    const customFilePath = path.resolve(__dirname, "../data/secure/custom_damage_mechanisms.json");
+    if (fs.existsSync(customFilePath)) {
+      const customs = JSON.parse(fs.readFileSync(customFilePath, "utf8")) || {};
+      for (const [cName, cVal] of Object.entries(customs)) {
+        if (!mechs[cName]) {
+          mechs[cName] = { ...cVal, isCustom: true };
+        }
+      }
+    }
+  } catch (e) {}
+
+  // Fallback to master baseline catalog only if mechs is completely empty
   if (Object.keys(mechs).length === 0) {
     try {
       const { fullCatalog } = await import("../scripts/seed_api571_mechanisms.js");
@@ -106,42 +126,50 @@ export async function getDamageMechanisms() {
     }
   }
 
-
-
   cachedDamageMechanisms = { "Damage Mechanism": mechs };
   cachedDamageMechanismsProjectId = activeProj.projectId;
+  cachedDamageMechanismsTimestamp = Date.now();
   return cachedDamageMechanisms;
 }
 
+let cachedStressDataTimestamp = 0;
+const STRESS_DATA_CACHE_TTL = 15000; // 15s TTL for fresh real-time Firestore sync
+
 // Fetch Stress Data from Firebase Cloud Firestore with local cache
-export async function getStressData() {
+export async function getStressData(options = {}) {
   const activeProj = getActiveProjectConfig();
-  if (cachedStressData && cachedStressDataProjectId === activeProj.projectId) {
+  const isExpired = Date.now() - cachedStressDataTimestamp > STRESS_DATA_CACHE_TTL;
+  const forceRefresh = options?.refresh === true || options?.live === true;
+
+  if (!forceRefresh && !isExpired && cachedStressData && cachedStressDataProjectId === activeProj.projectId) {
     return cachedStressData;
   }
 
   let stressDataResult = null;
 
-  // 1. Check active project Firestore
+  // 1. Check active project Firestore (prioritize per-year documents in 'stressData' collection)
   try {
     const adminDb = getAdminFirestore();
     if (adminDb) {
-      const metaSnap = await adminDb.collection("systemMeta").doc("stressDataMaster").get();
-      if (metaSnap.exists && metaSnap.data()?.data && Object.keys(metaSnap.data().data).length >= 1) {
-        stressDataResult = metaSnap.data().data;
-      } else {
-        const snap = await adminDb.collection("stressData").get();
-        if (!snap.empty) {
-          const data = {};
-          snap.forEach((docSnap) => {
-            const d = docSnap.data();
-            if (d.materials) {
-              data[docSnap.id] = d.materials;
-            }
-          });
-          if (Object.keys(data).length >= 1) {
-            stressDataResult = data;
+      const snap = await adminDb.collection("stressData").get();
+      if (!snap.empty) {
+        const data = {};
+        snap.forEach((docSnap) => {
+          const d = docSnap.data();
+          if (d && d.materials && typeof d.materials === "object") {
+            data[docSnap.id] = d.materials;
           }
+        });
+        if (Object.keys(data).length >= 1) {
+          stressDataResult = data;
+        }
+      }
+
+      // Fallback check on systemMeta/stressDataMaster if stressData collection was empty
+      if (!stressDataResult || Object.keys(stressDataResult).length === 0) {
+        const metaSnap = await adminDb.collection("systemMeta").doc("stressDataMaster").get();
+        if (metaSnap.exists && metaSnap.data()?.data && Object.keys(metaSnap.data().data).length >= 1) {
+          stressDataResult = metaSnap.data().data;
         }
       }
     }
@@ -149,11 +177,23 @@ export async function getStressData() {
     console.warn(`Firestore fetch notice for stress data in ${activeProj.projectId}:`, err.message);
   }
 
+  // 2. Fallback to local backup & auto-seed Firestore if Firestore had no stressData documents
   if (!stressDataResult || Object.keys(stressDataResult).length === 0) {
     const backupFile = path.resolve(__dirname, "../data/secure/bk_stress.json");
     if (fs.existsSync(backupFile)) {
       try {
         stressDataResult = JSON.parse(fs.readFileSync(backupFile, "utf-8"));
+        const adminDb = getAdminFirestore();
+        if (adminDb && stressDataResult && Object.keys(stressDataResult).length > 0) {
+          for (const [yr, mats] of Object.entries(stressDataResult)) {
+            await adminDb.collection("stressData").doc(String(yr)).set({
+              year: String(yr),
+              materials: mats,
+              updatedAt: Date.now(),
+              updatedBy: "system_seed"
+            }, { merge: true });
+          }
+        }
       } catch (e) {
         console.warn("Failed to load bk_stress.json backup:", e.message);
       }
@@ -162,6 +202,7 @@ export async function getStressData() {
 
   cachedStressData = stressDataResult || {};
   cachedStressDataProjectId = activeProj.projectId;
+  cachedStressDataTimestamp = Date.now();
   return cachedStressData;
 }
 
@@ -579,12 +620,11 @@ export async function deleteTemperaturePoint(payload, callerEmail) {
   delete targetNode[tempKey];
   const stats = countTreeStats(target);
 
-  const adminApp = getAdminApp();
-  if (adminApp) {
+  const db = getAdminFirestore();
+  if (db) {
     try {
-      const db = adminApp.firestore();
       await db.collection("systemMeta").doc("stressDataMaster").set({
-        data: target,
+        years: Object.keys(target),
         updatedAt: Date.now(),
         updatedBy: callerEmail || "admin",
         totalYears: stats.years,
@@ -604,6 +644,7 @@ export async function deleteTemperaturePoint(payload, callerEmail) {
   }
 
   cachedStressData = target;
+  cachedStressDataTimestamp = Date.now();
   return { success: true, stats, deletedTemperature: tempKey };
 }
 
@@ -627,8 +668,7 @@ export default async function handler(req, res) {
     // -------------------------------------------------------------
     if (req.method === "DELETE" && isStressRoute) {
       const callerEmail = req.body?.callerEmail || req.headers["x-user-email"] || req.query.callerEmail;
-      const adminApp = getAdminApp();
-      const db = adminApp ? adminApp.firestore() : null;
+      const db = getAdminFirestore();
       const isAdmin = await isAuthorizedAdmin(callerEmail, db);
 
       if (!isAdmin) {
@@ -661,8 +701,7 @@ export default async function handler(req, res) {
         // Action 1: Delete Year (Admin Only via POST)
         if (action === "delete-year") {
           const callerEmail = body.callerEmail || req.headers["x-user-email"] || req.query.callerEmail;
-          const adminApp = getAdminApp();
-          const db = adminApp ? adminApp.firestore() : null;
+          const db = getAdminFirestore();
           const isAdmin = await isAuthorizedAdmin(callerEmail, db);
 
           if (!isAdmin) {
@@ -698,8 +737,7 @@ export default async function handler(req, res) {
         // Action 3: Delete Temperature Point (Admin Only)
         if (action === "delete-temperature-point") {
           const callerEmail = body.callerEmail || req.headers["x-user-email"] || req.query.callerEmail;
-          const adminApp = getAdminApp();
-          const db = adminApp ? adminApp.firestore() : null;
+          const db = getAdminFirestore();
           const isAdmin = await isAuthorizedAdmin(callerEmail, db);
 
           if (!isAdmin) {
@@ -751,16 +789,18 @@ export default async function handler(req, res) {
     // -------------------------------------------------------------
     // GET: Retrieve data
     // -------------------------------------------------------------
+    const forceRefresh = req.query?.refresh === "1" || req.query?.live === "1" || !!req.query?._t;
+
     if (isStressRoute) {
       res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
       res.setHeader("Pragma", "no-cache");
       res.setHeader("Expires", "0");
-      const data = await getStressData();
+      const data = await getStressData({ refresh: forceRefresh });
       return res.status(200).json(data);
     }
 
     // Default: damage mechanisms
-    const allData = await getDamageMechanisms();
+    const allData = await getDamageMechanisms({ refresh: forceRefresh });
     const mechs = allData["Damage Mechanism"] || {};
 
     if (name) {

@@ -10,6 +10,7 @@ import admin from "firebase-admin";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { getClientFirestoreBridge } from "./firestoreBridge.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -227,15 +228,23 @@ export function getAdminApp() {
 }
 
 /**
- * Returns the Admin Firestore instance (or null if Admin SDK unconfigured)
+ * Returns the Admin Firestore instance (or falls back seamlessly to Cloud Firestore bridge)
  */
 export function getAdminFirestore() {
   const app = getAdminApp();
-  if (!app) return null;
+  if (app) {
+    try {
+      return app.firestore();
+    } catch (e) {
+      console.warn("[FirebaseAdmin] Firestore instance resolution note:", e?.message);
+    }
+  }
+
+  // Seamless fallback to Cloud Firestore bridge using active project credentials
   try {
-    return app.firestore();
-  } catch (e) {
-    console.warn("[FirebaseAdmin] Firestore instance resolution note:", e?.message);
+    return getClientFirestoreBridge();
+  } catch (err) {
+    console.warn("[FirebaseAdmin] Could not load getClientFirestoreBridge:", err?.message);
     return null;
   }
 }

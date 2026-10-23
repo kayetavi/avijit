@@ -2,8 +2,8 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { getAdminApp, getAdminFirestore, deleteSession, terminateAllUserSessions, verifyServerIdentity } from "./sessionStore.js";
-import { AVAILABLE_MODULES, buildRolePermissions, userRolesCache, loadUsersFromFile, saveUsersToFile, markUserDeleted, markUserRestored, isUserDeleted, USERS_FILE, getRoleMatrix, saveRoleMatrixFile, DEFAULT_ROLE_MATRIX } from "./rbac.js";
-import { getDamageMechanisms, invalidateDamageMechanismsCache, getStressData } from "./database.js";
+import { AVAILABLE_MODULES, buildRolePermissions, userRolesCache, loadUsersFromFile, saveUsersToFile, markUserDeleted, markUserRestored, isUserDeleted, USERS_FILE, getRoleMatrix, saveRoleMatrixFile, DEFAULT_ROLE_MATRIX, SUPER_ADMIN_EMAIL, isSuperAdminEmail } from "./rbac.js";
+import { getDamageMechanisms, invalidateDamageMechanismsCache, getStressData, saveStressData, deleteYearStressData, recordsToStressTree } from "./database.js";
 import {
   getFirestoreDb,
   getActiveProjectConfig,
@@ -22,8 +22,6 @@ import { doc, setDoc, deleteDoc, getDoc, collection, getDocs } from "firebase/fi
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-const SUPER_ADMIN_EMAIL = "";
 
 const AUDIT_LOGS_FILE = path.resolve(__dirname, "../data/secure/audit_logs.json");
 const LAYOUT_CONFIG_FILE = path.resolve(__dirname, "../data/secure/layout_config.json");
@@ -76,44 +74,47 @@ async function recordAuditLog(db, event) {
   return item;
 }
 
-function sanitizeSidebarModules(modules) {
-  if (!Array.isArray(modules)) return [];
-  const seenIds = new Set();
-  const result = [];
-  modules.forEach(m => {
-    if (!m) return;
-    let modId = m.id;
-    if (modId === "cracking" || modId === "crackingMechanism") modId = "crackingMechanism";
-    if (modId === "damage" || modId === "damageMechanisms" || modId === "damageMechanism" || modId === "api571" || modId === "damageExplorer") modId = "damageExplorer";
-    if (seenIds.has(modId)) return;
-    seenIds.add(modId);
-    result.push({
-      ...m,
-      id: modId
-    });
-  });
-  return result;
+function normalizeSidebarModuleId(rawId) {
+  if (!rawId) return "";
+  const id = String(rawId).trim();
+  if (id === "cracking" || id === "crackingMechanism") return "crackingMechanism";
+  if (
+    id === "damage" ||
+    id === "damageMechanisms" ||
+    id === "damageMechanism" ||
+    id === "damageCatalog" ||
+    id === "api571" ||
+    id === "api571DamageMechanisms" ||
+    id === "damageExplorer"
+  ) {
+    return "damageExplorer";
+  }
+  if (id === "remainingLife" || id === "api570") return "api570";
+  if (id === "designThickness" || id === "b313" || id === "thicknessCalc") return "thicknessCalc";
+  if (id === "tools" || id === "adminControlCenter") return "adminControlCenter";
+  if (id === "stream" || id === "streamData" || id === "streamComparator") return "streamComparator";
+  return id;
 }
 
 function getDefaultLayoutConfig() {
   return {
-    tickerText: "Welcome to Industrial Digital Tools & Plant Integrity Operations",
+    tickerText: "Welcome to API 571 Damage Mechanism Dashboard & Industrial Digital Tools",
     tickerUrgency: "normal",
     tickerEnabled: true,
     sidebarModules: [
-      { id: "api581", label: "API 581 Risk-Based Inspection", icon: "📊", visible: true, group: "RBI & Assessment", roles: ["admin", "lead_engineer"], tabId: "a571-criteriaTab", launcherFunc: "showCriteriaTab" },
-      { id: "api570", label: "API 570 Piping Inspection", icon: "🔍", visible: true, group: "RBI & Assessment", roles: ["admin", "lead_engineer"], tabId: "remainingLifeTab", launcherFunc: "showRemainingLifeTab" },
-      { id: "thicknessCalc", label: "Design Thickness Calculator (ASME B31.3 & VIII)", icon: "📏", visible: true, group: "Engineering Calculations", roles: ["admin", "lead_engineer", "inspector"], tabId: "ASMEB31_3Tab", launcherFunc: "showASMEB31_3Tab" },
-      { id: "damageExplorer", label: "API 571 Damage Mechanisms", icon: "🔬", visible: true, group: "Damage & Integrity", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "damageExplorerTab", launcherFunc: "showDamageMechanismTab" },
-      { id: "crackingMechanism", label: "Cracking Mechanism Finder", icon: "⚡", visible: true, group: "Damage & Integrity", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "crackingMechanismTab", launcherFunc: "showCrackingMechanismTab" },
-      { id: "bkStress", label: "Allowable Stress Lookup & DB", icon: "🧮", visible: true, group: "Engineering Calculations", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "bkStressTab", launcherFunc: "showbkStressTab" },
-      { id: "streamComparator", label: "Stream & Material Balance (HMB)", icon: "🔄", visible: true, group: "Process & Fluids", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "streamComparatorTab", launcherFunc: "showStreamComparatorTab" },
-      { id: "chemicalSuite", label: "Chemical & HAZMAT Safety Suite", icon: "⚗️", visible: true, group: "Process & Fluids", roles: ["admin", "lead_engineer", "inspector"], tabId: "chemicalSuiteTab", launcherFunc: "showChemicalSuiteTab" },
-      { id: "unitConverter", label: "Engineering Unit Converters", icon: "📐", visible: true, group: "Utilities", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "unitConverterTab", launcherFunc: "showUnitConverterTab" },
-      { id: "processFlow", label: "Process Flow Diagrams (PFD)", icon: "🗺️", visible: true, group: "Plant Operations", roles: ["admin", "lead_engineer"], tabId: "processFlowModal", launcherFunc: "showPROCESSFLOWDIAGRAMSTab" },
-      { id: "rptu", label: "RPTU Dashboard", icon: "📈", visible: true, group: "Monitoring", roles: ["admin", "lead_engineer"], tabId: "rptuDashboard", launcherFunc: "showRPTUDashboard" },
-      { id: "ccdAI", label: "CCD AI Platform", icon: "🤖", visible: true, group: "External Platforms", roles: ["admin", "lead_engineer"], tabId: "ccdAiTab", launcherFunc: "showCCDAITab" },
-      { id: "adminControlCenter", label: "Tools", icon: "🛠️", visible: true, group: "Governance & Tools", roles: ["admin"], tabId: "adminPanelTab", launcherFunc: "openTool" }
+      { id: "damageExplorer", label: "API 571 Damage Mechanisms", icon: "🛡️", visible: true, order: 1, group: "Damage & Integrity", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "damageExplorerTab", launcherFunc: "showDamageMechanismTab" },
+      { id: "api581", label: "API 581 Risk-Based Inspection", icon: "📊", visible: true, order: 2, group: "RBI & Assessment", roles: ["admin", "lead_engineer"], tabId: "a571-criteriaTab", launcherFunc: "showCriteriaTab" },
+      { id: "api570", label: "API 570 Piping Inspection", icon: "⏱️", visible: true, order: 3, group: "RBI & Assessment", roles: ["admin", "lead_engineer"], tabId: "remainingLifeTab", launcherFunc: "showRemainingLifeTab" },
+      { id: "thicknessCalc", label: "Design Thickness (ASME)", icon: "📐", visible: true, order: 4, group: "Engineering Calculations", roles: ["admin", "lead_engineer", "inspector"], tabId: "ASMEB31_3Tab", launcherFunc: "showASMEB31_3Tab" },
+      { id: "crackingMechanism", label: "Cracking Mechanism Analysis", icon: "⚡", visible: true, order: 5, group: "Damage & Integrity", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "crackingMechanismTab", launcherFunc: "showCrackingMechanismTab" },
+      { id: "bkStress", label: "Allowable Stress DB", icon: "🧮", visible: true, order: 6, group: "Engineering Calculations", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "bkStressTab", launcherFunc: "showbkStressTab" },
+      { id: "streamComparator", label: "Stream Data Comparator", icon: "🔄", visible: true, order: 7, group: "Process & Fluids", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "streamComparatorTab", launcherFunc: "showStreamComparatorTab" },
+      { id: "chemicalSuite", label: "Chemical Suite", icon: "⚗️", visible: true, order: 8, group: "Process & Fluids", roles: ["admin", "lead_engineer", "inspector"], tabId: "chemicalSuiteTab", launcherFunc: "showChemicalSuiteTab" },
+      { id: "unitConverter", label: "Unit Converters", icon: "📐", visible: true, order: 9, group: "Utilities", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "unitConverterTab", launcherFunc: "showUnitConverterTab" },
+      { id: "processFlow", label: "Process Flow Diagrams (PFD)", icon: "🗺️", visible: true, order: 10, group: "Plant Operations", roles: ["admin", "lead_engineer"], tabId: "processFlowModal", launcherFunc: "showPROCESSFLOWDIAGRAMSTab" },
+      { id: "rptu", label: "RPTU Dashboard", icon: "📈", visible: true, order: 11, group: "Monitoring", roles: ["admin", "lead_engineer"], tabId: "rptuDashboard", launcherFunc: "showRPTUDashboard" },
+      { id: "ccdAI", label: "CCD AI Platform", icon: "🤖", visible: true, order: 12, group: "External Platforms", roles: ["admin", "lead_engineer"], tabId: "ccdAiTab", launcherFunc: "showCCDAITab" },
+      { id: "adminControlCenter", label: "Tools", icon: "🛠️", visible: true, order: 13, group: "Governance & Tools", roles: ["admin"], tabId: "adminPanelTab", launcherFunc: "openTool" }
     ],
     welcomeCards: [
       { id: "card_damageExplorer", title: "API 571 Damage Mechanisms", subtitle: "Comprehensive catalog of 90+ damage mechanisms from API RP 571.", icon: "🔬", targetTab: "damageExplorer", enabled: true },
@@ -134,6 +135,37 @@ function getDefaultLayoutConfig() {
     updatedAt: Date.now(),
     updatedBy: "system"
   };
+}
+
+function sanitizeSidebarModules(modules) {
+  if (!Array.isArray(modules)) return [];
+  const defaults = getDefaultLayoutConfig().sidebarModules;
+  const defaultMap = new Map(defaults.map(d => [d.id, d]));
+  const seenIds = new Set();
+  const result = [];
+  modules.forEach(m => {
+    if (!m || !m.id) return;
+    const modId = normalizeSidebarModuleId(m.id);
+    if (!modId || seenIds.has(modId)) return;
+    seenIds.add(modId);
+    const def = defaultMap.get(modId) || {};
+    result.push({
+      ...def,
+      ...m,
+      id: modId,
+      label: String(m.label || m.name || def.label || modId).trim(),
+      icon: String(m.icon || def.icon || "📌").trim(),
+      visible: m.visible !== false,
+      group: m.group || def.group || "Engineering Suite",
+      roles: Array.isArray(m.roles) && m.roles.length > 0 ? m.roles : (def.roles || ["admin", "lead_engineer"]),
+      tabId: m.tabId || def.tabId || "",
+      launcherFunc: m.launcherFunc || def.launcherFunc || ""
+    });
+  });
+  result.forEach((item, idx) => {
+    item.order = idx + 1;
+  });
+  return result;
 }
 
 function normalizeAndMergeWelcomeCards(existingCards, defaultCards) {
@@ -249,6 +281,9 @@ async function isAuthorizedForAction(callerEmail, action, db) {
   if (!email || email === "null" || email === "undefined") {
     return false; // Deny unauthenticated requests
   }
+  if (isSuperAdminEmail(email)) {
+    return true;
+  }
 
 
   // 1. Fetch user record from cache, file, or Firestore
@@ -294,6 +329,11 @@ async function isAuthorizedForAction(callerEmail, action, db) {
 
   // Granular action mapping to assigned module / subsection
   switch (action) {
+    // 📦 Guarded Bundle & Template Delivery for Admin & Assigned Tools Users
+    case "get_admin_bundle":
+    case "get_admin_template":
+      return hasUserSubAccess(userRecord, "adminControlCenter", null);
+
     // 🛡️ Damage Mechanisms Catalog & Manager
     case "get_damage_mechanisms":
     case "upload_damage_mechanism_image":
@@ -317,17 +357,24 @@ async function isAuthorizedForAction(callerEmail, action, db) {
              hasUserSubAccess(userRecord, "adminControlCenter", "stress_tab_bulk_loader") ||
              hasUserSubAccess(userRecord, "bkStress", null);
     case "save_stress_year":
-      return hasUserSubAccess(userRecord, "adminControlCenter", "stress_action_add");
+      return hasUserSubAccess(userRecord, "adminControlCenter", "stress_action_add") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "appStress");
     case "delete_stress_year":
-      return hasUserSubAccess(userRecord, "adminControlCenter", "stress_action_delete");
+      return hasUserSubAccess(userRecord, "adminControlCenter", "stress_action_delete") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "appStress");
     case "bulk_import_stress_records":
-      return hasUserSubAccess(userRecord, "adminControlCenter", "stress_tab_bulk_loader");
+      return hasUserSubAccess(userRecord, "adminControlCenter", "stress_tab_bulk_loader") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "appStress");
 
     // 🖥️ Layout & Navigation Builder
     case "get_layout_config":
       return true; // public read
     case "save_layout_config":
-      return hasUserSubAccess(userRecord, "adminControlCenter", "layoutBuilder");
+      return hasUserSubAccess(userRecord, "adminControlCenter", "layoutBuilder") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "sidebarOrder") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "tickerText") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "welcomeCards") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "navVisibility");
 
     // 📱 System Overview
     case "get_overview":
@@ -338,19 +385,35 @@ async function isAuthorizedForAction(callerEmail, action, db) {
     case "get_sessions":
     case "terminate_session":
     case "clear_stale_sessions":
+      return hasUserSubAccess(userRecord, "adminControlCenter", "sysDiagnostics") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "activeSessions");
     case "get_collection_docs":
     case "save_firestore_doc":
     case "delete_firestore_doc":
-      return hasUserSubAccess(userRecord, "adminControlCenter", "sysDiagnostics");
+      return hasUserSubAccess(userRecord, "adminControlCenter", "sysDiagnostics") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "firestoreExplorer");
 
     // 💾 Master Data, Backup & Logs
     case "export_backup":
+      return hasUserSubAccess(userRecord, "adminControlCenter", "masterData") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "jsonBackup") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "sysDiagnostics");
     case "restore_backup":
+      return hasUserSubAccess(userRecord, "adminControlCenter", "masterData") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "jsonRestore") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "sysDiagnostics");
     case "get_backup_history":
+      return hasUserSubAccess(userRecord, "adminControlCenter", "masterData") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "backupHistory") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "sysDiagnostics");
     case "get_system_logs":
+      return hasUserSubAccess(userRecord, "adminControlCenter", "masterData") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "systemLogs") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "sysDiagnostics");
     case "get_audit_logs":
     case "record_audit_log":
       return hasUserSubAccess(userRecord, "adminControlCenter", "masterData") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "auditTrail") ||
              hasUserSubAccess(userRecord, "adminControlCenter", "sysDiagnostics");
 
     // 👥 User Management & Roles
@@ -360,7 +423,8 @@ async function isAuthorizedForAction(callerEmail, action, db) {
     case "get_reset_link":
     case "delete_user":
       return hasUserSubAccess(userRecord, "adminControlCenter", "userManagement") ||
-             hasUserSubAccess(userRecord, "adminControlCenter", "rbacPermissions");
+             hasUserSubAccess(userRecord, "adminControlCenter", "rbacPermissions") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "accessControl");
 
     // 🔄 Project & Workspace Switcher
     case "get_projects":
@@ -371,6 +435,7 @@ async function isAuthorizedForAction(callerEmail, action, db) {
     case "delete_custom_project":
     case "switch_workspace":
       return hasUserSubAccess(userRecord, "adminControlCenter", "sysDiagnostics") ||
+             hasUserSubAccess(userRecord, "adminControlCenter", "projectSwitcher") ||
              userRecord.role === "admin" || userRecord.isSuperAdmin === true;
 
     default:
@@ -405,7 +470,7 @@ export default async function handler(req, res) {
 
     const adminApp = getAdminApp();
     const activeProject = getActiveProjectConfig();
-    const db = adminApp ? adminApp.firestore(activeProject.firestoreDatabaseId || "(default)") : null;
+    const db = (adminApp ? adminApp.firestore(activeProject.firestoreDatabaseId || "(default)") : null) || getAdminFirestore();
 
     // Verify authorization per action (granular role & section permissions)
     const isPublicRead = action === "get_layout_config";
@@ -1513,7 +1578,8 @@ export default async function handler(req, res) {
     // 6. DAMAGE MECHANISM MANAGEMENT (CRUD, IMAGE UPLOAD, BULK)
     // -------------------------------------------------------------
     if (action === "get_damage_mechanisms") {
-      const data = await getDamageMechanisms();
+      const isForceRefresh = req.query?.refresh === "1" || req.query?.refresh === "true" || payload?.refresh === true || req.query?.live === "1";
+      const data = await getDamageMechanisms({ refresh: isForceRefresh });
       const mechs = (data && data["Damage Mechanism"]) ? data["Damage Mechanism"] : {};
       return res.status(200).json({
         success: true,
@@ -2028,13 +2094,23 @@ export default async function handler(req, res) {
       }
 
 
+      // 3. Fallback to local layout_config.json file
+      if (!config && fs.existsSync(LAYOUT_CONFIG_FILE)) {
+        try {
+          config = JSON.parse(fs.readFileSync(LAYOUT_CONFIG_FILE, "utf8"));
+        } catch (e) {}
+      }
+
       const defaults = getDefaultLayoutConfig();
+      let needsSelfHeal = false;
       if (!config) {
         config = defaults;
       } else {
         if (!config.tickerText || !config.tickerText.trim()) {
           config.tickerText = defaults.tickerText;
         }
+        const rawCount = Array.isArray(config.sidebarModules) ? config.sidebarModules.length : 0;
+        const hadLegacyIds = Array.isArray(config.sidebarModules) && config.sidebarModules.some(m => m && m.id !== normalizeSidebarModuleId(m.id));
         // Ensure all default modules exist in sidebarModules without disrupting user's order
         if (!config.sidebarModules || !Array.isArray(config.sidebarModules) || config.sidebarModules.length === 0) {
           config.sidebarModules = defaults.sidebarModules;
@@ -2048,8 +2124,28 @@ export default async function handler(req, res) {
           });
         }
         config.sidebarModules = sanitizeSidebarModules(config.sidebarModules);
+        if (hadLegacyIds || rawCount !== config.sidebarModules.length) {
+          needsSelfHeal = true;
+        }
         config.welcomeCards = normalizeAndMergeWelcomeCards(config.welcomeCards, defaults.welcomeCards);
       }
+
+      if (needsSelfHeal) {
+        try {
+          ensureDirExists(LAYOUT_CONFIG_FILE);
+          fs.writeFileSync(LAYOUT_CONFIG_FILE, JSON.stringify(config, null, 2), "utf8");
+        } catch (e) {}
+        if (db) {
+          try { await db.collection("systemSettings").doc("layoutConfig").set(config); } catch (e) {}
+        }
+        try {
+          const clientDb = getFirestoreDb();
+          if (clientDb) {
+            await setDoc(doc(clientDb, "systemSettings", "layoutConfig"), config);
+          }
+        } catch (e) {}
+      }
+
       return res.status(200).json({ success: true, config });
     }
 
@@ -2073,6 +2169,12 @@ export default async function handler(req, res) {
       config.updatedAt = Date.now();
       config.updatedBy = callerEmail;
 
+      try {
+        ensureDirExists(LAYOUT_CONFIG_FILE);
+        fs.writeFileSync(LAYOUT_CONFIG_FILE, JSON.stringify(config, null, 2), "utf8");
+      } catch (fileErr) {
+        console.warn("[Admin] Local layoutConfig save warning:", fileErr.message);
+      }
 
       let firestorePersisted = false;
       let firestoreError = null;
@@ -2086,8 +2188,20 @@ export default async function handler(req, res) {
           firestoreError = e?.message || String(e);
           console.warn("[Admin] Admin SDK layoutConfig save warning:", firestoreError);
         }
-      } else {
-        firestoreError = "Firebase Admin SDK unconfigured on server.";
+      }
+
+      // 2. Also persist via unified Firestore client (getFirestoreDb)
+      try {
+        const clientDb = getFirestoreDb();
+        if (clientDb) {
+          await setDoc(doc(clientDb, "systemSettings", "layoutConfig"), config);
+          firestorePersisted = true;
+          firestoreError = null;
+        }
+      } catch (clientErr) {
+        if (!firestorePersisted) {
+          firestoreError = clientErr?.message || String(clientErr);
+        }
       }
 
       await recordAuditLog(db, {
@@ -2226,7 +2340,7 @@ export default async function handler(req, res) {
     // 12. ALLOWABLE STRESS MASTER MANAGEMENT (ADMIN)
     // -------------------------------------------------------------
     if (action === "get_stress_manager_data") {
-      const stressDb = await getStressData();
+      const stressDb = await getStressData({ refresh: true });
 
       const yearsSummary = [];
       for (const [year, mats] of Object.entries(stressDb)) {
@@ -2260,7 +2374,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: "Please specify a valid 4-digit edition year (e.g. 2024)." });
       }
 
-      let stressDb = await getStressData();
+      let stressDb = await getStressData({ refresh: true });
 
       if (stressDb[newYear]) {
         return res.status(400).json({ error: `Edition year '${newYear}' already exists in database.` });
@@ -2281,7 +2395,6 @@ export default async function handler(req, res) {
           }, { merge: true });
           const years = Object.keys(stressDb);
           await db.collection("systemMeta").doc("stressDataMaster").set({
-            data: stressDb,
             years,
             totalYears: years.length,
             lastUpdated: Date.now()
@@ -2290,6 +2403,8 @@ export default async function handler(req, res) {
           console.warn("Firestore save_stress_year error:", e.message);
         }
       }
+
+      invalidateDamageMechanismsCache();
 
       await recordAuditLog(db, {
         user: callerEmail,
@@ -2306,28 +2421,12 @@ export default async function handler(req, res) {
       const yearToDelete = String(payload.year || "").trim();
       if (!yearToDelete) return res.status(400).json({ error: "Missing year to delete." });
 
-      let stressDb = await getStressData();
-
-      if (!stressDb[yearToDelete]) {
+      const delRes = await deleteYearStressData(yearToDelete, callerEmail);
+      if (delRes.notFound) {
         return res.status(404).json({ error: `Year '${yearToDelete}' not found in database.` });
       }
 
-      delete stressDb[yearToDelete];
-
-      if (db) {
-        try {
-          await db.collection("stressData").doc(yearToDelete).delete();
-          const years = Object.keys(stressDb);
-          await db.collection("systemMeta").doc("stressDataMaster").set({
-            data: stressDb,
-            years,
-            totalYears: years.length,
-            lastUpdated: Date.now()
-          }, { merge: true });
-        } catch (e) {
-          console.warn("Firestore delete_stress_year error:", e.message);
-        }
-      }
+      invalidateDamageMechanismsCache();
 
       await recordAuditLog(db, {
         user: callerEmail,
@@ -2346,72 +2445,33 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: "No stress records provided for bulk import." });
       }
 
-      let stressDb = await getStressData();
-
-      let imported = 0;
-      let skipped = 0;
-      const errors = [];
-      const touchedYears = new Set();
-
-      for (const r of records) {
-        const y = String(r.Year || r.year || "").trim();
-        const mat = String(r.Material || r.material || "").trim();
-        const grade = String(r.Grade || r.grade || "Default").trim();
-        const thk = String(r.Thickness || r.thickness || ">10mm").trim();
-        const temp = String(r.Temperature || r.temperature || "").trim();
-        const stress = parseFloat(r.Stress || r.stress || r.AllowableStress);
-
-        if (!y || !mat || !temp || isNaN(stress)) {
-          skipped++;
-          errors.push(`Invalid row: Missing required fields (Year, Material, Temp, Stress).`);
-          continue;
-        }
-
-        if (!stressDb[y]) stressDb[y] = {};
-        if (!stressDb[y][mat]) stressDb[y][mat] = {};
-        if (!stressDb[y][mat][grade]) stressDb[y][mat][grade] = {};
-        if (!stressDb[y][mat][grade][thk]) stressDb[y][mat][grade][thk] = {};
-
-        stressDb[y][mat][grade][thk][temp] = stress;
-        touchedYears.add(y);
-        imported++;
+      const inputTree = recordsToStressTree(records);
+      if (!inputTree || Object.keys(inputTree).length === 0) {
+        return res.status(400).json({ error: "No valid stress records found in uploaded rows." });
       }
 
-      if (db) {
-        try {
-          for (const y of touchedYears) {
-            await db.collection("stressData").doc(y).set({
-              year: y,
-              materials: stressDb[y] || {},
-              updatedAt: Date.now()
-            }, { merge: true });
-          }
-          const years = Object.keys(stressDb);
-          await db.collection("systemMeta").doc("stressDataMaster").set({
-            data: stressDb,
-            years,
-            totalYears: years.length,
-            lastUpdated: Date.now()
-          }, { merge: true });
-        } catch (e) {
-          console.warn("Firestore bulk_import_stress_records error:", e.message);
-        }
-      }
+      const saveRes = await saveStressData(inputTree, {
+        mode: "merge",
+        userEmail: callerEmail,
+        source: "admin_bulk_import"
+      });
+
+      invalidateDamageMechanismsCache();
 
       await recordAuditLog(db, {
         user: callerEmail,
         action: "STRESS_RECORDS_IMPORTED",
         module: "Allowable Stress Manager",
-        recordAffected: `Bulk Import (${imported} records)`,
-        details: `Imported ${imported} points, skipped ${skipped}.`
+        recordAffected: `Bulk Import (${records.length} rows)`,
+        details: `Imported rows into Firestore stress database (Total records: ${saveRes.stats?.records || 0}).`
       });
 
       return res.status(200).json({
         success: true,
-        imported,
-        skipped,
-        errors: errors.slice(0, 10),
-        message: `Successfully imported ${imported} stress records.`
+        imported: records.length,
+        skipped: 0,
+        errors: [],
+        message: `Successfully imported ${records.length} stress records to Firestore.`
       });
     }
 

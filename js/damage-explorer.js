@@ -136,13 +136,18 @@ function loadCategories(data) {
     categoryItem.classList.add("category-toggle");
     categoryItem.setAttribute("data-rbac-module", "damageExplorer");
 
-    const layoutCfg = window.layoutConfig || (window.adminPanel && window.adminPanel.layoutConfig) || null;
-    const modConfig = layoutCfg && layoutCfg.sidebarModules ? layoutCfg.sidebarModules.find(m => m.id === "damageExplorer" || m.id === "damageMechanisms") : null;
-    const customLabel = modConfig && modConfig.label ? modConfig.label : "API 571 Damage Mechanisms";
-    const customIcon = modConfig && modConfig.icon ? modConfig.icon : "🛡️";
+    const layoutCfg = (typeof window.getActiveLayoutConfig === "function" ? window.getActiveLayoutConfig() : null) || window.layoutConfig || (window.adminPanel && window.adminPanel.layoutConfig) || null;
+    const modConfig = layoutCfg && Array.isArray(layoutCfg.sidebarModules)
+      ? layoutCfg.sidebarModules.find(m => m && ((typeof window.normalizeSidebarModuleId === "function" ? window.normalizeSidebarModuleId(m.id) : m.id) === "damageExplorer" || m.id === "damageMechanisms"))
+      : null;
+    const customIcon = modConfig && modConfig.icon ? String(modConfig.icon).trim() : "🛡️";
+    let customLabel = modConfig && modConfig.label ? String(modConfig.label).trim() : "API 571 Damage Mechanisms";
+    if (customIcon && customLabel.startsWith(customIcon)) {
+      customLabel = customLabel.substring(customIcon.length).trim();
+    }
     const displayTitle = (customIcon ? (customIcon + " ") : "") + customLabel;
 
-    const isHidden = layoutCfg && typeof window.isModuleLayoutVisible === "function" && !window.isModuleLayoutVisible("damageExplorer", layoutCfg);
+    const isHidden = (modConfig && modConfig.visible === false) || (layoutCfg && typeof window.isModuleLayoutVisible === "function" && !window.isModuleLayoutVisible("damageExplorer", layoutCfg));
     const hasRbac = !window.RBAC || typeof window.RBAC.hasModuleAccess !== "function" || window.RBAC.isSuperAdmin || window.RBAC.role === "admin" || window.RBAC.hasModuleAccess("damageExplorer");
     if (isHidden || !hasRbac) {
       categoryItem.style.setProperty("display", "none", "important");
@@ -280,15 +285,27 @@ function loadCategories(data) {
 
       link.onclick = (e) => {
         e.preventDefault();
+        e.stopPropagation();
         setActiveLink(link);
         showMechanismDetails(mech, info);
+        if (typeof window.closeMobileSidebar === "function") {
+          window.closeMobileSidebar();
+        }
       };
 
       mechItem.appendChild(link);
       mechList.appendChild(mechItem);
     });
 
-    span.addEventListener("click", function () {
+    span.setAttribute("data-accordion-trigger", "true");
+    span.setAttribute("role", "button");
+    span.setAttribute("tabindex", "0");
+    span.addEventListener("click", function (e) {
+      if (e.target && e.target.closest && (e.target.closest(".category-filter-icon") || e.target.closest(".category-inline-filter"))) {
+        return;
+      }
+      e.preventDefault();
+      e.stopPropagation();
       const isBlock = (mechList.style.display === "block");
       mechList.style.display = isBlock ? "none" : "block";
       const arrow = span.querySelector(".arrow");
@@ -309,7 +326,9 @@ function loadCategories(data) {
     }
   });
 
-  if (window.RBAC && typeof window.RBAC.applySidebarVisibility === "function") {
+  if (typeof window.applyPublishedSidebarLayout === "function") {
+    window.applyPublishedSidebarLayout();
+  } else if (window.RBAC && typeof window.RBAC.applySidebarVisibility === "function") {
     window.RBAC.applySidebarVisibility();
   }
 

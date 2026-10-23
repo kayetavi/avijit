@@ -190,8 +190,8 @@ export async function interpolateStress({ year, material, grade, thickness, temp
 /**
  * Lightweight stress hierarchy (without bulky temperature point tables)
  */
-export async function getStressMetadata() {
-  const db = await getStressData();
+export async function getStressMetadata(options = {}) {
+  const db = await getStressData(options);
   const years = Object.keys(db || {});
   const hierarchy = {};
 
@@ -360,7 +360,11 @@ export default async function handler(req, res) {
 
   // 3. Metadata endpoint
   if (path.endsWith("/metadata") || action === "metadata") {
-    const meta = await getStressMetadata();
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+    const forceRefresh = req.query?.refresh === "1" || req.query?.live === "1" || !!req.query?._t;
+    const meta = await getStressMetadata({ refresh: forceRefresh });
     return res.status(200).json({ success: true, ...meta });
   }
 

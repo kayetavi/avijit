@@ -70,33 +70,36 @@
               <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
                 <div>
                   <label for="b313_stressYear" style="display: block; font-size: 11.5px; font-weight: 600; margin-bottom: 3px;">Lookup Year:</label>
-                  <select id="b313_stressYear" class="b313-auto-input" style="width: 100%;">
+                  <select id="b313_stressYear" class="b313-auto-input" onchange="if (typeof onB313StressYearChange === 'function') onB313StressYearChange();" style="width: 100%;">
                     <option value="">-- Select Year --</option>
                   </select>
                 </div>
 
                 <div>
                   <label for="b313_stressMaterial" style="display: block; font-size: 11.5px; font-weight: 600; margin-bottom: 3px;">Select Material:</label>
-                  <select id="b313_stressMaterial" class="b313-auto-input" disabled style="width: 100%;">
+                  <select id="b313_stressMaterial" class="b313-auto-input" disabled onchange="if (typeof onB313StressMaterialChange === 'function') onB313StressMaterialChange();" style="width: 100%;">
                     <option value="">-- Select Material --</option>
                   </select>
                 </div>
 
                 <div>
                   <label for="b313_stressGrade" style="display: block; font-size: 11.5px; font-weight: 600; margin-bottom: 3px;">Select Grade:</label>
-                  <select id="b313_stressGrade" class="b313-auto-input" disabled style="width: 100%;">
+                  <select id="b313_stressGrade" class="b313-auto-input" disabled onchange="if (typeof onB313StressGradeChange === 'function') onB313StressGradeChange();" style="width: 100%;">
                     <option value="">-- Select Grade --</option>
                   </select>
                 </div>
 
                 <div id="b313_stressThicknessGroup">
                   <label for="b313_stressThickness" style="display: block; font-size: 11.5px; font-weight: 600; margin-bottom: 3px;">Thickness (mm):</label>
-                  <select id="b313_stressThickness" class="b313-auto-input" disabled style="width: 100%;">
+                  <select id="b313_stressThickness" class="b313-auto-input" disabled onchange="if (typeof onB313StressThicknessChange === 'function') onB313StressThicknessChange();" style="width: 100%;">
                     <option value="">-- Select Thickness --</option>
                   </select>
                 </div>
 
-                <input type="hidden" id="b313_stressTemp" value="" />
+                <div>
+                  <label for="b313_stressTemp" style="display: block; font-size: 11.5px; font-weight: 600; margin-bottom: 3px;">Temperature (°C):</label>
+                  <input type="number" id="b313_stressTemp" class="b313-auto-input" placeholder="e.g. 100" step="1" oninput="if (typeof onB313StressTempInput === 'function') onB313StressTempInput();" style="width: 100%;" />
+                </div>
               </div>
 
               <!-- Dynamic Validation Messages & Warnings -->

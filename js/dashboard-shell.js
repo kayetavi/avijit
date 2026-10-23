@@ -250,10 +250,7 @@ function setupMobileSidebarEventListeners() {
         e.target.closest("#searchBox") ||
         e.target.closest(".category-inline-filter") ||
         e.target.closest(".category-filter-icon") ||
-        e.target.closest(".category") ||
-        e.target.closest(".subcategory") ||
         e.target.closest(".tool-arrow") ||
-        e.target.closest(".category-title") ||
         e.target.closest(".arrow") ||
         e.target.closest(".sidebar-header") ||
         e.target.closest(".sidebar-bottom-footer") ||
@@ -263,17 +260,17 @@ function setupMobileSidebarEventListeners() {
         return;
       }
 
-      const targetLink = e.target.closest("a");
-      if (targetLink) {
-        if (
-          targetLink.classList.contains("category") ||
-          targetLink.classList.contains("subcategory") ||
-          targetLink.closest(".category") ||
-          targetLink.closest(".subcategory")
-        ) {
+      const catOrSub = e.target.closest(".category, .subcategory");
+      if (catOrSub) {
+        const parentLi = catOrSub.closest("li");
+        const hasSubList = parentLi && parentLi.querySelector("ul.mechanisms, ul.subcategory-list, ul");
+        if (hasSubList || catOrSub.hasAttribute("data-accordion-trigger")) {
           return;
         }
+      }
 
+      const targetLink = e.target.closest("a");
+      if (targetLink) {
         const href = targetLink.getAttribute("href");
         if (href === "#" || href === "" || (href && href.startsWith("#"))) {
           if (e && typeof e.preventDefault === "function") e.preventDefault();
