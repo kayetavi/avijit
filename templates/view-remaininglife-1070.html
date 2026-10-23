@@ -1,0 +1,209 @@
+<div class="tab-content" id="remainingLifeTab" style="display: none;">
+ <!-- ✅ Center Title + Right Save + Gear Settings -->
+<div style="display: flex; justify-content: center; align-items: center; position: relative; margin-bottom: 10px;">
+  <h3 style="margin: 0; text-align: center;">🧪 Corrosion Rate Calculator</h3>
+
+
+<!-- 💾 Save + ⚙️ Settings Buttons (Right Corner) -->
+<div style="position: absolute; right: 5px; top: 0; display: flex; align-items: center; gap: 0;">
+  
+  <!-- 💾 Save Button -->
+  <!-- 💾 Save Button -->
+  <button 
+    onclick="saveAnalysisToServer()"
+    style="
+      background: none;
+      border: none;
+      color: inherit;
+      font-size: 17px;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      line-height: 1;
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+    "
+  >💾</button>
+
+  <!-- ⚙️ Settings Dropdown -->
+  <div class="remaining-settings-container" style="position: relative; display: inline-block; margin-left: 18px;"> <!-- 👈 small space added -->
+    <button 
+      id="remainingSettingsBtn"
+      class="remaining-settings-btn"
+      type="button"
+      title="Corrosion Calculator Settings"
+      aria-label="Settings"
+      onclick="if (typeof toggleRemainingSettingsMenu === 'function') { toggleRemainingSettingsMenu(event); } else if (typeof window.toggleRemainingSettingsMenu === 'function') { window.toggleRemainingSettingsMenu(event); } else { toggleSettingsMenu(event); }"
+      style="
+        background: none;
+        border: none;
+        color: inherit;
+        font-size: 18px;
+        cursor: pointer;
+        padding: 0;
+        margin: 0;
+        line-height: 1;
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+      "
+    >⚙️</button>
+
+    <!-- ⚙️ Dropdown Menu -->
+    <div id="settingsMenu"
+      style="display: none; position: absolute; right: 0; top: 120%; background: white; border: 1px solid #ccc;
+             border-radius: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); z-index: 999; min-width: 210px;">
+      <button class="btn" type="button" style="width: 100%; text-align: left; border-bottom: 1px solid #ddd;"
+        onclick="downloadTemplate(); closeSettingsMenu();">⬇️ Download CSV Template</button>
+      <button class="btn" type="button" style="width: 100%; text-align: left;"
+        onclick="viewSavedAnalyses(); closeSettingsMenu();">📊 Show Saved Data</button>
+    </div>
+  </div>
+</div>
+
+  </div>
+
+
+
+  <!-- ✅ Input Fields -->
+  <div class="form-grid-4">
+    <div>
+      <label for="baseDate">Base Date:</label>
+      <input type="date" id="baseDate">
+    </div>
+    <div>
+      <label for="baseThk">Base Thickness (mm):</label>
+      <input type="number" id="baseThk" step="0.01">
+    </div>
+    <div>
+      <label for="midDate">Middle Date (optional):</label>
+      <input type="date" id="midDate">
+    </div>
+    <div>
+      <label for="midThk">Middle Thickness (mm):</label>
+      <input type="number" id="midThk" step="0.01">
+    </div>
+    <div>
+      <label for="lastDate">Last Date:</label>
+      <input type="date" id="lastDate">
+    </div>
+    <div>
+      <label for="lastThk">Last Thickness (mm):</label>
+      <input type="number" id="lastThk" step="0.01">
+    </div>
+    <div>
+      <label for="tmin">T-Min (mm):</label>
+      <input type="number" id="tmin" step="0.01">
+    </div>
+    <div>
+      <label for="freq">OISD Frequency (Months):</label>
+      <input type="number" id="freq" step="1" value="">
+    </div>
+  </div>
+
+  <!-- ✅ Action Buttons -->
+  <div class="action-buttons">
+    <button class="btn" onclick="calculate()">📊 Calculate</button>
+
+    <!-- Bulk Upload Section -->
+    <div class="bulk-upload">
+      <input type="file" id="bulkUpload" accept=".csv,text/csv" />
+      <button class="btn" onclick="parseCSV()">📥 Upload & Parse</button>
+    </div>
+  </div>
+
+  <!-- ✅ Bulk Preview Modal -->
+  <div id="bulkPreviewModal" class="modal">
+    <div class="modal-content">
+      <span id="closeBulkBtn" class="close">&times;</span>
+      <div class="preview-buttons">
+        <h4 style="margin: 0;">📋 CSV Preview</h4>
+        <button class="btn" onclick="exportBulkTableToExcel()">📁 Export to Excel</button>
+        <button class="btn" onclick="exportBulkTableToPDF()">📄 Export to PDF</button>
+      </div>
+      <table id="bulkPreviewTable" class="table-preview"></table>
+    </div>
+  </div>
+
+  <!-- ✅ Saved Analyses Popup -->
+  <div id="savedDataModal" class="saved-data-modal">
+    <div class="saved-data-modal-content">
+      <button class="saved-data-close" onclick="closeSavedDataModal()">&times;</button>
+
+      <div class="saved-data-header">
+  <h3>📂 Saved Analyses Data</h3>
+  <button class="saved-data-clear-btn" onclick="clearAllAnalyses()">🗑️ Clear All</button>
+</div>
+
+
+      <div id="savedDataTableContainer">
+        <table class="saved-data-table" id="savedDataTable">
+          <!-- Rows dynamically generated via JS -->
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Analysis Output -->
+  <div class="analysis-output">
+    <h4>📘 Analysis Output</h4>
+    <div class="output-row"><span>Controlling Corrosion Rate:</span> <span id="ccr"></span></div>
+    <div class="output-row"><span>Long Term Corrosion Rate:</span> <span id="ltcr"></span></div>
+    <div class="output-row"><span>Short Term Corrosion Rate:</span> <span id="stcr"></span></div>
+    <div class="output-row"><span>Scheduled Next Inspection Date:</span> <span id="schedDate"></span></div>
+    <div class="output-row"><span>Interval Next Inspection Date:</span> <span id="intDate"></span></div>
+    <div class="output-row"><span>Factor Life Date:</span> <span id="factorDate"></span></div>
+    <div class="output-row"><span>Projected Tmin Date:</span> <span id="projDate"></span></div>
+    <div class="output-row"><span>T-Min Value:</span> <span id="tminVal"></span></div>
+    <div class="output-row"><span>Estimated Life From Today:</span> <span id="remLife"></span></div>
+  </div>
+
+  <!-- ✅ Professional API 570 Degradation & Trend Analysis Chart -->
+  <div class="chart-container" id="remainingLifeChartContainer" style="margin-top: 25px;">
+    <div class="chart-header-row">
+      <div class="chart-header-left">
+        <h4 style="margin: 0; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700;">
+          <span style="font-size: 18px;">📈</span> Thickness Degradation & Remaining Life Forecast
+        </h4>
+        <span class="chart-subtitle" style="font-size: 11px; opacity: 0.75; display: block; margin-top: 3px;">
+          API 570 / 510 Wall Thickness Degradation Curve & T-Min Critical Limit
+        </span>
+      </div>
+      <div class="chart-header-badges" id="chartHeaderBadges" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+        <span class="chart-badge badge-tag" id="chartBadgeTag" style="display: none;">Tag: -</span>
+        <span class="chart-badge badge-ccr" id="chartBadgeCCR" style="display: none;">CCR: -</span>
+        <span class="chart-badge badge-life" id="chartBadgeLife" style="display: none;">Life: -</span>
+      </div>
+    </div>
+
+    <!-- Chart Canvas Responsive Wrapper (prevents canvas distortion on multiple calculates) -->
+    <div class="chart-canvas-wrapper" id="trendChartWrapper" style="position: relative; width: 100%; height: 320px; margin: 15px 0 10px;">
+      <canvas id="thicknessTrendChart"></canvas>
+    </div>
+
+    <!-- Quick Engineering Legend & KPI Summary Grid -->
+    <div class="chart-kpi-grid" id="chartKpiGrid" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #e2e8f0;">
+      <div class="chart-kpi-item">
+        <span class="kpi-label">Base Measured</span>
+        <span class="kpi-value" id="kpiBaseThk">-</span>
+      </div>
+      <div class="chart-kpi-item">
+        <span class="kpi-label">Current / Last</span>
+        <span class="kpi-value highlight-current" id="kpiLastThk">-</span>
+      </div>
+      <div class="chart-kpi-item">
+        <span class="kpi-label">T-Min (Retirement)</span>
+        <span class="kpi-value highlight-tmin" id="kpiTminVal">-</span>
+      </div>
+      <div class="chart-kpi-item">
+        <span class="kpi-label">Controlling Rate</span>
+        <span class="kpi-value highlight-rate" id="kpiRateVal">-</span>
+      </div>
+      <div class="chart-kpi-item">
+        <span class="kpi-label">Retirement Date</span>
+        <span class="kpi-value highlight-date" id="kpiRetireDate">-</span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,599 @@
+/* ============================================================================
+   ⚛️ INTERACTIVE PERIODIC TABLE OF THE ELEMENTS - STYLING
+   Google Periodic Table Inspired Layout, 3D Bohr Atom Model, Industrial Metallurgical Database
+   ============================================================================ */
+
+.ptable-container {
+  background: #14181f;
+  color: #f1f5f9;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  border: 1px solid #283141;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Fullscreen mode */
+.ptable-container.is-fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  z-index: 99999 !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  overflow-y: auto !important;
+  background: #11151c !important;
+  padding: 20px 24px 40px 24px !important;
+}
+
+/* Header toolbar */
+.ptable-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #252e3d;
+}
+
+.ptable-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ptable-main-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ptable-actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ptable-search-box {
+  position: relative;
+  min-width: 240px;
+}
+
+.ptable-search-input {
+  width: 100%;
+  background: #1f2735;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 8px 12px 8px 34px;
+  color: #ffffff;
+  font-size: 13.5px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.ptable-search-input:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+  background: #253042;
+}
+
+.ptable-search-icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.ptable-btn-fullscreen {
+  background: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #3b4d6b;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: all 0.2s ease;
+}
+
+.ptable-btn-fullscreen:hover {
+  background: #2a374f;
+  color: #ffffff;
+  border-color: #38bdf8;
+}
+
+/* Temperature / Phase bar */
+.ptable-temp-bar {
+  background: #1a202c;
+  border: 1px solid #283344;
+  border-radius: 8px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+.ptable-temp-slider {
+  flex: 1;
+  min-width: 160px;
+  accent-color: #38bdf8;
+  cursor: pointer;
+}
+
+/* Two-column layout: Table Grid (left/center) + Inspector Card (right) */
+.ptable-body-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 370px;
+  gap: 22px;
+  align-items: start;
+}
+
+@media (max-width: 1250px) {
+  .ptable-body-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Table grid container */
+.ptable-grid-scroll-wrap {
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 12px;
+}
+
+.ptable-grid {
+  display: grid;
+  grid-template-columns: repeat(18, minmax(46px, 1fr));
+  gap: 4px;
+  min-width: 860px;
+}
+
+/* Element Cell */
+.ptable-cell {
+  aspect-ratio: 1 / 1.12;
+  border-radius: 4px;
+  padding: 4px 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease, border-color 0.15s ease;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
+}
+
+.ptable-cell:hover {
+  transform: translateY(-2px) scale(1.06);
+  z-index: 10;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+  border-color: #ffffff;
+}
+
+.ptable-cell.is-selected {
+  outline: 2px solid #ffffff;
+  outline-offset: 1px;
+  z-index: 12;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
+  transform: scale(1.08);
+}
+
+.ptable-cell.is-dimmed {
+  opacity: 0.22;
+  filter: grayscale(80%);
+}
+
+.ptable-cell-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 9px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.ptable-cell-num {
+  font-weight: 700;
+}
+
+.ptable-cell-mass {
+  font-size: 8px;
+  opacity: 0.65;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ptable-cell-symbol {
+  font-size: 17px;
+  font-weight: 800;
+  text-align: center;
+  line-height: 1;
+  margin: 2px 0 1px 0;
+  letter-spacing: -0.5px;
+  color: #ffffff;
+}
+
+.ptable-cell-name {
+  font-size: 8.5px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.1;
+}
+
+/* Special placeholders for Lanthanides & Actinides */
+.ptable-cell-placeholder {
+  background: #1e2633;
+  border: 1px dashed #3b4d6b;
+  color: #94a3b8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 600;
+  text-align: center;
+  cursor: default;
+}
+
+/* Category Color Palette (Matching user screenshot) */
+.cat-alkali-metal {
+  background: #0284c7; /* Cyan / Blue */
+}
+.cat-alkaline-earth {
+  background: #b91c1c; /* Brick Red / Maroon */
+}
+.cat-transition-metal {
+  background: #2b394f; /* Slate / Dark Blue-Gray */
+  border-color: #3b4d6b;
+}
+.cat-post-transition {
+  background: #15803d; /* Green */
+}
+.cat-metalloid {
+  background: #b45309; /* Amber / Ochre */
+}
+.cat-reactive-nonmetal {
+  background: #1e40af; /* Steel Blue / Royal Blue */
+}
+.cat-noble-gas {
+  background: #881337; /* Wine / Dark Red */
+}
+.cat-lanthanide {
+  background: #0369a1; /* Turquoise / Deep Cyan */
+}
+.cat-actinide {
+  background: #7c2d12; /* Rust / Brown */
+}
+.cat-unknown {
+  background: #374151; /* Charcoal Gray */
+}
+
+/* Category Legend & Filter Radio List (bottom) */
+.ptable-legend-wrap {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #252e3d;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px 16px;
+}
+
+.ptable-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  padding: 5px 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  font-size: 13px;
+  color: #cbd5e1;
+  user-select: none;
+}
+
+.ptable-legend-item:hover {
+  background: #1e2736;
+  color: #ffffff;
+}
+
+.ptable-legend-item.is-active {
+  background: #233044;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.ptable-radio-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.ptable-legend-item.is-active .ptable-radio-dot {
+  border-color: #38bdf8;
+}
+
+.ptable-radio-dot::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.ptable-legend-item.is-active .ptable-radio-dot::after {
+  background: #38bdf8;
+}
+
+.ptable-legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* ============================================================================
+   RIGHT INSPECTOR PANEL (Element Details + 3D Bohr Model)
+   ============================================================================ */
+.ptable-inspector {
+  background: #181d26;
+  border: 1px solid #2a3445;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+  position: sticky;
+  top: 20px;
+}
+
+@media (max-width: 1250px) {
+  .ptable-inspector {
+    position: static;
+    max-height: none;
+  }
+}
+
+.ptable-inspector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.ptable-inspector-badge {
+  width: 72px;
+  height: 76px;
+  border-radius: 8px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+}
+
+.ptable-badge-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.ptable-badge-symbol {
+  font-size: 26px;
+  font-weight: 800;
+  text-align: center;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.ptable-badge-name {
+  font-size: 9px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.ptable-inspector-title-wrap {
+  flex: 1;
+}
+
+.ptable-inspector-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.ptable-inspector-category {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-top: 3px;
+  font-weight: 500;
+}
+
+.ptable-inspector-close {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.ptable-inspector-close:hover {
+  color: #ffffff;
+  background: #252e3d;
+}
+
+/* 3D Bohr Model Card */
+.ptable-bohr-wrap {
+  background: #11151c;
+  border: 1px solid #232c3b;
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  position: relative;
+}
+
+.ptable-bohr-canvas {
+  width: 100%;
+  height: 200px;
+  border-radius: 6px;
+  cursor: grab;
+  touch-action: none;
+  display: block;
+}
+
+.ptable-bohr-canvas:active {
+  cursor: grabbing;
+}
+
+.ptable-bohr-caption {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ptable-bohr-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.ptable-bohr-btn {
+  background: #1e2633;
+  color: #94a3b8;
+  border: 1px solid #334155;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ptable-bohr-btn:hover {
+  background: #2b394f;
+  color: #ffffff;
+}
+
+/* Element Summary */
+.ptable-summary {
+  font-size: 13px;
+  color: #cbd5e1;
+  line-height: 1.55;
+}
+
+.ptable-summary a {
+  color: #38bdf8;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ptable-summary a:hover {
+  color: #7dd3fc;
+}
+
+/* Property rows */
+.ptable-props-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid #252e3d;
+  padding-top: 14px;
+}
+
+.ptable-prop-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 13px;
+  gap: 12px;
+}
+
+.ptable-prop-label {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.ptable-prop-val {
+  color: #f1f5f9;
+  font-weight: 600;
+  text-align: right;
+}
+
+.ptable-prop-val code {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  background: #11151c;
+  padding: 2px 5px;
+  border-radius: 4px;
+  color: #38bdf8;
+}
+
+/* Industrial relevance box */
+.ptable-industrial-box {
+  background: #16202c;
+  border: 1px solid #1e3a5f;
+  border-left: 4px solid #0284c7;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  color: #bae6fd;
+  line-height: 1.45;
+  margin-top: 4px;
+}
+
+.ptable-industrial-box strong {
+  color: #ffffff;
+  display: block;
+  margin-bottom: 3px;
+  font-size: 13px;
+}

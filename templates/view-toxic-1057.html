@@ -1,0 +1,207 @@
+<div id="TOXIC_CALCULATIONTab" class="tab-content" style="display:none;">
+  <div class="toxic-main-container">
+    
+    <!-- Header Section -->
+    <div class="toxic-header-banner">
+      <div class="toxic-title-wrap">
+        <h3>☣️ Toxic % Strict Calculator</h3>
+        <p>API 581 Consequence Analysis & Strict Toxic Mass / Molar Fraction Estimator</p>
+      </div>
+      <div class="toxic-badges-wrap">
+        <span class="toxic-badge toxic-badge-purple">API 581 / EPA RMP</span>
+        <span class="toxic-badge toxic-badge-green" id="toxic-headerStatusBadge">Database Synced</span>
+      </div>
+    </div>
+
+    <!-- ⚡ Stream Auto-Loader & Industrial Presets Card -->
+    <div class="toxic-card toxic-autoload-card" id="toxic-autoloadSection">
+      <div class="toxic-card-header">
+        <span class="toxic-card-icon">⚡</span>
+        <div>
+          <h4>Process Stream Auto-Loader & Industrial Presets</h4>
+          <p>Instantly fetch stream parameters, mass flow rates, and toxic compounds from Cloud Database.</p>
+        </div>
+      </div>
+
+      <div class="toxic-autoload-grid">
+        <div class="toxic-input-group">
+          <label for="toxic-unitSelector">Unit / Plant Dataset:</label>
+          <select id="toxic-unitSelector" class="toxic-select" onchange="toxic_onUnitChange(this.value)">
+            <option value="">-- Select Unit / Dataset --</option>
+          </select>
+        </div>
+
+        <div class="toxic-input-group">
+          <label for="toxic-streamSelector">Process Stream:</label>
+          <select id="toxic-streamSelector" class="toxic-select" disabled>
+            <option value="">-- Select Process Stream --</option>
+          </select>
+        </div>
+
+        <div class="toxic-autoload-btn-group">
+          <button type="button" class="toxic-btn toxic-btn-primary" onclick="toxic_loadSelectedStream()" id="toxic-btnLoadStream">
+            📥 Load Stream
+          </button>
+          <button type="button" class="toxic-btn toxic-btn-secondary" onclick="toxic_syncFromActiveStream()" title="Pulls current active stream from Comparator or API 571 Screening">
+            🔄 Sync Active
+          </button>
+          <button type="button" class="toxic-btn toxic-btn-ghost" onclick="toxic_resetAllFields()" title="Clear form fields">
+            🧹 Clear
+          </button>
+        </div>
+      </div>
+
+      <!-- Active Stream Quick Badge / Notification -->
+      <div id="toxic-autoloadAlert" class="toxic-alert-banner" style="display:none;"></div>
+    </div>
+
+    <!-- Main Calculation Form Card -->
+    <div class="toxic-card toxic-calc-card">
+      <div class="toxic-card-header">
+        <span class="toxic-card-icon">🎛️</span>
+        <div>
+          <h4>Calculation Parameters & Stream Boundaries</h4>
+          <p>Select calculation mode and enter operating flow rates or toxic component fractions.</p>
+        </div>
+      </div>
+
+      <div class="toxic-form-grid">
+        <!-- Row 1: Calculation Type & Toxic Gas -->
+        <div class="toxic-input-group">
+          <label for="calcType_Toxic">Calculation Type:</label>
+          <select id="calcType_Toxic" class="toxic-select" onchange="toxic_onCalcTypeChange()">
+            <option value="">-- Select Calculation Type --</option>
+            <option value="kg">Component Value (kg/hr)</option>
+            <option value="mol">Mole Percent (kmol/hr)</option>
+            <option value="gasComp">Weight Percent (WT % Breakdown)</option>
+          </select>
+        </div>
+
+        <div class="toxic-input-group" id="toxicGasGroup">
+          <label for="toxicGas_Toxic" id="toxicGasLabel">Select Target Toxic Gas:</label>
+          <select id="toxicGas_Toxic" class="toxic-select" onchange="toxic_onGasChange()">
+            <option value="">-- Select Toxic Compound --</option>
+            <option value="28.01">CO (Carbon Monoxide - MW: 28.01)</option>
+            <option value="44.01">CO₂ (Carbon Dioxide - MW: 44.01)</option>
+            <option value="34.08">H₂S (Hydrogen Sulfide - MW: 34.08)</option>
+            <option value="64.06">SO₂ (Sulfur Dioxide - MW: 64.06)</option>
+            <option value="30.01">NO (Nitric Oxide - MW: 30.01)</option>
+            <option value="46.01">NO₂ (Nitrogen Dioxide - MW: 46.01)</option>
+            <option value="70.90">Cl₂ (Chlorine - MW: 70.90)</option>
+            <option value="17.03">NH₃ (Ammonia - MW: 17.03)</option>
+            <option value="27.03">HCN (Hydrogen Cyanide - MW: 27.03)</option>
+          </select>
+        </div>
+
+        <!-- Row 2: Mode-Specific Inputs -->
+        <div class="toxic-input-group" id="kgInputs_Toxic" style="display:none;">
+          <label for="componentKg_Toxic">Toxic Component Flow (kg/hr):</label>
+          <input type="number" id="componentKg_Toxic" class="toxic-input" placeholder="e.g. 19387.02" step="any">
+        </div>
+
+        <div class="toxic-dynamic-mol-wrap" id="molInputs_Toxic" style="display:none; grid-column: 1 / -1;">
+          <div class="toxic-subgrid">
+            <div class="toxic-input-group">
+              <label for="molPercent_Toxic">Toxic Component Mole % (mol%):</label>
+              <input type="number" id="molPercent_Toxic" class="toxic-input" placeholder="e.g. 12.5226" step="any">
+            </div>
+            <div class="toxic-input-group">
+              <label for="totalMolarFlow_Toxic">Total Stream Molar Flow (kmol/hr):</label>
+              <input type="number" id="totalMolarFlow_Toxic" class="toxic-input" placeholder="e.g. 5527.18" step="any">
+            </div>
+          </div>
+        </div>
+
+        <div class="toxic-input-group" id="totalMassFlowGroup">
+          <label for="totalMassFlow_Toxic" id="totalMassFlowLabel">Total Stream Mass Flow (kg/hr):</label>
+          <input type="number" id="totalMassFlow_Toxic" class="toxic-input" placeholder="e.g. 73817.90" step="any">
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div class="toxic-action-bar">
+        <button type="button" onclick="calculateToxic_Toxic()" id="calculateBtn" class="toxic-calc-submit-btn">
+          ⚡ Execute Toxic Strict Calculation
+        </button>
+      </div>
+
+      <!-- Result Container -->
+      <div class="toxic-result-box" id="result_Toxic"></div>
+    </div>
+
+    <!-- Gas Composition Breakdown Section (WT% Mode) -->
+    <div id="gasCompCalculatorSection" class="toxic-card toxic-gascomp-card" style="display:none;">
+      <div class="toxic-card-header">
+        <span class="toxic-card-icon">🧪</span>
+        <div>
+          <h4>Gas Composition & Weight % Breakdown</h4>
+          <p>Add and manage individual stream gas fractions to calculate molar mass and WT %.</p>
+        </div>
+      </div>
+
+      <div class="toxic-gascomp-inputs-grid">
+        <div class="toxic-input-group">
+          <label for="gasSelect">Select Compound:</label>
+          <select id="gasSelect" class="toxic-select"></select>
+        </div>
+        <div class="toxic-input-group">
+          <label for="molePercent">Mole % (mol%):</label>
+          <input type="number" id="molePercent" class="toxic-input" min="0" max="100" step="any" placeholder="0 - 100" />
+        </div>
+        <div class="toxic-gascomp-btn-wrap">
+          <button type="button" id="addGasBtn" class="toxic-btn toxic-btn-primary">
+            ➕ Add / Update
+          </button>
+        </div>
+      </div>
+
+      <!-- Custom Gas Row -->
+      <div class="toxic-custom-gas-box">
+        <div class="toxic-custom-gas-header">Add Custom Compound (with custom molar mass)</div>
+        <div class="toxic-gascomp-inputs-grid">
+          <div class="toxic-input-group">
+            <label for="newGasName">Compound Name:</label>
+            <input type="text" id="newGasName" class="toxic-input" placeholder="e.g. C6 (Hexane)" />
+          </div>
+          <div class="toxic-input-group">
+            <label for="newGasMolarMass">Molar Mass (g/mol):</label>
+            <input type="number" id="newGasMolarMass" class="toxic-input" min="0" step="any" placeholder="e.g. 86.18" />
+          </div>
+          <div class="toxic-gascomp-btn-wrap">
+            <button type="button" id="addNewGasBtn" class="toxic-btn toxic-btn-secondary">
+              ➕ Add New
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gas Table -->
+      <div class="toxic-table-wrapper">
+        <table id="gasTable" class="toxic-table">
+          <thead>
+            <tr>
+              <th>Gas / Compound</th>
+              <th>Mole %</th>
+              <th>Mole Fraction</th>
+              <th>Molar Mass (g/mol)</th>
+              <th>Mass Contribution (g)</th>
+              <th>WT %</th>
+              <th style="text-align: center;">Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="toxic-gascomp-footer">
+        <div class="toxic-total-mass-badge">
+          Total Molar Mass: <span id="totalMass">0.000000</span> g/mol
+        </div>
+        <button type="button" id="exportCsvBtn" class="toxic-btn toxic-btn-ghost">
+          📊 Export CSV
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

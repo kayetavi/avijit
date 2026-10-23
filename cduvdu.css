@@ -1,0 +1,26 @@
+/* ==========================================================================
+   CDU / VDU CORROSION FLOW DIAGRAM - THEME ACCENTS
+   Layout and Fullscreen handled by Flowdiagrams.css
+   ========================================================================== */
+
+#cduVduModal .sidebar {
+  background-color: #f0f7ff !important;
+  border-right: 1px solid #bfdbfe !important;
+}
+
+#cduVduModal .sidebar h3 {
+  color: #1e40af;
+  border-bottom: 2px solid #2563eb;
+}
+
+#cduVduModal .diagram-dm-list li.active {
+  background: #eff6ff !important;
+  border-color: #2563eb !important;
+  box-shadow: inset 3px 0 0 #2563eb, 0 1px 4px rgba(37, 99, 235, 0.15) !important;
+  color: #1d4ed8 !important;
+}
+
+#cduVduModal .diagram-dm-list li.active .dm-item-code {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}

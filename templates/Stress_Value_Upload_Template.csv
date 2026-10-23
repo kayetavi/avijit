@@ -1,0 +1,11 @@
+Year,Material,Grade,Thickness,Temperature (°C),Allowable Stress (MPa),Yield Strength (MPa),Tensile Strength (MPa),Remarks
+2022,A106,B,,38,137.9,241.32,413.69,"ASME B31.3 Table A-1, Seamless Carbon Steel"
+2022,A106,B,,93,137.9,241.32,413.69,
+2022,A106,B,,149,137.9,241.32,413.69,
+2022,A106,B,,204,137.9,241.32,413.69,
+2022,A106,B,,260,137.2,241.32,413.69,
+2022,A106,B,,316,119.28,241.32,413.69,
+2022,A312,TP321,>10mm,40,115,172,483,Austenitic Stainless Steel (Thick Wall)
+2022,A312,TP321,>10mm,100,115,172,483,
+2022,A312,TP321,≤10mm,40,138,207,517,Austenitic Stainless Steel (Thin Wall)
+2022,A312,TP321,≤10mm,100,138,207,517,

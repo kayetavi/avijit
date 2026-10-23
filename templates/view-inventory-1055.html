@@ -1,0 +1,312 @@
+<div class="tab-content" id="inventoryTab">
+  <div class="inv-main-container">
+
+    <!-- Header Banner -->
+    <div class="inv-header-banner">
+      <div class="inv-title-wrap">
+        <div class="inv-icon-box">📦</div>
+        <div>
+          <h3>API 581 Process Fluid Inventory Calculator</h3>
+          <p>Calculates equipment volume, liquid holdup, vapor mass inventory, and release group estimation</p>
+        </div>
+      </div>
+      <div class="inv-badges-wrap">
+        <span class="inv-badge inv-badge-blue">API 581 Part 1 / Sec 4</span>
+        <span class="inv-badge inv-badge-emerald">● Active Engine</span>
+      </div>
+    </div>
+
+    <!-- Sub-tab buttons -->
+    <div class="inv-tab-nav">
+      <button type="button" class="inv-tab-btn active" id="invTabBtnSingle" onclick="showInventoryCalculator()">
+        <span>📏 Single Equipment Calculator</span>
+      </button>
+      <button type="button" class="inv-tab-btn" id="invTabBtnBulk" onclick="showBulkUploader()">
+        <span>📥 Bulk Inventory Upload (Excel/CSV)</span>
+      </button>
+    </div>
+
+    <!-- ✅ Single Equipment Inventory Calculator Section -->
+    <div id="inventoryCalcSection">
+      <div class="inv-grid-layout">
+
+        <!-- Left Column: Geometry, Shape & Dimensions -->
+        <div class="inv-card">
+          <div class="inv-card-header">
+            <span class="inv-card-icon">📐</span>
+            <div>
+              <h4>Equipment Geometry & Physical Dimensions</h4>
+              <p>Configure vessel shape, fluid phase, and structural sizes</p>
+            </div>
+          </div>
+
+          <!-- Shape Selection -->
+          <div class="inv-form-group">
+            <label for="shape">Select Equipment Shape: <span style="color:#ef4444;">*</span></label>
+            <select id="shape" onchange="handleShapeSelection()">
+              <option value="">-- Select --</option>
+              <option value="cylinder">Cylindrical Vessel / Piping</option>
+              <option value="sphere">Spherical Vessel</option>
+            </select>
+          </div>
+
+          <!-- Phase Selection -->
+          <div id="phaseSection" class="inv-form-group hidden">
+            <label for="phaseInventory">Select Fluid Phase: <span style="color:#ef4444;">*</span></label>
+            <select id="phaseInventory" onchange="handlePhaseSelection()">
+              <option value="">-- Select --</option>
+              <option value="liquid">Liquid Phase</option>
+              <option value="vapor">Vapor Phase</option>
+              <option value="both">Two-Phase (Liquid + Vapor)</option>
+            </select>
+          </div>
+
+          <!-- Dimensions (Hidden for vapor) -->
+          <div id="shapeInputs" class="input-grid">
+            <div class="input-group">
+              <label for="inv_diameter">Diameter (Inside ID):</label>
+              <input type="number" id="inv_diameter" step="0.01" placeholder="e.g. 1.8">
+            </div>
+            <div class="input-group">
+              <label for="inv_diameterUnit">Diameter Unit:</label>
+              <select id="inv_diameterUnit">
+                <option value="1">Meters (m)</option>
+                <option value="0.01">Centimeters (cm)</option>
+                <option value="0.001">Millimeters (mm)</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label for="inv_length">Length / Height:</label>
+              <input type="number" id="inv_length" step="0.01" placeholder="e.g. 6.5">
+            </div>
+            <div class="input-group">
+              <label for="inv_lengthUnit">Length Unit:</label>
+              <select id="inv_lengthUnit">
+                <option value="1">Meters (m)</option>
+                <option value="0.01">Centimeters (cm)</option>
+                <option value="0.001">Millimeters (mm)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Dished Ends -->
+          <div id="addHeadCheckboxDiv" class="checkbox-row hidden">
+            <input type="checkbox" id="addHeadCheckbox" onchange="toggleHeadSelection()">
+            <label for="addHeadCheckbox">Include Dished Heads Volume?</label>
+          </div>
+
+          <div id="headTypeSection" class="hidden">
+            <div class="input-grid">
+              <div class="input-group">
+                <label for="headType">Select Head Type:</label>
+                <select id="headType">
+                  <option value="hemihead">Hemispherical Head</option>
+                  <option value="torispherical">Torispherical Head</option>
+                  <option value="ellipsoidalhead">2:1 Ellipsoidal Head</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <label for="headCount">Number of Heads:</label>
+                <select id="headCount">
+                  <option value="2" selected>2 (Both Ends)</option>
+                  <option value="1">1 Head</option>
+                  <option value="0">No Head</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Manual Volume Override -->
+          <div id="manualVolumeFields" class="hidden">
+            <div class="checkbox-row">
+              <input type="checkbox" id="manualVolumeOverride" onchange="toggleManualVolume()">
+              <label for="manualVolumeOverride">Override with Direct Vessel Volume</label>
+            </div>
+
+            <div class="input-grid">
+              <div class="input-group">
+                <label for="volume">Manual Volume:</label>
+                <input type="number" id="volume" placeholder="e.g. 15.5" step="0.01">
+              </div>
+              <div class="input-group">
+                <label for="volumeUnit">Volume Unit:</label>
+                <select id="volumeUnit">
+                  <option value="m3">Cubic Meters (m³)</option>
+                  <option value="ft3">Cubic Feet (ft³)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Fluid Properties & Calculations -->
+        <div class="inv-card-stack">
+          <!-- Fluid & Operating Parameters Card -->
+          <div class="inv-card">
+            <div class="inv-card-header">
+              <span class="inv-card-icon">🧪</span>
+              <div>
+                <h4>Process Holdup & Fluid Inventory</h4>
+                <p>Equipment holdup % rules and process fluid density</p>
+              </div>
+            </div>
+
+            <!-- Liquid Inputs -->
+            <div id="liquidInputs" class="hidden">
+              <div class="input-grid">
+                <div class="input-group">
+                  <label for="equipmentType">Equipment Type / Holdup %:</label>
+                  <select id="equipmentType" onchange="toggleCustomPercent()">
+                    <optgroup label="Columns">
+                      <option value="COLTOP">Column Top Section (25% holdup)</option>
+                      <option value="COLMID">Column Middle Section (25% holdup)</option>
+                      <option value="COLBTM">Column Bottom Section (37% holdup)</option>
+                    </optgroup>
+                    <optgroup label="Drums & Vessels">
+                      <option value="DRUM">Process Drum / Vessel (50% holdup)</option>
+                      <option value="KODRUM">Knock-Out Pot / KO Drum (10% holdup)</option>
+                    </optgroup>
+                    <optgroup label="Rotating Equipment">
+                      <option value="COMP">Compressor (0% liquid)</option>
+                      <option value="PUMP">Pump Casing (100% liquid)</option>
+                    </optgroup>
+                    <optgroup label="Heat Exchangers">
+                      <option value="HEX">Shell & Tube Exchanger (50% holdup)</option>
+                      <option value="FINFAN">Fin-Fan Air Cooler (25% holdup)</option>
+                    </optgroup>
+                    <optgroup label="Other Equipment">
+                      <option value="FILTER">Coalescer / Filter (100% holdup)</option>
+                      <option value="PIPE">Piping System (100% holdup)</option>
+                      <option value="REACTOR">Catalytic Reactor (15% holdup)</option>
+                    </optgroup>
+                    <option value="custom">Custom Percentage (%)</option>
+                  </select>
+                </div>
+
+                <div class="input-group">
+                  <label for="fluidType">Representative Fluid:</label>
+                  <select id="fluidType" onchange="autoFillDensity()">
+                    <option value="">-- Select Fluid --</option>
+                    <option value="water">Water (1000 kg/m³)</option>
+                    <option value="diesel">Diesel (832 kg/m³)</option>
+                    <option value="crude">Crude Oil (850 kg/m³)</option>
+                    <option value="ammonia">Ammonia (682 kg/m³)</option>
+                    <option value="custom">Other / Custom Density</option>
+                  </select>
+                </div>
+
+                <div class="input-group">
+                  <label for="density">Liquid Density (kg/m³):</label>
+                  <input type="number" id="density" step="0.1" placeholder="e.g. 850">
+                </div>
+              </div>
+
+              <div id="customPercentDiv" class="hidden inv-form-group">
+                <label for="customPercent">Custom Liquid Holdup Fraction (0.0 to 1.0):</label>
+                <input type="number" id="customPercent" step="0.01" placeholder="e.g. 0.40">
+              </div>
+            </div>
+
+            <!-- Vapor Inputs -->
+            <div id="vaporInputs" class="hidden">
+              <div class="input-grid">
+                <div class="input-group">
+                  <label for="flowRate">Vapor Mass Flow Rate:</label>
+                  <input type="number" id="flowRate" placeholder="e.g. 12000">
+                </div>
+                <div class="input-group">
+                  <label for="flowRateUnit">Flow Rate Unit:</label>
+                  <select id="flowRateUnit">
+                    <option value="kg/s">kg/s</option>
+                    <option value="kg/min">kg/min</option>
+                    <option value="kg/h" selected>kg/h</option>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <label for="residenceTime">Residence Time:</label>
+                  <input type="number" id="residenceTime" value="180" min="1" placeholder="180">
+                </div>
+                <div class="input-group">
+                  <label for="residenceTimeUnit">Time Unit:</label>
+                  <select id="residenceTimeUnit">
+                    <option value="s" selected>seconds (s)</option>
+                    <option value="min">minutes (min)</option>
+                    <option value="h">hours (h)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Primary Calculate Button -->
+            <button type="button" class="inv-btn-calculate" onclick="calculateInventory()">
+              <span>🚀 Calculate Equipment Inventory</span>
+            </button>
+          </div>
+
+          <!-- Assessment Output Card -->
+          <div class="inv-card">
+            <div class="inv-card-header">
+              <span class="inv-card-icon">📊</span>
+              <div>
+                <h4>Inventory Calculation Output</h4>
+                <p>Equipment mass hold-up and release grouping metrics</p>
+              </div>
+            </div>
+
+            <div id="inventoryResult">
+              <div class="inv-placeholder">
+                <div class="inv-placeholder-icon">📦</div>
+                <div>
+                  <strong>Awaiting Calculation</strong>
+                  <p>Choose shape, phase, and process parameters above, then click <em>Calculate Equipment Inventory</em>.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ✅ Bulk Upload Section -->
+    <div id="bulkUploadSection" style="display: none;">
+      <div class="inv-card-header">
+        <span class="inv-card-icon">📥</span>
+        <div>
+          <h4>Bulk Equipment Inventory Uploader</h4>
+          <p>Import multi-equipment inventories via standardized Excel / CSV template</p>
+        </div>
+      </div>
+
+      <div class="inv-form-group" style="margin-top: 14px;">
+        <label for="bulkUploadInput">Select Equipment Spreadsheet File (.xlsx, .csv):</label>
+        <input type="file" id="bulkUploadInput" accept=".xlsx,.csv" />
+      </div>
+
+      <div class="bulk-actions-row">
+        <a href="templates/Inventory_Template_With_Picklist.xlsx" download class="inv-download-btn">
+          <span>📥 Download Excel Template</span>
+        </a>
+        <button type="button" class="inv-reset-btn" onclick="resetBulk()">
+          <span>🔄 Reset Form</span>
+        </button>
+      </div>
+
+      <!-- Bulk Result Modal -->
+      <div id="bulkModal">
+        <button id="closeBtnBulk" onclick="closeBulkModal()" type="button">✕ Close</button>
+        <h3 style="margin-top: 0; font-size: 18px; color: #1e293b;">📦 Bulk Inventory Summary Analysis</h3>
+        <div style="display: flex; gap: 10px; margin: 12px 0;">
+          <button type="button" class="inv-btn-calculate" onclick="processBulkData()" style="width: auto; padding: 8px 16px;">
+            ✅ Calculate All Inventories
+          </button>
+          <button type="button" class="inv-download-btn" onclick="downloadBulkPDF()">
+            📄 Export PDF Report
+          </button>
+        </div>
+        <div id="bulkResultsTable"></div>
+      </div>
+    </div>
+
+  </div>
+</div>

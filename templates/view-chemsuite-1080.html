@@ -1,0 +1,280 @@
+  <div class="tab-content" id="chemicalSuiteTab" style="display: none;">
+    <div class="chem-suite-container">
+      <!-- Header Banner -->
+      <div class="chem-suite-header">
+        <h2><span>⚗️</span> Chemistry & Chemical Engineering Suite</h2>
+        <p>Comprehensive HAZMAT Protective Suit Selector, Industrial Chemical Database, Chemical Reactivity Matrix & Neutralization Stoichiometry Solver.</p>
+      </div>
+
+      <!-- Navigation Pills -->
+      <div class="chem-nav-pills">
+        <button class="chem-nav-btn active" data-chem-tab="suit" onclick="switchChemSubTab('suit')">
+          <span>🦺</span> Chemical Suit & HAZMAT PPE
+        </button>
+        <button class="chem-nav-btn" data-chem-tab="database" onclick="switchChemSubTab('database')">
+          <span>🧪</span> Chemical Properties & SDS
+        </button>
+        <button class="chem-nav-btn" data-chem-tab="reactivity" onclick="switchChemSubTab('reactivity')">
+          <span>💥</span> Reactivity & Mixing Matrix
+        </button>
+        <button class="chem-nav-btn" data-chem-tab="neutralization" onclick="switchChemSubTab('neutralization')">
+          <span>⚖️</span> Neutralization & Spill Dosing
+        </button>
+        <button class="chem-nav-btn" data-chem-tab="periodictable" onclick="switchChemSubTab('periodictable')">
+          <span>⚛️</span> Periodic Table
+        </button>
+      </div>
+
+      <!-- PANE 1: Chemical Suit & PPE Selector -->
+      <div class="chem-section-pane active" id="chemPane_suit">
+        <div class="chem-card">
+          <div class="chem-card-header">
+            <h3><span>🦺</span> HAZMAT Chemical Protective Suit & PPE Selector</h3>
+            <span class="chem-badge chem-badge-blue">OSHA 29 CFR 1910.120 / NFPA 1991 / 1992</span>
+          </div>
+
+          <div class="chem-grid-2">
+            <div class="chem-form-group">
+              <label for="chemSuitSelect">Select Hazardous Chemical / Stream</label>
+              <select id="chemSuitSelect" class="chem-select" onchange="window.ChemicalSuite.renderSuitRecommendations()"></select>
+            </div>
+            <div class="chem-form-group">
+              <label for="chemScenarioSelect">Operational Exposure Scenario / Task</label>
+              <select id="chemScenarioSelect" class="chem-select" onchange="window.ChemicalSuite.renderSuitRecommendations()">
+                <option value="tankEntry">Confined Space / Vessel Internal Entry (High Vapor / IDLH Risk)</option>
+                <option value="lineBreak">Flange Breaking / Line Opening / Bleeder Operations</option>
+                <option value="sampling">Routine Process Sampling / Closed Loop Lab Operations</option>
+                <option value="spillResponse">Emergency Hazmat Spill / Major Release Mitigation</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Dynamic Recommendation Box -->
+          <div id="chemSuitHeroBox" class="chem-suit-hero"></div>
+
+          <!-- Barrier Permeation Breakthrough Matrix -->
+          <h4 style="margin: 20px 0 8px 0; font-size: 15px; color: #0284c7;">Fabric & Polymer Permeation Breakthrough Times (ASTM F739)</h4>
+          <div class="chem-table-wrap">
+            <table class="chem-table">
+              <thead>
+                <tr>
+                  <th>Barrier Material / Polymer</th>
+                  <th>Standard Breakthrough Time</th>
+                  <th>Degradation & Chemical Resistance</th>
+                </tr>
+              </thead>
+              <tbody id="chemPermeationTableBody"></tbody>
+            </table>
+          </div>
+
+          <!-- Full PPE Enclosure Specifications -->
+          <h4 style="margin: 20px 0 8px 0; font-size: 15px; color: #0284c7;">Ensemble & Auxiliary PPE Requirements</h4>
+          <div id="chemPpeSpecsBox"></div>
+        </div>
+      </div>
+
+      <!-- PANE 2: Chemical Properties & SDS Library -->
+      <div class="chem-section-pane" id="chemPane_database">
+        <div class="chem-card">
+          <div class="chem-card-header">
+            <h3><span>🧪</span> Industrial Chemical Properties & Safety Library</h3>
+            <div style="min-width: 280px;">
+              <select id="chemDbSelect" class="chem-select" onchange="window.ChemicalSuite.renderChemicalDetails(this.value)"></select>
+            </div>
+          </div>
+          <div id="chemDetailsContainer"></div>
+        </div>
+      </div>
+
+      <!-- PANE 3: Chemical Reactivity & Mixing Matrix -->
+      <div class="chem-section-pane" id="chemPane_reactivity">
+        <div class="chem-card">
+          <div class="chem-card-header">
+            <h3><span>💥</span> Chemical Incompatibility & Hazardous Reactivity Checker</h3>
+            <span class="chem-badge chem-badge-red">NOAA CAMEO & NFPA 491M MATRIX</span>
+          </div>
+
+          <p style="margin: 0 0 16px 0; font-size: 14px; color: #64748b;">
+            Select any two refinery chemicals or process streams to identify catastrophic mixing hazards, violent gas evolution, thermal runaway, or explosion risks.
+          </p>
+
+          <div class="chem-grid-2">
+            <div class="chem-form-group">
+              <label for="reactChemSelectA">Chemical #1 (Stream A)</label>
+              <select id="reactChemSelectA" class="chem-select" onchange="window.ChemicalSuite.renderReactivityComparison()"></select>
+            </div>
+            <div class="chem-form-group">
+              <label for="reactChemSelectB">Chemical #2 (Stream B)</label>
+              <select id="reactChemSelectB" class="chem-select" onchange="window.ChemicalSuite.renderReactivityComparison()"></select>
+            </div>
+          </div>
+
+          <div id="reactivityResultBox"></div>
+        </div>
+      </div>
+
+      <!-- PANE 4: Neutralization & Spill Dosing -->
+      <div class="chem-section-pane" id="chemPane_neutralization">
+        <div class="chem-card">
+          <div class="chem-card-header">
+            <h3><span>⚖️</span> Chemical Spill Neutralization & Stoichiometry Calculator</h3>
+            <span class="chem-badge chem-badge-green">HEAT & MASS BALANCE SOLVER</span>
+          </div>
+
+          <div class="chem-grid-3">
+            <div class="chem-form-group">
+              <label for="neutAcidSelect">Spilled Chemical Substance</label>
+              <select id="neutAcidSelect" class="chem-select"></select>
+            </div>
+            <div class="chem-form-group">
+              <label for="neutSpillVol">Spill Volume (Liters)</label>
+              <input type="number" id="neutSpillVol" class="chem-input" value="1000" min="1" step="10" oninput="window.ChemicalSuite.calculateNeutralization()" />
+            </div>
+            <div class="chem-form-group">
+              <label for="neutSpillConc">Concentration (% by weight)</label>
+              <input type="number" id="neutSpillConc" class="chem-input" value="98" min="1" max="100" step="1" oninput="window.ChemicalSuite.calculateNeutralization()" />
+            </div>
+          </div>
+
+          <div class="chem-form-group">
+            <label for="neutAgentSelect">Recommended Neutralizing Agent</label>
+            <select id="neutAgentSelect" class="chem-select"></select>
+          </div>
+
+          <h4 style="margin: 20px 0 12px 0; font-size: 15px; color: #0284c7;">Balanced Stoichiometric Reaction</h4>
+          <div id="neutResEquation" class="reaction-equation-box"></div>
+
+          <div class="chem-grid-3" style="margin-top: 16px;">
+            <div class="neut-metric-box">
+              <div id="neutResMassKg" class="neut-metric-value">-- kg</div>
+              <div class="neut-metric-label">Neutralizing Agent Required (Metric)</div>
+            </div>
+            <div class="neut-metric-box">
+              <div id="neutResMassLbs" class="neut-metric-value">-- lbs</div>
+              <div class="neut-metric-label">Neutralizing Agent Required (US Customary)</div>
+            </div>
+            <div class="neut-metric-box">
+              <div id="neutResHeat" class="neut-metric-value">-- MJ</div>
+              <div class="neut-metric-label">Theoretical Reaction Enthalpy Release</div>
+            </div>
+          </div>
+
+          <div id="neutResAdvice" style="margin-top: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px;"></div>
+        </div>
+      </div>
+
+      <!-- PANE 5: Interactive Periodic Table & 3D Bohr Model -->
+      <div class="chem-section-pane" id="chemPane_periodictable">
+        <div class="ptable-container" id="ptableMainContainer">
+          
+          <!-- Top Toolbar -->
+          <div class="ptable-topbar">
+            <div class="ptable-title-wrap">
+              <h3 class="ptable-main-title">
+                <span>⚛️</span> Periodic table
+              </h3>
+            </div>
+
+            <div class="ptable-actions-bar">
+              <div class="ptable-search-box">
+                <span class="ptable-search-icon">🔍</span>
+                <input 
+                  type="text" 
+                  id="ptableSearchInput" 
+                  class="ptable-search-input" 
+                  placeholder="Search element (e.g. Fe, Iron, 26, Gas)..." 
+                  autocomplete="off"
+                />
+              </div>
+
+              <button type="button" class="ptable-btn-fullscreen" id="ptableBtnFullscreen" title="Toggle Full Screen View">
+                <span>↗</span> Open in full screen
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic Temperature / STP State Control -->
+          <div class="ptable-temp-bar">
+            <div style="font-weight: 600; color: #94a3b8; display: flex; align-items: center; gap: 6px;">
+              <span>🌡️ State at Temperature:</span>
+              <strong id="ptableTempDisplay" style="color: #38bdf8;">298 K (25 °C)</strong>
+            </div>
+            <input 
+              type="range" 
+              id="ptableTempSlider" 
+              class="ptable-temp-slider" 
+              min="0" 
+              max="6000" 
+              step="25" 
+              value="298" 
+              title="Slide to examine physical state of matter from absolute zero (0 K) to 6000 K"
+            />
+            <div style="display: flex; gap: 6px;">
+              <button type="button" class="ptable-bohr-btn" onclick="document.getElementById('ptableTempSlider').value=298; document.getElementById('ptableTempSlider').dispatchEvent(new Event('input'))">STP (25°C)</button>
+              <button type="button" class="ptable-bohr-btn" onclick="document.getElementById('ptableTempSlider').value=0; document.getElementById('ptableTempSlider').dispatchEvent(new Event('input'))">0 K</button>
+              <button type="button" class="ptable-bohr-btn" onclick="document.getElementById('ptableTempSlider').value=1500; document.getElementById('ptableTempSlider').dispatchEvent(new Event('input'))">1500 K</button>
+            </div>
+          </div>
+
+          <!-- Main Layout: Grid on Left, Inspector & 3D Bohr on Right -->
+          <div class="ptable-body-layout">
+            <!-- Left: Periodic Table Grid & Category Filter Legend -->
+            <div class="ptable-left-wrap">
+              <div class="ptable-grid-scroll-wrap">
+                <div class="ptable-grid" id="ptableGrid"></div>
+              </div>
+
+              <!-- Category Legend and Filter Buttons -->
+              <div class="ptable-legend-wrap" id="ptableLegend"></div>
+            </div>
+
+            <!-- Right: Element Detailed Inspector & 3D Bohr Atom Model -->
+            <div class="ptable-inspector" id="ptableInspector">
+              <!-- Element Badge & Title Header -->
+              <div class="ptable-inspector-header">
+                <div class="ptable-inspector-badge" id="ptableBadge">
+                  <div class="ptable-badge-top">
+                    <span>112</span>
+                    <span>285</span>
+                  </div>
+                  <div class="ptable-badge-symbol">Cn</div>
+                  <div class="ptable-badge-name">Copernicium</div>
+                </div>
+
+                <div class="ptable-inspector-title-wrap">
+                  <h4 class="ptable-inspector-title" id="ptableInspectorTitle">Copernicium</h4>
+                  <div class="ptable-inspector-category" id="ptableInspectorCategory">Unknown properties</div>
+                </div>
+
+                <button type="button" class="ptable-inspector-close" onclick="window.PeriodicTable.selectElement(1)" title="Reset to Hydrogen">✕</button>
+              </div>
+
+              <!-- 3D Bohr Atom Model Visualizer -->
+              <div class="ptable-bohr-wrap">
+                <canvas id="ptableBohrCanvas" class="ptable-bohr-canvas"></canvas>
+                <div class="ptable-bohr-caption">
+                  <span>3D Bohr model (Drag to rotate 3D atom)</span>
+                  <div class="ptable-bohr-controls">
+                    <button type="button" id="btnBohrPlayPause" class="ptable-bohr-btn" onclick="window.PeriodicTable.toggleBohrAnimation()">⏸ Pause</button>
+                    <button type="button" class="ptable-bohr-btn" onclick="window.PeriodicTable.resetBohrView()">🔄 Reset</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Summary Paragraph -->
+              <div class="ptable-summary" id="ptableSummary">
+                Loading element summary...
+              </div>
+
+              <!-- Chemical & Engineering Properties -->
+              <div class="ptable-props-list" id="ptablePropsList"></div>
+
+              <!-- Refinery & Piping Integrity Industrial Insights -->
+              <div class="ptable-industrial-box" id="ptableIndustrialUse"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>

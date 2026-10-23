@@ -1,0 +1,2147 @@
+    <div class="tab-content" id="adminPanelTab" style="display: none; padding: 0;">
+      <div class="adm-control-center">
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             LEFT SIDEBAR: FIXED ENTERPRISE NAVIGATION
+             ══════════════════════════════════════════════════════════════════ -->
+        <aside class="adm-sidebar" id="admSidebar">
+          <!-- Brand Header -->
+          <div class="adm-sidebar-brand">
+            <div class="adm-brand-icon">⚙️</div>
+            <div class="adm-brand-text">
+              <h2>Admin Control Center</h2>
+              <p>KayetDMS Enterprise Governance</p>
+            </div>
+          </div>
+
+          <!-- Navigation Tree -->
+          <nav class="adm-sidebar-nav" id="admSidebarNav">
+
+            <!-- 1. 👥 Users & Permissions -->
+            <div class="adm-nav-group" id="admNavGroup_users">
+              <div class="adm-nav-group-header" onclick="window.adminPanel.toggleNavGroup('admNavGroup_users')">
+                <div class="adm-nav-group-title">
+                  <span>👥</span>
+                  <span>Users & Permissions</span>
+                </div>
+                <span class="adm-group-chevron">▼</span>
+              </div>
+              <div class="adm-nav-group-items">
+                <a class="adm-nav-item active" data-view="users-list" onclick="window.adminPanel.navigateTo('users-list')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">👤</span>
+                    <span class="adm-nav-item-label">User Management</span>
+                  </div>
+                  <span class="adm-nav-item-badge" id="admBadgeUsersCount">0</span>
+                </a>
+                <a class="adm-nav-item" data-view="roles-config" onclick="window.adminPanel.navigateTo('roles-config')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">🛡️</span>
+                    <span class="adm-nav-item-label">Roles & Permissions</span>
+                  </div>
+                </a>
+                <a class="adm-nav-item" data-view="access-control" onclick="window.adminPanel.navigateTo('access-control')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">🔒</span>
+                    <span class="adm-nav-item-label">Access Control</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <!-- 2. ⚙️ Application Manager -->
+            <div class="adm-nav-group" id="admNavGroup_app">
+              <div class="adm-nav-group-header" onclick="window.adminPanel.toggleNavGroup('admNavGroup_app')">
+                <div class="adm-nav-group-title">
+                  <span>⚙️</span>
+                  <span>Application Manager</span>
+                </div>
+                <span class="adm-group-chevron">▼</span>
+              </div>
+              <div class="adm-nav-group-items">
+                <a class="adm-nav-item" data-view="app-hub" onclick="window.adminPanel.navigateTo('app-hub')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">🎛️</span>
+                    <span class="adm-nav-item-label">Applications Overview</span>
+                  </div>
+                </a>
+                <a class="adm-nav-item" data-view="app-damage" onclick="window.adminPanel.navigateTo('app-damage')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">🛠️</span>
+                    <span class="adm-nav-item-label">API 571 Damage Mechanisms</span>
+                  </div>
+                  <span class="adm-nav-item-badge" id="admBadgeDmsCount">68</span>
+                </a>
+                <a class="adm-nav-item" data-view="app-stream" onclick="window.adminPanel.navigateTo('app-stream')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">📊</span>
+                    <span class="adm-nav-item-label">Stream Data Manager</span>
+                  </div>
+                  <span class="adm-nav-item-badge" id="admBadgeStreamsCount">0</span>
+                </a>
+                <a class="adm-nav-item" data-view="app-stress" onclick="window.adminPanel.navigateTo('app-stress')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">🧮</span>
+                    <span class="adm-nav-item-label">Allowable Stress Manager</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <!-- 3. 🖥️ Systems -->
+            <div class="adm-nav-group" id="admNavGroup_systems">
+              <div class="adm-nav-group-header" onclick="window.adminPanel.toggleNavGroup('admNavGroup_systems')">
+                <div class="adm-nav-group-title">
+                  <span>🖥️</span>
+                  <span>Systems</span>
+                </div>
+                <span class="adm-group-chevron">▼</span>
+              </div>
+              <div class="adm-nav-group-items">
+                <a class="adm-nav-item" data-view="sys-firestore" onclick="window.adminPanel.navigateTo('sys-firestore')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">🗄️</span>
+                    <span class="adm-nav-item-label">Firestore Collections Explorer</span>
+                  </div>
+                </a>
+                <a class="adm-nav-item" data-view="sys-diagnostics" onclick="window.adminPanel.navigateTo('sys-diagnostics')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">⚙️</span>
+                    <span class="adm-nav-item-label">Backup & Cloud Diagnostics</span>
+                  </div>
+                </a>
+                <a class="adm-nav-item" data-view="sys-projects" onclick="window.adminPanel.navigateTo('sys-projects')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">🔄</span>
+                    <span class="adm-nav-item-label">Project Switcher</span>
+                  </div>
+                  <span class="adm-nav-item-badge" id="admActiveProjectNavBadge" style="background: #16a34a; color: white;">loginapp-feb72</span>
+                </a>
+                <a class="adm-nav-item" data-view="sys-sessions" onclick="window.adminPanel.navigateTo('sys-sessions')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">👤</span>
+                    <span class="adm-nav-item-label">Active Sessions</span>
+                  </div>
+                  <span class="adm-nav-item-badge" id="admBadgeSessionsCount">0</span>
+                </a>
+                <a class="adm-nav-item" data-view="sys-logs" onclick="window.adminPanel.navigateTo('sys-logs')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">📋</span>
+                    <span class="adm-nav-item-label">System Logs</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <!-- 4. 🖥️ Layout & Navigation Builder -->
+            <div class="adm-nav-group" id="admNavGroup_layout">
+              <div class="adm-nav-group-header" onclick="window.adminPanel.toggleNavGroup('admNavGroup_layout')">
+                <div class="adm-nav-group-title">
+                  <span>🖥️</span>
+                  <span>Layout & Navigation Builder</span>
+                </div>
+                <span class="adm-group-chevron">▼</span>
+              </div>
+              <div class="adm-nav-group-items">
+                <a class="adm-nav-item" data-view="layout-sidebar" onclick="window.adminPanel.navigateTo('layout-sidebar')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">📑</span>
+                    <span class="adm-nav-item-label">Sidebar Configuration</span>
+                  </div>
+                </a>
+                <a class="adm-nav-item" data-view="layout-order" onclick="window.adminPanel.navigateTo('layout-order')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">↕️</span>
+                    <span class="adm-nav-item-label">Sidebar Order</span>
+                  </div>
+                </a>
+                <a class="adm-nav-item" data-view="layout-ticker" onclick="window.adminPanel.navigateTo('layout-ticker')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">📢</span>
+                    <span class="adm-nav-item-label">Ticker Text</span>
+                  </div>
+                </a>
+                <a class="adm-nav-item" data-view="layout-welcome" onclick="window.adminPanel.navigateTo('layout-welcome')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">🎴</span>
+                    <span class="adm-nav-item-label">Welcome Cards</span>
+                  </div>
+                </a>
+                <a class="adm-nav-item" data-view="layout-visibility" onclick="window.adminPanel.navigateTo('layout-visibility')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">👁️</span>
+                    <span class="adm-nav-item-label">Navigation Visibility</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <!-- 5. 💾 Master Data, Backup & Logs -->
+            <div class="adm-nav-group" id="admNavGroup_master">
+              <div class="adm-nav-group-header" onclick="window.adminPanel.toggleNavGroup('admNavGroup_master')">
+                <div class="adm-nav-group-title">
+                  <span>💾</span>
+                  <span>Master Data, Backup & Logs</span>
+                </div>
+                <span class="adm-group-chevron">▼</span>
+              </div>
+              <div class="adm-nav-group-items">
+                <a class="adm-nav-item" data-view="master-overview" onclick="window.adminPanel.navigateTo('master-overview')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">🗃️</span>
+                    <span class="adm-nav-item-label">Master Data Management</span>
+                  </div>
+                </a>
+                <a class="adm-nav-item" data-view="master-backup" onclick="window.adminPanel.navigateTo('master-backup')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">⚡</span>
+                    <span class="adm-nav-item-label">1-Click JSON Backup</span>
+                  </div>
+                </a>
+                <a class="adm-nav-item" data-view="master-restore" onclick="window.adminPanel.navigateTo('master-restore')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">🔄</span>
+                    <span class="adm-nav-item-label">JSON Restore</span>
+                  </div>
+                </a>
+                <a class="adm-nav-item" data-view="master-history" onclick="window.adminPanel.navigateTo('master-history')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">📜</span>
+                    <span class="adm-nav-item-label">Backup History</span>
+                  </div>
+                </a>
+                <a class="adm-nav-item" data-view="master-audit" onclick="window.adminPanel.navigateTo('master-audit')">
+                  <div class="adm-nav-item-content">
+                    <span class="adm-nav-item-icon">🔍</span>
+                    <span class="adm-nav-item-label">Audit Trail</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+          </nav>
+
+          <!-- Sidebar Footer -->
+          <div class="adm-sidebar-footer">
+            <div class="adm-footer-user-card">
+              <div class="adm-user-avatar" id="admSidebarUserAvatar">A</div>
+              <div class="adm-footer-user-info">
+                <div class="adm-footer-email" id="admSidebarUserEmail"><span class="adm-placeholder">--</span></div>
+                <div class="adm-footer-role" id="admSidebarUserRole">Administrator</div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             MAIN AREA: BREADCRUMBS & SECTION VIEWS
+             ══════════════════════════════════════════════════════════════════ -->
+        <main class="adm-main-area">
+
+          <!-- Sticky Top Bar -->
+          <header class="adm-topbar">
+            <div class="adm-topbar-left">
+              <button type="button" class="adm-mobile-nav-toggle" onclick="(window.adminPanel && typeof window.adminPanel.toggleMobileNav === 'function') ? window.adminPanel.toggleMobileNav() : (typeof window.toggleAdminMobileNav === 'function' ? window.toggleAdminMobileNav() : document.getElementById('admSidebar')?.classList.toggle('mobile-open'))">
+                ☰ Admin Menu
+              </button>
+              <div class="adm-breadcrumbs" id="admBreadcrumbs">
+                <span class="adm-breadcrumb-item">⚙️ Admin Control Center</span>
+                <span class="adm-breadcrumb-sep">&gt;</span>
+                <span class="adm-breadcrumb-item">👥 Users & Permissions</span>
+                <span class="adm-breadcrumb-sep">&gt;</span>
+                <span class="adm-breadcrumb-item active">User Management</span>
+              </div>
+            </div>
+
+            <div class="adm-topbar-actions">
+              <button type="button" class="adm-btn adm-btn-primary adm-btn-sm" onclick="(window.adminPanel && typeof window.adminPanel.returnToDashboard === 'function') ? window.adminPanel.returnToDashboard() : ((typeof window.returnToDashboard === 'function') ? window.returnToDashboard() : (function(){ document.body.classList.remove('admin-mode-active', 'tool-direct-view', 'non-admin-tool-mode'); if(typeof hideAllMainPanels==='function')hideAllMainPanels(); const w=document.getElementById('welcomePanel'); if(w)w.style.display='block'; const t=document.getElementById('selectedMechanismTitle'); if(t)t.style.display='block'; })())" title="Return to Main Dashboard">
+                ⬅ Back to Dashboard
+              </button>
+              <button type="button" class="adm-btn adm-btn-secondary adm-btn-sm" id="admFullscreenToggleBtn" onclick="(window.adminPanel && typeof window.adminPanel.toggleFullscreen === 'function') ? window.adminPanel.toggleFullscreen() : (typeof window.toggleAdminFullscreen === 'function' ? window.toggleAdminFullscreen() : document.body.classList.toggle('adm-windowed-mode'))" title="Toggle Fullscreen Desktop Mode">
+                ⛶ Fullscreen
+              </button>
+              <button type="button" class="adm-btn adm-btn-secondary adm-btn-sm" onclick="(window.adminPanel && typeof window.adminPanel.loadAll === 'function') ? window.adminPanel.loadAll() : location.reload()" title="Reload all administrative state">
+                🔄 Refresh
+              </button>
+              <button type="button" class="adm-btn adm-btn-secondary adm-btn-sm" onclick="toggleDarkMode()" title="Toggle Theme">
+                🌓 Theme
+              </button>
+              <span class="adm-pill role-admin" id="admStatFirestoreStatus">● Connected</span>
+            </div>
+          </header>
+
+          <!-- Dynamic Body Container -->
+          <div class="adm-body-container">
+
+            <!-- ── VIEW 1.1: USER MANAGEMENT ───────────────────────────── -->
+            <section class="adm-subview-panel active" id="admView_users-list">
+              <div class="adm-content-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;">
+                  <div>
+                    <h3 class="adm-card-title" style="margin: 0; font-size: 16px;">User Profiles & Role Configuration</h3>
+                    <p class="adm-card-subtitle" style="margin: 4px 0 0 0; font-size: 12px;">Manage user accounts, assigned engineering roles, and granular module permissions.</p>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <input type="text" class="adm-input" placeholder="🔍 Search user email..." oninput="window.adminPanel.searchQuery = this.value; window.adminPanel.renderUsersTable();" style="min-width: 220px;" />
+                    <button class="adm-btn adm-btn-primary" onclick="window.adminPanel.openAddUserModal()">
+                      ➕ Add User
+                    </button>
+                  </div>
+                </div>
+
+                <div class="adm-table-wrapper">
+                  <table class="adm-table">
+                    <thead>
+                      <tr>
+                        <th>User & Identity</th>
+                        <th>Assigned Role</th>
+                        <th>Allowed Modules</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admUsersTableBody">
+                      <!-- Injected dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <!-- ── VIEW 1.2: ROLES & PERMISSIONS ──────────────────────── -->
+            <section class="adm-subview-panel" id="admView_roles-config">
+              <div class="adm-content-card">
+                <div class="adm-view-header">
+                  <div class="adm-view-title">
+                    <h2>🛡️ Roles & Permissions Reference</h2>
+                    <p>Standard engineering role definitions, authorization boundaries, and assigned team members.</p>
+                  </div>
+                </div>
+
+                <div class="adm-app-hub-grid" id="admRolesCardsContainer">
+                  <!-- Dynamically rendered role cards -->
+                </div>
+              </div>
+            </section>
+
+            <!-- ── VIEW 1.2b: ROLES & PERMISSIONS MATRIX ───────────────── -->
+            <section class="adm-subview-panel" id="admView_permission-matrix">
+              <div class="adm-content-card">
+                <div class="adm-view-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                  <div class="adm-view-title">
+                    <h2>🛡️ Roles & Permissions Matrix</h2>
+                    <p>Interactive access matrix for standard engineering roles. Toggle module access and click "Save & Apply Matrix" to automatically update all Viewer, Inspector, and Engineer accounts.</p>
+                  </div>
+                  <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                    <button type="button" class="adm-btn adm-btn-secondary adm-btn-sm" onclick="window.adminPanel.navigateTo('roles-config')" title="Back to Roles Reference">
+                      ⬅️ Roles Overview
+                    </button>
+                    <button type="button" class="adm-btn adm-btn-secondary adm-btn-sm" onclick="window.adminPanel.resetRoleMatrix()" title="Reset to standard defaults">
+                      🔄 Reset Defaults
+                    </button>
+                    <button type="button" id="btnSaveRoleMatrix" class="adm-btn adm-btn-primary adm-btn-sm" style="background: #2563eb; border-color: #1d4ed8; font-weight: 700;" onclick="window.adminPanel.saveRoleMatrix()" title="Apply matrix permissions to all users">
+                      💾 Save & Apply Matrix
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Matrix Quick Filter & Summary -->
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 16px 0 12px 0; flex-wrap: wrap;">
+                  <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 240px; max-width: 380px;">
+                    <span style="font-size: 13px; color: #64748b;">🔍</span>
+                    <input type="text" id="admMatrixSearchInput" class="adm-search-input" placeholder="Filter modules in matrix..." oninput="window.adminPanel.filterRoleMatrix(this.value)" style="margin: 0; width: 100%;" />
+                  </div>
+                  <div style="display: flex; gap: 8px; font-size: 12px; color: #64748b; align-items: center; flex-wrap: wrap;">
+                    <span class="adm-pill" style="background: rgba(37,99,235,0.08); color: #2563eb; font-weight: 700;">👑 Admin: Full (Root)</span>
+                    <span class="adm-pill" style="background: rgba(5,150,105,0.08); color: #059669; font-weight: 700;">⚙️ Lead Eng: Suites</span>
+                    <span class="adm-pill" style="background: rgba(217,119,6,0.08); color: #d97706; font-weight: 700;">🔍 Inspector: Field Tools</span>
+                    <span class="adm-pill" style="background: rgba(100,116,139,0.08); color: #475569; font-weight: 700;">👁️ Viewer: Reference</span>
+                  </div>
+                </div>
+
+                <!-- Matrix Table Container -->
+                <div class="adm-table-wrapper" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow-x: auto; background: #ffffff;">
+                  <table class="adm-table" id="admRoleMatrixTable" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                      <tr style="background: #f8fafc; border-bottom: 2px solid #cbd5e1;">
+                        <th style="min-width: 260px; padding: 12px 16px; text-align: left; font-size: 12.5px; font-weight: 700; color: #1e293b;">
+                          Engineering Module / Tool
+                        </th>
+                        <th style="min-width: 140px; text-align: center; padding: 12px 8px; font-size: 12.5px; font-weight: 700; color: #2563eb; background: rgba(37,99,235,0.04);">
+                          👑 Administrator
+                          <div style="font-size: 10.5px; font-weight: normal; color: #64748b;">(Full Root)</div>
+                        </th>
+                        <th style="min-width: 140px; text-align: center; padding: 12px 8px; font-size: 12.5px; font-weight: 700; color: #059669; background: rgba(5,150,105,0.04);">
+                          ⚙️ Lead Engineer
+                          <div style="font-size: 10.5px; font-weight: normal; color: #64748b;">(All Suites)</div>
+                        </th>
+                        <th style="min-width: 140px; text-align: center; padding: 12px 8px; font-size: 12.5px; font-weight: 700; color: #d97706; background: rgba(217,119,6,0.04);">
+                          🔍 Plant Inspector
+                          <div style="font-size: 10.5px; font-weight: normal; color: #64748b;">(Inspection)</div>
+                        </th>
+                        <th style="min-width: 140px; text-align: center; padding: 12px 8px; font-size: 12.5px; font-weight: 700; color: #475569; background: rgba(100,116,139,0.04);">
+                          👁️ General Viewer
+                          <div style="font-size: 10.5px; font-weight: normal; color: #64748b;">(Reference)</div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody id="admRoleMatrixTbody">
+                      <!-- Rendered dynamically via renderRoleMatrixTable() -->
+                      <tr><td colspan="5" style="text-align: center; padding: 32px; color: #94a3b8;">Loading permissions matrix...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Footer Action Bar -->
+                <div style="margin-top: 16px; padding: 12px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                  <div style="font-size: 12.5px; color: #64748b;">
+                    💡 <em>Tip: Ticking or unticking boxes above and clicking <strong>Save & Apply Matrix</strong> will automatically update the module access count for all users assigned to those roles.</em>
+                  </div>
+                  <button type="button" class="adm-btn adm-btn-primary" style="background: #2563eb; border-color: #1d4ed8; font-weight: 700;" onclick="window.adminPanel.saveRoleMatrix()">
+                    💾 Save & Apply Matrix
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- ── VIEW 1.3: ACCESS CONTROL ───────────────────────────── -->
+            <section class="adm-subview-panel" id="admView_access-control">
+              <div class="adm-content-card">
+                <div class="adm-view-header">
+                  <div class="adm-view-title">
+                    <h2>🔒 Access Control & Security Governance</h2>
+                    <p>Enforce identity verification, multi-device session limits, and account status management.</p>
+                  </div>
+                  <button class="adm-btn adm-btn-danger adm-btn-sm" onclick="window.adminPanel.clearStaleSessions()">
+                    🧹 Terminate All Stale Sessions
+                  </button>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                  <div class="adm-info-box">
+                    <div class="adm-card-title" style="font-size: 14px; margin-bottom: 6px;">🛡️ Super Administrator Root</div>
+                    <div style="font-size: 13px; font-weight: 700; color: #2563eb;" id="admRootEmailDisplay"><span class="adm-placeholder">--</span></div>
+                    <div style="font-size: 11.5px; color: #64748b; margin-top: 4px;">Root identity maintains immutable full administration access.</div>
+                  </div>
+                  <div class="adm-info-box">
+                    <div class="adm-card-title" style="font-size: 14px; margin-bottom: 6px;">⚡ Session Timeout Window</div>
+                    <div style="font-size: 13px; font-weight: 700; color: #059669;">15 Minutes Active / 24h Purge</div>
+                    <div style="font-size: 11.5px; color: #64748b; margin-top: 4px;">Monitored via Firebase Authentication & Firestore <code>userSessions</code>.</div>
+                  </div>
+                  <div class="adm-info-box">
+                    <div class="adm-card-title" style="font-size: 14px; margin-bottom: 6px;">🔐 Cloud Rules Enforcement</div>
+                    <div style="font-size: 13px; font-weight: 700; color: #7c3aed;">Strict RBAC Policy</div>
+                    <div style="font-size: 11.5px; color: #64748b; margin-top: 4px;">Non-admin writes to master schemas are rejected server-side.</div>
+                  </div>
+                </div>
+
+                <div class="adm-card-title" style="margin: 16px 0 8px 0; font-size: 14px;">User Account Status & Lockout Controls</div>
+                <div class="adm-table-wrapper">
+                  <table class="adm-table">
+                    <thead>
+                      <tr>
+                        <th>Account Email</th>
+                        <th>Role</th>
+                        <th>Account Status</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admAccessControlTbody">
+                      <!-- Rendered dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+
+
+            <!-- ── VIEW 2.0: APPLICATION MANAGER (CARD HUB SCREEN) ──────── -->
+            <section class="adm-subview-panel" id="admView_app-hub">
+              <div class="adm-content-card">
+                <div class="adm-view-header">
+                  <div class="adm-view-title">
+                    <h2>⚙️ Application Manager</h2>
+                    <p>Select a specialized master database engine below to manage catalog records, process ingestion, or code curves.</p>
+                  </div>
+                </div>
+
+                <!-- 3 Executive Application Cards -->
+                <div class="adm-app-hub-grid">
+
+                  <!-- Card 1: API 571 Damage Mechanisms -->
+                  <div class="adm-app-card">
+                    <div>
+                      <div class="adm-app-card-header">
+                        <div class="adm-app-icon-wrap" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;">🛠️</div>
+                        <div class="adm-app-card-titles">
+                          <h3>API 571 Damage Mechanisms</h3>
+                          <p>Manage API 571 damage mechanism database and configuration.</p>
+                        </div>
+                      </div>
+                      <ul class="adm-app-card-features">
+                        <li>68 Standard & Custom Damage Mechanisms</li>
+                        <li>Rich-text bullet and numbered formatting</li>
+                        <li>High-resolution micrograph & diagram uploads</li>
+                        <li>Bulk JSON export and batch import engine</li>
+                      </ul>
+                    </div>
+                    <div class="adm-app-card-actions">
+                      <span style="font-size: 12px; font-weight: 700; color: #2563eb;" id="admHubDmCountBadge">68 Mechanisms</span>
+                      <button type="button" class="adm-btn adm-btn-primary" onclick="window.adminPanel.navigateTo('app-damage')">
+                        Open Manager ➔
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Card 2: Stream Data Manager -->
+                  <div class="adm-app-card">
+                    <div>
+                      <div class="adm-app-card-header">
+                        <div class="adm-app-icon-wrap" style="background: rgba(16, 185, 129, 0.1); color: #059669;">📊</div>
+                        <div class="adm-app-card-titles">
+                          <h3>Stream Data Manager</h3>
+                          <p>Manage process stream and material-balance data.</p>
+                        </div>
+                      </div>
+                      <ul class="adm-app-card-features">
+                        <li>Heat & Material Balance ingestion engine</li>
+                        <li>Excel (.xlsx, .csv), PDF & image stream parser</li>
+                        <li>Persistent Cloud Firestore dataset storage</li>
+                        <li>Normal users access read-only comparator</li>
+                      </ul>
+                    </div>
+                    <div class="adm-app-card-actions">
+                      <span style="font-size: 12px; font-weight: 700; color: #059669;" id="admHubStreamCountBadge">Live Datasets</span>
+                      <button type="button" class="adm-btn adm-btn-primary" onclick="window.adminPanel.navigateTo('app-stream')">
+                        Open Manager ➔
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Card 3: Allowable Stress Manager -->
+                  <div class="adm-app-card">
+                    <div>
+                      <div class="adm-app-card-header">
+                        <div class="adm-app-icon-wrap" style="background: rgba(217, 119, 6, 0.1); color: #d97706;">🧮</div>
+                        <div class="adm-app-card-titles">
+                          <h3>Allowable Stress Manager</h3>
+                          <p>Manage allowable stress value master database.</p>
+                        </div>
+                      </div>
+                      <ul class="adm-app-card-features">
+                        <li>ASME B31.3 Table A-1 & API Code editions</li>
+                        <li>Year & Database Configuration Manager</li>
+                        <li>Bulk stress records uploader with validation</li>
+                        <li>Read-only lookup for calculation users</li>
+                      </ul>
+                    </div>
+                    <div class="adm-app-card-actions">
+                      <span style="font-size: 12px; font-weight: 700; color: #d97706;" id="admHubStressCountBadge">Master Curves</span>
+                      <button type="button" class="adm-btn adm-btn-primary" onclick="window.adminPanel.navigateTo('app-stress')">
+                        Open Manager ➔
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </section>
+
+            <!-- ── VIEW 2.1: API 571 DAMAGE MECHANISMS MANAGER ───────────── -->
+            <section class="adm-subview-panel" id="admView_app-damage">
+              <div class="adm-content-card">
+                
+                <!-- Toolbar & Controls -->
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 16px;">
+                  <div>
+                    <h3 class="adm-card-title" style="margin: 0; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                      <span>🔬 API 571 Damage Mechanism Catalog & Custom Manager</span>
+                    </h3>
+                    <p class="adm-card-subtitle" style="margin: 4px 0 0 0; font-size: 12px;">
+                      Add new mechanisms, edit catalog data with rich text, upload diagram images, and persist to Firestore.
+                    </p>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <button class="adm-btn adm-btn-secondary" onclick="window.adminPanel.loadDamageMechanisms()" title="Reload damage mechanisms from server/Firestore">
+                      🔄 Refresh
+                    </button>
+                    <button class="adm-btn adm-btn-secondary" onclick="window.adminPanel.openBulkImportModal()" title="Import damage mechanisms in bulk from JSON">
+                      📥 Bulk Import JSON
+                    </button>
+                    <button class="adm-btn adm-btn-secondary" onclick="window.adminPanel.exportDamageMechsJson()" title="Export all mechanisms as JSON backup">
+                      📤 Export JSON
+                    </button>
+                    <button class="adm-btn adm-btn-primary" onclick="window.adminPanel.openDamageMechModal()" title="Create and load a new damage mechanism">
+                      ➕ Add New Mechanism
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Executive KPI & Status Stats Overview -->
+                <div class="adm-dm-kpi-grid">
+                  <div class="adm-dm-kpi-card">
+                    <div class="adm-dm-kpi-icon" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;">📚</div>
+                    <div>
+                      <div class="adm-dm-kpi-val" id="admDmCountTotal">0</div>
+                      <div class="adm-dm-kpi-lbl">Total Catalog</div>
+                    </div>
+                  </div>
+                  <div class="adm-dm-kpi-card">
+                    <div class="adm-dm-kpi-icon" style="background: rgba(217, 119, 6, 0.1); color: #d97706;">⭐</div>
+                    <div>
+                      <div class="adm-dm-kpi-val" id="admDmCountCustom" style="color: #d97706;">0</div>
+                      <div class="adm-dm-kpi-lbl">Custom / Modified</div>
+                    </div>
+                  </div>
+                  <div class="adm-dm-kpi-card">
+                    <div class="adm-dm-kpi-icon" style="background: rgba(5, 150, 105, 0.1); color: #059669;">🖼️</div>
+                    <div>
+                      <div class="adm-dm-kpi-val" id="admDmCountWithImage" style="color: #059669;">0</div>
+                      <div class="adm-dm-kpi-lbl">With Diagrams</div>
+                    </div>
+                  </div>
+                  <div class="adm-dm-kpi-card">
+                    <div class="adm-dm-kpi-icon" style="background: rgba(124, 58, 237, 0.1); color: #7c3aed;">📑</div>
+                    <div>
+                      <div class="adm-dm-kpi-val" id="admDmCountCategories" style="color: #7c3aed;">4</div>
+                      <div class="adm-dm-kpi-lbl">Active Sections</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Search, Categories, Filters & Sort Bar -->
+                <div class="adm-dm-controls-card">
+                  <div class="adm-dm-search-box">
+                    <span class="adm-dm-search-icon">🔍</span>
+                    <input type="text" id="admDmSearchInput" class="adm-input adm-dm-search-input" placeholder="Search mechanism by name, code, material, unit, description..." oninput="window.adminPanel.onDmSearchInput(this.value)" />
+                    <button type="button" class="adm-dm-clear-search-btn" onclick="document.getElementById('admDmSearchInput').value=''; window.adminPanel.onDmSearchInput('');" title="Clear Search">✕</button>
+                  </div>
+
+                  <div class="adm-dm-filters-row">
+                    <!-- Category Section Filter -->
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <span class="adm-dm-filter-lbl">Section:</span>
+                      <select id="admDmCategorySelect" class="adm-select" onchange="window.adminPanel.onDmCategoryChange(this.value)">
+                        <option value="all">All Sections & Categories</option>
+                      </select>
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <span class="adm-dm-filter-lbl">Type:</span>
+                      <select id="admDmFilterSelect" class="adm-select" onchange="window.adminPanel.onDmFilterChange(this.value)">
+                        <option value="all">All Mechanisms</option>
+                        <option value="custom">Custom / Modified Only</option>
+                        <option value="standard">Standard API 571 Only</option>
+                        <option value="with_image">With Diagram Images</option>
+                        <option value="without_image">Missing Diagram Image</option>
+                      </select>
+                    </div>
+
+                    <!-- Sort Filter -->
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <span class="adm-dm-filter-lbl">Sort:</span>
+                      <select id="admDmSortSelect" class="adm-select" onchange="window.adminPanel.onDmSortChange(this.value)">
+                        <option value="code_asc">Code (Ascending 1 → 68)</option>
+                        <option value="code_desc">Code (Descending 68 → 1)</option>
+                        <option value="name_asc">Name (A → Z)</option>
+                        <option value="name_desc">Name (Z → A)</option>
+                        <option value="custom_first">Custom Editions First</option>
+                        <option value="image_first">With Diagram First</option>
+                      </select>
+                    </div>
+
+                    <!-- View Mode Toggle -->
+                    <div class="adm-dm-view-toggle">
+                      <button type="button" id="admDmViewGridBtn" class="adm-btn adm-btn-sm adm-btn-primary" onclick="window.adminPanel.setDmViewMode('grid')" title="Executive Grid View">
+                        🔲 Grid
+                      </button>
+                      <button type="button" id="admDmViewTableBtn" class="adm-btn adm-btn-sm adm-btn-secondary" onclick="window.adminPanel.setDmViewMode('table')" title="Professional Table View">
+                        📋 Table
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Mechanisms Container (Paginated Grid or Table injected dynamically) -->
+                <div id="admDamageMechsListContainer">
+                  <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                    ⏳ Loading Damage Mechanisms catalog...
+                  </div>
+                </div>
+
+              </div>
+            </section>
+
+            <!-- ── VIEW 2.2: STREAM DATA MANAGER ────────────────────────── -->
+            <section class="adm-subview-panel" id="admView_app-stream">
+              <div class="adm-content-card">
+                <div class="adm-view-header">
+                  <div class="adm-view-title">
+                    <h2>📊 Process Stream Ingestion & Sheet Manager</h2>
+                    <p>Admin Control: Ingest heat and material balance sheets, parse stream datasets, commit to Firestore, and manage cloud storage.</p>
+                  </div>
+                  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="adm-btn adm-btn-secondary" onclick="window.adminPanel.downloadStreamTemplate()">
+                      📥 Download Template (.xlsx)
+                    </button>
+                    <button class="adm-btn adm-btn-primary" onclick="window.adminPanel.openStreamUploadModal()">
+                      📁 Ingest New Stream Sheet
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Active Ingestion State & Quick Controls -->
+                <div class="adm-info-box" style="margin-bottom: 20px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                      <div style="font-size: 12px; color: #64748b; font-weight: 600;">ACTIVE MASTER STREAM DATASET:</div>
+                      <div id="admActiveStreamDatasetTitle" style="font-size: 16px; font-weight: 700; color: #0f172a; margin-top: 2px;">
+                        Default Plant HMB Library (Streams 100 - 174A)
+                      </div>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                      <button class="adm-btn adm-btn-secondary adm-btn-sm" id="admRenameStreamBtn" onclick="window.adminPanel.promptRenameActiveStream()" disabled title="Save to cloud first or upload a dataset to enable renaming">
+                        ✏️ Rename Dataset
+                      </button>
+                      <button class="adm-btn adm-btn-secondary adm-btn-sm" onclick="window.adminPanel.exportStreamDatasetExcel()">
+                        📊 Export Active to Excel
+                      </button>
+                      <button class="adm-btn adm-btn-primary adm-btn-sm" onclick="window.adminPanel.commitActiveStreamToFirestore(true)">
+                        ☁️ Save to Firestore
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Live Stream Table Preview Container -->
+                <div id="admStreamLivePreviewContainer" style="margin-bottom: 24px; display: none;">
+                  <h4 style="margin: 0 0 10px 0; font-size: 15px; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                    <span>📋 Live Stream Table Preview</span>
+                    <span id="admLiveStreamCountTag" style="font-size: 12px; background: #e0e7ff; color: #3730a3; padding: 2px 8px; border-radius: 12px; font-weight: 600;">0 Streams</span>
+                  </h4>
+                  <div class="adm-table-wrapper" style="max-height: 320px; overflow-y: auto;">
+                    <table class="adm-table">
+                      <thead>
+                        <tr>
+                          <th>Stream No</th>
+                          <th>Stream Name / Content</th>
+                          <th>Phase</th>
+                          <th>Mass Flow (kg/hr)</th>
+                          <th>Molar Flow</th>
+                          <th>Temp (°C)</th>
+                          <th>Pressure (kg/cm²g)</th>
+                          <th>Details</th>
+                          <th>Validation</th>
+                        </tr>
+                      </thead>
+                      <tbody id="admStreamLivePreviewTbody">
+                        <!-- Populated dynamically -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Stream Ingestion Dropzone -->
+                <div class="adm-inline-editor-card" style="padding: 20px; border-radius: 10px; margin-bottom: 24px;">
+                  <h4 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 700;">📥 Direct Document Ingestion Sandbox</h4>
+                  <p style="margin: 0 0 14px 0; font-size: 12.5px; color: #64748b;">
+                    Upload process flow sheets, stream summaries, or mass balance tables (Excel .xlsx/.csv, PDF, or image). The engine extracts operating physical properties and chemical breakdowns automatically.
+                  </p>
+                  <div class="stress-dropzone" onclick="document.getElementById('admStreamFileInput').click()" style="cursor: pointer;">
+                    <input type="file" id="admStreamFileInput" accept=".xlsx,.xls,.csv,.pdf,image/*" style="display: none;" onchange="window.adminPanel.onStreamFileSelected(this.files)" />
+                    <div style="font-size: 32px; margin-bottom: 6px;">📑</div>
+                    <div style="font-weight: 700; font-size: 14px; color: #2563eb;">Click to Browse or Drag & Drop Stream Document Here</div>
+                    <div style="font-size: 11.5px; color: #64748b; margin-top: 4px;">Supports multi-stream Excel sheets, HMB PDFs, and scanned flow diagrams</div>
+                  </div>
+                </div>
+
+                <!-- Persisted Datasets in Cloud Firestore -->
+                <div class="adm-card-title" style="margin: 20px 0 10px 0; font-size: 15px;">☁️ Master Stream Datasets in Firestore</div>
+                <div class="adm-table-wrapper">
+                  <table class="adm-table">
+                    <thead>
+                      <tr>
+                        <th>Dataset Title</th>
+                        <th>Streams Count</th>
+                        <th>Created / Ingested</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admStreamDatasetsTbody">
+                      <!-- Rendered dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+            </section>
+
+            <!-- ── VIEW 2.3: ALLOWABLE STRESS MANAGER ───────────────────── -->
+            <section class="adm-subview-panel" id="admView_app-stress">
+              <div class="adm-content-card">
+                <div class="adm-view-header">
+                  <div class="adm-view-title">
+                    <h2>🧮 Allowable Stress Master Database Manager</h2>
+                    <p>Admin Control: Manage ASME B31.3 Table A-1 & API Code edition years, bulk upload stress curves, and sync to Firestore.</p>
+                  </div>
+                </div>
+
+                <!-- Subtabs for Stress Manager -->
+                <div class="adm-subtabs-nav" style="margin-bottom: 20px;">
+                  <button type="button" class="adm-subtab-btn active" id="admStressSubtabBtn_year" onclick="window.adminPanel.switchStressAdminSubtab('year')">
+                    ⚙️ Year & DB Manager
+                  </button>
+                  <button type="button" class="adm-subtab-btn" id="admStressSubtabBtn_bulk" onclick="window.adminPanel.switchStressAdminSubtab('bulk')">
+                    📤 Bulk Stress DataLoader
+                  </button>
+                </div>
+
+                <!-- Subtab 1: Year & DB Manager -->
+                <div id="admStressPane_year" style="display: block;">
+                  <div id="stressYearManagerSection" style="display: block;">
+                    <div class="stress-dataloader-card" style="box-shadow: none; border: 1px solid #e2e8f0;">
+                      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px;">
+                        <div>
+                          <h3 style="margin: 0; font-size: 16.5px; color: #0f172a;">⚙️ Code Editions & Year Management</h3>
+                          <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b;">
+                            Manage all active code years in the database. Deleting an entire year permanently wipes all corresponding material records from Firebase Cloud Firestore.
+                          </p>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                          <button type="button" class="adm-btn adm-btn-primary adm-btn-sm" id="admStressAddYearBtn" onclick="window.adminPanel.promptAddNewStressYear()">
+                            ➕ Add Code Edition Year
+                          </button>
+                          <button type="button" class="adm-btn adm-btn-secondary adm-btn-sm" id="admStressExportAllBtn" onclick="if (typeof exportStressDatabase === 'function') exportStressDatabase('xlsx');" title="Export active database to Excel">
+                            📊 Export All (.xlsx)
+                          </button>
+                          <button type="button" class="adm-btn adm-btn-secondary adm-btn-sm" onclick="if (typeof refreshStressDataFromCloud === 'function') refreshStressDataFromCloud();" title="Sync latest years from Cloud Firestore">
+                            🔄 Refresh Sync
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Year Cards Container -->
+                      <div id="stressYearCardsList" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Dynamically rendered -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Subtab 2: Bulk Stress DataLoader -->
+                <div id="admStressPane_bulk" style="display: none;">
+                  <div id="stressDataLoaderSection" style="display: block;">
+                    <div class="stress-dataloader-card" style="box-shadow: none; border: 1px solid #e2e8f0;">
+                      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                        <div>
+                          <h3 style="margin: 0; font-size: 17px; color: #0f172a;">📥 Import Allowable Stress Values in Bulk</h3>
+                          <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b;">
+                            Download the standard template, populate your material stress tables, and bulk upload for instant validation & Firebase Cloud Firestore synchronization.
+                          </p>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                          <button type="button" class="stress-btn-template" onclick="downloadStressTemplate('xlsx')" title="Download Excel Template (.xlsx)">
+                            📥 Download Template (.xlsx)
+                          </button>
+                          <button type="button" class="stress-btn-template" onclick="downloadStressTemplate('csv')" title="Download CSV Template (.csv)">
+                            📄 Download Template (.csv)
+                          </button>
+                          <button type="button" class="stress-btn-secondary" id="admStressExportCurrentBtn" onclick="exportStressDatabase('xlsx')" title="Export active database to Excel">
+                            📊 Export Current DB (.xlsx)
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Drag & Drop Zone -->
+                      <input type="file" id="stressBulkFileInput" accept=".xlsx,.xls,.csv,.json" style="display: none;" onclick="event.stopPropagation()" onchange="if(window.handleStressFileSelect) window.handleStressFileSelect(event)" />
+                      <div class="stress-dropzone" id="stressDropZone" onclick="document.getElementById('stressBulkFileInput').click()" style="border: 2px dashed #0284c7; background: #f0f9ff; border-radius: 10px; padding: 32px 20px; text-align: center; cursor: pointer; transition: all 0.2s ease; margin: 15px 0;">
+                        <div style="font-size: 42px; margin-bottom: 8px;">📊</div>
+                        <div style="font-weight: 700; font-size: 16px; color: #0284c7; margin-bottom: 4px;">
+                          Click to Browse or Drag &amp; Drop Stress File Here
+                        </div>
+                        <div style="font-size: 13px; color: #64748b; margin-bottom: 12px;">
+                          Supports Excel (.xlsx, .xls), CSV (.csv), or JSON files with automated column detection
+                        </div>
+                        <button type="button" class="stress-btn-primary" style="display: inline-flex; align-items: center; gap: 8px; padding: 7px 18px; font-size: 13px; pointer-events: none;" onclick="event.stopPropagation();">
+                          📁 Select Excel Spreadsheet (.xlsx)
+                        </button>
+                      </div>
+
+                      <!-- Upload Options Bar -->
+                      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-top: 15px; padding: 12px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+                        <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                          <span style="font-size: 13px; font-weight: 700; color: #334155;">Database Sync Mode:</span>
+                          <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; color: #334155; margin: 0;">
+                            <input type="radio" name="stressMergeMode" value="merge" checked />
+                            <strong>Merge / Append (Recommended)</strong> - Updates matching materials & adds new entries without deleting existing records
+                          </label>
+                          <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; color: #991b1b; margin: 0;">
+                            <input type="radio" name="stressMergeMode" value="replace" />
+                            <span>Replace Entire Database</span>
+                          </label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <label for="stressDefaultYear" style="font-size: 12.5px; font-weight: 600; color: #475569; margin: 0;">Default Year (if blank):</label>
+                          <input type="text" id="stressDefaultYear" value="2022" style="width: 75px; padding: 4px 8px; font-size: 13px; border: 1px solid #cbd5e1; border-radius: 4px;" />
+                        </div>
+                      </div>
+
+                      <!-- Dynamic Status & Feedback Message -->
+                      <div id="stressLoaderStatus" style="margin-top: 15px; display: none;"></div>
+
+                      <!-- KPI Metrics Bar -->
+                      <div id="stressDataLoaderKPIs" class="stress-kpi-grid" style="display: none;"></div>
+
+                      <!-- Preview Table Container -->
+                      <div id="stressPreviewContainer" style="display: none; margin-top: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 10px;">
+                          <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-weight: 700; font-size: 14px; color: #1e293b;">Data Preview & Validation</span>
+                            <span id="stressPreviewVisibleCount" style="font-size: 12.5px; color: #64748b;"></span>
+                          </div>
+                          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <button type="button" class="stress-filter-pill active" id="stressFilterPill_all" onclick="filterStressPreview('all')">All Rows</button>
+                            <button type="button" class="stress-filter-pill" id="stressFilterPill_valid" onclick="filterStressPreview('valid')">✅ Only Valid</button>
+                            <button type="button" class="stress-filter-pill" id="stressFilterPill_issues" onclick="filterStressPreview('issues')">⚠️ Warnings/Errors</button>
+                            <input type="text" placeholder="🔍 Search material / grade..." oninput="onStressSearchInput(event)" style="padding: 5px 10px; font-size: 12.5px; border: 1px solid #cbd5e1; border-radius: 4px; width: 180px;" />
+                          </div>
+                        </div>
+
+                        <div class="stress-preview-table-wrapper">
+                          <table class="stress-preview-table">
+                            <thead>
+                              <tr>
+                                <th style="width: 45px; text-align: center;">#</th>
+                                <th style="width: 95px; text-align: center;">Status</th>
+                                <th style="width: 70px;">Year</th>
+                                <th style="width: 130px;">Material</th>
+                                <th style="width: 90px;">Grade</th>
+                                <th style="width: 100px;">Thickness</th>
+                                <th style="width: 110px; text-align: right;">Temp (°C)</th>
+                                <th style="width: 140px; text-align: right;">Allowable Stress (MPa)</th>
+                                <th style="width: 110px; text-align: right;">Yield (MPa)</th>
+                                <th style="width: 110px; text-align: right;">Tensile (MPa)</th>
+                              </tr>
+                            </thead>
+                            <tbody id="stressPreviewTbody"></tbody>
+                          </table>
+                        </div>
+                        <div id="stressPreviewPagination"></div>
+
+                        <!-- Firebase Save Section -->
+                        <div style="margin-top: 24px; padding: 20px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; display: flex; flex-direction: column; gap: 16px;">
+                          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                            <div>
+                              <div style="font-weight: 700; font-size: 15px; color: #166534; margin-bottom: 4px;">
+                                Ready to synchronize with Firebase Cloud Firestore?
+                              </div>
+                              <div style="font-size: 13px; color: #15803d;">
+                                Click below to commit the validated records directly to Firebase Firestore (<code>stressData</code> & <code>systemMeta/stressDataMaster</code>). All calculation sheets will immediately reflect these values.
+                              </div>
+                            </div>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                              <button type="button" id="btnSaveStressToFirebase" class="stress-btn-firebase" onclick="saveStressDataToFirebase()" disabled>
+                                ☁️ Save to Firebase Cloud Database
+                              </button>
+                            </div>
+                          </div>
+                          <!-- Real-Time Bottom Progress & Confirmation Status -->
+                          <div id="stressSaveBottomStatus" style="display: none;"></div>
+                        </div>
+                      </div>
+
+                      <!-- Quick Test Query Sandbox (inside DataLoader) -->
+                      <div style="margin-top: 25px; padding: 16px 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                          <strong style="font-size: 13.5px; color: #334155;">⚡ Live Database Test Query (Verify Synced Values)</strong>
+                          <span style="font-size: 12px; color: #64748b;">Instant lookup & linear temperature interpolation</span>
+                        </div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                          <select id="stressQuickTestYear" onchange="onQuickTestYearChange()" style="flex: 1; min-width: 110px; padding: 7px 10px; font-size: 13px; border: 1px solid #cbd5e1; border-radius: 5px;">
+                            <option value="">-- Year --</option>
+                          </select>
+                          <select id="stressQuickTestMaterial" onchange="onQuickTestMaterialChange()" disabled style="flex: 1; min-width: 130px; padding: 7px 10px; font-size: 13px; border: 1px solid #cbd5e1; border-radius: 5px;">
+                            <option value="">-- Material --</option>
+                          </select>
+                          <select id="stressQuickTestGrade" onchange="onQuickTestGradeChange()" disabled style="flex: 1; min-width: 110px; padding: 7px 10px; font-size: 13px; border: 1px solid #cbd5e1; border-radius: 5px;">
+                            <option value="">-- Grade --</option>
+                          </select>
+                          <select id="stressQuickTestThickness" onchange="onQuickTestThicknessChange()" disabled style="flex: 1; min-width: 110px; padding: 7px 10px; font-size: 13px; border: 1px solid #cbd5e1; border-radius: 5px;">
+                            <option value="">-- Thickness --</option>
+                          </select>
+                          <input type="number" id="stressQuickTestTemp" oninput="evaluateQuickTestQuery()" placeholder="Temp °C" disabled style="width: 100px; padding: 7px 10px; font-size: 13px; border: 1px solid #cbd5e1; border-radius: 5px;" />
+                        </div>
+                        <div id="stressQuickTestResult" style="margin-top: 10px; padding: 8px 12px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 5px; min-height: 24px; display: flex; align-items: center;">
+                          <span style="color: #64748b; font-size: 13px;">Select Material, Grade, and Temperature to test query.</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- MODAL: Admin Confirmation for Year Deletion (inside Admin Control Center) -->
+                <div id="stressYearDeleteModal" class="stress-modal-overlay" style="display: none;">
+                  <div class="stress-modal-box" style="max-width: 480px;">
+                    <div class="stress-modal-header" style="background: #fef2f2; border-bottom-color: #fecaca;">
+                      <h4 style="margin: 0; font-size: 15.5px; color: #991b1b;">⚠️ Danger Zone: Delete Entire Year Dataset</h4>
+                      <button type="button" onclick="closeYearDeleteModal()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #94a3b8;">&times;</button>
+                    </div>
+                    <div class="stress-modal-body">
+                      <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 12px 14px; margin-bottom: 16px;">
+                        <p style="margin: 0; font-size: 13px; color: #991b1b; line-height: 1.5;">
+                          You are about to <strong>permanently delete ALL material stress curves for Code Edition Year <span id="modalDeleteYearTarget" style="font-weight: 800; font-size: 14px;"></span></strong>.
+                        </p>
+                        <p style="margin: 6px 0 0 0; font-size: 12px; color: #b91c1c;">
+                          This action will delete the Firestore document (<code>stressData/<span class="modalYearSpan"></span></code>) and remove it from calculation sheets. This cannot be undone.
+                        </p>
+                      </div>
+
+                      <div>
+                        <label for="modalConfirmYearInput" style="display: block; font-size: 12.5px; font-weight: 700; color: #334155; margin-bottom: 6px;">
+                          To confirm deletion, please type <code id="modalConfirmYearExpected" style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #dc2626; font-size: 13px;"></code> below:
+                        </label>
+                        <input type="text" id="modalConfirmYearInput" placeholder="Type year here..." oninput="onConfirmYearInputChange()" style="width: 100%; padding: 9px 12px; border: 2px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-weight: 600;" />
+                      </div>
+
+                      <div id="stressYearDeleteModalMsg" style="margin-top: 12px; display: none; padding: 8px 12px; border-radius: 6px; font-size: 12.5px;"></div>
+                    </div>
+                    <div class="stress-modal-footer">
+                      <button type="button" class="stress-btn-secondary" onclick="closeYearDeleteModal()">Cancel</button>
+                      <button type="button" id="btnExecuteDeleteYear" class="stress-btn-danger" onclick="submitDeleteYear()" disabled>
+                        🗑️ Permanently Delete Year
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </section>
+
+            <!-- ── VIEW 3.1: FIRESTORE COLLECTIONS EXPLORER ─────────────── -->
+            <section class="adm-subview-panel" id="admView_sys-firestore">
+              <div class="adm-content-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;">
+                  <div>
+                    <h3 class="adm-card-title" style="margin: 0; font-size: 16px;" id="admSelectedColTitle">Collection: 'userRoles'</h3>
+                    <p class="adm-card-subtitle" style="margin: 4px 0 0 0; font-size: 12px;">Direct Cloud Firestore Document Explorer. View fields, inspect snapshots, create or edit documents.</p>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <label class="adm-card-subtitle" style="font-size: 12px; font-weight: 600;">Collection:</label>
+                    <select class="adm-select" id="admFirestoreColSelect" onchange="window.adminPanel.loadFirestoreCollection(this.value)">
+                      <option value="userRoles">userRoles (Users & Roles)</option>
+                      <option value="damageMechanisms">damageMechanisms (API 571 Catalog)</option>
+                      <option value="customDamageMechanisms">customDamageMechanisms (Custom Catalog)</option>
+                      <option value="stressData">stressData (Allowable Stress DB)</option>
+                      <option value="streamDatasets">streamDatasets (Process Streams)</option>
+                      <option value="userSessions">userSessions (Active Sessions)</option>
+                      <option value="systemAuditLogs">systemAuditLogs (System Audit Logs)</option>
+                      <option value="deletedUsers">deletedUsers (Deleted Users Blacklist)</option>
+                      <option value="systemMeta">systemMeta (System Metadata)</option>
+                      <option value="systemSettings">systemSettings (System Settings)</option>
+                    </select>
+                    <button class="adm-btn adm-btn-primary" onclick="window.adminPanel.openNewDocModal()">
+                      ➕ Add Document
+                    </button>
+                  </div>
+                </div>
+
+                <div class="adm-table-wrapper">
+                  <table class="adm-table">
+                    <thead>
+                      <tr>
+                        <th style="width: 260px;">Document ID</th>
+                        <th>Data Snapshot</th>
+                        <th style="width: 150px;">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admFirestoreTableBody">
+                      <!-- Injected dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <!-- ── VIEW 3.2: BACKUP & CLOUD DIAGNOSTICS ────────────────── -->
+            <section class="adm-subview-panel" id="admView_sys-diagnostics">
+              <div class="adm-content-card">
+                <div class="adm-view-header">
+                  <div class="adm-view-title">
+                    <h2>⚙️ Backup & Cloud Diagnostics</h2>
+                    <p>Live health checks, latency monitoring, and Google Cloud Firestore connection telemetry.</p>
+                  </div>
+                  <button class="adm-btn adm-btn-primary adm-btn-sm" onclick="window.adminPanel.runCloudDiagnostics()">
+                    ⚡ Run Diagnostic Ping
+                  </button>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                  <div class="adm-info-box">
+                    <div class="adm-card-title" style="font-size: 13.5px; margin-bottom: 6px;">⚡ Firebase Connection Status</div>
+                    <div style="font-size: 15px; font-weight: 700; color: #16a34a;" id="admDiagConnStatus">● ONLINE & ACTIVE</div>
+                    <p style="margin: 4px 0 0 0; font-size: 11.5px; color: #64748b;">Firebase Admin SDK verified on Cloud Run container with service credentials.</p>
+                  </div>
+                  <div class="adm-info-box">
+                    <div class="adm-card-title" style="font-size: 13.5px; margin-bottom: 6px;">⏱️ Database Health & Latency</div>
+                    <div style="font-size: 15px; font-weight: 700; color: #2563eb;" id="admDiagLatency">~28 ms (Excellent)</div>
+                    <p style="margin: 4px 0 0 0; font-size: 11.5px; color: #64748b;">Sub-second read/write performance across all master collections.</p>
+                  </div>
+                  <div class="adm-info-box">
+                    <div class="adm-card-title" style="font-size: 13.5px; margin-bottom: 6px;">📦 Last Master Backup</div>
+                    <div style="font-size: 15px; font-weight: 700; color: #0f172a;" id="admDiagLastBackup">Instant Snapshot Ready</div>
+                    <p style="margin: 4px 0 0 0; font-size: 11.5px; color: #64748b;">Ready for 1-Click JSON export or selective restoration.</p>
+                  </div>
+                </div>
+
+                <div class="adm-code-banner">
+                  Project ID: loginapp-feb72<br>
+                  Storage Engine: Google Cloud Firestore (loginapp-feb72)<br>
+                  Security Architecture: Zero-Trust RBAC with Server-Side Enforcement<br>
+                  Admin Runtime: Node.js (Linux) • Port 3000
+                </div>
+              </div>
+            </section>
+
+            <!-- ── VIEW 3.2B: PROJECT & WORKSPACE SWITCHER ─────────────── -->
+            <section class="adm-subview-panel" id="admView_sys-projects">
+              <div class="adm-content-card">
+                <div class="adm-view-header">
+                  <div class="adm-view-title">
+                    <h2>🔄 Firebase & Plant Project Switcher</h2>
+                    <p>Switch between active Cloud Firebase projects and plant engineering workspaces in real-time.</p>
+                  </div>
+                  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="adm-btn adm-btn-secondary adm-btn-sm" onclick="window.adminPanel.loadProjectsList()">
+                      🔄 Refresh
+                    </button>
+                    <button class="adm-btn adm-btn-primary adm-btn-sm" onclick="window.adminPanel.openAddProjectModal()">
+                      ➕ Add Custom Firebase Project
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Active Project Hero Banner -->
+                <div class="adm-active-project-card" id="admActiveProjectHero" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #f8fafc; border-radius: 12px; padding: 20px; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 16px rgba(0,0,0,0.2);">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+                    <div>
+                      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                        <span style="display: inline-block; width: 10px; height: 10px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e;"></span>
+                        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #86efac;">Currently Active Firebase Project</span>
+                        <span class="adm-pill" id="admHeroProjectTag" style="background: rgba(34,197,94,0.2); color: #86efac; border: 1px solid rgba(34,197,94,0.4); font-size: 11px;">Active Default</span>
+                      </div>
+                      <h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #fff;" id="admHeroProjectName">LoginApp Feb72 (Secondary Auth Project)</h3>
+                      <p style="margin: 6px 0 0 0; font-size: 13px; color: #94a3b8;" id="admHeroProjectDesc">Secondary user authentication workspace.</p>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                      <button class="adm-btn adm-btn-sm" style="background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.25);" onclick="window.adminPanel.testActiveProjectPing()">
+                        ⚡ Test Live Ping
+                      </button>
+                      <button class="adm-btn adm-btn-sm" style="background: #2563eb; color: #fff; border: 1px solid #3b82f6;" onclick="window.adminPanel.syncDataToActiveProject()">
+                        📥 Sync Datasets to this Project
+                      </button>
+                    </div>
+                  </div>
+
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <div>
+                      <div style="font-size: 11px; color: #64748b; text-transform: uppercase;">Project ID</div>
+                      <div style="font-size: 13.5px; font-weight: 600; color: #e2e8f0; font-family: monospace;" id="admHeroProjectId">loginapp-feb72</div>
+                    </div>
+                    <div>
+                      <div style="font-size: 11px; color: #64748b; text-transform: uppercase;">Database ID</div>
+                      <div style="font-size: 12px; font-weight: 600; color: #e2e8f0; font-family: monospace; word-break: break-all;" id="admHeroDbId">(default)</div>
+                    </div>
+                    <div>
+                      <div style="font-size: 11px; color: #64748b; text-transform: uppercase;">Auth Domain</div>
+                      <div style="font-size: 13.5px; font-weight: 600; color: #e2e8f0; font-family: monospace;" id="admHeroAuthDomain">loginapp-feb72.firebaseapp.com</div>
+                    </div>
+                    <div>
+                      <div style="font-size: 11px; color: #64748b; text-transform: uppercase;">Latency / Health</div>
+                      <div style="font-size: 13.5px; font-weight: 700; color: #4ade80;" id="admHeroLatency">● Active (~32 ms)</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Available Firebase Projects Section -->
+                <div style="margin-bottom: 32px;">
+                  <h3 class="adm-card-title" style="margin-bottom: 4px; font-size: 16px;">Configured Firebase Projects</h3>
+                  <p class="adm-card-subtitle" style="margin-bottom: 16px; font-size: 12.5px;">Click "Switch to This Project" to instantaneously point the dashboard, calculation engines, and master storage to a different project.</p>
+                  
+                  <div id="admProjectsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
+                    <!-- Rendered dynamically by window.adminPanel.renderProjectsGrid() -->
+                  </div>
+                </div>
+
+                <!-- Plant Engineering Workspace Section -->
+                <div style="border-top: 1px solid #e2e8f0; padding-top: 24px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 8px;">
+                    <div>
+                      <h3 class="adm-card-title" style="font-size: 16px; margin: 0;">🏭 Plant Facility & Unit Workspace</h3>
+                      <p class="adm-card-subtitle" style="margin: 4px 0 0 0; font-size: 12.5px;">Switch active refinery or plant unit context for corrosion screening, stream data, and inspection planning.</p>
+                    </div>
+                    <span class="adm-pill" id="admActiveWorkspacePill" style="background: #eff6ff; color: #2563eb; font-weight: 700; font-size: 12px;">Active: Crude Distillation Unit (CDU / VDU)</span>
+                  </div>
+
+                  <div id="admWorkspacesGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 16px;">
+                    <!-- Rendered dynamically by window.adminPanel.renderWorkspacesGrid() -->
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Modal for Adding Custom Firebase Project -->
+            <div id="admCustomProjectModal" style="display:none; position:fixed; z-index:99999; inset:0; background:rgba(15,23,42,0.65); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:16px;">
+              <div style="background:#fff; border-radius:12px; max-width:540px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.3); overflow:hidden; animation:admModalPop 0.2s ease-out;">
+                <div style="background:#0f172a; color:#fff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+                  <h3 style="margin:0; font-size:16px; font-weight:700;">➕ Add Custom Firebase Project</h3>
+                  <button type="button" onclick="window.adminPanel.closeAddProjectModal()" style="background:transparent; border:none; color:#94a3b8; font-size:20px; cursor:pointer; line-height:1;">✕</button>
+                </div>
+                <form id="admCustomProjectForm" onsubmit="window.adminPanel.submitCustomProject(event)" style="padding:20px; display:flex; flex-direction:column; gap:14px;">
+                  <div>
+                    <label style="display:block; font-size:12px; font-weight:600; color:#475569; margin-bottom:4px;">Project Display Name</label>
+                    <input type="text" id="admCpName" class="adm-input" placeholder="e.g., Kayet Staging / Dev Firestore" required style="width:100%;">
+                  </div>
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div>
+                      <label style="display:block; font-size:12px; font-weight:600; color:#475569; margin-bottom:4px;">Project ID *</label>
+                      <input type="text" id="admCpProjectId" class="adm-input" placeholder="e.g., myproject-12345" required style="width:100%;">
+                    </div>
+                    <div>
+                      <label style="display:block; font-size:12px; font-weight:600; color:#475569; margin-bottom:4px;">API Key *</label>
+                      <input type="text" id="admCpApiKey" class="adm-input" placeholder="AIzaSy..." required style="width:100%;">
+                    </div>
+                  </div>
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div>
+                      <label style="display:block; font-size:12px; font-weight:600; color:#475569; margin-bottom:4px;">Auth Domain (optional)</label>
+                      <input type="text" id="admCpAuthDomain" class="adm-input" placeholder="project.firebaseapp.com" style="width:100%;">
+                    </div>
+                    <div>
+                      <label style="display:block; font-size:12px; font-weight:600; color:#475569; margin-bottom:4px;">Database ID (optional)</label>
+                      <input type="text" id="admCpDbId" class="adm-input" placeholder="(default) or database-id" style="width:100%;">
+                    </div>
+                  </div>
+                  <div>
+                    <label style="display:block; font-size:12px; font-weight:600; color:#475569; margin-bottom:4px;">Description</label>
+                    <input type="text" id="admCpDesc" class="adm-input" placeholder="Workspace notes or details" style="width:100%;">
+                  </div>
+                  <div id="admCpTestStatus" style="display:none; font-size:12.5px; padding:8px 12px; border-radius:6px;"></div>
+                  <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+                    <button type="button" class="adm-btn adm-btn-secondary" onclick="window.adminPanel.testModalProjectConnection()">⚡ Test Connection</button>
+                    <button type="button" class="adm-btn adm-btn-secondary" onclick="window.adminPanel.closeAddProjectModal()">Cancel</button>
+                    <button type="submit" class="adm-btn adm-btn-primary">💾 Save & Register</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- ── VIEW 3.3: ACTIVE SESSIONS & FORCE LOGOUT ─────────────── -->
+            <section class="adm-subview-panel" id="admView_sys-sessions">
+              <div class="adm-content-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;">
+                  <div>
+                    <h3 class="adm-card-title" style="margin: 0; font-size: 16px;">Active User Sessions & Remote Termination</h3>
+                    <p class="adm-card-subtitle" style="margin: 4px 0 0 0; font-size: 12px;">Monitor active user devices and force logout any session remotely.</p>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <button class="adm-btn adm-btn-secondary" onclick="window.adminPanel.loadSessions()">
+                      🔄 Refresh Sessions
+                    </button>
+                    <button class="adm-btn adm-btn-danger" onclick="window.adminPanel.clearStaleSessions()">
+                      🧹 Clear Stale Sessions (&gt;24h)
+                    </button>
+                  </div>
+                </div>
+
+                <div class="adm-table-wrapper">
+                  <table class="adm-table">
+                    <thead>
+                      <tr>
+                        <th>User Email / Session ID</th>
+                        <th>Device & Client Agent</th>
+                        <th>Last Active</th>
+                        <th>Status</th>
+                        <th>Security Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admSessionsTableBody">
+                      <!-- Injected dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <!-- ── VIEW 3.4: SYSTEM LOGS ───────────────────────────────── -->
+            <section class="adm-subview-panel" id="admView_sys-logs">
+              <div class="adm-content-card">
+                <div class="adm-view-header">
+                  <div class="adm-view-title">
+                    <h2>📋 System & Audit Logs</h2>
+                    <p>Chronological record of authentication events, administrative actions, and system health triggers.</p>
+                  </div>
+                  <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <input type="text" class="adm-input" placeholder="🔍 Search logs..." oninput="window.adminPanel.onLogSearchInput(this.value)" style="min-width: 200px;" />
+                    <button class="adm-btn adm-btn-secondary adm-btn-sm" onclick="window.adminPanel.loadSystemLogs()">
+                      🔄 Refresh
+                    </button>
+                  </div>
+                </div>
+
+                <div class="adm-table-wrapper">
+                  <table class="adm-table">
+                    <thead>
+                      <tr>
+                        <th>Timestamp</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Module</th>
+                        <th>Affected Record</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admSystemLogsTbody">
+                      <!-- Rendered dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <!-- ── VIEW 4.1: SIDEBAR CONFIGURATION ─────────────────────── -->
+            <section class="adm-subview-panel" id="admView_layout-sidebar">
+              <div class="adm-content-card">
+                <div class="adm-view-header">
+                  <div class="adm-view-title">
+                    <h2>📑 Sidebar Configuration</h2>
+                    <p>Customize menu icons and display labels across the main application navigation.</p>
+                  </div>
+                  <div style="display: flex; gap: 8px;">
+                    <button class="adm-btn adm-btn-secondary" onclick="window.adminPanel.resetLayoutDefaults()">🔄 Reset to Defaults</button>
+                    <button class="adm-btn adm-btn-primary" onclick="window.adminPanel.saveLayoutConfiguration()">💾 Save & Publish</button>
+                  </div>
+                </div>
+                <div id="admLayoutSidebarItemsList"></div>
+                <div style="margin-top: 14px; text-align: right;">
+                  <button type="button" class="adm-btn adm-btn-primary" onclick="window.adminPanel.saveLayoutConfiguration()" style="font-weight: 700;">💾 Save & Publish Sidebar Configuration</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- ── VIEW 4.2: SIDEBAR ORDER ─────────────────────────────── -->
+            <section class="adm-subview-panel" id="admView_layout-order">
+              <div class="adm-content-card">
+                <div class="adm-view-header">
+                  <div class="adm-view-title">
+                    <h2>↕️ Sidebar Order</h2>
+                    <p>Reorder modules top-to-bottom. Use Up (▲) / Down (▼) / TOP to arrange sequence.</p>
+                  </div>
+                  <div style="display: flex; gap: 8px;">
+                    <button class="adm-btn adm-btn-secondary" onclick="window.adminPanel.resetLayoutDefaults()">🔄 Reset to Defaults</button>
+                    <button class="adm-btn adm-btn-primary" onclick="window.adminPanel.saveLayoutConfiguration()">💾 Save & Publish</button>
+                  </div>
+                </div>
+                <div id="admLayoutOrderItemsList"></div>
+                <div style="margin-top: 14px; text-align: right;">
+                  <button type="button" class="adm-btn adm-btn-primary" onclick="window.adminPanel.saveLayoutConfiguration()" style="font-weight: 700;">💾 Save & Publish Layout Order</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- ── VIEW 4.3: NAVIGATION VISIBILITY ─────────────────────── -->
+            <section class="adm-subview-panel" id="admView_layout-visibility">
+              <div class="adm-content-card">
+                <div class="adm-view-header">
+                  <div class="adm-view-title">
+                    <h2>👁️ Navigation Visibility</h2>
+                    <p>Enable or disable modules in the main navigation. Hidden modules will not be visible to standard users.</p>
+                  </div>
+                  <div style="display: flex; gap: 6px;">
+                    <button type="button" class="adm-btn adm-btn-sm adm-btn-secondary" onclick="window.adminPanel.setAllModulesVisibility(true)">Show All</button>
+                    <button type="button" class="adm-btn adm-btn-sm adm-btn-secondary" onclick="window.adminPanel.setAllModulesVisibility(false)">Hide All</button>
+                    <button type="button" class="adm-btn adm-btn-sm adm-btn-primary" onclick="window.adminPanel.saveLayoutConfiguration()">💾 Save Visibility</button>
+                  </div>
+                </div>
+                <div class="adm-info-box" style="margin-bottom: 12px; font-size: 12px; background: rgba(37,99,235,0.06); border-left: 3px solid #2563eb; padding: 8px 12px;">
+                  ℹ️ <strong>Duplicate Prevention / Master Management:</strong> Toggle modules to <strong>Hidden</strong> to manage them exclusively in Admin Control Center.
+                </div>
+                <div id="admLayoutVisibilityItemsList"></div>
+              </div>
+            </section>
+
+            <!-- ── VIEW 4.4: TICKER TEXT ───────────────────────────────── -->
+            <section class="adm-subview-panel" id="admView_layout-ticker">
+              <div class="adm-content-card">
+                <div class="adm-view-header">
+                  <div class="adm-view-title">
+                    <h2>📢 Ticker Text</h2>
+                    <p>Configure top-bar announcement ticker messages and urgency styles.</p>
+                  </div>
+                  <button class="adm-btn adm-btn-primary" onclick="window.adminPanel.saveLayoutConfiguration()">💾 Save & Publish</button>
+                </div>
+                <div class="adm-info-box" style="margin-bottom: 16px;">
+                  <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px;">Top-Bar Announcement Ticker Text:</label>
+                  <input type="text" id="admLayoutTickerInput" class="adm-input" style="width: 100%; box-sizing: border-box; font-size: 13.5px;" placeholder="Welcome to API 571 Damage Mechanism Dashboard..." oninput="window.adminPanel.onTickerInputChange(this.value)" />
+                  <div style="display: flex; gap: 20px; margin-top: 14px; align-items: center; flex-wrap: wrap;">
+                    <label style="display: flex; align-items: center; gap: 6px; font-size: 12.5px; cursor: pointer;">
+                      <input type="checkbox" id="admLayoutTickerEnabled" checked onchange="window.adminPanel.onTickerToggleChange(this.checked)" />
+                      <strong>Enable Ticker Marquee</strong>
+                    </label>
+                    <div style="display: flex; align-items: center; gap: 6px; font-size: 12px;">
+                      <span>Ticker Style:</span>
+                      <select id="admLayoutTickerUrgency" class="adm-select" style="padding: 4px 8px; font-size: 12px;" onchange="window.adminPanel.onTickerUrgencyChange(this.value)">
+                        <option value="normal">🔵 Normal Announcement</option>
+                        <option value="urgent">🟠 Urgent Notice</option>
+                        <option value="critical">🔴 Critical Alert</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div style="margin-top: 16px; padding: 10px; background: rgba(15,23,42,0.06); border-radius: 6px;">
+                    <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">Live Marquee Simulation:</div>
+                    <div id="admLayoutTickerLiveSim" style="background: #0f172a; color: #38bdf8; padding: 8px 12px; border-radius: 4px; font-family: monospace; font-size: 12.5px; overflow: hidden; white-space: nowrap;">
+                      Welcome to API 571 Damage Mechanism Dashboard &amp; Industrial Digital Tools
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- ── VIEW 4.5: WELCOME CARDS ─────────────────────────────── -->
+            <section class="adm-subview-panel" id="admView_layout-welcome">
+              <div class="adm-content-card">
+                <div class="adm-view-header">
+                  <div class="adm-view-title">
+                    <h2>🎴 Welcome Cards</h2>
+                    <p>Manage all quick-access cards appearing on the main home dashboard.</p>
+                  </div>
+                  <button class="adm-btn adm-btn-primary" onclick="window.adminPanel.saveLayoutConfiguration()">💾 Save & Publish</button>
+                </div>
+                <div id="admLayoutWelcomeCardsList"></div>
+              </div>
+            </section>
+
+            <!-- ── VIEW 5.1: MASTER DATA MANAGEMENT ────────────────────── -->
+            <section class="adm-subview-panel" id="admView_master-overview">
+              <div class="adm-content-card">
+                <div class="adm-view-header">
+                  <div class="adm-view-title">
+                    <h2>💾 Master Data Management</h2>
+                    <p>Central repository and inventory of all proprietary industrial engineering master datasets.</p>
+                  </div>
+                </div>
+
+                <div class="adm-app-hub-grid">
+                  <div class="adm-app-card">
+                    <div class="adm-app-card-header">
+                      <div class="adm-app-icon-wrap" style="background: rgba(37,99,235,0.1); color: #2563eb;">📚</div>
+                      <div class="adm-app-card-titles">
+                        <h3>API 571 Damage Mechanisms</h3>
+                        <p>Complete damage catalog with materials, units, morphologies, mitigation and inspection methods.</p>
+                      </div>
+                    </div>
+                    <div class="adm-app-card-actions">
+                      <span id="admMasterDmCountBadge" style="font-size: 12px; font-weight: 700;">68 Records</span>
+                      <button class="adm-btn adm-btn-primary adm-btn-sm" onclick="window.adminPanel.navigateTo('app-damage')">Manage Catalog</button>
+                    </div>
+                  </div>
+
+                  <div class="adm-app-card">
+                    <div class="adm-app-card-header">
+                      <div class="adm-app-icon-wrap" style="background: rgba(16,185,129,0.1); color: #059669;">📊</div>
+                      <div class="adm-app-card-titles">
+                        <h3>Process Stream & HMB Data</h3>
+                        <p>Heat and material balance stream sheets, chemical breakdowns, and variance records.</p>
+                      </div>
+                    </div>
+                    <div class="adm-app-card-actions">
+                      <span id="admMasterStreamCountBadge" style="font-size: 12px; font-weight: 700;">Active HMB</span>
+                      <button class="adm-btn adm-btn-primary adm-btn-sm" onclick="window.adminPanel.navigateTo('app-stream')">Manage Streams</button>
+                    </div>
+                  </div>
+
+                  <div class="adm-app-card">
+                    <div class="adm-app-card-header">
+                      <div class="adm-app-icon-wrap" style="background: rgba(217,119,6,0.1); color: #d97706;">🧮</div>
+                      <div class="adm-app-card-titles">
+                        <h3>Allowable Stress Database</h3>
+                        <p>ASME B31.3 Table A-1 code editions, material curves, and temperature points.</p>
+                      </div>
+                    </div>
+                    <div class="adm-app-card-actions">
+                      <span id="admMasterStressCountBadge" style="font-size: 12px; font-weight: 700;">Active Editions</span>
+                      <button class="adm-btn adm-btn-primary adm-btn-sm" onclick="window.adminPanel.navigateTo('app-stress')">Manage Stress DB</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- ── VIEW 5.2: 1-CLICK JSON BACKUP ───────────────────────── -->
+            <section class="adm-subview-panel" id="admView_master-backup">
+              <div class="adm-content-card">
+                <div class="adm-view-header">
+                  <div class="adm-view-title">
+                    <h2>⚡ 1-Click JSON Database Backup</h2>
+                    <p>Download full or selective database snapshots directly to formatted JSON files.</p>
+                  </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                  <div class="adm-info-box" style="padding: 20px; border-radius: 10px;">
+                    <h4 style="margin: 0 0 8px 0; font-size: 15px;">📥 Instant Full Database Backup</h4>
+                    <p style="margin: 0 0 16px 0; font-size: 12.5px; color: #64748b;">
+                      Downloads complete snapshot containing user profiles, custom damage mechanisms, stream datasets, stress curves, and system metadata.
+                    </p>
+                    <button class="adm-btn adm-btn-primary" onclick="window.adminPanel.downloadFullBackup()">
+                      ⚡ Download Full Backup (.JSON)
+                    </button>
+                  </div>
+
+                  <div class="adm-info-box" style="padding: 20px; border-radius: 10px;">
+                    <h4 style="margin: 0 0 8px 0; font-size: 15px;">🎯 Selective Module Backup</h4>
+                    <p style="margin: 0 0 12px 0; font-size: 12px; color: #64748b;">Select which datasets to include in the exported JSON archive:</p>
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+                      <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; cursor: pointer;">
+                        <input type="checkbox" id="admBackupCheck_dms" checked /> API 571 Damage Mechanisms
+                      </label>
+                      <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; cursor: pointer;">
+                        <input type="checkbox" id="admBackupCheck_streams" checked /> Process Stream Datasets
+                      </label>
+                      <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; cursor: pointer;">
+                        <input type="checkbox" id="admBackupCheck_stress" checked /> Allowable Stress Database
+                      </label>
+                      <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; cursor: pointer;">
+                        <input type="checkbox" id="admBackupCheck_users" checked /> User Profiles & Roles
+                      </label>
+                    </div>
+                    <button class="adm-btn adm-btn-secondary" onclick="window.adminPanel.downloadSelectiveBackup()">
+                      📦 Download Selective Backup
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- ── VIEW 5.3: JSON RESTORE ───────────────────────────────── -->
+            <section class="adm-subview-panel" id="admView_master-restore">
+              <div class="adm-content-card">
+                <div class="adm-view-header">
+                  <div class="adm-view-title">
+                    <h2>🔄 JSON Database Restore & Disaster Recovery</h2>
+                    <p>Upload a previously exported JSON backup file, preview contents, validate schemas, and restore.</p>
+                  </div>
+                </div>
+
+                <div class="stress-dropzone" onclick="document.getElementById('admRestoreFileInput').click()" style="cursor: pointer; margin-bottom: 20px;">
+                  <input type="file" id="admRestoreFileInput" accept=".json" style="display: none;" onchange="window.adminPanel.onRestoreFileSelected(this.files)" />
+                  <div style="font-size: 36px; margin-bottom: 6px;">📤</div>
+                  <div style="font-weight: 700; font-size: 15px; color: #2563eb;">Click to Browse or Drag & Drop Backup JSON Here</div>
+                  <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Automatic validation of master collections and data schemas</div>
+                </div>
+
+                <div id="admRestorePreviewContainer" style="display: none; padding: 18px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px;">
+                  <h4 style="margin: 0 0 10px 0; font-size: 14px;">📋 Backup Contents Verification</h4>
+                  <div id="admRestoreSummaryDetails" style="font-size: 13px; line-height: 1.6; color: #334155; margin-bottom: 16px;"></div>
+                  <button class="adm-btn adm-btn-danger" onclick="window.adminPanel.confirmAndExecuteRestore()">
+                    ⚠️ Execute Database Restore
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- ── VIEW 5.4: BACKUP HISTORY ────────────────────────────── -->
+            <section class="adm-subview-panel" id="admView_master-history">
+              <div class="adm-content-card">
+                <div class="adm-view-header">
+                  <div class="adm-view-title">
+                    <h2>📜 Backup History & Snapshots</h2>
+                    <p>Archived snapshot timestamps, data sizes, and backup versions recorded by the system.</p>
+                  </div>
+                  <button class="adm-btn adm-btn-secondary adm-btn-sm" onclick="window.adminPanel.loadBackupHistory()">
+                    🔄 Refresh
+                  </button>
+                </div>
+
+                <div class="adm-table-wrapper">
+                  <table class="adm-table">
+                    <thead>
+                      <tr>
+                        <th>Timestamp</th>
+                        <th>Backup Version</th>
+                        <th>Initiated By</th>
+                        <th>Collections Snapshot</th>
+                        <th>Archive Size</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admBackupHistoryTbody">
+                      <!-- Rendered dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <!-- ── VIEW 5.5: AUDIT TRAIL ───────────────────────────────── -->
+            <section class="adm-subview-panel" id="admView_master-audit">
+              <div class="adm-content-card">
+                <div class="adm-view-header">
+                  <div class="adm-view-title">
+                    <h2>🔍 Master Data Audit Trail</h2>
+                    <p>Audit trail of all data updates, deletions, imports, exports, and backup restorations.</p>
+                  </div>
+                  <div style="display: flex; gap: 8px;">
+                    <button class="adm-btn adm-btn-secondary adm-btn-sm" onclick="window.adminPanel.loadAuditTrail()">
+                      🔄 Refresh Audit Trail
+                    </button>
+                  </div>
+                </div>
+
+                <div class="adm-table-wrapper">
+                  <table class="adm-table">
+                    <thead>
+                      <tr>
+                        <th>Date & Time</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Module</th>
+                        <th>Record / Data Affected</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admAuditTrailTbody">
+                      <!-- Rendered dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         UNIVERSAL ADMIN CONFIRMATION DIALOG
+         ══════════════════════════════════════════════════════════════════ -->
+    <div id="admUniversalConfirmModal" class="rbac-modal-backdrop" style="display: none; z-index: 100100;">
+      <div class="adm-confirm-modal">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div id="admConfirmIcon" style="font-size: 26px;">⚠️</div>
+          <div>
+            <h4 id="admConfirmTitle" style="margin: 0; font-size: 16px; color: #0f172a;">Confirm Action</h4>
+            <div id="admConfirmSubtitle" style="font-size: 12px; color: #64748b; margin-top: 2px;">Administrative Confirmation</div>
+          </div>
+        </div>
+        <p id="admConfirmMessage" style="margin: 0; font-size: 13.5px; color: #334155; line-height: 1.5;"></p>
+        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
+          <button type="button" class="adm-btn adm-btn-secondary" onclick="window.adminPanel.closeConfirmModal()">Cancel</button>
+          <button type="button" class="adm-btn adm-btn-danger" id="admConfirmExecuteBtn">Proceed</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         FLOATING TOAST NOTIFICATION CONTAINER
+         ══════════════════════════════════════════════════════════════════ -->
+    <div id="admToastContainer" class="adm-toast-container"></div>
+
+    <!-- ➕ Modal: Add New User -->
+    <div id="admAddUserModal" class="rbac-modal-backdrop" style="display: none; z-index: 2000000 !important;">
+      <div class="rbac-modal-card" style="max-width: 520px;">
+        <div class="rbac-modal-header">
+          <h3>➕ Add New User (Firebase Auth & RBAC)</h3>
+          <button class="rbac-close-btn" onclick="window.adminPanel.closeAddUserModal()" type="button">&times;</button>
+        </div>
+        <div class="rbac-modal-body">
+          <div class="rbac-field-group">
+            <label>User Email Address <span style="color:#ef4444;">*</span></label>
+            <input type="email" id="admNewUserEmail" placeholder="colleague@company.com" />
+          </div>
+          <div class="rbac-field-group">
+            <label>Assign Role Preset <span style="color:#ef4444;">*</span></label>
+            <select id="admNewUserRole" class="adm-select">
+              <option value="lead_engineer">⚙️ Lead Engineer (All Engineering Modules)</option>
+              <option value="inspector">🔍 Inspector (Damage Explorer, Screening & Remaining Life)</option>
+              <option value="viewer">👁️ Viewer (Read-only Damage & Fluids)</option>
+              <option value="admin">👑 Administrator (Full Access)</option>
+              <option value="custom">🛠️ Custom Role (Configurable)</option>
+            </select>
+          </div>
+          <div class="rbac-field-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <label style="margin: 0;">Initial Password (Login Credentials)</label>
+              <button type="button" class="adm-btn adm-btn-sm adm-btn-secondary" onclick="window.adminPanel.generateRandomPasswordForNewUser()" style="padding: 2px 8px; font-size: 11px;">
+                🎲 Auto-Generate
+              </button>
+            </div>
+            <div style="position: relative;">
+              <input type="text" id="admNewUserPassword" placeholder="e.g. Kayet@2026 (Min 6 characters)" style="font-family: monospace;" />
+            </div>
+            <span style="font-size: 11px; color: #94a3b8; display: block; margin-top: 4px;">
+              💡 If left blank, a secure password will be auto-generated and displayed with a copyable credentials card.
+            </span>
+          </div>
+        </div>
+        <div class="rbac-modal-footer">
+          <button class="adm-btn adm-btn-secondary" onclick="window.adminPanel.closeAddUserModal()">Cancel</button>
+          <button class="adm-btn adm-btn-primary" id="admAddUserSubmitBtn" onclick="window.adminPanel.submitNewUser()">💾 Create & Provision User</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🔑 Modal: Manage / Reset User Password -->
+    <div id="admPasswordModal" class="rbac-modal-backdrop" style="display: none; z-index: 2000000 !important;">
+      <div class="rbac-modal-card" style="max-width: 520px;">
+        <div class="rbac-modal-header">
+          <h3>🔑 Manage User Password & Access</h3>
+          <button class="rbac-close-btn" onclick="window.adminPanel.closePasswordModal()" type="button">&times;</button>
+        </div>
+        <div class="rbac-modal-body">
+          <div class="adm-info-box" style="margin-bottom: 16px;">
+            <div style="font-size: 12px; color: #64748b;">Selected Account:</div>
+            <div id="admPasswordUserEmail" style="font-size: 14px; font-weight: 600; word-break: break-all; margin-top: 2px;">user@example.com</div>
+          </div>
+
+          <div class="rbac-field-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <label style="margin: 0;">Set New Password</label>
+              <button type="button" class="adm-btn adm-btn-sm adm-btn-secondary" onclick="window.adminPanel.generateRandomPasswordForReset()" style="padding: 2px 8px; font-size: 11px;">
+                🎲 Auto-Generate
+              </button>
+            </div>
+            <input type="text" id="admNewResetPassword" placeholder="Enter new password (min 6 chars)" style="font-family: monospace;" />
+            <span style="font-size: 11px; color: #94a3b8; display: block; margin-top: 4px;">
+              Directly overwrites the user's password in Firebase Authentication.
+            </span>
+          </div>
+
+          <div style="display: flex; gap: 8px; margin-top: 14px;">
+            <button class="adm-btn adm-btn-primary" id="admSetPasswordBtn" onclick="window.adminPanel.submitSetPassword()" style="flex: 1;">
+              💾 Set New Password
+            </button>
+            <button class="adm-btn adm-btn-secondary" id="admGenResetLinkBtn" onclick="window.adminPanel.submitGetResetLink()" style="flex: 1;" title="Get Firebase password reset link">
+              🔗 Get Reset Link
+            </button>
+          </div>
+
+          <div id="admPasswordStatusBox" style="display: none; margin-top: 14px; padding: 12px; border-radius: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid #3b82f6;">
+            <div id="admPasswordStatusText" style="font-size: 12px; color: #2563eb; margin-bottom: 6px; font-weight: 600;"></div>
+            <div style="display: flex; gap: 6px;">
+              <input type="text" id="admPasswordResultCopyVal" readonly style="font-family: monospace; font-size: 11px; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; flex: 1;" />
+              <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="window.adminPanel.copyPasswordResultVal()">📋 Copy</button>
+            </div>
+          </div>
+        </div>
+        <div class="rbac-modal-footer">
+          <button class="adm-btn adm-btn-secondary" onclick="window.adminPanel.closePasswordModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📋 Modal: Credential Handover Card -->
+    <div id="admCredentialsResultModal" class="rbac-modal-backdrop" style="display: none; z-index: 2000000 !important;">
+      <div class="rbac-modal-card" style="max-width: 540px;">
+        <div class="rbac-modal-header" style="border-bottom-color: #22c55e;">
+          <h3 style="color: #16a34a;">🎉 User Account Successfully Provisioned</h3>
+          <button class="rbac-close-btn" onclick="window.adminPanel.closeCredentialsModal()" type="button">&times;</button>
+        </div>
+        <div class="rbac-modal-body">
+          <p style="font-size: 13px; margin-bottom: 14px; opacity: 0.9;">
+            The user account is now active in <strong>Firebase Authentication</strong> and permissions are recorded in <strong>Firestore</strong>. Share the credentials below with the user so they can log in:
+          </p>
+          
+          <div class="adm-cred-box">
+            <div class="adm-cred-row">
+              <span style="color: #64748b;">Login URL:</span>
+              <span style="color: #0284c7; font-weight: 600;" id="credCardUrl">https://your-domain.com/index.html</span>
+            </div>
+            <div class="adm-cred-row">
+              <span style="color: #64748b;">User Email:</span>
+              <span style="font-weight: 600;" id="credCardEmail"></span>
+            </div>
+            <div class="adm-cred-row">
+              <span style="color: #64748b;">Initial Password:</span>
+              <span style="color: #16a34a; font-weight: bold; font-size: 13px;" id="credCardPassword"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #64748b;">Assigned Role:</span>
+              <span style="color: #d97706; font-weight: 600;" id="credCardRole"></span>
+            </div>
+          </div>
+
+          <div id="credCardResetLinkSection" style="margin-bottom: 14px; display: none;">
+            <label style="font-size: 12px; color: #94a3b8; display: block; margin-bottom: 4px;">Self-Service Password Reset Link (Optional):</label>
+            <div style="display: flex; gap: 6px;">
+              <input type="text" id="credCardResetLink" readonly class="adm-input" style="font-family: monospace; font-size: 11px; padding: 6px; flex: 1;" />
+              <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="window.adminPanel.copyCredResetLink()">📋 Copy Link</button>
+            </div>
+          </div>
+        </div>
+        <div class="rbac-modal-footer">
+          <button class="adm-btn adm-btn-primary" onclick="window.adminPanel.copyAllCredentials()" style="background: #16a34a;">
+            📋 Copy All Details for User
+          </button>
+          <button class="adm-btn adm-btn-secondary" onclick="window.adminPanel.closeCredentialsModal()">Done</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✏️ Modal: Firestore Document JSON Editor -->
+    <div id="admDocEditModal" class="rbac-modal-backdrop" style="display: none;">
+      <div class="rbac-modal-card" style="max-width: 700px;">
+        <div class="rbac-modal-header">
+          <h3 id="admDocModalTitle">✏️ Document Editor</h3>
+          <button class="rbac-close-btn" onclick="window.adminPanel.closeDocJsonEditor()" type="button">&times;</button>
+        </div>
+        <div class="rbac-modal-body">
+          <div class="rbac-field-group">
+            <label>Document ID</label>
+            <input type="text" id="admDocModalId" />
+          </div>
+          <div class="rbac-field-group">
+            <label>JSON Content</label>
+            <textarea id="admDocModalJson" rows="12" style="background:#020617; color:#f8fafc; font-family:monospace; font-size:12px; padding:12px; border:1px solid #334155; border-radius:6px; outline:none; resize:vertical;"></textarea>
+          </div>
+        </div>
+        <div class="rbac-modal-footer">
+          <button class="adm-btn adm-btn-secondary" onclick="window.adminPanel.closeDocJsonEditor()">Cancel</button>
+          <button class="adm-btn adm-btn-primary" onclick="window.adminPanel.submitSaveDoc()">💾 Save to Firestore</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🔬 Modal: Add / Edit Damage Mechanism Full Form -->
+    <div id="admDamageMechModal" class="rbac-modal-backdrop" style="display: none; z-index: 100060;">
+      <div class="rbac-modal-card" style="max-width: 900px; max-height: 92vh; display: flex; flex-direction: column;">
+        <div class="rbac-modal-header">
+          <h3 id="admDmModalTitle">➕ Add New Damage Mechanism</h3>
+          <button class="rbac-close-btn" onclick="window.adminPanel.closeDamageMechModal()" type="button">&times;</button>
+        </div>
+        
+        <div class="rbac-modal-body" style="overflow-y: auto; flex: 1; padding: 20px;">
+          <!-- Hidden tracking field -->
+          <input type="hidden" id="admDmId" />
+
+          <!-- Row 1: Code / ID & Mechanism Name -->
+          <div style="display: grid; grid-template-columns: 160px 1fr; gap: 16px; margin-bottom: 16px;">
+            <div class="rbac-field-group" style="margin-bottom: 0;">
+              <label>API 571 Code # <span style="font-size: 11px; color: #94a3b8;">(e.g. 1, 68)</span></label>
+              <input type="text" id="admDmCode" placeholder="e.g. 68" style="font-weight: 700; color: #2563eb;" />
+            </div>
+            <div class="rbac-field-group" style="margin-bottom: 0;">
+              <label>Damage Mechanism Name <span style="color:#ef4444;">*</span></label>
+              <input type="text" id="admDmName" placeholder="e.g. Hydrogen Induced Cracking (HIC)" style="font-weight: 600;" />
+            </div>
+          </div>
+
+          <!-- Row 2: Reference Image Upload & Management -->
+          <div style="margin-bottom: 18px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;" class="adm-inline-editor-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <label style="font-size: 13px; font-weight: 700; margin: 0; color: #0f172a;" class="adm-card-title">
+                🖼️ Reference Diagram / Micrograph Image
+              </label>
+              <span style="font-size: 11px; color: #64748b;">Supports PNG, JPG, JPEG, SVG, WebP</span>
+            </div>
+
+            <!-- Image Dropzone -->
+            <div id="admDmDropzone" class="adm-image-dropzone" onclick="document.getElementById('admDmModalFileInput').click()">
+              <div style="font-size: 24px; margin-bottom: 6px;">📁</div>
+              <div style="font-weight: 600; font-size: 13px; color: #2563eb;">Click or Drag & Drop new image file here</div>
+              <div style="font-size: 11px; color: #64748b; margin-top: 2px;">File will be uploaded and linked to this damage mechanism</div>
+              <input type="file" id="admDmModalFileInput" accept="image/*" style="display: none;" onchange="window.adminPanel.onModalImageFileSelected(this.files)" />
+            </div>
+
+            <!-- Image Preview Box -->
+            <div id="admDmModalImagePreviewRow" style="display: none; margin-top: 12px; align-items: center; gap: 14px; background: #ffffff; padding: 10px 14px; border-radius: 8px; border: 1px solid #cbd5e1;">
+              <div class="adm-image-preview-box" style="width: 120px; height: 80px;">
+                <img id="admDmModalPreviewImg" src="" alt="Preview" />
+              </div>
+              <div style="flex: 1;">
+                <div id="admDmModalPreviewInfo" style="font-size: 12px; font-weight: 600; color: #0f172a; word-break: break-all;">image.png</div>
+                <div id="admDmModalPreviewMeta" style="font-size: 11px; color: #64748b; margin-top: 2px;">Ready to save</div>
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <button type="button" class="adm-btn adm-btn-sm adm-btn-secondary" onclick="document.getElementById('admDmModalFileInput').click()">
+                  🔄 Replace
+                </button>
+                <button type="button" class="adm-btn adm-btn-sm adm-btn-danger" onclick="window.adminPanel.removeModalImage()">
+                  ❌ Remove
+                </button>
+              </div>
+            </div>
+
+            <!-- Manual Path Input fallback -->
+            <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 11px; color: #64748b; white-space: nowrap;">Or image path/URL:</span>
+              <input type="text" id="admDmImagePath" class="adm-input" placeholder="e.g. image/sulfidation.png or https://..." oninput="window.adminPanel.onModalImagePathInput(this.value)" style="font-size: 12px; padding: 4px 8px; font-family: monospace; flex: 1;" />
+            </div>
+          </div>
+
+          <!-- Formatting Guidance Banner -->
+          <div class="adm-formatting-hint-banner">
+            <span style="font-size: 14px;">💡</span>
+            <span>
+              <strong>List Formatting Supported:</strong> Use the <strong>• Bullet</strong> or <strong>1. Number</strong> buttons, or simply type <code>•</code> or <code>1.</code> on a new line. Pressing <kbd>Enter</kbd> will automatically continue your list with the next number or bullet!
+            </span>
+          </div>
+
+          <!-- Section 1: Description & Scope -->
+          <div class="rbac-field-group">
+            <div class="adm-field-header-row">
+              <label>📖 Description & Scope</label>
+              <div class="adm-formatting-toolbar">
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertBullet('admDmDescription')" title="Insert Bullet Point (•)">
+                  <span class="adm-fmt-symbol">•</span> Bullet List
+                </button>
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertNumberedList('admDmDescription')" title="Insert Numbered List (1, 2, 3...)">
+                  <span class="adm-fmt-symbol">1.</span> Numbered
+                </button>
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertBold('admDmDescription')" title="Bold Text (**text**)">
+                  <b>B</b> Bold
+                </button>
+              </div>
+            </div>
+            <textarea id="admDmDescription" rows="4" class="adm-rich-textarea" placeholder="Detailed description of the corrosion or damage mechanism..."></textarea>
+          </div>
+
+          <!-- Section 2: Affected Materials -->
+          <div class="rbac-field-group">
+            <div class="adm-field-header-row">
+              <label>🧱 Affected Materials</label>
+              <div class="adm-formatting-toolbar">
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertBullet('admDmAffectedMaterials')" title="Insert Bullet Point (•)">
+                  <span class="adm-fmt-symbol">•</span> Bullet List
+                </button>
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertNumberedList('admDmAffectedMaterials')" title="Insert Numbered List (1, 2, 3...)">
+                  <span class="adm-fmt-symbol">1.</span> Numbered
+                </button>
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertBold('admDmAffectedMaterials')" title="Bold Text (**text**)">
+                  <b>B</b> Bold
+                </button>
+              </div>
+            </div>
+            <textarea id="admDmAffectedMaterials" rows="3" class="adm-rich-textarea" placeholder="Carbon steel, low-alloy steels, 300 series stainless steels, nickel alloys..."></textarea>
+          </div>
+
+          <!-- Section 3: Critical Factors -->
+          <div class="rbac-field-group">
+            <div class="adm-field-header-row">
+              <label>⚠️ Critical Factors</label>
+              <div class="adm-formatting-toolbar">
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertBullet('admDmCriticalFactors')" title="Insert Bullet Point (•)">
+                  <span class="adm-fmt-symbol">•</span> Bullet List
+                </button>
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertNumberedList('admDmCriticalFactors')" title="Insert Numbered List (1, 2, 3...)">
+                  <span class="adm-fmt-symbol">1.</span> Numbered
+                </button>
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertBold('admDmCriticalFactors')" title="Bold Text (**text**)">
+                  <b>B</b> Bold
+                </button>
+              </div>
+            </div>
+            <textarea id="admDmCriticalFactors" rows="4" class="adm-rich-textarea" placeholder="Key influencing factors: temperature, pressure, fluid velocity, concentration, pH, contaminants..."></textarea>
+          </div>
+
+          <!-- Section 4: Affected Units & Equipment -->
+          <div class="rbac-field-group">
+            <div class="adm-field-header-row">
+              <label>🏭 Affected Units & Equipment</label>
+              <div class="adm-formatting-toolbar">
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertBullet('admDmAffectedUnits')" title="Insert Bullet Point (•)">
+                  <span class="adm-fmt-symbol">•</span> Bullet List
+                </button>
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertNumberedList('admDmAffectedUnits')" title="Insert Numbered List (1, 2, 3...)">
+                  <span class="adm-fmt-symbol">1.</span> Numbered
+                </button>
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertBold('admDmAffectedUnits')" title="Bold Text (**text**)">
+                  <b>B</b> Bold
+                </button>
+              </div>
+            </div>
+            <textarea id="admDmAffectedUnits" rows="3" class="adm-rich-textarea" placeholder="Crude Distillation Units, Hydroprocessing, Coker, Heater Tubes, Reactors, Heat Exchangers..."></textarea>
+          </div>
+
+          <!-- Section 5: Appearance & Morphology of Damage -->
+          <div class="rbac-field-group">
+            <div class="adm-field-header-row">
+              <label>🔬 Appearance & Morphology</label>
+              <div class="adm-formatting-toolbar">
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertBullet('admDmAppearance')" title="Insert Bullet Point (•)">
+                  <span class="adm-fmt-symbol">•</span> Bullet List
+                </button>
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertNumberedList('admDmAppearance')" title="Insert Numbered List (1, 2, 3...)">
+                  <span class="adm-fmt-symbol">1.</span> Numbered
+                </button>
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertBold('admDmAppearance')" title="Bold Text (**text**)">
+                  <b>B</b> Bold
+                </button>
+              </div>
+            </div>
+            <textarea id="admDmAppearance" rows="3" class="adm-rich-textarea" placeholder="Uniform thinning, localized grooving, blisters, step-wise cracking, pitting..."></textarea>
+          </div>
+
+          <!-- Section 6: Prevention & Mitigation -->
+          <div class="rbac-field-group">
+            <div class="adm-field-header-row">
+              <label>🛡️ Prevention & Mitigation</label>
+              <div class="adm-formatting-toolbar">
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertBullet('admDmMitigation')" title="Insert Bullet Point (•)">
+                  <span class="adm-fmt-symbol">•</span> Bullet List
+                </button>
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertNumberedList('admDmMitigation')" title="Insert Numbered List (1, 2, 3...)">
+                  <span class="adm-fmt-symbol">1.</span> Numbered
+                </button>
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertBold('admDmMitigation')" title="Bold Text (**text**)">
+                  <b>B</b> Bold
+                </button>
+              </div>
+            </div>
+            <textarea id="admDmMitigation" rows="3" class="adm-rich-textarea" placeholder="Material upgrades, corrosion inhibitors, PWHT, process control, operating window (IOW)..."></textarea>
+          </div>
+
+          <!-- Section 7: Inspection & Monitoring Methods -->
+          <div class="rbac-field-group">
+            <div class="adm-field-header-row">
+              <label>🔎 Inspection & Monitoring Methods</label>
+              <div class="adm-formatting-toolbar">
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertBullet('admDmInspection')" title="Insert Bullet Point (•)">
+                  <span class="adm-fmt-symbol">•</span> Bullet List
+                </button>
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertNumberedList('admDmInspection')" title="Insert Numbered List (1, 2, 3...)">
+                  <span class="adm-fmt-symbol">1.</span> Numbered
+                </button>
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertBold('admDmInspection')" title="Bold Text (**text**)">
+                  <b>B</b> Bold
+                </button>
+              </div>
+            </div>
+            <textarea id="admDmInspection" rows="3" class="adm-rich-textarea" placeholder="Ultrasonic Testing (UT), Radiography (RT), Magnetic Particle (MT), Dye Penetrant (PT), PAUT, TOFD..."></textarea>
+          </div>
+
+          <!-- Section 8: Temperature Limits & Comparison -->
+          <div class="rbac-field-group">
+            <div class="adm-field-header-row">
+              <label>🌡️ Temperature Limits & Code Comparison</label>
+              <div class="adm-formatting-toolbar">
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertBullet('admDmTempComparison')" title="Insert Bullet Point (•)">
+                  <span class="adm-fmt-symbol">•</span> Bullet List
+                </button>
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertNumberedList('admDmTempComparison')" title="Insert Numbered List (1, 2, 3...)">
+                  <span class="adm-fmt-symbol">1.</span> Numbered
+                </button>
+                <button type="button" class="adm-fmt-btn" onclick="window.adminPanel.insertBold('admDmTempComparison')" title="Bold Text (**text**)">
+                  <b>B</b> Bold
+                </button>
+              </div>
+            </div>
+            <textarea id="admDmTempComparison" rows="3" class="adm-rich-textarea" placeholder="API 571 threshold temperatures vs API 581 comparison limits..."></textarea>
+          </div>
+        </div>
+
+        <div class="rbac-modal-footer">
+          <button class="adm-btn adm-btn-secondary" onclick="window.adminPanel.closeDamageMechModal()">Cancel</button>
+          <button class="adm-btn adm-btn-secondary" onclick="window.adminPanel.previewFromModal()" title="Preview how this mechanism renders in the live Details Modal">
+            👁️ Test Live Preview
+          </button>
+          <button class="adm-btn adm-btn-primary" id="admSaveDmSubmitBtn" onclick="window.adminPanel.saveDamageMechFromModal()">
+            💾 Save Mechanism to Firestore
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🖼️ Modal: Quick Image Upload & Replace -->
+    <div id="admDamageMechImageModal" class="rbac-modal-backdrop" style="display: none; z-index: 100070;">
+      <div class="rbac-modal-card" style="max-width: 580px;">
+        <div class="rbac-modal-header">
+          <h3>🖼️ Upload / Replace Reference Image</h3>
+          <button class="rbac-close-btn" onclick="window.adminPanel.closeImageUploadModal()" type="button">&times;</button>
+        </div>
+        
+        <div class="rbac-modal-body">
+          <div class="adm-info-box" style="margin-bottom: 14px;">
+            <div style="font-size: 11px; color: #64748b;">Target Damage Mechanism:</div>
+            <div id="admImgModalMechTitle" style="font-size: 15px; font-weight: 700; color: #0f172a; margin-top: 2px;" class="adm-card-title">Sulfidation</div>
+          </div>
+
+          <!-- Current Image Display -->
+          <div style="margin-bottom: 14px;">
+            <div style="font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px;">Current Image:</div>
+            <div id="admImgModalCurrentBox" style="height: 120px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+              <span style="color: #94a3b8; font-size: 12px;">No current image assigned</span>
+            </div>
+          </div>
+
+          <!-- Upload Dropzone -->
+          <div id="admImgModalDropzone" class="adm-image-dropzone" onclick="document.getElementById('admQuickFileInput').click()">
+            <div style="font-size: 26px; margin-bottom: 6px;">📷</div>
+            <div style="font-weight: 700; font-size: 13px; color: #2563eb;">Choose New Image or Drag & Drop File Here</div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 3px;">Replaces the diagram image across all diagrams & API 571 explorer</div>
+            <input type="file" id="admQuickFileInput" accept="image/*" style="display: none;" onchange="window.adminPanel.onQuickImageFileSelected(this.files)" />
+          </div>
+
+          <!-- Selected Staged Image Preview -->
+          <div id="admImgModalStagedRow" style="display: none; margin-top: 14px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 10px 14px; align-items: center; gap: 12px;">
+            <div class="adm-image-preview-box" style="width: 100px; height: 70px;">
+              <img id="admImgModalStagedImg" src="" alt="New Staged" />
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 11px; font-weight: 700; color: #166534;">🟢 New Image Staged:</div>
+              <div id="admImgModalStagedName" style="font-size: 12px; font-weight: 600; color: #14532d; word-break: break-all;">new_image.png</div>
+              <div id="admImgModalStagedSize" style="font-size: 11px; color: #166534;">0 KB</div>
+            </div>
+          </div>
+
+          <!-- Manual Path Input -->
+          <div style="margin-top: 14px;">
+            <label style="font-size: 12px; font-weight: 600; color: #475569;">Or enter Image Path / URL:</label>
+            <input type="text" id="admImgModalPathInput" class="adm-input" placeholder="e.g. image/sulfidation.png or https://..." style="font-size: 12px; font-family: monospace;" />
+          </div>
+        </div>
+
+        <div class="rbac-modal-footer">
+          <button class="adm-btn adm-btn-secondary" onclick="window.adminPanel.closeImageUploadModal()">Cancel</button>
+          <button class="adm-btn adm-btn-primary" id="admSubmitQuickImgBtn" onclick="window.adminPanel.submitQuickImageUpload()">
+            💾 Apply & Save Image
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📥 Modal: Bulk Import Damage Mechanisms (JSON) -->
+    <div id="admDamageMechImportModal" class="rbac-modal-backdrop" style="display: none; z-index: 100065;">
+      <div class="rbac-modal-card" style="max-width: 680px;">
+        <div class="rbac-modal-header">
+          <h3>📥 Bulk Import Damage Mechanisms (JSON)</h3>
+          <button class="rbac-close-btn" onclick="window.adminPanel.closeBulkImportModal()" type="button">&times;</button>
+        </div>
+        <div class="rbac-modal-body">
+          <p style="font-size: 13px; color: #475569; margin-bottom: 12px;">
+            Import multiple damage mechanisms into Cloud Firestore and your active catalog in one step. Paste JSON below or upload a <code>.json</code> file.
+          </p>
+
+          <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+            <input type="file" id="admBulkJsonFileInput" accept=".json" style="display:none;" onchange="window.adminPanel.onBulkJsonFileSelected(this.files)" />
+            <button type="button" class="adm-btn adm-btn-secondary" onclick="document.getElementById('admBulkJsonFileInput').click()">
+              📁 Upload JSON File
+            </button>
+            <button type="button" class="adm-btn adm-btn-secondary" onclick="window.adminPanel.fillSampleImportJson()">
+              📋 Load Sample Format
+            </button>
+          </div>
+
+          <div class="rbac-field-group">
+            <textarea id="admBulkJsonTextarea" rows="12" style="background:#020617; color:#f8fafc; font-family:monospace; font-size:12px; padding:12px; border:1px solid #334155; border-radius:6px; outline:none; resize:vertical; width: 100%; box-sizing: border-box;" placeholder='{ "Damage Mechanism": { "My New Mechanism": { "description": "...", "affectedMaterials": "..." } } }'></textarea>
+          </div>
+        </div>
+        <div class="rbac-modal-footer">
+          <button class="adm-btn adm-btn-secondary" onclick="window.adminPanel.closeBulkImportModal()">Cancel</button>
+          <button class="adm-btn adm-btn-primary" id="admBulkImportSubmitBtn" onclick="window.adminPanel.submitBulkImport()">
+            📥 Import Mechanisms to Firestore
+          </button>
+        </div>
+      </div>
+    </div>

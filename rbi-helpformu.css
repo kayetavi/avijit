@@ -1,0 +1,113 @@
+/* ===== Reset & Base ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f2f6fc;
+  color: #333;
+  padding: 20px;
+  line-height: 1.6;
+}
+
+/* ===== Page Title ===== */
+h1 {
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 2rem;
+  color: #1a73e8;
+}
+
+/* ===== Section Cards ===== */
+#content > div.section {
+  background-color: #fff;
+  padding: 20px 25px;
+  margin-bottom: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border-left: 5px solid #1a73e8;
+}
+
+/* ===== Section Headings ===== */
+.section h4 {
+  font-size: 1.25rem;
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.section h5 {
+  font-size: 1.1rem;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: #34495e;
+}
+
+/* ===== Formulas and Pre blocks ===== */
+pre {
+  background-color: #f4f6f8;
+  padding: 15px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.95rem;
+  border-left: 3px solid #1a73e8;
+  margin-bottom: 10px;
+}
+
+/* ===== Tables ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+table th, table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+table th {
+  background-color: #1a73e8;
+  color: #fff;
+  font-weight: 600;
+}
+
+table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+table tr:hover {
+  background-color: #e6f0ff;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+  h1 {
+    font-size: 1.5rem;
+  }
+  pre {
+    font-size: 0.85rem;
+    padding: 10px;
+  }
+  table th, table td {
+    padding: 6px;
+    font-size: 0.85rem;
+  }
+}
+
+/* ===== Scrollbars ===== */
+pre::-webkit-scrollbar, table::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+pre::-webkit-scrollbar-thumb, table::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}

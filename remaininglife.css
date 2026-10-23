@@ -1,0 +1,633 @@
+/* ✅ Full Layout Container (Scoped to Corrosion Calculator Tab) */
+#remainingLifeTab {
+  width: 100%;
+  max-width: 100%;
+  background-color: #fdfdfd;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.08);
+  font-family: inherit;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* All children respect border-box */
+#remainingLifeTab *, 
+#remainingLifeTab *::before, 
+#remainingLifeTab *::after {
+  box-sizing: inherit;
+}
+
+/* ✅ Headings */
+#remainingLifeTab h3 {
+  text-align: center;
+  color: #2a2a2a;
+  margin-bottom: 15px;
+  font-size: 21px;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+#remainingLifeTab h4 {
+  color: #444;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #ccc;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+/* ✅ Grid Input Layout (4 Columns) */
+#remainingLifeTab .form-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+#remainingLifeTab .form-grid-4 label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+  color: #333;
+  word-break: break-word;
+}
+
+#remainingLifeTab .form-grid-4 input {
+  width: 100%;
+  padding: 7px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 14.5px;
+  background-color: #fff;
+  transition: border-color 0.3s ease;
+}
+
+#remainingLifeTab .form-grid-4 input:focus {
+  border-color: #007acc;
+  outline: none;
+}
+
+/* ✅ Button Styling */
+#remainingLifeTab .btn {
+  background-color: #007acc;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+  width: auto; /* Make button width auto */
+  min-width: 150px; /* Set a minimum width */
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+#remainingLifeTab .btn:hover {
+  background-color: #005fa3;
+  transform: scale(1.01);
+}
+
+/* ✅ Action Buttons Section - Align Buttons in a Single Row */
+#remainingLifeTab .action-buttons {
+  display: inline-flex;  /* Inline flex ensures no wrapping */
+  gap: 20px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+#remainingLifeTab .bulk-upload {
+  display: inline-flex; /* Ensures file input and button align in one row */
+  gap: 10px;
+  align-items: center;
+}
+
+/* ✅ Output Section */
+#remainingLifeTab .analysis-output {
+  background-color: #f6fcf8;
+  border: 1px solid #d4e9dd;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ✅ Output Rows (Cleanly Aligned) */
+#remainingLifeTab .output-row {
+  display: grid;
+  grid-template-columns: 250px auto;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 15px;
+  border-bottom: 1px solid #e4e4e4;
+}
+
+#remainingLifeTab .output-row:last-child {
+  border-bottom: none;
+}
+
+#remainingLifeTab .output-row span:first-child {
+  font-weight: 500;
+  color: #333;
+}
+
+#remainingLifeTab .output-row span:last-child {
+  font-weight: 600;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ✅ Responsive Layout */
+@media (max-width: 1024px) {
+  #remainingLifeTab .form-grid-4 {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */
+  }
+}
+
+@media (max-width: 768px) {
+  #remainingLifeTab .action-buttons,
+  #remainingLifeTab .bulk-upload {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  #remainingLifeTab .btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    text-align: center;
+  }
+
+  #remainingLifeTab .bulk-upload input[type="file"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 600px) {
+  #remainingLifeTab .form-grid-4 {
+    grid-template-columns: 1fr; /* Single column on mobile */
+  }
+
+  #remainingLifeTab .btn {
+    font-size: 14px; /* Smaller buttons on mobile */
+  }
+
+  #remainingLifeTab .output-row {
+    grid-template-columns: 1fr;
+    padding: 6px 0;
+  }
+
+  #remainingLifeTab .output-row span:first-child,
+  #remainingLifeTab .output-row span:last-child {
+    white-space: normal;
+  }
+
+  .table-preview {
+    min-width: 100% !important;
+  }
+}
+
+/* Professional Chart Container */
+.chart-container {
+  width: 100%;
+  max-width: 900px;       
+  margin: 25px auto 0;    
+  padding: 16px 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.chart-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.chart-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+
+.chart-badge.badge-tag {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.chart-badge.badge-ccr {
+  background: #fef3c7;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+.chart-badge.badge-life {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+.chart-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  min-height: 280px;
+}
+
+#thicknessTrendChart {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.chart-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.chart-kpi-item {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.chart-kpi-item .kpi-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.3px;
+  margin-bottom: 3px;
+}
+
+.chart-kpi-item .kpi-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.chart-kpi-item .highlight-current {
+  color: #2563eb;
+}
+
+.chart-kpi-item .highlight-tmin {
+  color: #dc2626;
+}
+
+.chart-kpi-item .highlight-rate {
+  color: #d97706;
+}
+
+.chart-kpi-item .highlight-date {
+  color: #7c3aed;
+}
+
+/* Modal Background */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999999; /* 🔥 Increased z-index so modal stays on top */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+  font-family: Arial, sans-serif;
+}
+
+/* Modal Content Box */
+.modal-content {
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 20px 25px;
+  border-radius: 8px;
+  max-width: 95vw;
+  max-height: 80vh;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  position: relative;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+/* Close Button */
+.modal-content .close {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+  z-index: 999999; /* ✅ Added so button is clickable */
+}
+
+.modal-content .close:hover {
+  color: #000;
+}
+
+/* Table Styling */
+.table-preview {
+  width: 100%;
+  min-width: 1000px;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 14px;
+  text-align: left;
+  color: #333;
+}
+
+.table-preview th,
+.table-preview td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #ddd;
+  white-space: nowrap;
+}
+
+.table-preview th {
+  background-color: #007acc;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.table-preview tbody tr:hover {
+  background-color: #f1faff;
+}
+
+/* Highlight errors in table */
+.table-preview td.error {
+  color: #d93025;
+  font-weight: bold;
+}
+
+/* Custom button size */
+.small-btn {
+  padding: 5px 12px;
+  font-size: 12px;
+  width: auto;
+}
+
+/* Flexbox layout for buttons */
+.action-buttons {
+  display: inline-flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.bulk-upload {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.preview-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.form-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.analysis-output {
+  margin-top: 25px;
+}
+
+.output-row {
+  margin-bottom: 10px;
+}
+
+.table-preview {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.table-preview th, .table-preview td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.chart-container {
+  margin-top: 25px;
+}
+
+h4 {
+  font-weight: bold;
+}
+
+
+
+
+
+/* ===============================
+   🎯 UNIQUE STYLES — SAVED DATA POPUP
+   Prefix: .saved-data-
+   =============================== */
+
+/* ---------- Button Styles ---------- */
+.saved-data-btn {
+  background-color: #003366;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 14px;
+}
+.saved-data-btn:hover {
+  background-color: #0055aa;
+}
+
+/* ---------- Modal (Popup Window) ---------- */
+.saved-data-modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+}
+
+.saved-data-modal-content {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  position: relative;
+  width: 90%;
+  max-width: 1000px;
+  max-height: 80vh;
+  overflow: auto;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  animation: savedDataFadeIn 0.3s ease;
+}
+
+.saved-data-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  color: #b22222;
+  cursor: pointer;
+  font-weight: bold;
+  background: none;
+  border: none;
+}
+
+/* ---------- Table Styles ---------- */
+.saved-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.saved-data-table th,
+.saved-data-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.saved-data-table th {
+  background-color: #f2f2f2;
+  color: #333;
+  font-weight: bold;
+}
+
+.saved-data-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.saved-data-table .saved-data-delete-btn {
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.saved-data-table .saved-data-delete-btn:hover {
+  background-color: #cc0000;
+}
+
+/* ---------- Header Section in Modal ---------- */
+.saved-data-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.saved-data-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #003366;
+}
+
+/* ---------- Animation ---------- */
+@keyframes savedDataFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Clear All Button (Smaller + Lower Position) ---------- */
+.saved-data-clear-btn {
+  background-color: #b22222;
+  color: white;
+  border: none;
+  padding: 5px 12px; /* 🔹 Smaller size */
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;   /* 🔹 Smaller text */
+  margin-top: 10px;  /* 🔹 Moves button slightly down */
+  transition: background-color 0.2s;
+}
+
+.saved-data-clear-btn:hover {
+  background-color: #8b0000;
+}
+
+/* ✅ Always keep SweetAlert popups above every modal */
+  /* ✅ Force SweetAlert to stay above all modals */
+/* ✅ Always keep SweetAlert above any modal or overlay */
+.swal2-container {
+  z-index: 2147483647 !important; /* Maximum possible z-index value */
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+/* ✅ Ensure the backdrop also stays above everything */
+.swal2-container.swal2-backdrop-show {
+  z-index: 2147483646 !important;
+}
+
+/* 💬 Add this part BELOW (SweetAlert Compact Popup) */
+.small-swal-popup {
+  width: 320px !important;
+  padding: 10px 15px !important;
+  font-size: 14px !important;
+  border-radius: 12px !important;
+}
+
+.swal2-title {
+  font-size: 18px !important;
+  text-align: center !important;
+}
+
+.swal2-html-container,
+.swal2-content {
+  font-size: 14px !important;
+  text-align: center !important;
+}
+
+.swal2-confirm,
+.swal2-cancel {
+  padding: 5px 15px !important;
+  font-size: 13px !important;
+  border-radius: 8px !important;
+}

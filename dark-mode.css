@@ -1,0 +1,3889 @@
+/* ==========================================================================
+   🌙 COMPREHENSIVE DARK MODE STYLESHEET
+   Applies when dark mode is enabled (either html:not(.light-mode) or html.dark-mode)
+   Ensures ALL application tabs, tools, text, forms, tables, and modals (dialogs)
+   look clean, high-contrast, professional, and fully readable.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. ROOT VARIABLES & GLOBAL APPLICATION SURFACES
+   -------------------------------------------------------------------------- */
+:root:not(.light-mode),
+html.dark-mode,
+body.dark-mode {
+  --bg-dark: #121519;
+  --bg-medium: #1b1f26;
+  --bg-light: #232832;
+  --bg-elevated: #282f3a;
+  --bg-hover: #2f3644;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-heading: #f8fafc;
+  --accent: #3b82f6;
+  --accent-hover: #60a5fa;
+  --border: #334155;
+  --border-light: #475569;
+  --selected-bg: #2563eb;
+  --selected-text: #ffffff;
+  --input-bg: #14181e;
+  --input-border: #475569;
+  --input-text: #f1f5f9;
+  --modal-bg: #1b1f26;
+  --modal-content-bg: #1f242d;
+  color-scheme: dark;
+}
+
+html:not(.light-mode),
+html.dark-mode,
+body.dark-mode {
+  background-color: #121519 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) body,
+html.dark-mode body,
+body.dark-mode {
+  background: #121519 !important;
+  color: #e2e8f0 !important;
+}
+
+/* Base typography colors */
+html:not(.light-mode) h1,
+html:not(.light-mode) h2,
+html:not(.light-mode) h3,
+html:not(.light-mode) h4,
+html:not(.light-mode) h5,
+html:not(.light-mode) h6,
+html.dark-mode h1,
+html.dark-mode h2,
+html.dark-mode h3,
+html.dark-mode h4,
+html.dark-mode h5,
+html.dark-mode h6,
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6 {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) p,
+html:not(.light-mode) label,
+html.dark-mode p,
+html.dark-mode label,
+body.dark-mode p,
+body.dark-mode label {
+  color: #cbd5e1;
+}
+
+/* --------------------------------------------------------------------------
+   2. TOP BAR, NAVIGATION, SIDEBAR & DASHBOARD SHELL
+   -------------------------------------------------------------------------- */
+html:not(.light-mode) .top-bar,
+html.dark-mode .top-bar,
+body.dark-mode .top-bar {
+  background: #181c23 !important;
+  border-bottom: 1px solid #334155 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+html:not(.light-mode) .sidebar,
+html.dark-mode .sidebar,
+body.dark-mode .sidebar {
+  background: #181c23 !important;
+  border-right: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+  -webkit-backface-visibility: hidden !important;
+  backface-visibility: hidden !important;
+}
+
+.sidebar-backdrop {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html:not(.light-mode) .sidebar-header,
+html.dark-mode .sidebar-header,
+body.dark-mode .sidebar-header {
+  border-bottom: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .sidebar-header h3,
+html.dark-mode .sidebar-header h3,
+body.dark-mode .sidebar-header h3 {
+  color: #f8fafc !important;
+}
+
+/* 🔍 Sidebar Search Box in Dark Mode */
+html:not(.light-mode) #searchBox,
+html.dark-mode #searchBox,
+body.dark-mode #searchBox {
+  background: #1e2430 !important;
+  border: 1px solid #3b4252 !important;
+  color: #f8fafc !important;
+  animation: none !important;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+}
+
+html:not(.light-mode) #searchBox::placeholder,
+html.dark-mode #searchBox::placeholder,
+body.dark-mode #searchBox::placeholder {
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) #searchBox:focus,
+html.dark-mode #searchBox:focus,
+body.dark-mode #searchBox:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3) !important;
+  outline: none !important;
+}
+
+/* 📂 Sidebar Category Boxes in Dark Mode ("left sidebar me jo box ha") */
+html:not(.light-mode) #categoryList > li > .category,
+html.dark-mode #categoryList > li > .category,
+body.dark-mode #categoryList > li > .category,
+html:not(.light-mode) #categoryList > li > a,
+html.dark-mode #categoryList > li > a,
+body.dark-mode #categoryList > li > a {
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+  padding: 7px 11px !important;
+  margin: 5px 0 !important;
+  background: linear-gradient(135deg, #1e293b 0%, #253349 100%) !important;
+  border: 1px solid #384558 !important;
+  color: #f8fafc !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+html:not(.light-mode) #categoryList > li > .category:hover,
+html.dark-mode #categoryList > li > .category:hover,
+body.dark-mode #categoryList > li > .category:hover {
+  background: linear-gradient(135deg, #253349 0%, #2e3e58 100%) !important;
+  border-color: #60a5fa !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* 🏷️ Sidebar Subcategory (Quantitative, Semi-Quantitative, Process Piping) */
+html:not(.light-mode) .subcategory,
+html.dark-mode .subcategory,
+body.dark-mode .subcategory {
+  background: rgba(30, 41, 59, 0.85) !important;
+  border: 1px solid #3b4a63 !important;
+  color: #93c5fd !important;
+  font-weight: 600 !important;
+}
+
+html:not(.light-mode) .subcategory:hover,
+html.dark-mode .subcategory:hover,
+body.dark-mode .subcategory:hover {
+  background: rgba(59, 130, 246, 0.22) !important;
+  border-color: #60a5fa !important;
+  color: #ffffff !important;
+}
+
+/* 🏷️ Remove bullets on subcategory cards in dark mode */
+html:not(.light-mode) #categoryList li[data-rbac-subcategory],
+html.dark-mode #categoryList li[data-rbac-subcategory],
+body.dark-mode #categoryList li[data-rbac-subcategory],
+html:not(.light-mode) #categoryList li.subcategory-item,
+html.dark-mode #categoryList li.subcategory-item,
+body.dark-mode #categoryList li.subcategory-item,
+html:not(.light-mode) #categoryList li:has(> .subcategory),
+html.dark-mode #categoryList li:has(> .subcategory),
+body.dark-mode #categoryList li:has(> .subcategory) {
+  list-style: none !important;
+  list-style-type: none !important;
+  padding: 0 !important;
+}
+
+html:not(.light-mode) #categoryList li[data-rbac-subcategory]::marker,
+html.dark-mode #categoryList li[data-rbac-subcategory]::marker,
+body.dark-mode #categoryList li[data-rbac-subcategory]::marker,
+html:not(.light-mode) #categoryList li.subcategory-item::marker,
+html.dark-mode #categoryList li.subcategory-item::marker,
+body.dark-mode #categoryList li.subcategory-item::marker,
+html:not(.light-mode) #categoryList li:has(> .subcategory)::marker,
+html.dark-mode #categoryList li:has(> .subcategory)::marker,
+body.dark-mode #categoryList li:has(> .subcategory)::marker {
+  content: "" !important;
+  display: none !important;
+}
+
+/* 📄 Damage Mechanism List Items & Links */
+html:not(.light-mode) #categoryList li ul.mechanisms,
+html.dark-mode #categoryList li ul.mechanisms,
+body.dark-mode #categoryList li ul.mechanisms {
+  list-style: none !important;
+  list-style-type: none !important;
+}
+
+html:not(.light-mode) #categoryList li ul.mechanisms li,
+html.dark-mode #categoryList li ul.mechanisms li,
+body.dark-mode #categoryList li ul.mechanisms li {
+  color: #cbd5e1 !important;
+  list-style: none !important;
+  list-style-type: none !important;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+  padding: 2px 0 !important;
+}
+
+html:not(.light-mode) #categoryList li ul.mechanisms li::marker,
+html.dark-mode #categoryList li ul.mechanisms li::marker,
+body.dark-mode #categoryList li ul.mechanisms li::marker {
+  content: "" !important;
+  display: none !important;
+}
+
+html:not(.light-mode) #categoryList li ul.mechanisms li a,
+html.dark-mode #categoryList li ul.mechanisms li a,
+body.dark-mode #categoryList li ul.mechanisms li a {
+  color: #cbd5e1 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-decoration: none !important;
+  display: block !important;
+  padding: 5px 8px !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  transition: all 0.15s ease !important;
+}
+
+html:not(.light-mode) #categoryList li ul.mechanisms li a:hover,
+html.dark-mode #categoryList li ul.mechanisms li a:hover,
+body.dark-mode #categoryList li ul.mechanisms li a:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  text-decoration: none !important;
+}
+
+html:not(.light-mode) #categoryList li ul.mechanisms li a.active-link,
+html.dark-mode #categoryList li ul.mechanisms li a.active-link,
+body.dark-mode #categoryList li ul.mechanisms li a.active-link {
+  color: #ffffff !important;
+  background: #2563eb !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  display: block !important;
+  padding: 5px 8px !important;
+  border-radius: 6px !important;
+}
+
+/* 🛡️ Admin Sidebar Item in Dark Mode */
+html:not(.light-mode) .admin-sidebar-link,
+html.dark-mode .admin-sidebar-link,
+body.dark-mode .admin-sidebar-link {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid #3b82f6 !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
+}
+
+html:not(.light-mode) .admin-sidebar-link:hover,
+html.dark-mode .admin-sidebar-link:hover,
+body.dark-mode .admin-sidebar-link:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4) !important;
+}
+
+html:not(.light-mode) .sidebar a,
+html:not(.light-mode) .sidebar button,
+html.dark-mode .sidebar a,
+html.dark-mode .sidebar button,
+body.dark-mode .sidebar a,
+body.dark-mode .sidebar button {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) .sidebar a:hover,
+html:not(.light-mode) .sidebar button:hover,
+html.dark-mode .sidebar a:hover,
+html.dark-mode .sidebar button:hover,
+body.dark-mode .sidebar a:hover,
+body.dark-mode .sidebar button:hover {
+  background: #252c38 !important;
+  color: #ffffff !important;
+}
+
+html:not(.light-mode) .sidebar a.active,
+html:not(.light-mode) .sidebar button.active,
+html.dark-mode .sidebar a.active,
+html.dark-mode .sidebar button.active,
+body.dark-mode .sidebar a.active,
+body.dark-mode .sidebar button.active {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+
+/* Tabs list at top of content */
+html:not(.light-mode) .tabs,
+html.dark-mode .tabs,
+body.dark-mode .tabs {
+  background: #181c23 !important;
+  border-bottom: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .tab-button,
+html.dark-mode .tab-button,
+body.dark-mode .tab-button {
+  background: #232832 !important;
+  color: #cbd5e1 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .tab-button:hover,
+html.dark-mode .tab-button:hover,
+body.dark-mode .tab-button:hover {
+  background: #2f3644 !important;
+  color: #ffffff !important;
+}
+
+html:not(.light-mode) .tab-button.active,
+html.dark-mode .tab-button.active,
+body.dark-mode .tab-button.active {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border-color: #2563eb !important;
+}
+
+/* Settings Menu Dropdown */
+html:not(.light-mode) .settings-menu .dropdown-content,
+html.dark-mode .settings-menu .dropdown-content,
+body.dark-mode .settings-menu .dropdown-content {
+  background: #1b1f26 !important;
+  border: 1px solid #3b4252 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6) !important;
+}
+
+html:not(.light-mode) .settings-menu .dropdown-content button,
+html.dark-mode .settings-menu .dropdown-content button,
+body.dark-mode .settings-menu .dropdown-content button {
+  color: #e2e8f0 !important;
+  background: transparent !important;
+}
+
+html:not(.light-mode) .settings-menu .dropdown-content button:hover,
+html.dark-mode .settings-menu .dropdown-content button:hover,
+body.dark-mode .settings-menu .dropdown-content button:hover {
+  background: #282f3a !important;
+  color: #ffffff !important;
+}
+
+/* Content Area */
+html:not(.light-mode) .content,
+html.dark-mode .content,
+body.dark-mode .content {
+  background: #121519 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) .welcome-panel,
+html.dark-mode .welcome-panel,
+body.dark-mode .welcome-panel {
+  background: #1b1f26 !important;
+  border: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) .info-card,
+html.dark-mode .info-card,
+body.dark-mode .info-card {
+  background: #1b1f26 !important;
+  border: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) .info-card h4,
+html.dark-mode .info-card h4,
+body.dark-mode .info-card h4 {
+  color: #f8fafc !important;
+}
+
+/* --------------------------------------------------------------------------
+   3. UNIVERSAL FORM CONTROLS IN DARK MODE
+   -------------------------------------------------------------------------- */
+html:not(.light-mode) input[type="text"],
+html:not(.light-mode) input[type="number"],
+html:not(.light-mode) input[type="email"],
+html:not(.light-mode) input[type="password"],
+html:not(.light-mode) input[type="date"],
+html:not(.light-mode) input[type="file"],
+html:not(.light-mode) select,
+html:not(.light-mode) textarea,
+html.dark-mode input[type="text"],
+html.dark-mode input[type="number"],
+html.dark-mode input[type="email"],
+html.dark-mode input[type="password"],
+html.dark-mode input[type="date"],
+html.dark-mode input[type="file"],
+html.dark-mode select,
+html.dark-mode textarea,
+body.dark-mode input[type="text"],
+body.dark-mode input[type="number"],
+body.dark-mode input[type="email"],
+body.dark-mode input[type="password"],
+body.dark-mode input[type="date"],
+body.dark-mode input[type="file"],
+body.dark-mode select,
+body.dark-mode textarea {
+  background-color: #14181e !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #475569 !important;
+}
+
+html:not(.light-mode) input::placeholder,
+html:not(.light-mode) textarea::placeholder,
+html.dark-mode input::placeholder,
+html.dark-mode textarea::placeholder,
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+  color: #64748b !important;
+}
+
+html:not(.light-mode) input:focus,
+html:not(.light-mode) select:focus,
+html:not(.light-mode) textarea:focus,
+html.dark-mode input:focus,
+html.dark-mode select:focus,
+html.dark-mode textarea:focus,
+body.dark-mode input:focus,
+body.dark-mode select:focus,
+body.dark-mode textarea:focus {
+  border-color: #3b82f6 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3) !important;
+}
+
+html:not(.light-mode) select option,
+html.dark-mode select option,
+body.dark-mode select option {
+  background-color: #1b1f26 !important;
+  color: #f1f5f9 !important;
+}
+
+html:not(.light-mode) input:disabled,
+html:not(.light-mode) select:disabled,
+html.dark-mode input:disabled,
+html.dark-mode select:disabled,
+body.dark-mode input:disabled,
+body.dark-mode select:disabled {
+  background-color: #242932 !important;
+  color: #64748b !important;
+  border-color: #334155 !important;
+}
+
+/* --------------------------------------------------------------------------
+   4. ALL MODALS & POPUPS ("MODELS")
+   -------------------------------------------------------------------------- */
+/* General Modal Backdrop */
+html:not(.light-mode) .modal,
+html.dark-mode .modal,
+body.dark-mode .modal {
+  background-color: rgba(0, 0, 0, 0.78) !important;
+}
+
+/* Modal Content Box */
+html:not(.light-mode) .modal-content,
+html.dark-mode .modal-content,
+body.dark-mode .modal-content {
+  background-color: #1b1f26 !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #3b4252 !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7) !important;
+}
+
+html:not(.light-mode) .modal-content h1,
+html:not(.light-mode) .modal-content h2,
+html:not(.light-mode) .modal-content h3,
+html:not(.light-mode) .modal-content h4,
+html.dark-mode .modal-content h1,
+html.dark-mode .modal-content h2,
+html.dark-mode .modal-content h3,
+html.dark-mode .modal-content h4,
+body.dark-mode .modal-content h1,
+body.dark-mode .modal-content h2,
+body.dark-mode .modal-content h3,
+body.dark-mode .modal-content h4 {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .modal-content label,
+html.dark-mode .modal-content label,
+body.dark-mode .modal-content label {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) .modal-content .close,
+html:not(.light-mode) .modal-content .close-btn,
+html.dark-mode .modal-content .close,
+html.dark-mode .modal-content .close-btn,
+body.dark-mode .modal-content .close,
+body.dark-mode .modal-content .close-btn {
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) .modal-content .close:hover,
+html:not(.light-mode) .modal-content .close-btn:hover,
+html.dark-mode .modal-content .close:hover,
+html.dark-mode .modal-content .close-btn:hover,
+body.dark-mode .modal-content .close:hover,
+body.dark-mode .modal-content .close-btn:hover {
+  color: #ffffff !important;
+  background: #2d3440 !important;
+}
+
+/* Bulk Preview Modal */
+html:not(.light-mode) #bulkPreviewModal .modal-content,
+html.dark-mode #bulkPreviewModal .modal-content,
+body.dark-mode #bulkPreviewModal .modal-content {
+  background-color: #1b1f26 !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #3b4252 !important;
+}
+
+html:not(.light-mode) #bulkPreviewModal h4,
+html.dark-mode #bulkPreviewModal h4,
+body.dark-mode #bulkPreviewModal h4 {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .table-preview,
+html.dark-mode .table-preview,
+body.dark-mode .table-preview {
+  color: #e2e8f0 !important;
+  background-color: transparent !important;
+}
+
+html:not(.light-mode) .table-preview th,
+html.dark-mode .table-preview th,
+body.dark-mode .table-preview th {
+  background-color: #242932 !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .table-preview td,
+html.dark-mode .table-preview td,
+body.dark-mode .table-preview td {
+  background-color: transparent !important;
+  color: #cbd5e1 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .table-preview tbody tr:hover,
+html.dark-mode .table-preview tbody tr:hover,
+body.dark-mode .table-preview tbody tr:hover {
+  background-color: #252b36 !important;
+}
+
+/* Saved Data Modal (#savedDataModal) */
+html:not(.light-mode) .saved-data-modal,
+html.dark-mode .saved-data-modal,
+body.dark-mode .saved-data-modal {
+  background-color: rgba(0, 0, 0, 0.78) !important;
+}
+
+html:not(.light-mode) .saved-data-modal-content,
+html.dark-mode .saved-data-modal-content,
+body.dark-mode .saved-data-modal-content {
+  background-color: #1b1f26 !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #3b4252 !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7) !important;
+}
+
+html:not(.light-mode) .saved-data-header h3,
+html.dark-mode .saved-data-header h3,
+body.dark-mode .saved-data-header h3 {
+  color: #60a5fa !important;
+}
+
+html:not(.light-mode) .saved-data-close,
+html.dark-mode .saved-data-close,
+body.dark-mode .saved-data-close {
+  color: #f87171 !important;
+}
+
+html:not(.light-mode) .saved-data-close:hover,
+html.dark-mode .saved-data-close:hover,
+body.dark-mode .saved-data-close:hover {
+  color: #ef4444 !important;
+}
+
+html:not(.light-mode) .saved-data-table,
+html.dark-mode .saved-data-table,
+body.dark-mode .saved-data-table {
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) .saved-data-table th,
+html.dark-mode .saved-data-table th,
+body.dark-mode .saved-data-table th {
+  background-color: #242932 !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .saved-data-table td,
+html.dark-mode .saved-data-table td,
+body.dark-mode .saved-data-table td {
+  background-color: transparent !important;
+  color: #cbd5e1 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .saved-data-table tr:hover,
+html.dark-mode .saved-data-table tr:hover,
+body.dark-mode .saved-data-table tr:hover {
+  background-color: #252b36 !important;
+}
+
+/* External, Internal, Consequence Modals */
+html:not(.light-mode) #externalModal .modal-content,
+html:not(.light-mode) #internalModal .modal-content,
+html:not(.light-mode) #consequenceModal .modal-content,
+html.dark-mode #externalModal .modal-content,
+html.dark-mode #internalModal .modal-content,
+html.dark-mode #consequenceModal .modal-content,
+body.dark-mode #externalModal .modal-content,
+body.dark-mode #internalModal .modal-content,
+body.dark-mode #consequenceModal .modal-content {
+  background-color: #1b1f26 !important;
+  border: 1px solid #3b4252 !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+}
+
+html:not(.light-mode) #externalModal h2,
+html:not(.light-mode) #internalModal h2,
+html:not(.light-mode) #consequenceModal h2,
+html.dark-mode #externalModal h2,
+html.dark-mode #internalModal h2,
+html.dark-mode #consequenceModal h2,
+body.dark-mode #externalModal h2,
+body.dark-mode #internalModal h2,
+body.dark-mode #consequenceModal h2 {
+  color: #60a5fa !important;
+  border-bottom: 2px solid #334155 !important;
+  padding-bottom: 8px !important;
+}
+
+html:not(.light-mode) #externalModal .form-group,
+html:not(.light-mode) #internalModal .form-group,
+html:not(.light-mode) #consequenceModal .form-group,
+html.dark-mode #externalModal .form-group,
+html.dark-mode #internalModal .form-group,
+html.dark-mode #consequenceModal .form-group,
+body.dark-mode #externalModal .form-group,
+body.dark-mode #internalModal .form-group,
+body.dark-mode #consequenceModal .form-group {
+  background-color: #14181f !important;
+  border: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #externalModal label,
+html:not(.light-mode) #internalModal label,
+html:not(.light-mode) #consequenceModal label,
+html.dark-mode #externalModal label,
+html.dark-mode #internalModal label,
+html.dark-mode #consequenceModal label,
+body.dark-mode #externalModal label,
+body.dark-mode #internalModal label,
+body.dark-mode #consequenceModal label {
+  color: #cbd5e1 !important;
+  font-weight: 500 !important;
+}
+
+html:not(.light-mode) #externalModal input,
+html:not(.light-mode) #externalModal select,
+html:not(.light-mode) #internalModal input,
+html:not(.light-mode) #internalModal select,
+html:not(.light-mode) #consequenceModal input,
+html:not(.light-mode) #consequenceModal select,
+html.dark-mode #externalModal input,
+html.dark-mode #externalModal select,
+html.dark-mode #internalModal input,
+html.dark-mode #internalModal select,
+html.dark-mode #consequenceModal input,
+html.dark-mode #consequenceModal select,
+body.dark-mode #externalModal input,
+body.dark-mode #externalModal select,
+body.dark-mode #internalModal input,
+body.dark-mode #internalModal select,
+body.dark-mode #consequenceModal input,
+body.dark-mode #consequenceModal select {
+  background-color: #0f1318 !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #475569 !important;
+}
+
+html:not(.light-mode) #externalModal button,
+html:not(.light-mode) #internalModal button,
+html:not(.light-mode) #consequenceModal button,
+html.dark-mode #externalModal button,
+html.dark-mode #internalModal button,
+html.dark-mode #consequenceModal button,
+body.dark-mode #externalModal button,
+body.dark-mode #internalModal button,
+body.dark-mode #consequenceModal button {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  color: #ffffff !important;
+  border: 1px solid #3b82f6 !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
+}
+
+html:not(.light-mode) #externalModal button:hover,
+html:not(.light-mode) #internalModal button:hover,
+html:not(.light-mode) #consequenceModal button:hover,
+html.dark-mode #externalModal button:hover,
+html.dark-mode #internalModal button:hover,
+html.dark-mode #consequenceModal button:hover,
+body.dark-mode #externalModal button:hover,
+body.dark-mode #internalModal button:hover,
+body.dark-mode #consequenceModal button:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+  border-color: #60a5fa !important;
+}
+
+html:not(.light-mode) #ext_results,
+html:not(.light-mode) #int_results,
+html:not(.light-mode) #cons_results,
+html:not(.light-mode) #externalModal .result,
+html:not(.light-mode) #internalModal .result,
+html:not(.light-mode) #consequenceModal .result,
+html.dark-mode #ext_results,
+html.dark-mode #int_results,
+html.dark-mode #cons_results,
+html.dark-mode #externalModal .result,
+html.dark-mode #internalModal .result,
+html.dark-mode #consequenceModal .result,
+body.dark-mode #ext_results,
+body.dark-mode #int_results,
+body.dark-mode #cons_results,
+body.dark-mode #externalModal .result,
+body.dark-mode #internalModal .result,
+body.dark-mode #consequenceModal .result {
+  background: #141b24 !important;
+  background-color: #141b24 !important;
+  border: 1px solid #334155 !important;
+  border-left: 5px solid #3b82f6 !important;
+  color: #f1f5f9 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+}
+
+html:not(.light-mode) #ext_results b,
+html:not(.light-mode) #ext_results strong,
+html:not(.light-mode) #int_results b,
+html:not(.light-mode) #int_results strong,
+html:not(.light-mode) #cons_results b,
+html:not(.light-mode) #cons_results strong,
+html.dark-mode #ext_results b,
+html.dark-mode #ext_results strong,
+html.dark-mode #int_results b,
+html.dark-mode #int_results strong,
+html.dark-mode #cons_results b,
+html.dark-mode #cons_results strong,
+body.dark-mode #ext_results b,
+body.dark-mode #ext_results strong,
+body.dark-mode #int_results b,
+body.dark-mode #int_results strong,
+body.dark-mode #cons_results b,
+body.dark-mode #cons_results strong {
+  color: #60a5fa !important;
+}
+
+html:not(.light-mode) #cons_results table,
+html.dark-mode #cons_results table,
+body.dark-mode #cons_results table {
+  background: #10141b !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) #cons_results th,
+html.dark-mode #cons_results th,
+body.dark-mode #cons_results th {
+  background-color: #1e2530 !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) #cons_results td,
+html.dark-mode #cons_results td,
+body.dark-mode #cons_results td {
+  border: 1px solid #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #externalModal .close-btn,
+html:not(.light-mode) #internalModal .close-btn,
+html:not(.light-mode) #consequenceModal .close-btn,
+html.dark-mode #externalModal .close-btn,
+html.dark-mode #internalModal .close-btn,
+html.dark-mode #consequenceModal .close-btn,
+body.dark-mode #externalModal .close-btn,
+body.dark-mode #internalModal .close-btn,
+body.dark-mode #consequenceModal .close-btn {
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) #externalModal .close-btn:hover,
+html:not(.light-mode) #internalModal .close-btn:hover,
+html:not(.light-mode) #consequenceModal .close-btn:hover,
+html.dark-mode #externalModal .close-btn:hover,
+html.dark-mode #internalModal .close-btn:hover,
+html.dark-mode #consequenceModal .close-btn:hover,
+body.dark-mode #externalModal .close-btn:hover,
+body.dark-mode #internalModal .close-btn:hover,
+body.dark-mode #consequenceModal .close-btn:hover {
+  color: #f1f5f9 !important;
+}
+
+/* Process Flow Diagrams Fullscreen Modals */
+html:not(.light-mode) #processFlowModal .modal-content.fullscreen,
+html:not(.light-mode) #cduVduModal .modal-content.fullscreen,
+html:not(.light-mode) #mspModal .modal-content.fullscreen,
+html:not(.light-mode) #h2uModal .modal-content.fullscreen,
+html.dark-mode #processFlowModal .modal-content.fullscreen,
+html.dark-mode #cduVduModal .modal-content.fullscreen,
+html.dark-mode #mspModal .modal-content.fullscreen,
+html.dark-mode #h2uModal .modal-content.fullscreen,
+body.dark-mode #processFlowModal .modal-content.fullscreen,
+body.dark-mode #cduVduModal .modal-content.fullscreen,
+body.dark-mode #mspModal .modal-content.fullscreen,
+body.dark-mode #h2uModal .modal-content.fullscreen {
+  background-color: #121519 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #processFlowModal .sidebar,
+html:not(.light-mode) #cduVduModal .sidebar,
+html:not(.light-mode) #mspModal .sidebar,
+html:not(.light-mode) #h2uModal .sidebar,
+html.dark-mode #processFlowModal .sidebar,
+html.dark-mode #cduVduModal .sidebar,
+html.dark-mode #mspModal .sidebar,
+html.dark-mode #h2uModal .sidebar,
+body.dark-mode #processFlowModal .sidebar,
+body.dark-mode #cduVduModal .sidebar,
+body.dark-mode #mspModal .sidebar,
+body.dark-mode #h2uModal .sidebar {
+  position: relative !important;
+  transform: none !important;
+  -webkit-transform: none !important;
+  top: auto !important;
+  left: auto !important;
+  background-color: #181c23 !important;
+  border-right: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #processFlowModal .sidebar h3,
+html:not(.light-mode) #cduVduModal .sidebar h3,
+html:not(.light-mode) #mspModal .sidebar h3,
+html:not(.light-mode) #h2uModal .sidebar h3,
+html.dark-mode #processFlowModal .sidebar h3,
+html.dark-mode #cduVduModal .sidebar h3,
+html.dark-mode #mspModal .sidebar h3,
+html.dark-mode #h2uModal .sidebar h3,
+body.dark-mode #processFlowModal .sidebar h3,
+body.dark-mode #cduVduModal .sidebar h3,
+body.dark-mode #mspModal .sidebar h3,
+body.dark-mode #h2uModal .sidebar h3 {
+  color: #60a5fa !important;
+  border-bottom: 2px solid #2563eb !important;
+}
+
+html:not(.light-mode) #processFlowModal .sidebar li,
+html:not(.light-mode) #cduVduModal .sidebar li,
+html:not(.light-mode) #mspModal .sidebar li,
+html:not(.light-mode) #h2uModal .sidebar li,
+html.dark-mode #processFlowModal .sidebar li,
+html.dark-mode #cduVduModal .sidebar li,
+html.dark-mode #mspModal .sidebar li,
+html.dark-mode #h2uModal .sidebar li,
+body.dark-mode #processFlowModal .sidebar li,
+body.dark-mode #cduVduModal .sidebar li,
+body.dark-mode #mspModal .sidebar li,
+body.dark-mode #h2uModal .sidebar li {
+  border-bottom: 1px solid #2d3440 !important;
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #processFlowModal .sidebar li:hover,
+html:not(.light-mode) #cduVduModal .sidebar li:hover,
+html:not(.light-mode) #mspModal .sidebar li:hover,
+html:not(.light-mode) #h2uModal .sidebar li:hover,
+html.dark-mode #processFlowModal .sidebar li:hover,
+html.dark-mode #cduVduModal .sidebar li:hover,
+html.dark-mode #mspModal .sidebar li:hover,
+html.dark-mode #h2uModal .sidebar li:hover,
+body.dark-mode #processFlowModal .sidebar li:hover,
+body.dark-mode #cduVduModal .sidebar li:hover,
+body.dark-mode #mspModal .sidebar li:hover,
+body.dark-mode #h2uModal .sidebar li:hover {
+  background-color: #252b36 !important;
+  color: #93c5fd !important;
+}
+
+html:not(.light-mode) #processFlowModal .drawing,
+html:not(.light-mode) #cduVduModal .drawing,
+html:not(.light-mode) #mspModal .drawing,
+html:not(.light-mode) #h2uModal .drawing,
+html.dark-mode #processFlowModal .drawing,
+html.dark-mode #cduVduModal .drawing,
+html.dark-mode #mspModal .drawing,
+html.dark-mode #h2uModal .drawing,
+body.dark-mode #processFlowModal .drawing,
+body.dark-mode #cduVduModal .drawing,
+body.dark-mode #mspModal .drawing,
+body.dark-mode #h2uModal .drawing {
+  background-color: #121519 !important;
+}
+
+/* Detail Popups inside Diagram Modals */
+html:not(.light-mode) #detailsModal,
+html:not(.light-mode) #cduvdu-detailsModal,
+html:not(.light-mode) #msp-detailsModal,
+html:not(.light-mode) #h2u-detailsModal,
+html.dark-mode #detailsModal,
+html.dark-mode #cduvdu-detailsModal,
+html.dark-mode #msp-detailsModal,
+html.dark-mode #h2u-detailsModal,
+body.dark-mode #detailsModal,
+body.dark-mode #cduvdu-detailsModal,
+body.dark-mode #msp-detailsModal,
+body.dark-mode #h2u-detailsModal {
+  background-color: rgba(27, 31, 38, 0.96) !important;
+  border: 2px solid #3b4252 !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8) !important;
+}
+
+html:not(.light-mode) #detailsModal #detailsContent,
+html:not(.light-mode) #cduvdu-detailsModalContent,
+html:not(.light-mode) #msp-detailsModalContent,
+html:not(.light-mode) #h2u-detailsModalContent,
+html.dark-mode #detailsModal #detailsContent,
+html.dark-mode #cduvdu-detailsModalContent,
+html.dark-mode #msp-detailsModalContent,
+html.dark-mode #h2u-detailsModalContent,
+body.dark-mode #detailsModal #detailsContent,
+body.dark-mode #cduvdu-detailsModalContent,
+body.dark-mode #msp-detailsModalContent,
+body.dark-mode #h2u-detailsModalContent {
+  background: #14181e !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) #detailsModal .close-btn,
+html:not(.light-mode) #cduvdu-detailsModal .close-btn,
+html:not(.light-mode) #msp-detailsModal .close-btn,
+html:not(.light-mode) #h2u-detailsModal .close-btn,
+html.dark-mode #detailsModal .close-btn,
+html.dark-mode #cduvdu-detailsModal .close-btn,
+html.dark-mode #msp-detailsModal .close-btn,
+html.dark-mode #h2u-detailsModal .close-btn,
+body.dark-mode #detailsModal .close-btn,
+body.dark-mode #cduvdu-detailsModal .close-btn,
+body.dark-mode #msp-detailsModal .close-btn,
+body.dark-mode #h2u-detailsModal .close-btn {
+  background: #252b36 !important;
+  color: #f8fafc !important;
+  border: 1px solid #475569 !important;
+}
+
+/* SweetAlert2 Dialogs */
+html:not(.light-mode) .swal2-popup,
+html.dark-mode .swal2-popup,
+body.dark-mode .swal2-popup {
+  background: #1b1f26 !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #3b4252 !important;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7) !important;
+}
+
+html:not(.light-mode) .swal2-title,
+html.dark-mode .swal2-title,
+body.dark-mode .swal2-title {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .swal2-html-container,
+html.dark-mode .swal2-html-container,
+body.dark-mode .swal2-html-container {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) .swal2-close,
+html.dark-mode .swal2-close,
+body.dark-mode .swal2-close {
+  color: #94a3b8 !important;
+}
+
+/* --------------------------------------------------------------------------
+   5. SPECIFIC APPLICATION TABS ("SOB APPLICATION")
+   -------------------------------------------------------------------------- */
+
+/* TAB 1: API 571 Damage Mechanism Screening Criteria (#a571-criteriaTab) */
+html:not(.light-mode) #a571-criteriaTab,
+html.dark-mode #a571-criteriaTab,
+body.dark-mode #a571-criteriaTab {
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab > h3,
+html.dark-mode #a571-criteriaTab > h3,
+body.dark-mode #a571-criteriaTab > h3 {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .criteria-note,
+html.dark-mode #a571-criteriaTab .criteria-note,
+body.dark-mode #a571-criteriaTab .criteria-note {
+  background: #182234 !important;
+  border-color: #2b3952 !important;
+  border-left: 4px solid #3b82f6 !important;
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab #a571-filterForm,
+html.dark-mode #a571-criteriaTab #a571-filterForm,
+body.dark-mode #a571-criteriaTab #a571-filterForm {
+  background: #1b1f26 !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab #a571-filterForm label,
+html.dark-mode #a571-criteriaTab #a571-filterForm label,
+body.dark-mode #a571-criteriaTab #a571-filterForm label {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab #a571-filterForm input,
+html:not(.light-mode) #a571-criteriaTab #a571-filterForm select,
+html.dark-mode #a571-criteriaTab #a571-filterForm input,
+html.dark-mode #a571-criteriaTab #a571-filterForm select,
+body.dark-mode #a571-criteriaTab #a571-filterForm input,
+body.dark-mode #a571-criteriaTab #a571-filterForm select {
+  background: #14181e !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #475569 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab #a571-filterForm input::placeholder,
+html.dark-mode #a571-criteriaTab #a571-filterForm input::placeholder,
+body.dark-mode #a571-criteriaTab #a571-filterForm input::placeholder {
+  color: #64748b !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .calc-card,
+html.dark-mode #a571-criteriaTab .calc-card,
+body.dark-mode #a571-criteriaTab .calc-card {
+  background: #1b1f26 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .calc-card h4,
+html.dark-mode #a571-criteriaTab .calc-card h4,
+body.dark-mode #a571-criteriaTab .calc-card h4 {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .calc-grid > div,
+html.dark-mode #a571-criteriaTab .calc-grid > div,
+body.dark-mode #a571-criteriaTab .calc-grid > div {
+  background: #14181e !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .calc-grid strong,
+html.dark-mode #a571-criteriaTab .calc-grid strong,
+body.dark-mode #a571-criteriaTab .calc-grid strong {
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .calc-grid span,
+html.dark-mode #a571-criteriaTab .calc-grid span,
+body.dark-mode #a571-criteriaTab .calc-grid span {
+  color: #60a5fa !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .result-header,
+html.dark-mode #a571-criteriaTab .result-header,
+body.dark-mode #a571-criteriaTab .result-header {
+  background: #1b1f26 !important;
+  border: 1px solid #334155 !important;
+  border-bottom: none !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .result-table-wrapper,
+html.dark-mode #a571-criteriaTab .result-table-wrapper,
+body.dark-mode #a571-criteriaTab .result-table-wrapper {
+  background: #1b1f26 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .damage-table thead th,
+html.dark-mode #a571-criteriaTab .damage-table thead th,
+body.dark-mode #a571-criteriaTab .damage-table thead th {
+  background: #242932 !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .damage-table tbody td,
+html.dark-mode #a571-criteriaTab .damage-table tbody td,
+body.dark-mode #a571-criteriaTab .damage-table tbody td {
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .damage-table .applicable-row,
+html.dark-mode #a571-criteriaTab .damage-table .applicable-row,
+body.dark-mode #a571-criteriaTab .damage-table .applicable-row {
+  background: rgba(16, 185, 129, 0.16) !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .damage-table .applicable-row:hover,
+html.dark-mode #a571-criteriaTab .damage-table .applicable-row:hover,
+body.dark-mode #a571-criteriaTab .damage-table .applicable-row:hover {
+  background: rgba(16, 185, 129, 0.24) !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .damage-table .not-applicable-row,
+html.dark-mode #a571-criteriaTab .damage-table .not-applicable-row,
+body.dark-mode #a571-criteriaTab .damage-table .not-applicable-row {
+  background: rgba(239, 68, 68, 0.12) !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .damage-table .not-applicable-row:hover,
+html.dark-mode #a571-criteriaTab .damage-table .not-applicable-row:hover,
+body.dark-mode #a571-criteriaTab .damage-table .not-applicable-row:hover {
+  background: rgba(239, 68, 68, 0.18) !important;
+}
+
+/* Dark Mode: Auto-Loader Hub & Matrix Grid */
+html:not(.light-mode) #a571-criteriaTab .a571-autoload-box,
+html.dark-mode #a571-criteriaTab .a571-autoload-box,
+body.dark-mode #a571-criteriaTab .a571-autoload-box {
+  background: linear-gradient(135deg, #182234 0%, #0f172a 100%) !important;
+  border-color: #2b3952 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-autoload-title h4,
+html.dark-mode #a571-criteriaTab .a571-autoload-title h4,
+body.dark-mode #a571-criteriaTab .a571-autoload-title h4 {
+  color: #93c5fd !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-autoload-title p,
+html.dark-mode #a571-criteriaTab .a571-autoload-title p,
+body.dark-mode #a571-criteriaTab .a571-autoload-title p {
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-select-label,
+html.dark-mode #a571-criteriaTab .a571-select-label,
+body.dark-mode #a571-criteriaTab .a571-select-label {
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-stream-select,
+html.dark-mode #a571-criteriaTab .a571-stream-select,
+body.dark-mode #a571-criteriaTab .a571-stream-select {
+  background: #14181e !important;
+  color: #f1f5f9 !important;
+  border-color: #3b82f6 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-sync-btn,
+html.dark-mode #a571-criteriaTab .a571-sync-btn,
+body.dark-mode #a571-criteriaTab .a571-sync-btn {
+  background: #1e293b !important;
+  color: #60a5fa !important;
+  border-color: #3b82f6 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-reset-btn,
+html.dark-mode #a571-criteriaTab .a571-reset-btn,
+body.dark-mode #a571-criteriaTab .a571-reset-btn {
+  background: #1e293b !important;
+  color: #cbd5e1 !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-alert-badge,
+html.dark-mode #a571-criteriaTab .a571-alert-badge,
+body.dark-mode #a571-criteriaTab .a571-alert-badge {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-color: #059669 !important;
+  color: #a7f3d0 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-kpi-box,
+html.dark-mode #a571-criteriaTab .a571-kpi-box,
+body.dark-mode #a571-criteriaTab .a571-kpi-box {
+  background: #182234 !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-filter-chip,
+html.dark-mode #a571-criteriaTab .a571-filter-chip,
+body.dark-mode #a571-criteriaTab .a571-filter-chip {
+  background: #1e293b !important;
+  color: #cbd5e1 !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-filter-chip.active,
+html.dark-mode #a571-criteriaTab .a571-filter-chip.active,
+body.dark-mode #a571-criteriaTab .a571-filter-chip.active {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-matrix-card,
+html.dark-mode #a571-criteriaTab .a571-matrix-card,
+body.dark-mode #a571-criteriaTab .a571-matrix-card {
+  background: #1b1f26 !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-matrix-card.applicable-border,
+html.dark-mode #a571-criteriaTab .a571-matrix-card.applicable-border,
+body.dark-mode #a571-criteriaTab .a571-matrix-card.applicable-border {
+  border-left-color: #ef4444 !important;
+  background: linear-gradient(135deg, #1b1f26 0%, rgba(239, 68, 68, 0.12) 100%) !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-card-title,
+html.dark-mode #a571-criteriaTab .a571-card-title,
+body.dark-mode #a571-criteriaTab .a571-card-title {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-card-basis,
+html.dark-mode #a571-criteriaTab .a571-card-basis,
+body.dark-mode #a571-criteriaTab .a571-card-basis {
+  background: #14181e !important;
+  border-color: #2b3952 !important;
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-card-inspection,
+html.dark-mode #a571-criteriaTab .a571-card-inspection,
+body.dark-mode #a571-criteriaTab .a571-card-inspection {
+  background: #1e293b !important;
+  border-color: #3b82f6 !important;
+  color: #93c5fd !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-export-btn,
+html.dark-mode #a571-criteriaTab .a571-export-btn,
+body.dark-mode #a571-criteriaTab .a571-export-btn {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+  border-color: #475569 !important;
+}
+
+/* TAB 2: Remaining Life / Corrosion Rate Calculator Sheet (#remainingLifeTab) */
+html:not(.light-mode) #remainingLifeTab,
+html.dark-mode #remainingLifeTab,
+body.dark-mode #remainingLifeTab {
+  background: #14181e !important;
+  background-color: #14181e !important;
+  border: 1px solid #334155 !important;
+  border-radius: 10px !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+html:not(.light-mode) #remainingLifeTab h3,
+html.dark-mode #remainingLifeTab h3,
+body.dark-mode #remainingLifeTab h3 {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #remainingLifeTab h4,
+html.dark-mode #remainingLifeTab h4,
+body.dark-mode #remainingLifeTab h4 {
+  color: #60a5fa !important;
+  border-bottom: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) #remainingLifeTab .form-grid-4,
+html.dark-mode #remainingLifeTab .form-grid-4,
+body.dark-mode #remainingLifeTab .form-grid-4 {
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #remainingLifeTab .form-grid-4 label,
+html.dark-mode #remainingLifeTab .form-grid-4 label,
+body.dark-mode #remainingLifeTab .form-grid-4 label {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #remainingLifeTab .form-grid-4 input,
+html.dark-mode #remainingLifeTab .form-grid-4 input,
+body.dark-mode #remainingLifeTab .form-grid-4 input {
+  background-color: #0f1318 !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #475569 !important;
+  border-radius: 5px !important;
+}
+
+html:not(.light-mode) #remainingLifeTab .form-grid-4 input:focus,
+html.dark-mode #remainingLifeTab .form-grid-4 input:focus,
+body.dark-mode #remainingLifeTab .form-grid-4 input:focus {
+  border-color: #3b82f6 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25) !important;
+}
+
+html:not(.light-mode) #remainingLifeTab input[type="date"]::-webkit-calendar-picker-indicator,
+html.dark-mode #remainingLifeTab input[type="date"]::-webkit-calendar-picker-indicator,
+body.dark-mode #remainingLifeTab input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.9) hue-rotate(180deg) !important;
+  cursor: pointer !important;
+}
+
+/* Action Buttons & Bulk Upload */
+html:not(.light-mode) #remainingLifeTab .btn,
+html.dark-mode #remainingLifeTab .btn,
+body.dark-mode #remainingLifeTab .btn {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  color: #ffffff !important;
+  border: 1px solid #3b82f6 !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+}
+
+html:not(.light-mode) #remainingLifeTab .btn:hover,
+html.dark-mode #remainingLifeTab .btn:hover,
+body.dark-mode #remainingLifeTab .btn:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+  border-color: #60a5fa !important;
+  transform: translateY(-1px) !important;
+}
+
+html:not(.light-mode) #remainingLifeTab .bulk-upload input[type="file"],
+html.dark-mode #remainingLifeTab .bulk-upload input[type="file"],
+body.dark-mode #remainingLifeTab .bulk-upload input[type="file"] {
+  color: #cbd5e1 !important;
+}
+
+/* Settings Menu Dropdown in Corrosion Rate Calculator */
+html:not(.light-mode) #settingsMenu,
+html.dark-mode #settingsMenu,
+body.dark-mode #settingsMenu {
+  background: #1a222d !important;
+  background-color: #1a222d !important;
+  border: 1px solid #334155 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+html:not(.light-mode) #settingsMenu .btn,
+html:not(.light-mode) #settingsMenu button,
+html.dark-mode #settingsMenu .btn,
+html.dark-mode #settingsMenu button,
+body.dark-mode #settingsMenu .btn,
+body.dark-mode #settingsMenu button {
+  background: transparent !important;
+  color: #e2e8f0 !important;
+  border: none !important;
+  border-bottom: 1px solid #334155 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  width: 100% !important;
+  text-align: left !important;
+}
+
+html:not(.light-mode) #settingsMenu .btn:last-child,
+html:not(.light-mode) #settingsMenu button:last-child,
+html.dark-mode #settingsMenu .btn:last-child,
+html.dark-mode #settingsMenu button:last-child,
+body.dark-mode #settingsMenu .btn:last-child,
+body.dark-mode #settingsMenu button:last-child {
+  border-bottom: none !important;
+}
+
+html:not(.light-mode) #settingsMenu .btn:hover,
+html:not(.light-mode) #settingsMenu button:hover,
+html.dark-mode #settingsMenu .btn:hover,
+html.dark-mode #settingsMenu button:hover,
+body.dark-mode #settingsMenu .btn:hover,
+body.dark-mode #settingsMenu button:hover {
+  background: #252f3e !important;
+  color: #38bdf8 !important;
+}
+
+/* Analysis Output Box */
+html:not(.light-mode) #remainingLifeTab .analysis-output,
+html.dark-mode #remainingLifeTab .analysis-output,
+body.dark-mode #remainingLifeTab .analysis-output {
+  background: #182230 !important;
+  background-color: #182230 !important;
+  border: 1px solid #334155 !important;
+  border-left: 5px solid #10b981 !important;
+  border-radius: 8px !important;
+  color: #f1f5f9 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+html:not(.light-mode) #remainingLifeTab .output-row,
+html.dark-mode #remainingLifeTab .output-row,
+body.dark-mode #remainingLifeTab .output-row {
+  border-bottom: 1px solid #283344 !important;
+}
+
+html:not(.light-mode) #remainingLifeTab .output-row span:first-child,
+html.dark-mode #remainingLifeTab .output-row span:first-child,
+body.dark-mode #remainingLifeTab .output-row span:first-child {
+  color: #94a3b8 !important;
+  font-weight: 500 !important;
+}
+
+html:not(.light-mode) #remainingLifeTab .output-row span:last-child,
+html.dark-mode #remainingLifeTab .output-row span:last-child,
+body.dark-mode #remainingLifeTab .output-row span:last-child {
+  color: #38bdf8 !important;
+  font-weight: 700 !important;
+}
+
+/* Chart Container & Trend Chart */
+html:not(.light-mode) #remainingLifeTab .chart-container,
+html.dark-mode #remainingLifeTab .chart-container,
+body.dark-mode #remainingLifeTab .chart-container {
+  background: #181d24 !important;
+  border: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+html:not(.light-mode) #remainingLifeTab .chart-header-row,
+html.dark-mode #remainingLifeTab .chart-header-row,
+body.dark-mode #remainingLifeTab .chart-header-row {
+  border-bottom-color: #334155 !important;
+}
+
+html:not(.light-mode) #remainingLifeTab .chart-kpi-grid,
+html.dark-mode #remainingLifeTab .chart-kpi-grid,
+body.dark-mode #remainingLifeTab .chart-kpi-grid {
+  border-top-color: #334155 !important;
+}
+
+html:not(.light-mode) #remainingLifeTab .chart-kpi-item,
+html.dark-mode #remainingLifeTab .chart-kpi-item,
+body.dark-mode #remainingLifeTab .chart-kpi-item {
+  background: #0f172a !important;
+  border-color: #1e293b !important;
+}
+
+html:not(.light-mode) #remainingLifeTab .chart-kpi-item .kpi-label,
+html.dark-mode #remainingLifeTab .chart-kpi-item .kpi-label,
+body.dark-mode #remainingLifeTab .chart-kpi-item .kpi-label {
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) #remainingLifeTab .chart-kpi-item .kpi-value,
+html.dark-mode #remainingLifeTab .chart-kpi-item .kpi-value,
+body.dark-mode #remainingLifeTab .chart-kpi-item .kpi-value {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #remainingLifeTab #thicknessTrendChart,
+html.dark-mode #remainingLifeTab #thicknessTrendChart,
+body.dark-mode #remainingLifeTab #thicknessTrendChart {
+  background-color: transparent !important;
+}
+
+/* Bulk Preview Modal (CSV Upload Preview Sheet) */
+html:not(.light-mode) #bulkPreviewModal .modal-content,
+html.dark-mode #bulkPreviewModal .modal-content,
+body.dark-mode #bulkPreviewModal .modal-content {
+  background-color: #181d24 !important;
+  border: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
+}
+
+html:not(.light-mode) #bulkPreviewModal .close,
+html.dark-mode #bulkPreviewModal .close,
+body.dark-mode #bulkPreviewModal .close {
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) #bulkPreviewModal .close:hover,
+html.dark-mode #bulkPreviewModal .close:hover,
+body.dark-mode #bulkPreviewModal .close:hover {
+  color: #f1f5f9 !important;
+}
+
+html:not(.light-mode) #bulkPreviewModal h4,
+html.dark-mode #bulkPreviewModal h4,
+body.dark-mode #bulkPreviewModal h4 {
+  color: #60a5fa !important;
+}
+
+html:not(.light-mode) .table-preview,
+html:not(.light-mode) #bulkPreviewTable,
+html.dark-mode .table-preview,
+html.dark-mode #bulkPreviewTable,
+body.dark-mode .table-preview,
+body.dark-mode #bulkPreviewTable {
+  background: #14181e !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .table-preview th,
+html:not(.light-mode) #bulkPreviewTable th,
+html.dark-mode .table-preview th,
+html.dark-mode #bulkPreviewTable th,
+body.dark-mode .table-preview th,
+body.dark-mode #bulkPreviewTable th {
+  background-color: #1e2634 !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155 !important;
+  font-weight: 600 !important;
+}
+
+html:not(.light-mode) .table-preview td,
+html:not(.light-mode) #bulkPreviewTable td,
+html.dark-mode .table-preview td,
+html.dark-mode #bulkPreviewTable td,
+body.dark-mode .table-preview td,
+body.dark-mode #bulkPreviewTable td {
+  background-color: #14181e !important;
+  color: #cbd5e1 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .table-preview tbody tr:hover td,
+html:not(.light-mode) #bulkPreviewTable tbody tr:hover td,
+html.dark-mode .table-preview tbody tr:hover td,
+html.dark-mode #bulkPreviewTable tbody tr:hover td,
+body.dark-mode .table-preview tbody tr:hover td,
+body.dark-mode #bulkPreviewTable tbody tr:hover td {
+  background-color: #222b38 !important;
+}
+
+/* Saved Analyses Modal (Saved Data Sheet) */
+html:not(.light-mode) #savedDataModal .saved-data-modal-content,
+html.dark-mode #savedDataModal .saved-data-modal-content,
+body.dark-mode #savedDataModal .saved-data-modal-content {
+  background-color: #181d24 !important;
+  border: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
+}
+
+html:not(.light-mode) #savedDataModal .saved-data-header h3,
+html.dark-mode #savedDataModal .saved-data-header h3,
+body.dark-mode #savedDataModal .saved-data-header h3 {
+  color: #60a5fa !important;
+}
+
+html:not(.light-mode) #savedDataModal .saved-data-close,
+html.dark-mode #savedDataModal .saved-data-close,
+body.dark-mode #savedDataModal .saved-data-close {
+  color: #f87171 !important;
+}
+
+html:not(.light-mode) .saved-data-table,
+html:not(.light-mode) #savedDataTable,
+html.dark-mode .saved-data-table,
+html.dark-mode #savedDataTable,
+body.dark-mode .saved-data-table,
+body.dark-mode #savedDataTable {
+  background: #14181e !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .saved-data-table th,
+html:not(.light-mode) #savedDataTable th,
+html.dark-mode .saved-data-table th,
+html.dark-mode #savedDataTable th,
+body.dark-mode .saved-data-table th,
+body.dark-mode #savedDataTable th {
+  background-color: #1e2634 !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155 !important;
+  font-weight: 600 !important;
+}
+
+html:not(.light-mode) .saved-data-table td,
+html:not(.light-mode) #savedDataTable td,
+html.dark-mode .saved-data-table td,
+html.dark-mode #savedDataTable td,
+body.dark-mode .saved-data-table td,
+body.dark-mode #savedDataTable td {
+  background-color: #14181e !important;
+  color: #cbd5e1 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .saved-data-table tr:hover td,
+html:not(.light-mode) #savedDataTable tr:hover td,
+html.dark-mode .saved-data-table tr:hover td,
+html.dark-mode #savedDataTable tr:hover td,
+body.dark-mode .saved-data-table tr:hover td,
+body.dark-mode #savedDataTable tr:hover td {
+  background-color: #222b38 !important;
+}
+
+html:not(.light-mode) .saved-data-clear-btn,
+html.dark-mode .saved-data-clear-btn,
+body.dark-mode .saved-data-clear-btn {
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
+}
+
+/* Standalone API 570 remaininglife.html support */
+html:not(.light-mode) .container,
+html.dark-mode .container,
+body.dark-mode .container {
+  background-color: #14181e !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) .description-box,
+html.dark-mode .description-box,
+body.dark-mode .description-box {
+  background-color: #1a222d !important;
+  color: #94a3b8 !important;
+  border-left: 3px solid #3b82f6 !important;
+}
+
+html:not(.light-mode) .section,
+html.dark-mode .section,
+body.dark-mode .section {
+  background-color: #181d24 !important;
+  border: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+/* TAB 3: API 581 COF Tab (#cof_calculatorTab / #cof_calculator) */
+html:not(.light-mode) #cof_calculator,
+html.dark-mode #cof_calculator,
+body.dark-mode #cof_calculator {
+  --bg: #121519 !important;
+  --card: #1b1f26 !important;
+  --text: #e2e8f0 !important;
+  --muted: #94a3b8 !important;
+  --border: #334155 !important;
+  background: #121519 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #cof_calculator .card,
+html.dark-mode #cof_calculator .card,
+body.dark-mode #cof_calculator .card {
+  background: #1b1f26 !important;
+  border: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #cof_calculator h1,
+html:not(.light-mode) #cof_calculator h2,
+html:not(.light-mode) #cof_calculator h3,
+html.dark-mode #cof_calculator h1,
+html.dark-mode #cof_calculator h2,
+html.dark-mode #cof_calculator h3,
+body.dark-mode #cof_calculator h1,
+body.dark-mode #cof_calculator h2,
+body.dark-mode #cof_calculator h3 {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #cof_calculator label,
+html.dark-mode #cof_calculator label,
+body.dark-mode #cof_calculator label {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #cof_calculator input,
+html:not(.light-mode) #cof_calculator select,
+html.dark-mode #cof_calculator input,
+html.dark-mode #cof_calculator select,
+body.dark-mode #cof_calculator input,
+body.dark-mode #cof_calculator select {
+  background-color: #14181e !important;
+  color: #f1f5f9 !important;
+  border-color: #475569 !important;
+}
+
+html:not(.light-mode) #cof_calculator table,
+html.dark-mode #cof_calculator table,
+body.dark-mode #cof_calculator table {
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #cof_calculator th,
+html.dark-mode #cof_calculator th,
+body.dark-mode #cof_calculator th {
+  background-color: #242932 !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) #cof_calculator td,
+html.dark-mode #cof_calculator td,
+body.dark-mode #cof_calculator td {
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #cof_calculator input[readonly],
+html.dark-mode #cof_calculator input[readonly],
+body.dark-mode #cof_calculator input[readonly] {
+  background-color: #1e242d !important;
+  color: #94a3b8 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) #cof_calculator button,
+html:not(.light-mode) #cof_calculator #cof_calcBtn,
+html.dark-mode #cof_calculator button,
+html.dark-mode #cof_calculator #cof_calcBtn,
+body.dark-mode #cof_calculator button,
+body.dark-mode #cof_calculator #cof_calcBtn {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  color: #ffffff !important;
+  border: 1px solid #3b82f6 !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35) !important;
+  font-weight: 600 !important;
+}
+
+html:not(.light-mode) #cof_calculator button:hover,
+html:not(.light-mode) #cof_calculator #cof_calcBtn:hover,
+html.dark-mode #cof_calculator button:hover,
+html.dark-mode #cof_calculator #cof_calcBtn:hover,
+body.dark-mode #cof_calculator button:hover,
+body.dark-mode #cof_calculator #cof_calcBtn:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+  border-color: #60a5fa !important;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.45) !important;
+}
+
+html:not(.light-mode) #cof_calculator button.secondary,
+html:not(.light-mode) #cof_calculator #cof_resetBtn,
+html.dark-mode #cof_calculator button.secondary,
+html.dark-mode #cof_calculator #cof_resetBtn,
+body.dark-mode #cof_calculator button.secondary,
+body.dark-mode #cof_calculator #cof_resetBtn {
+  background: #242932 !important;
+  color: #cbd5e1 !important;
+  border: 1px solid #475569 !important;
+  box-shadow: none !important;
+}
+
+html:not(.light-mode) #cof_calculator button.secondary:hover,
+html:not(.light-mode) #cof_calculator #cof_resetBtn:hover,
+html.dark-mode #cof_calculator button.secondary:hover,
+html.dark-mode #cof_calculator #cof_resetBtn:hover,
+body.dark-mode #cof_calculator button.secondary:hover,
+body.dark-mode #cof_calculator #cof_resetBtn:hover {
+  background: #2f3644 !important;
+  color: #f1f5f9 !important;
+  border-color: #64748b !important;
+}
+
+html:not(.light-mode) #cof_calculator pre#cof_output,
+html.dark-mode #cof_calculator pre#cof_output,
+body.dark-mode #cof_calculator pre#cof_output {
+  background: #14181e !important;
+  background-color: #14181e !important;
+  border: 1px solid #334155 !important;
+  border-left: 4px solid #3b82f6 !important;
+  color: #f1f5f9 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+html:not(.light-mode) #cof_calculator .hint,
+html.dark-mode #cof_calculator .hint,
+body.dark-mode #cof_calculator .hint {
+  color: #94a3b8 !important;
+}
+
+/* TAB 4: Toxic Calculation Tab (#TOXIC_CALCULATIONTab) */
+html:not(.light-mode) #TOXIC_CALCULATIONTab #toxicCalculator,
+html.dark-mode #TOXIC_CALCULATIONTab #toxicCalculator,
+body.dark-mode #TOXIC_CALCULATIONTab #toxicCalculator {
+  background: #1b1f26 !important;
+  border: 2px solid #10b981 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #TOXIC_CALCULATIONTab #toxicCalculator h2,
+html.dark-mode #TOXIC_CALCULATIONTab #toxicCalculator h2,
+body.dark-mode #TOXIC_CALCULATIONTab #toxicCalculator h2 {
+  color: #34d399 !important;
+}
+
+html:not(.light-mode) #TOXIC_CALCULATIONTab #toxicCalculator label,
+html.dark-mode #TOXIC_CALCULATIONTab #toxicCalculator label,
+body.dark-mode #TOXIC_CALCULATIONTab #toxicCalculator label {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #TOXIC_CALCULATIONTab #toxicCalculator input,
+html:not(.light-mode) #TOXIC_CALCULATIONTab #toxicCalculator select,
+html.dark-mode #TOXIC_CALCULATIONTab #toxicCalculator input,
+html.dark-mode #TOXIC_CALCULATIONTab #toxicCalculator select,
+body.dark-mode #TOXIC_CALCULATIONTab #toxicCalculator input,
+body.dark-mode #TOXIC_CALCULATIONTab #toxicCalculator select {
+  background: #14181e !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #475569 !important;
+}
+
+html:not(.light-mode) #TOXIC_CALCULATIONTab #toxicCalculator .result,
+html.dark-mode #TOXIC_CALCULATIONTab #toxicCalculator .result,
+body.dark-mode #TOXIC_CALCULATIONTab #toxicCalculator .result {
+  background: #14181e !important;
+  border: 1px solid #334155 !important;
+  color: #f8fafc !important;
+  padding: 12px !important;
+  border-radius: 6px !important;
+}
+
+/* TAB 5: Simple Piping & ASME B31.3 (#simplePipingTab, #ASMEB31_3Tab) */
+html:not(.light-mode) #simplePipingTab,
+html.dark-mode #simplePipingTab,
+body.dark-mode #simplePipingTab {
+  background: #1b1f26 !important;
+  color: #e2e8f0 !important;
+  border-top: 4px solid #10b981 !important;
+}
+
+html:not(.light-mode) #simplePipingTab h2,
+html.dark-mode #simplePipingTab h2,
+body.dark-mode #simplePipingTab h2 {
+  color: #f8fafc !important;
+  border-bottom: 2px solid #334155 !important;
+}
+
+html:not(.light-mode) #simplePipingTab label,
+html.dark-mode #simplePipingTab label,
+body.dark-mode #simplePipingTab label {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #simplePipingTab input[type="number"],
+html:not(.light-mode) #simplePipingTab select,
+html.dark-mode #simplePipingTab input[type="number"],
+html.dark-mode #simplePipingTab select,
+body.dark-mode #simplePipingTab input[type="number"],
+body.dark-mode #simplePipingTab select {
+  background: #14181e !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #475569 !important;
+}
+
+html:not(.light-mode) #simplePipingTab .simple-result,
+html.dark-mode #simplePipingTab .simple-result,
+body.dark-mode #simplePipingTab .simple-result {
+  background: #14181e !important;
+  color: #cbd5e1 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) #simple_resultBox,
+html.dark-mode #simple_resultBox,
+body.dark-mode #simple_resultBox {
+  background: rgba(16, 185, 129, 0.18) !important;
+  border-left: 5px solid #10b981 !important;
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #ASMEB31_3Tab,
+html.dark-mode #ASMEB31_3Tab,
+body.dark-mode #ASMEB31_3Tab {
+  background-color: #121519 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #ASMEB31_3Tab .b313-container,
+html:not(.light-mode) #ASMEB31_3Tab .b313-wrapper,
+html:not(.light-mode) #ASMEB31_3Tab .b313-calc-card,
+html.dark-mode #ASMEB31_3Tab .b313-container,
+html.dark-mode #ASMEB31_3Tab .b313-wrapper,
+html.dark-mode #ASMEB31_3Tab .b313-calc-card,
+body.dark-mode #ASMEB31_3Tab .b313-container,
+body.dark-mode #ASMEB31_3Tab .b313-wrapper,
+body.dark-mode #ASMEB31_3Tab .b313-calc-card {
+  background-color: #1b1f26 !important;
+  border: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+}
+
+html:not(.light-mode) #ASMEB31_3Tab .b313-header-card,
+html.dark-mode #ASMEB31_3Tab .b313-header-card,
+body.dark-mode #ASMEB31_3Tab .b313-header-card {
+  background-color: #1b1f26 !important;
+  border-bottom: 2px solid #334155 !important;
+}
+
+html:not(.light-mode) #ASMEB31_3Tab .b313-section-card,
+html.dark-mode #ASMEB31_3Tab .b313-section-card,
+body.dark-mode #ASMEB31_3Tab .b313-section-card {
+  background-color: #181d24 !important;
+  border: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #ASMEB31_3Tab h1,
+html:not(.light-mode) #ASMEB31_3Tab h2,
+html:not(.light-mode) #ASMEB31_3Tab h3,
+html.dark-mode #ASMEB31_3Tab h1,
+html.dark-mode #ASMEB31_3Tab h2,
+html.dark-mode #ASMEB31_3Tab h3,
+body.dark-mode #ASMEB31_3Tab h1,
+body.dark-mode #ASMEB31_3Tab h2,
+body.dark-mode #ASMEB31_3Tab h3 {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #ASMEB31_3Tab .b313-subtitle,
+html.dark-mode #ASMEB31_3Tab .b313-subtitle,
+body.dark-mode #ASMEB31_3Tab .b313-subtitle {
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) #ASMEB31_3Tab label,
+html:not(.light-mode) #ASMEB31_3Tab .b313-form-group label,
+html:not(.light-mode) #ASMEB31_3Tab .b313-section-card label,
+html.dark-mode #ASMEB31_3Tab label,
+html.dark-mode #ASMEB31_3Tab .b313-form-group label,
+html.dark-mode #ASMEB31_3Tab .b313-section-card label,
+body.dark-mode #ASMEB31_3Tab label,
+body.dark-mode #ASMEB31_3Tab .b313-form-group label,
+body.dark-mode #ASMEB31_3Tab .b313-section-card label {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #ASMEB31_3Tab input,
+html:not(.light-mode) #ASMEB31_3Tab select,
+html.dark-mode #ASMEB31_3Tab input,
+html.dark-mode #ASMEB31_3Tab select,
+body.dark-mode #ASMEB31_3Tab input,
+body.dark-mode #ASMEB31_3Tab select {
+  background-color: #14181e !important;
+  color: #f1f5f9 !important;
+  border-color: #475569 !important;
+}
+
+html:not(.light-mode) #ASMEB31_3Tab .readonly-field,
+html:not(.light-mode) #b313_autoMillTol,
+html.dark-mode #ASMEB31_3Tab .readonly-field,
+html.dark-mode #b313_autoMillTol,
+body.dark-mode #ASMEB31_3Tab .readonly-field,
+body.dark-mode #b313_autoMillTol {
+  background-color: #1e242d !important;
+  color: #94a3b8 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) #ASMEB31_3Tab button.calculate-btn,
+html.dark-mode #ASMEB31_3Tab button.calculate-btn,
+body.dark-mode #ASMEB31_3Tab button.calculate-btn {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  color: #ffffff !important;
+  border: 1px solid #3b82f6 !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
+}
+
+/* B31.3 Calculation Result Box & Inner Elements */
+html:not(.light-mode) #b313_resultBox,
+html:not(.light-mode) #ASMEB31_3Tab .result,
+html.dark-mode #b313_resultBox,
+html.dark-mode #ASMEB31_3Tab .result,
+body.dark-mode #b313_resultBox,
+body.dark-mode #ASMEB31_3Tab .result {
+  background: #182230 !important;
+  background-color: #182230 !important;
+  border: 1px solid #334155 !important;
+  border-left: 5px solid #10b981 !important;
+  color: #f1f5f9 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+
+html:not(.light-mode) #b313_resultBox .b313-calc-result-card,
+html:not(.light-mode) #b313_resultBox div,
+html.dark-mode #b313_resultBox .b313-calc-result-card,
+html.dark-mode #b313_resultBox div,
+body.dark-mode #b313_resultBox .b313-calc-result-card,
+body.dark-mode #b313_resultBox div {
+  background: #141b24 !important;
+  background-color: #141b24 !important;
+  color: #e2e8f0 !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) #b313_resultBox .b313-calc-title,
+html:not(.light-mode) #b313_resultBox h3,
+html.dark-mode #b313_resultBox .b313-calc-title,
+html.dark-mode #b313_resultBox h3,
+body.dark-mode #b313_resultBox .b313-calc-title,
+body.dark-mode #b313_resultBox h3 {
+  color: #60a5fa !important;
+}
+
+/* 🔹 B31.3 & Simple Allowable Stress Automation Panel (Dark Mode) */
+html:not(.light-mode) .b313-auto-stress-panel,
+html.dark-mode .b313-auto-stress-panel,
+body.dark-mode .b313-auto-stress-panel,
+html:not(.light-mode) .simple-auto-stress-panel,
+html.dark-mode .simple-auto-stress-panel,
+body.dark-mode .simple-auto-stress-panel {
+  background: #1e293b !important;
+  border: 1px solid #3b82f6 !important;
+  color: #f1f5f9 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+html:not(.light-mode) .b313-auto-stress-panel label,
+html.dark-mode .b313-auto-stress-panel label,
+body.dark-mode .b313-auto-stress-panel label,
+html:not(.light-mode) .simple-auto-stress-panel label,
+html.dark-mode .simple-auto-stress-panel label,
+body.dark-mode .simple-auto-stress-panel label {
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) .b313-auto-stress-panel .b313-auto-input,
+html.dark-mode .b313-auto-stress-panel .b313-auto-input,
+body.dark-mode .b313-auto-stress-panel .b313-auto-input,
+html:not(.light-mode) .simple-auto-stress-panel .simple-auto-input,
+html.dark-mode .simple-auto-stress-panel .simple-auto-input,
+body.dark-mode .simple-auto-stress-panel .simple-auto-input {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border: 1px solid #475569 !important;
+}
+
+html:not(.light-mode) .b313-auto-stress-toggle-label,
+html.dark-mode .b313-auto-stress-toggle-label,
+body.dark-mode .b313-auto-stress-toggle-label,
+html:not(.light-mode) .simple-auto-stress-toggle-label,
+html.dark-mode .simple-auto-stress-toggle-label,
+body.dark-mode .simple-auto-stress-toggle-label {
+  color: #93c5fd !important;
+  background: rgba(37, 99, 235, 0.2) !important;
+  border-color: rgba(96, 165, 250, 0.5) !important;
+}
+
+html:not(.light-mode) #b313_autoStressResultDiv,
+html.dark-mode #b313_autoStressResultDiv,
+body.dark-mode #b313_autoStressResultDiv,
+html:not(.light-mode) #simple_autoStressResultDiv,
+html.dark-mode #simple_autoStressResultDiv,
+body.dark-mode #simple_autoStressResultDiv {
+  background: rgba(22, 101, 52, 0.3) !important;
+  border-left: 4px solid #22c55e !important;
+}
+
+html:not(.light-mode) #b313_autoStressDisplay,
+html.dark-mode #b313_autoStressDisplay,
+body.dark-mode #b313_autoStressDisplay,
+html:not(.light-mode) #simple_autoStressDisplay,
+html.dark-mode #simple_autoStressDisplay,
+body.dark-mode #simple_autoStressDisplay {
+  color: #4ade80 !important;
+}
+
+html:not(.light-mode) #b313_autoStressResultDiv span,
+html.dark-mode #b313_autoStressResultDiv span,
+body.dark-mode #b313_autoStressResultDiv span,
+html:not(.light-mode) #simple_autoStressResultDiv span,
+html.dark-mode #simple_autoStressResultDiv span,
+body.dark-mode #simple_autoStressResultDiv span {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #b313_autoStressResultDiv strong,
+html.dark-mode #b313_autoStressResultDiv strong,
+body.dark-mode #b313_autoStressResultDiv strong,
+html:not(.light-mode) #simple_autoStressResultDiv strong,
+html.dark-mode #simple_autoStressResultDiv strong,
+body.dark-mode #simple_autoStressResultDiv strong {
+  color: #ffffff !important;
+}
+
+html:not(.light-mode) #b313_stressValidationMsg,
+html.dark-mode #b313_stressValidationMsg,
+body.dark-mode #b313_stressValidationMsg,
+html:not(.light-mode) #simple_stressValidationMsg,
+html.dark-mode #simple_stressValidationMsg,
+body.dark-mode #simple_stressValidationMsg {
+  background: rgba(15, 23, 42, 0.6) !important;
+  color: #cbd5e1 !important;
+}
+
+
+html:not(.light-mode) #b313_resultBox .b313-res-design,
+html.dark-mode #b313_resultBox .b313-res-design,
+body.dark-mode #b313_resultBox .b313-res-design {
+  color: #4ade80 !important;
+}
+
+html:not(.light-mode) #b313_resultBox .b313-res-req,
+html.dark-mode #b313_resultBox .b313-res-req,
+body.dark-mode #b313_resultBox .b313-res-req {
+  color: #38bdf8 !important;
+}
+
+html:not(.light-mode) #b313_resultBox .b313-res-net,
+html.dark-mode #b313_resultBox .b313-res-net,
+body.dark-mode #b313_resultBox .b313-res-net {
+  color: #fb923c !important;
+}
+
+html:not(.light-mode) #b313_resultBox .b313-res-meta,
+html.dark-mode #b313_resultBox .b313-res-meta,
+body.dark-mode #b313_resultBox .b313-res-meta {
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) #b313_resultBox .b313-summary-link,
+html:not(.light-mode) #b313_resultBox summary,
+html.dark-mode #b313_resultBox .b313-summary-link,
+html.dark-mode #b313_resultBox summary,
+body.dark-mode #b313_resultBox .b313-summary-link,
+body.dark-mode #b313_resultBox summary {
+  color: #60a5fa !important;
+}
+
+html:not(.light-mode) #b313_resultBox .b313-breakdown-table,
+html:not(.light-mode) #b313_resultBox table,
+html.dark-mode #b313_resultBox .b313-breakdown-table,
+html.dark-mode #b313_resultBox table,
+body.dark-mode #b313_resultBox .b313-breakdown-table,
+body.dark-mode #b313_resultBox table {
+  background: #11151c !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) #b313_resultBox .b313-table-head-row,
+html:not(.light-mode) #b313_resultBox th,
+html.dark-mode #b313_resultBox .b313-table-head-row,
+html.dark-mode #b313_resultBox th,
+body.dark-mode #b313_resultBox .b313-table-head-row,
+body.dark-mode #b313_resultBox th {
+  background-color: #1e2634 !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) #b313_resultBox td,
+html.dark-mode #b313_resultBox td,
+body.dark-mode #b313_resultBox td {
+  background-color: #141a22 !important;
+  color: #cbd5e1 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) #b313_resultBox code,
+html.dark-mode #b313_resultBox code,
+body.dark-mode #b313_resultBox code {
+  background-color: #0f1318 !important;
+  color: #38bdf8 !important;
+  border: 1px solid #334155 !important;
+}
+
+/* TAB 6: ASME Section VIII Div 1 (#ASMESECTIONVIIIDIV1Tab) */
+html:not(.light-mode) #ASMESECTIONVIIIDIV1Tab,
+html.dark-mode #ASMESECTIONVIIIDIV1Tab,
+body.dark-mode #ASMESECTIONVIIIDIV1Tab {
+  background-color: #121519 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #ASMESECTIONVIIIDIV1Tab .container,
+html.dark-mode #ASMESECTIONVIIIDIV1Tab .container,
+body.dark-mode #ASMESECTIONVIIIDIV1Tab .container {
+  background-color: #1b1f26 !important;
+  border: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+html:not(.light-mode) #ASMESECTIONVIIIDIV1Tab h1,
+html.dark-mode #ASMESECTIONVIIIDIV1Tab h1,
+body.dark-mode #ASMESECTIONVIIIDIV1Tab h1 {
+  color: #60a5fa !important;
+}
+
+html:not(.light-mode) #ASMESECTIONVIIIDIV1Tab h3,
+html.dark-mode #ASMESECTIONVIIIDIV1Tab h3,
+body.dark-mode #ASMESECTIONVIIIDIV1Tab h3 {
+  color: #93c5fd !important;
+}
+
+html:not(.light-mode) #ASMESECTIONVIIIDIV1Tab label,
+html.dark-mode #ASMESECTIONVIIIDIV1Tab label,
+body.dark-mode #ASMESECTIONVIIIDIV1Tab label {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #ASMESECTIONVIIIDIV1Tab input,
+html:not(.light-mode) #ASMESECTIONVIIIDIV1Tab select,
+html.dark-mode #ASMESECTIONVIIIDIV1Tab input,
+html.dark-mode #ASMESECTIONVIIIDIV1Tab select,
+body.dark-mode #ASMESECTIONVIIIDIV1Tab input,
+body.dark-mode #ASMESECTIONVIIIDIV1Tab select {
+  background-color: #14181e !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #475569 !important;
+  border-radius: 6px !important;
+}
+
+html:not(.light-mode) #ASMESECTIONVIIIDIV1Tab input:focus,
+html:not(.light-mode) #ASMESECTIONVIIIDIV1Tab select:focus,
+html.dark-mode #ASMESECTIONVIIIDIV1Tab input:focus,
+html.dark-mode #ASMESECTIONVIIIDIV1Tab select:focus,
+body.dark-mode #ASMESECTIONVIIIDIV1Tab input:focus,
+body.dark-mode #ASMESECTIONVIIIDIV1Tab select:focus {
+  border-color: #3b82f6 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25) !important;
+}
+
+html:not(.light-mode) #ASMESECTIONVIIIDIV1Tab .form-section,
+html.dark-mode #ASMESECTIONVIIIDIV1Tab .form-section,
+body.dark-mode #ASMESECTIONVIIIDIV1Tab .form-section {
+  background-color: #181d24 !important;
+  border: 1px solid #334155 !important;
+  border-radius: 8px !important;
+  padding: 16px !important;
+  margin-top: 14px !important;
+}
+
+html:not(.light-mode) #ASMESECTIONVIIIDIV1Tab button,
+html.dark-mode #ASMESECTIONVIIIDIV1Tab button,
+body.dark-mode #ASMESECTIONVIIIDIV1Tab button {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  color: #ffffff !important;
+  border: 1px solid #3b82f6 !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+html:not(.light-mode) #ASMESECTIONVIIIDIV1Tab button:hover,
+html.dark-mode #ASMESECTIONVIIIDIV1Tab button:hover,
+body.dark-mode #ASMESECTIONVIIIDIV1Tab button:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+  border-color: #60a5fa !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Pressure Vessel Calculation Result Box */
+html:not(.light-mode) #ASMESECTIONVIIIDIV1Tab #results,
+html.dark-mode #ASMESECTIONVIIIDIV1Tab #results,
+body.dark-mode #ASMESECTIONVIIIDIV1Tab #results {
+  background: #182230 !important;
+  background-color: #182230 !important;
+  border: 1px solid #334155 !important;
+  border-left: 5px solid #10b981 !important;
+  border-radius: 10px !important;
+  color: #f1f5f9 !important;
+  padding: 16px !important;
+  margin-top: 16px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+html:not(.light-mode) #ASMESECTIONVIIIDIV1Tab #results h3,
+html.dark-mode #ASMESECTIONVIIIDIV1Tab #results h3,
+body.dark-mode #ASMESECTIONVIIIDIV1Tab #results h3 {
+  color: #60a5fa !important;
+  font-size: 18px !important;
+  margin-top: 0 !important;
+  margin-bottom: 8px !important;
+  font-weight: 600 !important;
+}
+
+html:not(.light-mode) #ASMESECTIONVIIIDIV1Tab #results p,
+html.dark-mode #ASMESECTIONVIIIDIV1Tab #results p,
+body.dark-mode #ASMESECTIONVIIIDIV1Tab #results p {
+  color: #e2e8f0 !important;
+  font-size: 16px !important;
+  margin: 4px 0 !important;
+}
+
+html:not(.light-mode) #ASMESECTIONVIIIDIV1Tab #results strong,
+html.dark-mode #ASMESECTIONVIIIDIV1Tab #results strong,
+body.dark-mode #ASMESECTIONVIIIDIV1Tab #results strong {
+  color: #4ade80 !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+}
+
+html:not(.light-mode) #ASMESECTIONVIIIDIV1Tab #results .loader,
+html.dark-mode #ASMESECTIONVIIIDIV1Tab #results .loader,
+body.dark-mode #ASMESECTIONVIIIDIV1Tab #results .loader {
+  border: 4px solid #334155 !important;
+  border-top: 4px solid #38bdf8 !important;
+}
+
+/* TAB 7: BK Stress (#bkStressTab) */
+html:not(.light-mode) #bkStressTab,
+html.dark-mode #bkStressTab,
+body.dark-mode #bkStressTab {
+  background-color: #121519 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #bkStressTab h2,
+html.dark-mode #bkStressTab h2,
+body.dark-mode #bkStressTab h2 {
+  color: #f8fafc !important;
+  border-bottom: 4px solid #3b82f6 !important;
+}
+
+html:not(.light-mode) #bkStressTab label,
+html.dark-mode #bkStressTab label,
+body.dark-mode #bkStressTab label {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #bkStressTab select,
+html:not(.light-mode) #bkStressTab input[type="number"],
+html.dark-mode #bkStressTab select,
+html.dark-mode #bkStressTab input[type="number"],
+body.dark-mode #bkStressTab select,
+body.dark-mode #bkStressTab input[type="number"] {
+  background-color: #14181e !important;
+  color: #f1f5f9 !important;
+  border: 2px solid #475569 !important;
+}
+
+html:not(.light-mode) #bkStressTab select:disabled,
+html:not(.light-mode) #bkStressTab input:disabled,
+html.dark-mode #bkStressTab select:disabled,
+html.dark-mode #bkStressTab input:disabled,
+body.dark-mode #bkStressTab select:disabled,
+body.dark-mode #bkStressTab input:disabled {
+  background-color: #242932 !important;
+  color: #64748b !important;
+  border-color: #334155 !important;
+}
+
+/* Allowable Stress Value Result Box (#bkOutputDiv) */
+html:not(.light-mode) #bkStressTab #bkOutputDiv,
+html:not(.light-mode) #bkOutputDiv,
+html.dark-mode #bkStressTab #bkOutputDiv,
+html.dark-mode #bkOutputDiv,
+body.dark-mode #bkStressTab #bkOutputDiv,
+body.dark-mode #bkOutputDiv {
+  background: #182230 !important;
+  background-color: #182230 !important;
+  border: 1px solid #334155 !important;
+  border-left: 5px solid #3b82f6 !important;
+  color: #f1f5f9 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+html:not(.light-mode) #bkStressTab #bkOutputDiv p,
+html:not(.light-mode) #bkOutputDiv p,
+html.dark-mode #bkStressTab #bkOutputDiv p,
+html.dark-mode #bkOutputDiv p,
+body.dark-mode #bkStressTab #bkOutputDiv p,
+body.dark-mode #bkOutputDiv p {
+  color: #cbd5e1 !important;
+  border-bottom: 1px solid #334155 !important;
+  padding-bottom: 6px !important;
+}
+
+html:not(.light-mode) #bkStressTab #bkOutputDiv strong,
+html:not(.light-mode) #bkOutputDiv strong,
+html.dark-mode #bkStressTab #bkOutputDiv strong,
+html.dark-mode #bkOutputDiv strong,
+body.dark-mode #bkStressTab #bkOutputDiv strong,
+body.dark-mode #bkOutputDiv strong {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #bkYieldStrength,
+html:not(.light-mode) #bkTensileStrength,
+html.dark-mode #bkYieldStrength,
+html.dark-mode #bkTensileStrength,
+body.dark-mode #bkYieldStrength,
+body.dark-mode #bkTensileStrength {
+  color: #60a5fa !important;
+  font-weight: 700 !important;
+}
+
+/* Corrosion Rate Dashboard & Calculation Result Section (#corrosionFullTab, #corrosionRateTab) */
+html:not(.light-mode) #corrosionFullTab,
+html:not(.light-mode) #corrosionRateTab,
+html.dark-mode #corrosionFullTab,
+html.dark-mode #corrosionRateTab,
+body.dark-mode #corrosionFullTab,
+body.dark-mode #corrosionRateTab {
+  background-color: #121519 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #corrosionFullTab .header,
+html.dark-mode #corrosionFullTab .header,
+body.dark-mode #corrosionFullTab .header {
+  background: #182230 !important;
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #corrosionFullTab .main-content,
+html.dark-mode #corrosionFullTab .main-content,
+body.dark-mode #corrosionFullTab .main-content {
+  background-color: #121519 !important;
+}
+
+html:not(.light-mode) #corrosionFullTab .form-section,
+html:not(.light-mode) #corrosionRateTab .container,
+html.dark-mode #corrosionFullTab .form-section,
+html.dark-mode #corrosionRateTab .container,
+body.dark-mode #corrosionFullTab .form-section,
+body.dark-mode #corrosionRateTab .container {
+  background-color: #1b1f26 !important;
+  border: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+html:not(.light-mode) #corrosionFullTab label,
+html:not(.light-mode) #corrosionRateTab label,
+html.dark-mode #corrosionFullTab label,
+html.dark-mode #corrosionRateTab label,
+body.dark-mode #corrosionFullTab label,
+body.dark-mode #corrosionRateTab label {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #corrosionFullTab input,
+html:not(.light-mode) #corrosionFullTab select,
+html:not(.light-mode) #corrosionRateTab input,
+html:not(.light-mode) #corrosionRateTab select,
+html.dark-mode #corrosionFullTab input,
+html.dark-mode #corrosionFullTab select,
+html.dark-mode #corrosionRateTab input,
+html.dark-mode #corrosionRateTab select,
+body.dark-mode #corrosionFullTab input,
+body.dark-mode #corrosionFullTab select,
+body.dark-mode #corrosionRateTab input,
+body.dark-mode #corrosionRateTab select {
+  background-color: #14181e !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #475569 !important;
+}
+
+html:not(.light-mode) #corrosionFullTab button,
+html:not(.light-mode) #corrosionRateTab button,
+html.dark-mode #corrosionFullTab button,
+html.dark-mode #corrosionRateTab button,
+body.dark-mode #corrosionFullTab button,
+body.dark-mode #corrosionRateTab button {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  color: #ffffff !important;
+  border: 1px solid #3b82f6 !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35) !important;
+  font-weight: 600 !important;
+}
+
+html:not(.light-mode) #corrosionFullTab button:hover,
+html:not(.light-mode) #corrosionRateTab button:hover,
+html.dark-mode #corrosionFullTab button:hover,
+html.dark-mode #corrosionRateTab button:hover,
+body.dark-mode #corrosionFullTab button:hover,
+body.dark-mode #corrosionRateTab button:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+  border-color: #60a5fa !important;
+}
+
+html:not(.light-mode) #corrosionResultFull,
+html:not(.light-mode) #corrosionResult,
+html:not(.light-mode) #result,
+html:not(.light-mode) #corrosionFullTab .result-section,
+html.dark-mode #corrosionResultFull,
+html.dark-mode #corrosionResult,
+html.dark-mode #result,
+html.dark-mode #corrosionFullTab .result-section,
+body.dark-mode #corrosionResultFull,
+body.dark-mode #corrosionResult,
+body.dark-mode #result,
+body.dark-mode #corrosionFullTab .result-section {
+  background: #182230 !important;
+  background-color: #182230 !important;
+  border: 1px solid #334155 !important;
+  border-left: 5px solid #10b981 !important;
+  color: #f1f5f9 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+html:not(.light-mode) #corrosionResultFull h3,
+html:not(.light-mode) #corrosionResult h3,
+html.dark-mode #corrosionResultFull h3,
+html.dark-mode #corrosionResult h3,
+body.dark-mode #corrosionResultFull h3,
+body.dark-mode #corrosionResult h3 {
+  color: #60a5fa !important;
+}
+
+html:not(.light-mode) #corrosionResultFull p,
+html:not(.light-mode) #corrosionResult p,
+html.dark-mode #corrosionResultFull p,
+html.dark-mode #corrosionResult p,
+body.dark-mode #corrosionResultFull p,
+body.dark-mode #corrosionResult p {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #corrosionResultFull strong,
+html:not(.light-mode) #corrosionResult strong,
+html.dark-mode #corrosionResultFull strong,
+html.dark-mode #corrosionResult strong,
+body.dark-mode #corrosionResultFull strong,
+body.dark-mode #corrosionResult strong {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #corrosionFullTab .footer,
+html.dark-mode #corrosionFullTab .footer,
+body.dark-mode #corrosionFullTab .footer {
+  background-color: #14181e !important;
+  color: #94a3b8 !important;
+  border-top: 1px solid #334155 !important;
+}
+
+/* TAB 8: Inventory Tab (#inventoryTab) */
+html:not(.light-mode) #inventoryTab,
+html.dark-mode #inventoryTab,
+body.dark-mode #inventoryTab {
+  background: #121519 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #inventoryTab .sidebar,
+html.dark-mode #inventoryTab .sidebar,
+body.dark-mode #inventoryTab .sidebar {
+  background-color: #181c23 !important;
+  border-right: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #inventoryTab .sidebar h3,
+html.dark-mode #inventoryTab .sidebar h3,
+body.dark-mode #inventoryTab .sidebar h3 {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #inventoryTab .sidebar a,
+html.dark-mode #inventoryTab .sidebar a,
+body.dark-mode #inventoryTab .sidebar a {
+  color: #60a5fa !important;
+}
+
+html:not(.light-mode) #inventoryTab .main-content,
+html.dark-mode #inventoryTab .main-content,
+body.dark-mode #inventoryTab .main-content {
+  background: #121519 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #inventoryTab .form-section,
+html.dark-mode #inventoryTab .form-section,
+body.dark-mode #inventoryTab .form-section {
+  background: #1b1f26 !important;
+  border: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+html:not(.light-mode) #inventoryTab label,
+html.dark-mode #inventoryTab label,
+body.dark-mode #inventoryTab label {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #inventoryTab input,
+html:not(.light-mode) #inventoryTab select,
+html:not(.light-mode) #inventoryTab textarea,
+html.dark-mode #inventoryTab input,
+html.dark-mode #inventoryTab select,
+html.dark-mode #inventoryTab textarea,
+body.dark-mode #inventoryTab input,
+body.dark-mode #inventoryTab select,
+body.dark-mode #inventoryTab textarea {
+  background-color: #14181e !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #475569 !important;
+}
+
+/* TAB 9: Inspection Confidence Tab (#inspectionconfidenceTab) */
+html:not(.light-mode) #inspectionconfidenceTab,
+html.dark-mode #inspectionconfidenceTab,
+body.dark-mode #inspectionconfidenceTab {
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #inspectionconfidenceTab h2,
+html.dark-mode #inspectionconfidenceTab h2,
+body.dark-mode #inspectionconfidenceTab h2 {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #inspectionconfidenceTab label,
+html.dark-mode #inspectionconfidenceTab label,
+body.dark-mode #inspectionconfidenceTab label {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #inspectionconfidenceTab input,
+html:not(.light-mode) #inspectionconfidenceTab select,
+html.dark-mode #inspectionconfidenceTab input,
+html.dark-mode #inspectionconfidenceTab select,
+body.dark-mode #inspectionconfidenceTab input,
+body.dark-mode #inspectionconfidenceTab select {
+  background-color: #14181e !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #475569 !important;
+}
+
+html:not(.light-mode) #inspectionconfidenceTab .summary,
+html.dark-mode #inspectionconfidenceTab .summary,
+body.dark-mode #inspectionconfidenceTab .summary {
+  background: #1b1f26 !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* TAB 10: Cracking Mechanism Tab (#crackingMechanismTab) */
+html:not(.light-mode) #crackingMechanismTab,
+html.dark-mode #crackingMechanismTab,
+body.dark-mode #crackingMechanismTab {
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #crackingMechanismTab h2,
+html.dark-mode #crackingMechanismTab h2,
+body.dark-mode #crackingMechanismTab h2 {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #crackingMechanismTab label,
+html.dark-mode #crackingMechanismTab label,
+body.dark-mode #crackingMechanismTab label {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #crackingMechanismTab input,
+html:not(.light-mode) #crackingMechanismTab select,
+html.dark-mode #crackingMechanismTab input,
+html.dark-mode #crackingMechanismTab select,
+body.dark-mode #crackingMechanismTab input,
+body.dark-mode #crackingMechanismTab select {
+  background-color: #14181e !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #475569 !important;
+}
+
+html:not(.light-mode) #crackingMechanismTab #mechanismResult,
+html.dark-mode #crackingMechanismTab #mechanismResult,
+body.dark-mode #crackingMechanismTab #mechanismResult {
+  color: #34d399 !important;
+}
+
+/* TAB 11: Piping Thickness Tab (#pipeThicknessTab) */
+html:not(.light-mode) #pipeThicknessTab .box883,
+html.dark-mode #pipeThicknessTab .box883,
+body.dark-mode #pipeThicknessTab .box883 {
+  background: rgba(20, 24, 30, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6) !important;
+}
+
+html:not(.light-mode) #pipeThicknessTab select,
+html.dark-mode #pipeThicknessTab select,
+body.dark-mode #pipeThicknessTab select {
+  background: #14181e !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #475569 !important;
+}
+
+/* TAB 12: Representative Fluids & Select2 Dropdowns (#fluidSelectorTab) */
+html:not(.light-mode) #fluidSelectorTab,
+html.dark-mode #fluidSelectorTab,
+body.dark-mode #fluidSelectorTab {
+  background-color: #121519 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #fluidSelectorTab .main-content,
+html.dark-mode #fluidSelectorTab .main-content,
+body.dark-mode #fluidSelectorTab .main-content {
+  background-color: #121519 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) #fluidSelectorTab h3,
+html.dark-mode #fluidSelectorTab h3,
+body.dark-mode #fluidSelectorTab h3 {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #fluidSelectorTab label,
+html.dark-mode #fluidSelectorTab label,
+body.dark-mode #fluidSelectorTab label {
+  color: #cbd5e1 !important;
+}
+
+/* Representative Fluids Result Table (#fluidTable) */
+html:not(.light-mode) #fluidTable,
+html.dark-mode #fluidTable,
+body.dark-mode #fluidTable {
+  background-color: #14181e !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+html:not(.light-mode) #fluidTable th,
+html.dark-mode #fluidTable th,
+body.dark-mode #fluidTable th {
+  background-color: #1e2634 !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155 !important;
+  font-weight: 600 !important;
+}
+
+html:not(.light-mode) #fluidTable td,
+html.dark-mode #fluidTable td,
+body.dark-mode #fluidTable td {
+  background-color: #14181e !important;
+  color: #cbd5e1 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) #fluidTable tbody tr:nth-child(even) td,
+html.dark-mode #fluidTable tbody tr:nth-child(even) td,
+body.dark-mode #fluidTable tbody tr:nth-child(even) td {
+  background-color: #181f28 !important;
+}
+
+html:not(.light-mode) #fluidTable tbody tr:hover td,
+html.dark-mode #fluidTable tbody tr:hover td,
+body.dark-mode #fluidTable tbody tr:hover td {
+  background-color: #222c3a !important;
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #noDataMessage,
+html.dark-mode #noDataMessage,
+body.dark-mode #noDataMessage {
+  color: #f87171 !important;
+}
+
+/* Fluid Note Section */
+html:not(.light-mode) #noteSection,
+html.dark-mode #noteSection,
+body.dark-mode #noteSection {
+  background: #182230 !important;
+  background-color: #182230 !important;
+  border: 1px solid #334155 !important;
+  border-left: 4px solid #3b82f6 !important;
+  color: #e2e8f0 !important;
+  border-radius: 4px !important;
+}
+
+html:not(.light-mode) #noteSection strong,
+html.dark-mode #noteSection strong,
+body.dark-mode #noteSection strong {
+  color: #60a5fa !important;
+}
+
+html:not(.light-mode) #noteSection ul,
+html:not(.light-mode) #noteSection li,
+html.dark-mode #noteSection ul,
+html.dark-mode #noteSection li,
+body.dark-mode #noteSection ul,
+body.dark-mode #noteSection li {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) .select2-container--default .select2-selection--single,
+html:not(.light-mode) .select2-container--default .select2-selection--multiple,
+html.dark-mode .select2-container--default .select2-selection--single,
+html.dark-mode .select2-container--default .select2-selection--multiple,
+body.dark-mode .select2-container--default .select2-selection--single,
+body.dark-mode .select2-container--default .select2-selection--multiple {
+  background-color: #14181e !important;
+  border: 1px solid #475569 !important;
+  color: #f1f5f9 !important;
+}
+
+html:not(.light-mode) .select2-container--default .select2-selection--single .select2-selection__rendered,
+html.dark-mode .select2-container--default .select2-selection--single .select2-selection__rendered,
+body.dark-mode .select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: #f1f5f9 !important;
+}
+
+html:not(.light-mode) .select2-dropdown,
+html.dark-mode .select2-dropdown,
+body.dark-mode .select2-dropdown {
+  background-color: #1b1f26 !important;
+  border: 1px solid #475569 !important;
+  color: #f1f5f9 !important;
+}
+
+html:not(.light-mode) .select2-container--default .select2-search--dropdown .select2-search__field,
+html.dark-mode .select2-container--default .select2-search--dropdown .select2-search__field,
+body.dark-mode .select2-container--default .select2-search--dropdown .select2-search__field {
+  background-color: #14181e !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #475569 !important;
+}
+
+html:not(.light-mode) .select2-results__option,
+html.dark-mode .select2-results__option,
+body.dark-mode .select2-results__option {
+  color: #cbd5e1 !important;
+  background-color: transparent !important;
+}
+
+html:not(.light-mode) .select2-container--default .select2-results__option--highlighted[aria-selected],
+html.dark-mode .select2-container--default .select2-results__option--highlighted[aria-selected],
+body.dark-mode .select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+}
+
+html:not(.light-mode) .select2-container--default .select2-selection--multiple .select2-selection__choice,
+html.dark-mode .select2-container--default .select2-selection--multiple .select2-selection__choice,
+body.dark-mode .select2-container--default .select2-selection--multiple .select2-selection__choice {
+  background-color: #252b36 !important;
+  border: 1px solid #475569 !important;
+  color: #f1f5f9 !important;
+}
+
+/* TAB 13: Semi-Quantitative RBI Dashboard & Corrosion Calculation (#CORROSION_CALCULATIONTab) */
+html:not(.light-mode) #CORROSION_CALCULATIONTab,
+html:not(.light-mode) .rbi-dashboard,
+html.dark-mode #CORROSION_CALCULATIONTab,
+html.dark-mode .rbi-dashboard,
+body.dark-mode #CORROSION_CALCULATIONTab,
+body.dark-mode .rbi-dashboard {
+  background: #121519 !important;
+  background-color: #121519 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) .rbi-dashboard h1,
+html:not(.light-mode) .rbi-dashboard h3,
+html.dark-mode .rbi-dashboard h1,
+html.dark-mode .rbi-dashboard h3,
+body.dark-mode .rbi-dashboard h1,
+body.dark-mode .rbi-dashboard h3 {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .summary-box,
+html.dark-mode .summary-box,
+body.dark-mode .summary-box {
+  background: #1b1f26 !important;
+  border: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+}
+
+html:not(.light-mode) .summary-box h3,
+html.dark-mode .summary-box h3,
+body.dark-mode .summary-box h3 {
+  color: #cbd5e1 !important;
+  border-bottom: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .summary-value,
+html.dark-mode .summary-value,
+body.dark-mode .summary-value {
+  color: #60a5fa !important;
+}
+
+html:not(.light-mode) .rbi-dashboard .link-btn,
+html.dark-mode .rbi-dashboard .link-btn,
+body.dark-mode .rbi-dashboard .link-btn {
+  color: #38bdf8 !important;
+  font-weight: 600 !important;
+  text-decoration: underline !important;
+  cursor: pointer !important;
+}
+
+html:not(.light-mode) .rbi-dashboard .link-btn:hover,
+html.dark-mode .rbi-dashboard .link-btn:hover,
+body.dark-mode .rbi-dashboard .link-btn:hover {
+  color: #7dd3fc !important;
+}
+
+html:not(.light-mode) .rbi-dashboard button,
+html.dark-mode .rbi-dashboard button,
+body.dark-mode .rbi-dashboard button {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  color: #ffffff !important;
+  border: 1px solid #3b82f6 !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
+  font-weight: 600 !important;
+}
+
+html:not(.light-mode) .rbi-dashboard button:hover,
+html.dark-mode .rbi-dashboard button:hover,
+body.dark-mode .rbi-dashboard button:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+  border-color: #60a5fa !important;
+}
+
+/* Risk Matrix Table in Dark Mode */
+html:not(.light-mode) .risk-matrix,
+html.dark-mode .risk-matrix,
+body.dark-mode .risk-matrix {
+  background-color: #14181e !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+html:not(.light-mode) .risk-matrix th,
+html.dark-mode .risk-matrix th,
+body.dark-mode .risk-matrix th {
+  background-color: #1e2634 !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .risk-matrix td,
+html.dark-mode .risk-matrix td,
+body.dark-mode .risk-matrix td {
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .risk-matrix .high,
+html.dark-mode .risk-matrix .high,
+body.dark-mode .risk-matrix .high {
+  background-color: #991b1b !important;
+  color: #fef2f2 !important;
+}
+
+html:not(.light-mode) .risk-matrix .medium-high,
+html.dark-mode .risk-matrix .medium-high,
+body.dark-mode .risk-matrix .medium-high {
+  background-color: #c2410c !important;
+  color: #fff7ed !important;
+}
+
+html:not(.light-mode) .risk-matrix .medium,
+html.dark-mode .risk-matrix .medium,
+body.dark-mode .risk-matrix .medium {
+  background-color: #b45309 !important;
+  color: #fffbeb !important;
+}
+
+html:not(.light-mode) .risk-matrix .low,
+html.dark-mode .risk-matrix .low,
+body.dark-mode .risk-matrix .low {
+  background-color: #166534 !important;
+  color: #f0fdf4 !important;
+}
+
+/* Risk Result Output Box */
+html:not(.light-mode) #riskResult,
+html:not(.light-mode) .risk-output,
+html.dark-mode #riskResult,
+html.dark-mode .risk-output,
+body.dark-mode #riskResult,
+body.dark-mode .risk-output {
+  background: #182230 !important;
+  background-color: #182230 !important;
+  border: 1px solid #334155 !important;
+  border-left: 5px solid #10b981 !important;
+  color: #f1f5f9 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+html:not(.light-mode) #riskResult h4,
+html.dark-mode #riskResult h4,
+body.dark-mode #riskResult h4 {
+  color: #60a5fa !important;
+}
+
+html:not(.light-mode) #riskResult p,
+html.dark-mode #riskResult p,
+body.dark-mode #riskResult p {
+  color: #cbd5e1 !important;
+}
+
+/* --------------------------------------------------------------------------
+   6. CHATBOT WIDGET IN DARK MODE
+   -------------------------------------------------------------------------- */
+html:not(.light-mode) #chat-box,
+html.dark-mode #chat-box,
+body.dark-mode #chat-box {
+  background: #1b1f26 !important;
+  border: 1px solid #3b4252 !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+}
+
+html:not(.light-mode) #chat-header,
+html.dark-mode #chat-header,
+body.dark-mode #chat-header {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%) !important;
+  color: #ffffff !important;
+  border-bottom: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) #chat-body,
+html:not(.light-mode) #chat-messages,
+html.dark-mode #chat-body,
+html.dark-mode #chat-messages,
+body.dark-mode #chat-body,
+body.dark-mode #chat-messages {
+  background: #121519 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) .bot-message,
+html:not(.light-mode) .bot-msg,
+html.dark-mode .bot-message,
+html.dark-mode .bot-msg,
+body.dark-mode .bot-message,
+body.dark-mode .bot-msg {
+  background: #232832 !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .user-message,
+html:not(.light-mode) .user-msg,
+html.dark-mode .user-message,
+html.dark-mode .user-msg,
+body.dark-mode .user-message,
+body.dark-mode .user-msg {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+
+html:not(.light-mode) #chat-footer,
+html:not(.light-mode) #chat-input-container,
+html.dark-mode #chat-footer,
+html.dark-mode #chat-input-container,
+body.dark-mode #chat-footer,
+body.dark-mode #chat-input-container {
+  background: #181c23 !important;
+  border-top: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) #chat-input,
+html:not(.light-mode) #user-input,
+html.dark-mode #chat-input,
+html.dark-mode #user-input,
+body.dark-mode #chat-input,
+body.dark-mode #user-input {
+  background: #14181e !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #475569 !important;
+}
+
+/* --------------------------------------------------------------------------
+   7. FOOTER IN DARK MODE
+   -------------------------------------------------------------------------- */
+html:not(.light-mode) footer.footer,
+html.dark-mode footer.footer,
+body.dark-mode footer.footer {
+  background: #181c23 !important;
+  border-top: 1px solid #334155 !important;
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) footer.footer .footer-credit,
+html.dark-mode footer.footer .footer-credit,
+body.dark-mode footer.footer .footer-credit {
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) footer.footer .footer-links a,
+html.dark-mode footer.footer .footer-links a,
+body.dark-mode footer.footer .footer-links a {
+  color: #60a5fa !important;
+}
+
+/* User Role Badge in Footer (Dark Mode) */
+html:not(.light-mode) .footer-left .user-role-badge,
+html.dark-mode .footer-left .user-role-badge,
+body.dark-mode .footer-left .user-role-badge {
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4) !important;
+}
+
+html:not(.light-mode) .user-role-badge.role-admin,
+html.dark-mode .user-role-badge.role-admin,
+body.dark-mode .user-role-badge.role-admin,
+html:not(.light-mode) .adm-pill.role-admin,
+html.dark-mode .adm-pill.role-admin,
+body.dark-mode .adm-pill.role-admin {
+  background: rgba(245, 158, 11, 0.22) !important;
+  border-color: rgba(245, 158, 11, 0.75) !important;
+  color: #fef08a !important;
+}
+
+html:not(.light-mode) .user-role-badge.role-lead_engineer,
+html.dark-mode .user-role-badge.role-lead_engineer,
+body.dark-mode .user-role-badge.role-lead_engineer,
+html:not(.light-mode) .user-role-badge.role-engineer,
+html.dark-mode .user-role-badge.role-engineer,
+body.dark-mode .user-role-badge.role-engineer,
+html:not(.light-mode) .adm-pill.role-lead_engineer,
+html.dark-mode .adm-pill.role-lead_engineer,
+body.dark-mode .adm-pill.role-lead_engineer {
+  background: rgba(16, 185, 129, 0.22) !important;
+  border-color: rgba(16, 185, 129, 0.75) !important;
+  color: #a7f3d0 !important;
+}
+
+html:not(.light-mode) .user-role-badge.role-inspector,
+html.dark-mode .user-role-badge.role-inspector,
+body.dark-mode .user-role-badge.role-inspector,
+html:not(.light-mode) .adm-pill.role-inspector,
+html.dark-mode .adm-pill.role-inspector,
+body.dark-mode .adm-pill.role-inspector {
+  background: rgba(168, 85, 247, 0.22) !important;
+  border-color: rgba(168, 85, 247, 0.75) !important;
+  color: #e9d5ff !important;
+}
+
+html:not(.light-mode) .user-role-badge.role-viewer,
+html.dark-mode .user-role-badge.role-viewer,
+body.dark-mode .user-role-badge.role-viewer,
+html:not(.light-mode) .adm-pill.role-viewer,
+html.dark-mode .adm-pill.role-viewer,
+body.dark-mode .adm-pill.role-viewer {
+  background: rgba(148, 163, 184, 0.22) !important;
+  border-color: rgba(148, 163, 184, 0.7) !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) .user-role-badge.role-custom,
+html.dark-mode .user-role-badge.role-custom,
+body.dark-mode .user-role-badge.role-custom,
+html:not(.light-mode) .adm-pill.role-custom,
+html.dark-mode .adm-pill.role-custom,
+body.dark-mode .adm-pill.role-custom {
+  background: rgba(59, 130, 246, 0.22) !important;
+  border-color: rgba(59, 130, 246, 0.75) !important;
+  color: #93c5fd !important;
+}
+
+/* --------------------------------------------------------------------------
+   8. DARK SCROLLBARS FOR CLEAN POLISH
+   -------------------------------------------------------------------------- */
+html:not(.light-mode),
+html.dark-mode,
+body.dark-mode {
+  scrollbar-color: #475569 #181c23;
+  scrollbar-width: thin;
+}
+
+html:not(.light-mode) ::-webkit-scrollbar,
+html.dark-mode ::-webkit-scrollbar,
+body.dark-mode ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+html:not(.light-mode) ::-webkit-scrollbar-track,
+html.dark-mode ::-webkit-scrollbar-track,
+body.dark-mode ::-webkit-scrollbar-track {
+  background: #181c23;
+}
+
+html:not(.light-mode) ::-webkit-scrollbar-thumb,
+html.dark-mode ::-webkit-scrollbar-thumb,
+body.dark-mode ::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+html:not(.light-mode) ::-webkit-scrollbar-thumb:hover,
+html.dark-mode ::-webkit-scrollbar-thumb:hover,
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* --------------------------------------------------------------------------
+   9. ADMIN CONTROL PANEL & RBAC MODALS (DARK MODE)
+   -------------------------------------------------------------------------- */
+html:not(.light-mode) .admin-panel-container,
+html.dark-mode .admin-panel-container,
+body.dark-mode .admin-panel-container {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .adm-header-banner,
+html.dark-mode .adm-header-banner,
+body.dark-mode .adm-header-banner {
+  background: #181f2a !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35) !important;
+}
+
+html:not(.light-mode) .adm-header-titles h2,
+html.dark-mode .adm-header-titles h2,
+body.dark-mode .adm-header-titles h2 {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .adm-header-titles p,
+html.dark-mode .adm-header-titles p,
+body.dark-mode .adm-header-titles p {
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) .adm-kpi-card,
+html.dark-mode .adm-kpi-card,
+body.dark-mode .adm-kpi-card {
+  background: #181f2a !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+html:not(.light-mode) .adm-kpi-label,
+html.dark-mode .adm-kpi-label,
+body.dark-mode .adm-kpi-label {
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) .adm-kpi-val,
+html.dark-mode .adm-kpi-val,
+body.dark-mode .adm-kpi-val {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .adm-subtabs-nav,
+html.dark-mode .adm-subtabs-nav,
+body.dark-mode .adm-subtabs-nav {
+  background: #181f2a !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .adm-subtab-btn,
+html.dark-mode .adm-subtab-btn,
+body.dark-mode .adm-subtab-btn {
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) .adm-subtab-btn:hover,
+html.dark-mode .adm-subtab-btn:hover,
+body.dark-mode .adm-subtab-btn:hover {
+  color: #f8fafc !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+html:not(.light-mode) .adm-subtab-btn.active,
+html.dark-mode .adm-subtab-btn.active,
+body.dark-mode .adm-subtab-btn.active {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4) !important;
+}
+
+html:not(.light-mode) .adm-content-card,
+html.dark-mode .adm-content-card,
+body.dark-mode .adm-content-card {
+  background: #181f2a !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25) !important;
+}
+
+html:not(.light-mode) .adm-table-wrapper,
+html.dark-mode .adm-table-wrapper,
+body.dark-mode .adm-table-wrapper {
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .adm-table th,
+html.dark-mode .adm-table th,
+body.dark-mode .adm-table th {
+  background: #1e293b !important;
+  color: #94a3b8 !important;
+  border-bottom: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .adm-table td,
+html.dark-mode .adm-table td,
+body.dark-mode .adm-table td {
+  border-bottom: 1px solid rgba(51, 65, 85, 0.6) !important;
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) .adm-table tr:hover td,
+html.dark-mode .adm-table tr:hover td,
+body.dark-mode .adm-table tr:hover td {
+  background: rgba(30, 41, 59, 0.6) !important;
+}
+
+html:not(.light-mode) .adm-btn-secondary,
+html.dark-mode .adm-btn-secondary,
+body.dark-mode .adm-btn-secondary {
+  background: #334155 !important;
+  color: #f8fafc !important;
+  border: 1px solid #475569 !important;
+}
+
+html:not(.light-mode) .adm-btn-secondary:hover,
+html.dark-mode .adm-btn-secondary:hover,
+body.dark-mode .adm-btn-secondary:hover {
+  background: #475569 !important;
+  color: #ffffff !important;
+}
+
+html:not(.light-mode) .adm-select,
+html:not(.light-mode) .adm-input,
+html.dark-mode .adm-select,
+html.dark-mode .adm-input,
+body.dark-mode .adm-select,
+body.dark-mode .adm-input {
+  background: #0f172a !important;
+  border: 1px solid #334155 !important;
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .adm-json-preview,
+html.dark-mode .adm-json-preview,
+body.dark-mode .adm-json-preview {
+  color: #94a3b8 !important;
+  background: #020617 !important;
+  border: 1px solid #1e293b !important;
+}
+
+/* Modal RBAC in dark mode */
+html:not(.light-mode) .rbac-modal-card,
+html.dark-mode .rbac-modal-card,
+body.dark-mode .rbac-modal-card {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+html:not(.light-mode) .rbac-modal-header,
+html.dark-mode .rbac-modal-header,
+body.dark-mode .rbac-modal-header {
+  background: #0f172a !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+html:not(.light-mode) .rbac-modal-header h3,
+html.dark-mode .rbac-modal-header h3,
+body.dark-mode .rbac-modal-header h3 {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .rbac-close-btn,
+html.dark-mode .rbac-close-btn,
+body.dark-mode .rbac-close-btn {
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) .rbac-close-btn:hover,
+html.dark-mode .rbac-close-btn:hover,
+body.dark-mode .rbac-close-btn:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+html:not(.light-mode) .rbac-modal-body,
+html.dark-mode .rbac-modal-body,
+body.dark-mode .rbac-modal-body {
+  background: #1e293b !important;
+}
+
+html:not(.light-mode) .rbac-controls-bar,
+html.dark-mode .rbac-controls-bar,
+body.dark-mode .rbac-controls-bar {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+html:not(.light-mode) .rbac-field-group label,
+html.dark-mode .rbac-field-group label,
+body.dark-mode .rbac-field-group label {
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) .rbac-field-group select,
+html:not(.light-mode) .rbac-field-group input,
+html.dark-mode .rbac-field-group select,
+html.dark-mode .rbac-field-group input,
+body.dark-mode .rbac-field-group select,
+body.dark-mode .rbac-field-group input {
+  background: #0f172a !important;
+  border: 1px solid #334155 !important;
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .rbac-module-card,
+html.dark-mode .rbac-module-card,
+body.dark-mode .rbac-module-card {
+  background: #0f172a !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .rbac-module-header,
+html.dark-mode .rbac-module-header,
+body.dark-mode .rbac-module-header {
+  border-bottom: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .rbac-checkbox-label,
+html.dark-mode .rbac-checkbox-label,
+body.dark-mode .rbac-checkbox-label {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .rbac-category-tag,
+html.dark-mode .rbac-category-tag,
+body.dark-mode .rbac-category-tag {
+  background: #1e293b !important;
+  color: #94a3b8 !important;
+  border: 1px solid #334155 !important;
+}
+
+html:not(.light-mode) .rbac-subsections-grouped,
+html.dark-mode .rbac-subsections-grouped,
+body.dark-mode .rbac-subsections-grouped,
+html:not(.light-mode) .rbac-subsections-list,
+html.dark-mode .rbac-subsections-list,
+body.dark-mode .rbac-subsections-list {
+  background: #020617 !important;
+  border: 1px solid #1e293b !important;
+  border-left: 2px solid #334155 !important;
+}
+
+html:not(.light-mode) .rbac-sub-group,
+html.dark-mode .rbac-sub-group,
+body.dark-mode .rbac-sub-group {
+  background: #0f172a !important;
+  border: 1px solid #1e293b !important;
+}
+
+html:not(.light-mode) .rbac-sub-group-header,
+html.dark-mode .rbac-sub-group-header,
+body.dark-mode .rbac-sub-group-header {
+  background: #1e293b !important;
+  color: #94a3b8 !important;
+  border-left: 3px solid #3b82f6 !important;
+}
+
+html:not(.light-mode) .rbac-sub-label,
+html.dark-mode .rbac-sub-label,
+body.dark-mode .rbac-sub-label {
+  background: #0f172a !important;
+  border: 1px solid #1e293b !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) .rbac-sub-label:hover,
+html.dark-mode .rbac-sub-label:hover,
+body.dark-mode .rbac-sub-label:hover {
+  background: #1e293b !important;
+  border-color: #3b82f6 !important;
+}
+
+html:not(.light-mode) .rbac-sub-label span,
+html.dark-mode .rbac-sub-label span,
+body.dark-mode .rbac-sub-label span {
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) .rbac-modal-footer,
+html.dark-mode .rbac-modal-footer,
+body.dark-mode .rbac-modal-footer {
+  background: #0f172a !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+html:not(.light-mode) .adm-info-box,
+html.dark-mode .adm-info-box,
+body.dark-mode .adm-info-box {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) .adm-code-banner,
+html.dark-mode .adm-code-banner,
+body.dark-mode .adm-code-banner {
+  color: #4ade80 !important;
+  background: #020617 !important;
+  border-color: #1e293b !important;
+}
+
+html:not(.light-mode) .adm-cred-box,
+html.dark-mode .adm-cred-box,
+body.dark-mode .adm-cred-box {
+  background: #020617 !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) .adm-cred-row,
+html.dark-mode .adm-cred-row,
+body.dark-mode .adm-cred-row {
+  border-bottom-color: #1e293b !important;
+}
+
+/* ✅ Admin Panel Typography & Contrast Dark Mode Overrides */
+html:not(.light-mode) .adm-card-title,
+html.dark-mode .adm-card-title,
+body.dark-mode .adm-card-title {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .adm-card-subtitle,
+html.dark-mode .adm-card-subtitle,
+body.dark-mode .adm-card-subtitle {
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) .adm-user-email-text,
+html.dark-mode .adm-user-email-text,
+body.dark-mode .adm-user-email-text {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .adm-mod-count-text,
+html.dark-mode .adm-mod-count-text,
+body.dark-mode .adm-mod-count-text {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) .adm-cell-title,
+html.dark-mode .adm-cell-title,
+body.dark-mode .adm-cell-title {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .adm-cell-muted,
+html.dark-mode .adm-cell-muted,
+body.dark-mode .adm-cell-muted {
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) .adm-inline-editor-card,
+html.dark-mode .adm-inline-editor-card,
+body.dark-mode .adm-inline-editor-card {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) .adm-editor-title,
+html.dark-mode .adm-editor-title,
+body.dark-mode .adm-editor-title {
+  color: #f8fafc !important;
+}
+
+/* 🔬 Dark Mode: Damage Mechanism Manager */
+html:not(.light-mode) .adm-dm-card,
+html.dark-mode .adm-dm-card,
+body.dark-mode .adm-dm-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+html:not(.light-mode) .adm-dm-name,
+html.dark-mode .adm-dm-name,
+body.dark-mode .adm-dm-name {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .adm-dm-thumb-wrapper,
+html.dark-mode .adm-dm-thumb-wrapper,
+body.dark-mode .adm-dm-thumb-wrapper {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) .adm-dm-meta-list,
+html.dark-mode .adm-dm-meta-list,
+body.dark-mode .adm-dm-meta-list {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) .adm-dm-meta-label,
+html.dark-mode .adm-dm-meta-label,
+body.dark-mode .adm-dm-meta-label {
+  color: #94a3b8 !important;
+}
+
+html:not(.light-mode) .adm-image-dropzone,
+html.dark-mode .adm-image-dropzone,
+body.dark-mode .adm-image-dropzone {
+  background: #0f172a !important;
+  border-color: #475569 !important;
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) .adm-image-preview-container,
+html.dark-mode .adm-image-preview-container,
+body.dark-mode .adm-image-preview-container {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) .adm-image-preview-box,
+html.dark-mode .adm-image-preview-box,
+body.dark-mode .adm-image-preview-box {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) .adm-rich-textarea,
+html.dark-mode .adm-rich-textarea,
+body.dark-mode .adm-rich-textarea {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+/* 🌙 Dark Mode: Damage Mechanism Manager Executive Enhancements */
+html:not(.light-mode) .adm-dm-kpi-card,
+html.dark-mode .adm-dm-kpi-card,
+body.dark-mode .adm-dm-kpi-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) .adm-dm-kpi-val,
+html.dark-mode .adm-dm-kpi-val,
+body.dark-mode .adm-dm-kpi-val {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .adm-dm-controls-card,
+html.dark-mode .adm-dm-controls-card,
+body.dark-mode .adm-dm-controls-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) .adm-dm-search-input,
+html.dark-mode .adm-dm-search-input,
+body.dark-mode .adm-dm-search-input {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .adm-dm-cat-badge,
+html.dark-mode .adm-dm-cat-badge,
+body.dark-mode .adm-dm-cat-badge {
+  background: #0f172a !important;
+  color: #94a3b8 !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) .adm-pagination-bar,
+html.dark-mode .adm-pagination-bar,
+body.dark-mode .adm-pagination-bar {
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) .adm-page-btn,
+html.dark-mode .adm-page-btn,
+body.dark-mode .adm-page-btn {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) .adm-page-btn:hover:not(:disabled),
+html.dark-mode .adm-page-btn:hover:not(:disabled),
+body.dark-mode .adm-page-btn:hover:not(:disabled) {
+  background: #334155 !important;
+  color: #ffffff !important;
+}
+
+html:not(.light-mode) .adm-formatting-toolbar,
+html.dark-mode .adm-formatting-toolbar,
+body.dark-mode .adm-formatting-toolbar {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) .adm-fmt-btn,
+html.dark-mode .adm-fmt-btn,
+body.dark-mode .adm-fmt-btn {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) .adm-fmt-btn:hover,
+html.dark-mode .adm-fmt-btn:hover,
+body.dark-mode .adm-fmt-btn:hover {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+
+html:not(.light-mode) .adm-formatting-hint-banner,
+html.dark-mode .adm-formatting-hint-banner,
+body.dark-mode .adm-formatting-hint-banner {
+  background: rgba(30, 58, 138, 0.25) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  color: #93c5fd !important;
+}
+
+html:not(.light-mode) .adm-formatting-hint-banner kbd,
+html.dark-mode .adm-formatting-hint-banner kbd,
+body.dark-mode .adm-formatting-hint-banner kbd {
+  background: #0f172a !important;
+  border-color: #3b82f6 !important;
+  color: #60a5fa !important;
+}
+
+/* 🌙 Dark Mode: Layout Builder (Navigation Visibility, Welcome Cards, Sidebar Order, Ticker) */
+html:not(.light-mode) .adm-builder-item-row,
+html.dark-mode .adm-builder-item-row,
+body.dark-mode .adm-builder-item-row {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .adm-builder-item-row div,
+html:not(.light-mode) .adm-builder-item-row span,
+html:not(.light-mode) .adm-builder-item-row label,
+html.dark-mode .adm-builder-item-row div,
+html.dark-mode .adm-builder-item-row span,
+html.dark-mode .adm-builder-item-row label,
+body.dark-mode .adm-builder-item-row div,
+body.dark-mode .adm-builder-item-row span,
+body.dark-mode .adm-builder-item-row label {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .adm-builder-item-row input[type="text"],
+html.dark-mode .adm-builder-item-row input[type="text"],
+body.dark-mode .adm-builder-item-row input[type="text"] {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #admLayoutWelcomeCardsList > div,
+html.dark-mode #admLayoutWelcomeCardsList > div,
+body.dark-mode #admLayoutWelcomeCardsList > div {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #admLayoutWelcomeCardsList label,
+html.dark-mode #admLayoutWelcomeCardsList label,
+body.dark-mode #admLayoutWelcomeCardsList label {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .adm-builder-reorder-btn,
+html.dark-mode .adm-builder-reorder-btn,
+body.dark-mode .adm-builder-reorder-btn {
+  background: #334155 !important;
+  border-color: #475569 !important;
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .adm-builder-reorder-btn:hover:not(:disabled),
+html.dark-mode .adm-builder-reorder-btn:hover:not(:disabled),
+body.dark-mode .adm-builder-reorder-btn:hover:not(:disabled) {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+
+/* 🌙 Dark Mode: Stress Database Manager & Stream Ingestion & Access Control */
+html:not(.light-mode) .stress-dataloader-card,
+html.dark-mode .stress-dataloader-card,
+body.dark-mode .stress-dataloader-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) .stress-dropzone,
+html.dark-mode .stress-dropzone,
+body.dark-mode .stress-dropzone {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #admActiveStreamDatasetTitle,
+html.dark-mode #admActiveStreamDatasetTitle,
+body.dark-mode #admActiveStreamDatasetTitle {
+  color: #38bdf8 !important;
+}
+
+html:not(.light-mode) #admView_app-stress h2,
+html:not(.light-mode) #admView_app-stress h3,
+html:not(.light-mode) #admView_app-stress h4,
+html.dark-mode #admView_app-stress h2,
+html.dark-mode #admView_app-stress h3,
+html.dark-mode #admView_app-stress h4,
+body.dark-mode #admView_app-stress h2,
+body.dark-mode #admView_app-stress h3,
+body.dark-mode #admView_app-stress h4,
+html:not(.light-mode) #admView_app-stream h2,
+html:not(.light-mode) #admView_app-stream h3,
+html:not(.light-mode) #admView_app-stream h4,
+html.dark-mode #admView_app-stream h2,
+html.dark-mode #admView_app-stream h3,
+html.dark-mode #admView_app-stream h4,
+body.dark-mode #admView_app-stream h2,
+body.dark-mode #admView_app-stream h3,
+body.dark-mode #admView_app-stream h4,
+html:not(.light-mode) #admView_access-control h2,
+html:not(.light-mode) #admView_access-control h3,
+html:not(.light-mode) #admView_access-control h4,
+html.dark-mode #admView_access-control h2,
+html.dark-mode #admView_access-control h3,
+html.dark-mode #admView_access-control h4,
+body.dark-mode #admView_access-control h2,
+body.dark-mode #admView_access-control h3,
+body.dark-mode #admView_access-control h4 {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #admView_access-control code,
+html.dark-mode #admView_access-control code,
+body.dark-mode #admView_access-control code {
+  background: #020617 !important;
+  color: #38bdf8 !important;
+  border: 1px solid #1e293b !important;
+}
+
+

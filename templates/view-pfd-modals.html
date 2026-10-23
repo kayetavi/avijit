@@ -1,0 +1,308 @@
+<!-- ✅ Modal 1: Hydroprocessing Unit (HCU) Process Flow Diagram -->
+<div id="processFlowModal" class="modal">
+  <div class="modal-content fullscreen">
+    <!-- Executive Top Toolbar -->
+    <div class="diagram-top-toolbar">
+      <div class="diagram-toolbar-left">
+        <span class="diagram-toolbar-title">🏭 Hydroprocessing Unit (HCU)</span>
+        <span class="diagram-active-dm-badge" id="hcuActiveBadge">🎯 Active DM: 1 - Sulfidation</span>
+      </div>
+      <div class="diagram-toolbar-right">
+        <button type="button" class="diagram-btn diagram-sidebar-toggle-btn" onclick="toggleDiagramSidebar('processFlowModal')" title="Toggle sidebar to maximize diagram view">↔ Sidebar</button>
+        <div class="diagram-zoom-group">
+          <button type="button" class="diagram-btn" onclick="zoomDiagram('processFlowModal', 1.25)" title="Zoom In">➕</button>
+          <button type="button" class="diagram-btn" onclick="zoomDiagram('processFlowModal', 0.8)" title="Zoom Out">➖</button>
+          <button type="button" class="diagram-btn" onclick="resetDiagramZoom('processFlowModal')" title="Fit to Screen / Reset Zoom">↺ Fit</button>
+        </div>
+        <button type="button" class="diagram-btn diagram-btn-fs" onclick="toggleDiagramFullscreen('processFlowModal')" title="Toggle Fullscreen View">⛶ Fullscreen</button>
+        <button type="button" class="diagram-btn diagram-btn-close" onclick="closeProcessFlowModal()" title="Close Diagram">✕</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="sidebar">
+        <div class="diagram-sidebar-header">
+          <h3>Damage Mechanisms</h3>
+          <span class="diagram-dm-count-badge">21 DMs</span>
+        </div>
+        <div class="diagram-sidebar-search">
+          <input type="text" placeholder="Filter mechanisms..." oninput="filterDiagramMechanisms(this, 'dm-list')">
+        </div>
+        <ul id="dm-list" class="diagram-dm-list">
+          <li data-dm="1"><div class="dm-item-main"><span class="dm-item-code">1</span><span class="dm-item-name">Sulfidation</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('1', 'hcu');">Details ↗</button></li>
+          <li data-dm="2"><div class="dm-item-main"><span class="dm-item-code">2</span><span class="dm-item-name">Wet H₂S Damage (Blistering, HIC, SOHIC, SSC)</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('2', 'hcu');">Details ↗</button></li>
+          <li data-dm="3"><div class="dm-item-main"><span class="dm-item-code">3</span><span class="dm-item-name">Creep and Stress Rupture</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('3', 'hcu');">Details ↗</button></li>
+          <li data-dm="4"><div class="dm-item-main"><span class="dm-item-code">4</span><span class="dm-item-name">High-temperature H₂/H₂S Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('4', 'hcu');">Details ↗</button></li>
+          <li data-dm="5"><div class="dm-item-main"><span class="dm-item-code">5</span><span class="dm-item-name">Polythionic Acid Stress Corrosion Cracking</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('5', 'hcu');">Details ↗</button></li>
+          <li data-dm="6"><div class="dm-item-main"><span class="dm-item-code">6</span><span class="dm-item-name">Naphthenic Acid Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('6', 'hcu');">Details ↗</button></li>
+          <li data-dm="7"><div class="dm-item-main"><span class="dm-item-code">7</span><span class="dm-item-name">Ammonium Bisulfide Corrosion (Alkaline Sour Water)</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('7', 'hcu');">Details ↗</button></li>
+          <li data-dm="8"><div class="dm-item-main"><span class="dm-item-code">8</span><span class="dm-item-name">Ammonium Chloride and Amine Hydrochloride Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('8', 'hcu');">Details ↗</button></li>
+          <li data-dm="9"><div class="dm-item-main"><span class="dm-item-code">9</span><span class="dm-item-name">Hydrochloric Acid Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('9', 'hcu');">Details ↗</button></li>
+          <li data-dm="10"><div class="dm-item-main"><span class="dm-item-code">10</span><span class="dm-item-name">High-temperature Hydrogen Attack (HTHA)</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('10', 'hcu');">Details ↗</button></li>
+          <li data-dm="16"><div class="dm-item-main"><span class="dm-item-code">16</span><span class="dm-item-name">Temper Embrittlement</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('16', 'hcu');">Details ↗</button></li>
+          <li data-dm="20"><div class="dm-item-main"><span class="dm-item-code">20</span><span class="dm-item-name">Erosion/Erosion-Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('20', 'hcu');">Details ↗</button></li>
+          <li data-dm="22"><div class="dm-item-main"><span class="dm-item-code">22</span><span class="dm-item-name">Amine Stress Corrosion Cracking</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('22', 'hcu');">Details ↗</button></li>
+          <li data-dm="23"><div class="dm-item-main"><span class="dm-item-code">23</span><span class="dm-item-name">Chloride Stress Corrosion Cracking</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('23', 'hcu');">Details ↗</button></li>
+          <li data-dm="25"><div class="dm-item-main"><span class="dm-item-code">25</span><span class="dm-item-name">Hydrogen Embrittlement</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('25', 'hcu');">Details ↗</button></li>
+          <li data-dm="30"><div class="dm-item-main"><span class="dm-item-code">30</span><span class="dm-item-name">Short-term Overheating-Stress Rupture</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('30', 'hcu');">Details ↗</button></li>
+          <li data-dm="31"><div class="dm-item-main"><span class="dm-item-code">31</span><span class="dm-item-name">Brittle Fracture</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('31', 'hcu');">Details ↗</button></li>
+          <li data-dm="32"><div class="dm-item-main"><span class="dm-item-code">32</span><span class="dm-item-name">Sigma Phase Embrittlement</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('32', 'hcu');">Details ↗</button></li>
+          <li data-dm="35"><div class="dm-item-main"><span class="dm-item-code">35</span><span class="dm-item-name">Stress Relaxation Cracking (Reheat Cracking)</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('35', 'hcu');">Details ↗</button></li>
+          <li data-dm="45"><div class="dm-item-main"><span class="dm-item-code">45</span><span class="dm-item-name">Amine Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('45', 'hcu');">Details ↗</button></li>
+          <li data-dm="46"><div class="dm-item-main"><span class="dm-item-code">46</span><span class="dm-item-name">Corrosion Under Insulation (CUI)</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('46', 'hcu');">Details ↗</button></li>
+        </ul>
+      </div>
+
+      <div class="drawing">
+        <div id="svgContainer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Modal 1 Details: HCU API 571 Damage Mechanism -->
+<div id="detailsModal" class="modal diagram-details-modal">
+  <div class="modal-content" id="detailsModalContent">
+    <div class="diagram-details-header">
+      <div class="diagram-details-header-info">
+        <span class="diagram-details-standard-badge">API 571 3rd Edition — Technical Standard</span>
+        <h2 id="detailsModalTitle" class="diagram-details-title">Sulfidation</h2>
+      </div>
+      <div class="diagram-details-header-actions">
+        <button type="button" class="diagram-btn-explorer" onclick="openInFullAPI571ExplorerFromModal('detailsModal')">🚀 Open in API 571 Explorer</button>
+        <span class="diagram-details-close-btn" onclick="closeDetailsModal()">&times;</span>
+      </div>
+    </div>
+    <div id="detailsContent" class="diagram-details-panes-container"></div>
+  </div>
+</div>
+
+<!-- ✅ Modal 2: Crude & Vacuum Distillation Units (CDU / VDU) Process Flow Diagram -->
+<div id="cduVduModal" class="modal">
+  <div class="modal-content fullscreen">
+    <!-- Executive Top Toolbar -->
+    <div class="diagram-top-toolbar">
+      <div class="diagram-toolbar-left">
+        <span class="diagram-toolbar-title">🏭 CDU / VDU Distillation Units</span>
+        <span class="diagram-active-dm-badge" id="cduvduActiveBadge">🎯 Active DM: 1 - Sulfidation</span>
+      </div>
+      <div class="diagram-toolbar-right">
+        <button type="button" class="diagram-btn diagram-sidebar-toggle-btn" onclick="toggleDiagramSidebar('cduVduModal')" title="Toggle sidebar to maximize diagram view">↔ Sidebar</button>
+        <div class="diagram-zoom-group">
+          <button type="button" class="diagram-btn" onclick="zoomDiagram('cduVduModal', 1.25)" title="Zoom In">➕</button>
+          <button type="button" class="diagram-btn" onclick="zoomDiagram('cduVduModal', 0.8)" title="Zoom Out">➖</button>
+          <button type="button" class="diagram-btn" onclick="resetDiagramZoom('cduVduModal')" title="Fit to Screen / Reset Zoom">↺ Fit</button>
+        </div>
+        <button type="button" class="diagram-btn diagram-btn-fs" onclick="toggleDiagramFullscreen('cduVduModal')" title="Toggle Fullscreen View">⛶ Fullscreen</button>
+        <button type="button" class="diagram-btn diagram-btn-close" onclick="closeCDUVDUModal()" title="Close Diagram">✕</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="sidebar">
+        <div class="diagram-sidebar-header">
+          <h3>Damage Mechanisms (CDU / VDU)</h3>
+          <span class="diagram-dm-count-badge">21 DMs</span>
+        </div>
+        <div class="diagram-sidebar-search">
+          <input type="text" placeholder="Filter CDU/VDU mechanisms..." oninput="filterDiagramMechanisms(this, 'cduvdu-dm-list')">
+        </div>
+        <ul id="cduvdu-dm-list" class="diagram-dm-list">
+          <li data-dm="1"><div class="dm-item-main"><span class="dm-item-code">1</span><span class="dm-item-name">Sulfidation</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('1', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="2"><div class="dm-item-main"><span class="dm-item-code">2</span><span class="dm-item-name">Wet H₂S Damage (Blistering, HIC, SOHIC, SSC)</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('2', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="3"><div class="dm-item-main"><span class="dm-item-code">3</span><span class="dm-item-name">Creep and Stress Rupture</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('3', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="5"><div class="dm-item-main"><span class="dm-item-code">5</span><span class="dm-item-name">Polythionic Acid Stress Corrosion Cracking</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('5', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="6"><div class="dm-item-main"><span class="dm-item-code">6</span><span class="dm-item-name">Naphthenic Acid Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('6', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="8"><div class="dm-item-main"><span class="dm-item-code">8</span><span class="dm-item-name">Ammonium Chloride and Amine Hydrochloride Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('8', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="9"><div class="dm-item-main"><span class="dm-item-code">9</span><span class="dm-item-name">Hydrochloric Acid Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('9', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="11"><div class="dm-item-main"><span class="dm-item-code">11</span><span class="dm-item-name">Oxidation</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('11', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="18"><div class="dm-item-main"><span class="dm-item-code">18</span><span class="dm-item-name">Caustic Stress Corrosion Cracking</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('18', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="19"><div class="dm-item-main"><span class="dm-item-code">19</span><span class="dm-item-name">Caustic Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('19', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="20"><div class="dm-item-main"><span class="dm-item-code">20</span><span class="dm-item-name">Erosion/Erosion-Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('20', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="23"><div class="dm-item-main"><span class="dm-item-code">23</span><span class="dm-item-name">Chloride Stress Corrosion Cracking</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('23', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="30"><div class="dm-item-main"><span class="dm-item-code">30</span><span class="dm-item-name">Short-term Overheating-Stress Rupture</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('30', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="33"><div class="dm-item-main"><span class="dm-item-code">33</span><span class="dm-item-name">885 °F (475 °C) Embrittlement</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('33', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="39"><div class="dm-item-main"><span class="dm-item-code">39</span><span class="dm-item-name">Dissimilar Metal Weld Cracking</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('39', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="42"><div class="dm-item-main"><span class="dm-item-code">42</span><span class="dm-item-name">CO₂ Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('42', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="44"><div class="dm-item-main"><span class="dm-item-code">44</span><span class="dm-item-name">Fuel Ash Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('44', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="48"><div class="dm-item-main"><span class="dm-item-code">48</span><span class="dm-item-name">Ammonia Stress Corrosion Cracking</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('48', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="52"><div class="dm-item-main"><span class="dm-item-code">52</span><span class="dm-item-name">Liquid Metal Embrittlement (LME)</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('52', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="66"><div class="dm-item-main"><span class="dm-item-code">66</span><span class="dm-item-name">Aqueous Organic AcidCorrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('66', 'cduvdu');">Details ↗</button></li>
+          <li data-dm="67"><div class="dm-item-main"><span class="dm-item-code">67</span><span class="dm-item-name">Brine Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('67', 'cduvdu');">Details ↗</button></li>
+        </ul>
+      </div>
+
+      <div class="drawing">
+        <div id="cduvdu-svgContainer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Modal 2 Details: CDU / VDU API 571 Damage Mechanism -->
+<div id="cduvdu-detailsModal" class="modal diagram-details-modal">
+  <div class="modal-content" id="cduvdu-detailsModalContent">
+    <div class="diagram-details-header">
+      <div class="diagram-details-header-info">
+        <span class="diagram-details-standard-badge">API 571 3rd Edition — Technical Standard</span>
+        <h2 id="cduvduDetailsModalTitle" class="diagram-details-title">Naphthenic Acid Corrosion</h2>
+      </div>
+      <div class="diagram-details-header-actions">
+        <button type="button" class="diagram-btn-explorer" onclick="openInFullAPI571ExplorerFromModal('cduvdu-detailsModal')">🚀 Open in API 571 Explorer</button>
+        <span class="diagram-details-close-btn" onclick="closeCDUVDUDetailsModal()">&times;</span>
+      </div>
+    </div>
+    <div id="cduvdu-detailsContent" class="diagram-details-panes-container"></div>
+  </div>
+</div>
+
+<!-- ✅ Modal 3: Medium Pressure Separator (MSP) Process Flow Diagram -->
+<div id="mspModal" class="modal">
+  <div class="modal-content fullscreen">
+    <!-- Executive Top Toolbar -->
+    <div class="diagram-top-toolbar">
+      <div class="diagram-toolbar-left">
+        <span class="diagram-toolbar-title">🏭 Medium Pressure Separator (MSP)</span>
+        <span class="diagram-active-dm-badge" id="mspActiveBadge">🎯 Active DM: 3 - Creep/Stress Rupture</span>
+      </div>
+      <div class="diagram-toolbar-right">
+        <button type="button" class="diagram-btn diagram-sidebar-toggle-btn" onclick="toggleDiagramSidebar('mspModal')" title="Toggle sidebar to maximize diagram view">↔ Sidebar</button>
+        <div class="diagram-zoom-group">
+          <button type="button" class="diagram-btn" onclick="zoomDiagram('mspModal', 1.25)" title="Zoom In">➕</button>
+          <button type="button" class="diagram-btn" onclick="zoomDiagram('mspModal', 0.8)" title="Zoom Out">➖</button>
+          <button type="button" class="diagram-btn" onclick="resetDiagramZoom('mspModal')" title="Fit to Screen / Reset Zoom">↺ Fit</button>
+        </div>
+        <button type="button" class="diagram-btn diagram-btn-fs" onclick="toggleDiagramFullscreen('mspModal')" title="Toggle Fullscreen View">⛶ Fullscreen</button>
+        <button type="button" class="diagram-btn diagram-btn-close" onclick="closeMSPModal()" title="Close Diagram">✕</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="sidebar">
+        <div class="diagram-sidebar-header">
+          <h3>Damage Mechanisms (MSP)</h3>
+          <span class="diagram-dm-count-badge">14 DMs</span>
+        </div>
+        <div class="diagram-sidebar-search">
+          <input type="text" placeholder="Filter MSP mechanisms..." oninput="filterDiagramMechanisms(this, 'msp-dm-list')">
+        </div>
+        <ul id="msp-dm-list" class="diagram-dm-list">
+          <li data-dm="3"><div class="dm-item-main"><span class="dm-item-code">3</span><span class="dm-item-name">Creep and Stress Rupture</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('3', 'msp');">Details ↗</button></li>
+          <li data-dm="8"><div class="dm-item-main"><span class="dm-item-code">8</span><span class="dm-item-name">Ammonium Chloride and Amine Hydrochloride Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('8', 'msp');">Details ↗</button></li>
+          <li data-dm="9"><div class="dm-item-main"><span class="dm-item-code">9</span><span class="dm-item-name">Hydrochloric Acid Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('9', 'msp');">Details ↗</button></li>
+          <li data-dm="10"><div class="dm-item-main"><span class="dm-item-code">10</span><span class="dm-item-name">High-temperature Hydrogen Attack (HTHA)</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('10', 'msp');">Details ↗</button></li>
+          <li data-dm="11"><div class="dm-item-main"><span class="dm-item-code">11</span><span class="dm-item-name">Oxidation</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('11', 'msp');">Details ↗</button></li>
+          <li data-dm="16"><div class="dm-item-main"><span class="dm-item-code">16</span><span class="dm-item-name">Temper Embrittlement</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('16', 'msp');">Details ↗</button></li>
+          <li data-dm="20"><div class="dm-item-main"><span class="dm-item-code">20</span><span class="dm-item-name">Erosion/Erosion-Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('20', 'msp');">Details ↗</button></li>
+          <li data-dm="24"><div class="dm-item-main"><span class="dm-item-code">24</span><span class="dm-item-name">Carburization</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('24', 'msp');">Details ↗</button></li>
+          <li data-dm="25"><div class="dm-item-main"><span class="dm-item-code">25</span><span class="dm-item-name">Hydrogen Embrittlement</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('25', 'msp');">Details ↗</button></li>
+          <li data-dm="30"><div class="dm-item-main"><span class="dm-item-code">30</span><span class="dm-item-name">Short-term Overheating-Stress Rupture</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('30', 'msp');">Details ↗</button></li>
+          <li data-dm="35"><div class="dm-item-main"><span class="dm-item-code">35</span><span class="dm-item-name">Stress Relaxation Cracking (Reheat Cracking)</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('35', 'msp');">Details ↗</button></li>
+          <li data-dm="49"><div class="dm-item-main"><span class="dm-item-code">49</span><span class="dm-item-name">Ammonia Stress Corrosion Cracking</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('49', 'msp');">Details ↗</button></li>
+          <li data-dm="51"><div class="dm-item-main"><span class="dm-item-code">51</span><span class="dm-item-name">Mechanical Fatigue</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('51', 'msp');">Details ↗</button></li>
+          <li data-dm="59"><div class="dm-item-main"><span class="dm-item-code">59</span><span class="dm-item-name">Metal Dusting</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('59', 'msp');">Details ↗</button></li>
+        </ul>
+      </div>
+
+      <div class="drawing">
+        <div id="msp-svgContainer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Modal 3 Details: MSP API 571 Damage Mechanism -->
+<div id="msp-detailsModal" class="modal diagram-details-modal">
+  <div class="modal-content" id="msp-detailsModalContent">
+    <div class="diagram-details-header">
+      <div class="diagram-details-header-info">
+        <span class="diagram-details-standard-badge">API 571 3rd Edition — Technical Standard</span>
+        <h2 id="mspDetailsModalTitle" class="diagram-details-title">Creep and Stress Rupture</h2>
+      </div>
+      <div class="diagram-details-header-actions">
+        <button type="button" class="diagram-btn-explorer" onclick="openInFullAPI571ExplorerFromModal('msp-detailsModal')">🚀 Open in API 571 Explorer</button>
+        <span class="diagram-details-close-btn" onclick="closeMSPDetailsModal()">&times;</span>
+      </div>
+    </div>
+    <div id="msp-detailsContent" class="diagram-details-panes-container"></div>
+  </div>
+</div>
+
+<!-- ✅ Modal 4: Hydrogen Plant (H2U) Process Flow Diagram -->
+<div id="h2uModal" class="modal">
+  <div class="modal-content fullscreen">
+    <!-- Executive Top Toolbar -->
+    <div class="diagram-top-toolbar">
+      <div class="diagram-toolbar-left">
+        <span class="diagram-toolbar-title">🏭 Hydrogen Generation Unit (H2U)</span>
+        <span class="diagram-active-dm-badge" id="h2uActiveBadge">🎯 Active DM: 3 - CREEP/STRESS RUPTURE</span>
+      </div>
+      <div class="diagram-toolbar-right">
+        <button type="button" class="diagram-btn diagram-sidebar-toggle-btn" onclick="toggleDiagramSidebar('h2uModal')" title="Toggle sidebar to maximize diagram view">↔ Sidebar</button>
+        <div class="diagram-zoom-group">
+          <button type="button" class="diagram-btn" onclick="zoomDiagram('h2uModal', 1.25)" title="Zoom In">➕</button>
+          <button type="button" class="diagram-btn" onclick="zoomDiagram('h2uModal', 0.8)" title="Zoom Out">➖</button>
+          <button type="button" class="diagram-btn" onclick="resetDiagramZoom('h2uModal')" title="Fit to Screen / Reset Zoom">↺ Fit</button>
+        </div>
+        <button type="button" class="diagram-btn diagram-btn-fs" onclick="toggleDiagramFullscreen('h2uModal')" title="Toggle Fullscreen View">⛶ Fullscreen</button>
+        <button type="button" class="diagram-btn diagram-btn-close" onclick="closeH2UModal()" title="Close Diagram">✕</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="sidebar">
+        <div class="diagram-sidebar-header">
+          <h3>Damage Mechanisms (H2U)</h3>
+          <span class="diagram-dm-count-badge">21 DMs</span>
+        </div>
+        <div class="diagram-sidebar-search">
+          <input type="text" placeholder="Filter H2U mechanisms..." oninput="filterDiagramMechanisms(this, 'h2u-dm-list')">
+        </div>
+        <ul id="h2u-dm-list" class="diagram-dm-list">
+          <li data-dm="3"><div class="dm-item-main"><span class="dm-item-code">3</span><span class="dm-item-name">Creep and Stress Rupture</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('3', 'h2u');">Details ↗</button></li>
+          <li data-dm="10"><div class="dm-item-main"><span class="dm-item-code">10</span><span class="dm-item-name">High-temperature Hydrogen Attack (HTHA)</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('10', 'h2u');">Details ↗</button></li>
+          <li data-dm="11"><div class="dm-item-main"><span class="dm-item-code">11</span><span class="dm-item-name">Oxidation</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('11', 'h2u');">Details ↗</button></li>
+          <li data-dm="5"><div class="dm-item-main"><span class="dm-item-code">5</span><span class="dm-item-name">Sulfidation</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('5', 'h2u');">Details ↗</button></li>
+          <li data-dm="12"><div class="dm-item-main"><span class="dm-item-code">12</span><span class="dm-item-name">Thermal Fatigue</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('12', 'h2u');">Details ↗</button></li>
+          <li data-dm="14"><div class="dm-item-main"><span class="dm-item-code">14</span><span class="dm-item-name">Refractory Degradation</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('14', 'h2u');">Details ↗</button></li>
+          <li data-dm="16"><div class="dm-item-main"><span class="dm-item-code">16</span><span class="dm-item-name">Temper Embrittlement</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('16', 'h2u');">Details ↗</button></li>
+          <li data-dm="11"><div class="dm-item-main"><span class="dm-item-code">11</span><span class="dm-item-name">Carbonate Stress Corrosion Cracking</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('11', 'h2u');">Details ↗</button></li>
+          <li data-dm="21"><div class="dm-item-main"><span class="dm-item-code">21</span><span class="dm-item-name">Polythionic Acid Stress Corrosion Cracking</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('21', 'h2u');">Details ↗</button></li>
+          <li data-dm="22"><div class="dm-item-main"><span class="dm-item-code">22</span><span class="dm-item-name">Amine Stress Corrosion Cracking</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('22', 'h2u');">Details ↗</button></li>
+          <li data-dm="23"><div class="dm-item-main"><span class="dm-item-code">23</span><span class="dm-item-name">Chloride Stress Corrosion Cracking</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('23', 'h2u');">Details ↗</button></li>
+          <li data-dm="26"><div class="dm-item-main"><span class="dm-item-code">26</span><span class="dm-item-name">Short-term Overheating-Stress Rupture</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('26', 'h2u');">Details ↗</button></li>
+          <li data-dm="27"><div class="dm-item-main"><span class="dm-item-code">27</span><span class="dm-item-name">Thermal Shock</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('27', 'h2u');">Details ↗</button></li>
+          <li data-dm="30"><div class="dm-item-main"><span class="dm-item-code">30</span><span class="dm-item-name">Short-term Overheating-Stress Rupture</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('30', 'h2u');">Details ↗</button></li>
+          <li data-dm="32"><div class="dm-item-main"><span class="dm-item-code">32</span><span class="dm-item-name">Sigma Phase Embrittlement</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('32', 'h2u');">Details ↗</button></li>
+          <li data-dm="35"><div class="dm-item-main"><span class="dm-item-code">35</span><span class="dm-item-name">Stress Relaxation Cracking (Reheat Cracking)</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('35', 'h2u');">Details ↗</button></li>
+          <li data-dm="39"><div class="dm-item-main"><span class="dm-item-code">39</span><span class="dm-item-name">Dissimilar Metal Weld Cracking</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('39', 'h2u');">Details ↗</button></li>
+          <li data-dm="42"><div class="dm-item-main"><span class="dm-item-code">42</span><span class="dm-item-name">CO₂ Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('42', 'h2u');">Details ↗</button></li>
+          <li data-dm="45"><div class="dm-item-main"><span class="dm-item-code">45</span><span class="dm-item-name">Amine Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('45', 'h2u');">Details ↗</button></li>
+          <li data-dm="50"><div class="dm-item-main"><span class="dm-item-code">50</span><span class="dm-item-name">Boiler WaterSteam Corrosion</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('50', 'h2u');">Details ↗</button></li>
+          <li data-dm="59"><div class="dm-item-main"><span class="dm-item-code">59</span><span class="dm-item-name">Metal Dusting</span></div><button type="button" class="dm-item-details-btn" onclick="event.stopPropagation(); openAPI571Details('59', 'h2u');">Details ↗</button></li>
+        </ul>
+      </div>
+
+      <div class="drawing">
+        <div id="h2u-svgContainer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Modal 4 Details: H2U API 571 Damage Mechanism -->
+<div id="h2u-detailsModal" class="modal diagram-details-modal">
+  <div class="modal-content" id="h2u-detailsModalContent">
+    <div class="diagram-details-header">
+      <div class="diagram-details-header-info">
+        <span class="diagram-details-standard-badge">API 571 3rd Edition — Technical Standard</span>
+        <h2 id="h2uDetailsModalTitle" class="diagram-details-title">High Temperature Hydrogen Attack (HTHA)</h2>
+      </div>
+      <div class="diagram-details-header-actions">
+        <button type="button" class="diagram-btn-explorer" onclick="openInFullAPI571ExplorerFromModal('h2u-detailsModal')">🚀 Open in API 571 Explorer</button>
+        <span class="diagram-details-close-btn" onclick="closeH2UDetailsModal()">&times;</span>
+      </div>
+    </div>
+    <div id="h2u-detailsContent" class="diagram-details-panes-container"></div>
+  </div>
+</div>

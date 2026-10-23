@@ -1,0 +1,180 @@
+/* ✅ Scope only for AIC Tab */
+#inspectionconfidenceTab {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0 10px;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+#inspectionconfidenceTab h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* ✅ Input Layout */
+#inspectionconfidenceTab .input-box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+/* ✅ Row of fields */
+#inspectionconfidenceTab .form-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: nowrap; /* ensure no wrapping */
+  align-items: flex-end; /* align inputs & buttons at bottom */
+}
+
+/* ✅ Each label+input container */
+#inspectionconfidenceTab .form-field,
+#inspectionconfidenceTab .button-group-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 180px;
+}
+
+/* Buttons container is same flex to align with inputs */
+#inspectionconfidenceTab .button-group-inline {
+  display: flex;
+  gap: 10px;
+  margin-top: auto; /* push buttons to bottom aligning with inputs */
+}
+
+/* Label styling */
+#inspectionconfidenceTab label {
+  font-weight: bold;
+  margin-bottom: 6px;
+  white-space: nowrap;
+}
+
+/* Inputs and selects styling */
+#inspectionconfidenceTab input,
+#inspectionconfidenceTab select {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+/* Buttons styling */
+#inspectionconfidenceTab button {
+  background: #1e73be;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s ease-in-out;
+}
+
+#inspectionconfidenceTab button:hover {
+  background: #155a96;
+}
+
+/* Reset button distinct style */
+#inspectionconfidenceTab .reset-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+}
+
+#inspectionconfidenceTab .reset-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* ✅ Table */
+#inspectionconfidenceTab table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+#inspectionconfidenceTab th,
+#inspectionconfidenceTab td {
+  border: 1px solid #ccc;
+  text-align: center;
+  padding: 8px;
+  font-size: 0.9rem;
+}
+
+#inspectionconfidenceTab th {
+  background: #1e73be;
+  color: white;
+  font-weight: bold;
+}
+
+/* ✅ Triangle + Summary Layout */
+#inspectionconfidenceTab .triangle-summary {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  margin-top: 20px;
+  width: 100%;
+  flex-wrap: wrap; /* responsive wrap */
+}
+
+#inspectionconfidenceTab .triangle {
+  width: 140px;
+}
+
+#inspectionconfidenceTab .triangle .section {
+  text-align: center;
+  padding: 12px;
+  color: white;
+  font-weight: bold;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+  user-select: none;
+}
+
+#inspectionconfidenceTab .triangle .vh { background: #1a4fa3; }
+#inspectionconfidenceTab .triangle .h { background: #2271b1; }
+#inspectionconfidenceTab .triangle .m { background: #4a9cd6; }
+#inspectionconfidenceTab .triangle .l { background: #7fc2f3; }
+
+#inspectionconfidenceTab .triangle .active {
+  opacity: 1;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ✅ Summary Box */
+#inspectionconfidenceTab .summary {
+  background: #f8f8f8;
+  padding: 15px 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  min-width: 220px;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+#inspectionconfidenceTab .summary h4 {
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+#inspectionconfidenceTab .summary p {
+  margin: 6px 0;
+  line-height: 1.4;
+}
+
+/* Responsive tweak: stack inputs vertically on narrow screens */
+@media (max-width: 600px) {
+  #inspectionconfidenceTab .form-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+}

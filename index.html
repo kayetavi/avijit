@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" class="login-html">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ✅ Canonical URL -->
+  <link rel="canonical" href="https://kayetdms.live/" />
+
+  <!-- ✅ SEO Title & Meta Description -->
+  <title>Kayetdms - Digital Tools | Integrity Dashboard</title>
+  <meta name="description" content="KayetDMS is a web-based dashboard for managing damage mechanisms, tracking corrosion rates, calculating remaining life, and performing standard-compliant design thickness assessments for industrial equipment." />
+  <meta name="keywords" content="Damage Mechanisms, Corrosion Monitoring, Remaining Life, Design Thickness, Maintenance Tools,Cracking Mechanism Finder,Risk-Based Inspection Methodology, KayetDMS" />
+  <meta name="author" content="Avijit Kayet" />
+
+  <!-- ✅ Social Media Meta -->
+  <meta property="og:title" content="KayetDMS - Damage mechanism & Digital Tools" />
+  <meta property="og:description" content="Digital Maintenance Dashboard for Inspection, Inventory Calculation, Damage mechanism,Inspection cofidence, Corrosion Tracking as per damage mechanism & More" />
+  <meta property="og:image" content="https://kayetdms.live/image/avijitk-logo.png" />
+  <meta property="og:url" content="https://kayetdms.live/" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- ✅ Favicon -->
+   <link rel="icon" type="image/png" sizes="32x32" href="image/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="image/favicon-16x16.png">
+  <link rel="manifest" href="image/site.webmanifest">
+
+  <!-- ✅ CSS -->
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* 🏭 Instant Login Refinery Background */
+    html.login-html,
+    body.login-page {
+      min-height: 100vh;
+      min-height: 100dvh;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      background-color: #0f172a !important;
+      background-image: url('image/refinery.jpg') !important;
+      background-size: cover !important;
+      background-position: center center !important;
+      background-repeat: no-repeat !important;
+    }
+
+    body.login-page::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      background-image: url('image/refinery.jpg');
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body.login-page .login-container {
+      z-index: 10;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    body.login-page footer.footer {
+      z-index: 10;
+    }
+  </style>
+
+  <!-- ✅ Safe JSON Serialization Guard (Prevents circular structure TypeError across iframe & extensions) -->
+  <script>
+    (function () {
+      if (typeof window === "undefined" || window.__safeJsonStringifyInstalled) return;
+      window.__safeJsonStringifyInstalled = true;
+
+      // 🛡️ Global Error, Cross-Origin Resilience & Safe Alert Guard
+      window.addEventListener("error", function (event) {
+        if (!event) return;
+        if (event.message === "Script error." || (event.error && event.error.name === "AbortError")) {
+          console.warn("[GlobalGuard] Handled cross-origin notification safely:", event.message);
+          if (typeof event.preventDefault === "function") event.preventDefault();
+          return true;
+        }
+      }, true);
+
+      window.addEventListener("unhandledrejection", function (event) {
+        if (!event) return;
+        const reason = event.reason;
+        if (reason && (reason.name === "AbortError" || String(reason).includes("Script error"))) {
+          if (typeof event.preventDefault === "function") event.preventDefault();
+          return;
+        }
+      });
+
+      const origAlert = window.alert;
+      window.alert = function (msg) {
+        try {
+          if (typeof origAlert === "function") {
+            origAlert.call(window, msg);
+          }
+        } catch (e) {
+          console.warn("[SafeAlert] alert suppressed in sandbox iframe:", msg);
+        }
+      };
+
+      const originalStringify = JSON.stringify;
+      function createSafeReplacer(customReplacer) {
+        const seen = new WeakSet();
+        return function (key, value) {
+          if (typeof value === "object" && value !== null) {
+            if (seen.has(value)) return "[Circular]";
+            seen.add(value);
+          }
+          if (typeof customReplacer === "function") return customReplacer.call(this, key, value);
+          return value;
+        };
+      }
+      JSON.stringify = function (value, replacer, space) {
+        try {
+          return originalStringify(value, replacer, space);
+        } catch (err) {
+          if (err && (err.name === "TypeError" || /circular|cyclic/i.test(String(err.message || err)))) {
+            try {
+              return originalStringify(value, createSafeReplacer(replacer), space);
+            } catch (fallbackErr) {
+              return '"[Circular]"';
+            }
+          }
+          throw err;
+        }
+      };
+    })();
+  </script>
+</head>
+<body class="login-page">
+
+  <div class="login-container">
+    <img src="image/avijitk-logo.png" alt="KayetDMS Logo" class="logo" />
+    <h2>Integrity Digital Tools</h2>
+
+    <input type="email" id="username" placeholder="Email" required />
+    <div class="password-wrapper">
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="button" id="togglePasswordBtn" class="toggle-password-btn" aria-label="Show password" title="Show password">
+        <svg id="eyeIcon" class="eye-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </button>
+    </div>
+
+    <div class="login-actions">
+      <a href="javascript:void(0)" id="forgotPasswordLink" class="forgot-password-link">Forgot Password?</a>
+    </div>
+
+    <!-- ❌ reCAPTCHA removed -->
+
+    <button id="loginBtn">
+      <span class="btn-text">Login</span>
+      <div class="spinner"></div>
+    </button>
+
+    <div class="error" id="errorMsg"></div>
+  </div>
+
+  <!-- 🔹 Forgot Password Modal -->
+  <div id="forgotPasswordModal" class="forgot-modal hidden" role="dialog" aria-modal="true" aria-labelledby="forgotModalTitle">
+    <div class="forgot-modal-backdrop" id="forgotModalBackdrop"></div>
+    <div class="forgot-modal-card">
+      <button type="button" class="forgot-modal-close" id="closeForgotModalBtn" aria-label="Close modal">&times;</button>
+      <div class="forgot-modal-header">
+        <div class="forgot-modal-icon">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <h3 id="forgotModalTitle">Reset Password</h3>
+        <p>Enter your registered email address and we'll send you instructions to reset your password.</p>
+      </div>
+
+      <form id="forgotPasswordForm" onsubmit="return false;">
+        <div class="forgot-input-group">
+          <label for="recoveryEmail">Email Address</label>
+          <input type="email" id="recoveryEmail" placeholder="Enter your email" required />
+        </div>
+        
+        <div id="recoveryStatus" class="recovery-status"></div>
+
+        <div class="forgot-modal-actions">
+          <button type="button" class="btn-cancel" id="cancelForgotBtn">Cancel</button>
+          <button type="submit" class="btn-submit" id="sendRecoveryBtn">
+            <span class="btn-text">Send Reset Link</span>
+            <span class="spinner" id="recoverySpinner"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="about.html">About</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="footer-credit">
+      &copy; 2025 | Created by Avijit Kayet
+    </div>
+  </footer>
+
+  <!-- ✅ Scripts -->
+  <script type="module" src="login.js"></script>
+ 
+</body>
+</html>
+

@@ -1,0 +1,97 @@
+<div id="inspectionconfidenceTab" class="tab-content" style="display:none;">
+  <h2>Aggregate Inspection Confidence (AIC) Calculator</h2>
+
+  <!-- ✅ Inputs Section -->
+  <div class="input-box">
+    <!-- Row 1: Year + Inspection Type + Inspection Method -->
+    <div class="form-row">
+      <div class="form-field">
+        <label for="inspectionYear_AIC">Year:</label>
+        <input type="number" id="inspectionYear_AIC" placeholder="e.g., 2025" />
+      </div>
+
+      <div class="form-field">
+        <label for="inspectionType_AIC">Inspection Type:</label>
+        <select id="inspectionType_AIC" onchange="toggleCategoryDropdown_AIC()">
+          <option value="">-- Select --</option>
+          <option value="internal">Internal</option>
+          <option value="external">External</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="inspectionMethod_AIC">Inspection Method:</label>
+        <select id="inspectionMethod_AIC">
+          <option value="">-- Select Equipment, Type, and Category First --</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Row 2: Equipment Type + Inspection Category + Buttons -->
+    <div class="form-row">
+      <div class="form-field">
+        <label for="equipmentType_AIC">Equipment Type:</label>
+        <select id="equipmentType_AIC" onchange="toggleMethodDropdown_AIC()">
+          <option value="">-- Select --</option>
+          <option value="piping">Piping</option>
+          <option value="vessel">Vessel</option>
+          <option value="exchanger">Exchanger</option>
+          <option value="column">Column</option>
+          <option value="airfin">Air Fin Cooler</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="inspectionCategory_AIC">Inspection Category:</label>
+        <select id="inspectionCategory_AIC" onchange="toggleMethodDropdown_AIC()">
+          <option value="">-- Select --</option>
+        </select>
+      </div>
+
+      <!-- Buttons grouped inside a form-field for alignment -->
+      <div class="form-field">
+        <label>&nbsp;</label> <!-- Blank label to keep vertical space aligned -->
+        <div class="button-group-inline">
+          <button onclick="addInspection_AIC()">Add</button>
+          <button class="reset-btn" onclick="resetData_AIC()">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- ✅ Table -->
+  <h3>Added Inspections</h3>
+  <table id="inspectionTable_AIC" border="1" style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th>Year</th>
+        <th>Equipment</th>
+        <th>Inspection Type</th>
+        <th>Inspection Category</th>
+        <th>Inspection Method</th>
+        <th>Confidence Level</th>
+        <th>Equivalent</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- ✅ Triangle + Summary -->
+  <div class="triangle-summary" style="display: flex; gap: 40px; margin-top: 20px;">
+    <div class="triangle" style="width: 140px;">
+      <div class="section vh" id="tri-vh_AIC">VH</div>
+      <div class="section h" id="tri-h_AIC">H</div>
+      <div class="section m" id="tri-m_AIC">M</div>
+      <div class="section l" id="tri-l_AIC">L</div>
+    </div>
+
+    <div class="summary" style="background: #f8f8f8; padding: 15px 20px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); min-width: 220px;">
+      <h4>Summary</h4>
+      <p><strong>Total Equivalent:</strong> <span id="totalEquivalent_AIC">-</span></p>
+      <p><strong>Aggregate No. of Inspections (ANI):</strong> <span id="aggregateInspections_AIC">-</span></p>
+      <p><strong>AIC (Confidence):</strong> <span id="aicValue_AIC">-</span></p>
+    </div>
+  </div>
+ </div>

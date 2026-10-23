@@ -1,0 +1,1227 @@
+/* ==========================================================================
+   🛡️ API Structural Min-T & Tolerance Lookup Stylesheet
+   Modern High-Tech Industrial Engineering UI Architecture
+   Full Light Mode + Ultra-Crisp Dark Mode Support & Perfectly Symmetrical UI
+   ========================================================================== */
+
+/* Main Container Box */
+.st-wrapper {
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+  padding: 18px 20px;
+  margin: 6px 0 24px 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: #1e293b;
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+/* Header */
+.st-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 14px;
+  margin-bottom: 18px;
+}
+
+.st-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.st-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+  flex-shrink: 0;
+}
+
+.st-title-group h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.st-title-group p {
+  margin: 2px 0 0 0;
+  font-size: 12.5px;
+  color: #64748b;
+  line-height: 1.3;
+}
+
+.st-header-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.st-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 11.5px;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.st-pill-badge.cloud-synced {
+  background: #ecfdf5;
+  color: #059669;
+  border-color: #a7f3d0;
+}
+
+.st-pill-badge.api-standard {
+  background: #eff6ff;
+  color: #2563eb;
+  border-color: #bfdbfe;
+}
+
+/* 🎛️ Perfectly Equal & Symmetrical Form Inputs Grid (All 8 Boxes Exactly Equal) */
+.st-form-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 12px;
+  background: #f8fafc;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 20px;
+  align-items: stretch;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.st-form-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  background: #ffffff;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  box-sizing: border-box;
+  min-height: 76px;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.st-form-group:hover {
+  border-color: #cbd5e1;
+}
+
+.st-form-group:focus-within {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 2.5px rgba(2, 132, 199, 0.12);
+}
+
+.st-form-group label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #334155;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 20px;
+  min-height: 20px;
+  margin: 0;
+  padding: 0;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  gap: 6px;
+}
+
+.st-form-group label .hint {
+  font-size: 10px;
+  font-weight: 600;
+  color: #0284c7;
+  background: #e0f2fe;
+  padding: 1px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.st-select, .st-input {
+  width: 100%;
+  height: 38px;
+  min-height: 38px;
+  max-height: 38px;
+  padding: 0 10px;
+  margin: 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  display: block;
+}
+
+.st-select:focus, .st-input:focus {
+  border-color: #0284c7;
+  background: #ffffff;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+}
+
+.st-unit-toggle {
+  display: inline-flex;
+  background: #e2e8f0;
+  padding: 2px;
+  border-radius: 6px;
+  gap: 2px;
+}
+
+.st-unit-btn {
+  border: none;
+  background: transparent;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.st-unit-btn.active {
+  background: #ffffff;
+  color: #0284c7;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* 📊 Compact Results Card & KPIs */
+.st-results-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.st-kpi-card {
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 96px;
+}
+
+.st-kpi-card.primary {
+  border-left: 4px solid #0284c7;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+}
+
+.st-kpi-card.accent {
+  border-left: 4px solid #10b981;
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+}
+
+.st-kpi-card.warning {
+  border-left: 4px solid #f59e0b;
+  background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+}
+
+.st-kpi-card.info {
+  border-left: 4px solid #6366f1;
+  background: linear-gradient(135deg, #ffffff 0%, #eef2ff 100%);
+}
+
+.st-kpi-header {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.st-kpi-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.1;
+  margin: 2px 0;
+}
+
+.st-kpi-unit {
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
+  margin-left: 3px;
+}
+
+.st-kpi-subtext {
+  font-size: 11px;
+  color: #475569;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 🔌 Pipe Thickness Finder Connected Verification Card */
+.st-finder-card {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.st-finder-card.empty {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  text-align: center;
+  padding: 20px;
+}
+
+.st-finder-card.pass {
+  border-left: 5px solid #059669;
+  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+}
+
+.st-finder-card.fail {
+  border-left: 5px solid #dc2626;
+  background: linear-gradient(180deg, #fef2f2 0%, #ffffff 100%);
+}
+
+.st-finder-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.st-finder-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.st-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0284c7;
+}
+
+.st-finder-title h4 {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.st-source-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  background: #e2e8f0;
+  color: #334155;
+  border-radius: 4px;
+}
+
+.st-status-pill {
+  padding: 4px 12px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.st-status-pill.status-pass {
+  background: #059669;
+  color: #ffffff;
+}
+
+.st-status-pill.status-fail {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.st-finder-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.st-finder-item {
+  background: #f8fafc;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 3px;
+  min-height: 58px;
+}
+
+.st-finder-item.highlight {
+  background: #f0f9ff;
+  border-color: #bae6fd;
+}
+
+.st-finder-item .label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.st-finder-item .val {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.st-finder-item .tol-val {
+  color: #d97706;
+}
+
+.st-finder-item .net-val {
+  color: #0284c7;
+}
+
+.st-finder-item.margin-positive .val {
+  color: #059669;
+}
+
+.st-finder-item.margin-negative .val {
+  color: #dc2626;
+}
+
+/* 📊 Schedule Suitability Comparison Table */
+.st-sch-table-wrapper {
+  margin-top: 10px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 10px;
+}
+
+.st-sch-table-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.st-sch-compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  background: #ffffff;
+}
+
+.st-sch-compare-table th {
+  background: #f1f5f9;
+  padding: 7px 10px;
+  font-weight: 700;
+  color: #334155;
+  text-align: left;
+  border-bottom: 2px solid #cbd5e1;
+}
+
+.st-sch-compare-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.st-sch-compare-table tr.selected-sch-row td {
+  background: #e0f2fe !important;
+  font-weight: 700;
+  color: #0369a1;
+}
+
+.st-mini-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.st-mini-badge.pass {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.st-mini-badge.fail {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* 🎯 Match Callout Banner */
+.st-match-banner {
+  background: linear-gradient(90deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  padding: 10px 16px;
+  border-radius: 6px;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.st-match-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.st-match-icon {
+  font-size: 20px;
+}
+
+.st-match-banner-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.st-match-banner-desc {
+  font-size: 11.5px;
+  opacity: 0.92;
+  color: #e0f2fe;
+}
+
+.st-match-banner-value {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 15px;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+/* 📑 Table Matrix Section */
+.st-table-section {
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+}
+
+.st-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.st-table-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.st-table-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.st-btn {
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.st-btn-primary {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+.st-btn-primary:hover {
+  background: #0369a1;
+}
+
+.st-btn-outline {
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.st-btn-outline:hover {
+  background: #f1f5f9;
+}
+
+.st-table-container {
+  overflow-x: auto;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  max-height: 420px;
+}
+
+.st-data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12.5px;
+  text-align: center;
+}
+
+.st-data-table th, .st-data-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+}
+
+.st-data-table th {
+  background: #f1f5f9;
+  color: #1e293b;
+  font-weight: 700;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.st-data-table th:first-child, .st-data-table td:first-child {
+  text-align: left;
+  position: sticky;
+  left: 0;
+  background: #ffffff;
+  z-index: 1;
+  font-weight: 600;
+}
+
+.st-data-table th:first-child {
+  z-index: 3;
+  background: #f1f5f9;
+}
+
+.st-data-table tr:hover td {
+  background: #f8fafc;
+}
+
+/* 🌟 Ultra-Clear High-Contrast Matrix Highlighting with Distinct Color Tiers */
+.st-data-table th.selected-col {
+  background: #1e40af !important;
+  color: #ffffff !important;
+  border-bottom: 3px solid #1d4ed8 !important;
+  font-weight: 800 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Selected Column Cells - Soft Sky Blue */
+.st-data-table td.selected-col-cell {
+  background: #e0f2fe !important;
+  color: #0369a1 !important;
+  font-weight: 700 !important;
+  border-left: 1px dashed #7dd3fc !important;
+  border-right: 1px dashed #7dd3fc !important;
+}
+
+/* Selected Row - Warm Amber/Gold */
+.st-data-table tr.selected-row td {
+  background: #fef9c3 !important;
+  color: #854d0e !important;
+  font-weight: 700 !important;
+  border-top: 2px solid #eab308 !important;
+  border-bottom: 2px solid #eab308 !important;
+}
+
+.st-data-table tr.selected-row td:first-child {
+  background: #fef08a !important;
+  color: #713f12 !important;
+  font-weight: 800 !important;
+  border-left: 5px solid #ca8a04 !important;
+}
+
+/* 🎯 Active Intersection Matched Cell - Vibrant Radiant Emerald Spotlight */
+.st-data-table td.selected-cell {
+  background: #059669 !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  border: 2px solid #047857 !important;
+  box-shadow: 0 0 14px rgba(5, 150, 105, 0.55), inset 0 0 6px rgba(255, 255, 255, 0.3) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.st-active-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.15);
+  padding: 3px 8px;
+  border-radius: 4px;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.02em;
+}
+
+/* 🏭 Tolerance Reference Chart Section */
+.st-tolerance-chart-section {
+  margin-top: 18px;
+}
+
+.st-details-panel {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.st-details-summary {
+  padding: 11px 16px;
+  background: #f8fafc;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: #0f172a;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  border-bottom: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.st-details-summary:hover {
+  background: #f1f5f9;
+  color: #0284c7;
+}
+
+.st-details-badge {
+  font-size: 11px;
+  font-weight: 600;
+  background: #ecfdf5;
+  color: #059669;
+  padding: 2px 7px;
+  border-radius: 10px;
+  border: 1px solid #a7f3d0;
+}
+
+.st-details-content {
+  padding: 12px;
+}
+
+.st-tol-tag {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 11.5px;
+}
+
+.st-tol-ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.st-tol-ref-table th {
+  background: #f1f5f9;
+  text-align: left;
+  padding: 7px 10px;
+}
+
+.st-tol-ref-table td {
+  text-align: left;
+  padding: 7px 10px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* ℹ️ Formula and Reference Footnotes */
+.st-reference-notes {
+  margin-top: 16px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.st-reference-notes h4 {
+  margin: 0 0 6px 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.st-reference-notes ul {
+  margin: 0;
+  padding-left: 16px;
+}
+
+/* ==========================================================================
+   🌙 COMPLETE DARK MODE STYLING SUPPORT (.dark-mode)
+   ========================================================================== */
+
+html.dark-mode #structuralThicknessTab .st-wrapper,
+body.dark-mode #structuralThicknessTab .st-wrapper,
+[data-theme="dark"] #structuralThicknessTab .st-wrapper {
+  background: #11141a !important;
+  border-color: #262c36 !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-header,
+body.dark-mode #structuralThicknessTab .st-header {
+  border-bottom-color: #262c36 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-title-group h2,
+body.dark-mode #structuralThicknessTab .st-title-group h2 {
+  color: #f8fafc !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-title-group p,
+body.dark-mode #structuralThicknessTab .st-title-group p {
+  color: #94a3b8 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-form-container,
+body.dark-mode #structuralThicknessTab .st-form-container {
+  background: #161b22 !important;
+  border-color: #262c36 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-form-group,
+body.dark-mode #structuralThicknessTab .st-form-group {
+  background: #0d1117 !important;
+  border-color: #30363d !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-form-group:hover,
+body.dark-mode #structuralThicknessTab .st-form-group:hover {
+  border-color: #484f58 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-form-group:focus-within,
+body.dark-mode #structuralThicknessTab .st-form-group:focus-within {
+  border-color: #388bfd !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-form-group label,
+body.dark-mode #structuralThicknessTab .st-form-group label {
+  color: #cbd5e1 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-form-group label .hint,
+body.dark-mode #structuralThicknessTab .st-form-group label .hint {
+  background: #1e3a8a !important;
+  color: #93c5fd !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-select,
+html.dark-mode #structuralThicknessTab .st-input,
+body.dark-mode #structuralThicknessTab .st-select,
+body.dark-mode #structuralThicknessTab .st-input {
+  background: #161b22 !important;
+  border-color: #30363d !important;
+  color: #f0f6fc !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-select:focus,
+html.dark-mode #structuralThicknessTab .st-input:focus,
+body.dark-mode #structuralThicknessTab .st-select:focus,
+body.dark-mode #structuralThicknessTab .st-input:focus {
+  border-color: #388bfd !important;
+  background: #0d1117 !important;
+  box-shadow: 0 0 0 2px rgba(56, 139, 253, 0.25) !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-unit-toggle,
+body.dark-mode #structuralThicknessTab .st-unit-toggle {
+  background: #21262d !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-unit-btn,
+body.dark-mode #structuralThicknessTab .st-unit-btn {
+  color: #8b949e !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-unit-btn.active,
+body.dark-mode #structuralThicknessTab .st-unit-btn.active {
+  background: #30363d !important;
+  color: #58a6ff !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-pill-badge,
+body.dark-mode #structuralThicknessTab .st-pill-badge {
+  background: #21262d !important;
+  color: #c9d1d9 !important;
+  border-color: #30363d !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-pill-badge.cloud-synced,
+body.dark-mode #structuralThicknessTab .st-pill-badge.cloud-synced {
+  background: #064e3b !important;
+  color: #6ee7b7 !important;
+  border-color: #047857 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-pill-badge.api-standard,
+body.dark-mode #structuralThicknessTab .st-pill-badge.api-standard {
+  background: #1e3a8a !important;
+  color: #93c5fd !important;
+  border-color: #1d4ed8 !important;
+}
+
+/* Dark Mode KPI Cards */
+html.dark-mode #structuralThicknessTab .st-kpi-card,
+body.dark-mode #structuralThicknessTab .st-kpi-card {
+  background: #161b22 !important;
+  border-color: #262c36 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-kpi-card.primary,
+body.dark-mode #structuralThicknessTab .st-kpi-card.primary {
+  border-left-color: #388bfd !important;
+  background: linear-gradient(135deg, #161b22 0%, #0d2744 100%) !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-kpi-card.accent,
+body.dark-mode #structuralThicknessTab .st-kpi-card.accent {
+  border-left-color: #238636 !important;
+  background: linear-gradient(135deg, #161b22 0%, #092e1a 100%) !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-kpi-card.warning,
+body.dark-mode #structuralThicknessTab .st-kpi-card.warning {
+  border-left-color: #d29922 !important;
+  background: linear-gradient(135deg, #161b22 0%, #382404 100%) !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-kpi-card.info,
+body.dark-mode #structuralThicknessTab .st-kpi-card.info {
+  border-left-color: #a371f7 !important;
+  background: linear-gradient(135deg, #161b22 0%, #24143a 100%) !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-kpi-header,
+body.dark-mode #structuralThicknessTab .st-kpi-header {
+  color: #8b949e !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-kpi-value,
+body.dark-mode #structuralThicknessTab .st-kpi-value {
+  color: #f0f6fc !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-kpi-subtext,
+body.dark-mode #structuralThicknessTab .st-kpi-subtext {
+  color: #8b949e !important;
+}
+
+/* Dark Mode Pipe Finder Card */
+html.dark-mode #structuralThicknessTab .st-finder-card,
+body.dark-mode #structuralThicknessTab .st-finder-card {
+  background: #161b22 !important;
+  border-color: #262c36 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-finder-card.pass,
+body.dark-mode #structuralThicknessTab .st-finder-card.pass {
+  background: linear-gradient(180deg, #092e1a 0%, #161b22 100%) !important;
+  border-left-color: #238636 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-finder-card.fail,
+body.dark-mode #structuralThicknessTab .st-finder-card.fail {
+  background: linear-gradient(180deg, #3d1214 0%, #161b22 100%) !important;
+  border-left-color: #da3633 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-finder-card-header,
+body.dark-mode #structuralThicknessTab .st-finder-card-header {
+  border-bottom-color: #262c36 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-finder-title h4,
+body.dark-mode #structuralThicknessTab .st-finder-title h4 {
+  color: #f0f6fc !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-source-badge,
+body.dark-mode #structuralThicknessTab .st-source-badge {
+  background: #21262d !important;
+  color: #c9d1d9 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-finder-item,
+body.dark-mode #structuralThicknessTab .st-finder-item {
+  background: #0d1117 !important;
+  border-color: #262c36 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-finder-item.highlight,
+body.dark-mode #structuralThicknessTab .st-finder-item.highlight {
+  background: #0d2744 !important;
+  border-color: #1e40af !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-finder-item .label,
+body.dark-mode #structuralThicknessTab .st-finder-item .label {
+  color: #8b949e !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-finder-item .val,
+body.dark-mode #structuralThicknessTab .st-finder-item .val {
+  color: #f0f6fc !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-sch-table-wrapper,
+body.dark-mode #structuralThicknessTab .st-sch-table-wrapper {
+  border-top-color: #262c36 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-sch-table-title,
+body.dark-mode #structuralThicknessTab .st-sch-table-title {
+  color: #f0f6fc !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-sch-compare-table,
+body.dark-mode #structuralThicknessTab .st-sch-compare-table {
+  background: #0d1117 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-sch-compare-table th,
+body.dark-mode #structuralThicknessTab .st-sch-compare-table th {
+  background: #161b22 !important;
+  color: #c9d1d9 !important;
+  border-bottom-color: #262c36 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-sch-compare-table td,
+body.dark-mode #structuralThicknessTab .st-sch-compare-table td {
+  border-bottom-color: #21262d !important;
+  color: #c9d1d9 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-sch-compare-table tr.selected-sch-row td,
+body.dark-mode #structuralThicknessTab .st-sch-compare-table tr.selected-sch-row td {
+  background: #0d2744 !important;
+  color: #58a6ff !important;
+}
+
+/* Dark Mode Table Matrix */
+html.dark-mode #structuralThicknessTab .st-table-section,
+body.dark-mode #structuralThicknessTab .st-table-section {
+  background: #161b22 !important;
+  border-color: #262c36 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-table-title,
+body.dark-mode #structuralThicknessTab .st-table-title {
+  color: #f0f6fc !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-btn-outline,
+body.dark-mode #structuralThicknessTab .st-btn-outline {
+  background: #21262d !important;
+  border-color: #30363d !important;
+  color: #c9d1d9 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-btn-outline:hover,
+body.dark-mode #structuralThicknessTab .st-btn-outline:hover {
+  background: #30363d !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-table-container,
+body.dark-mode #structuralThicknessTab .st-table-container {
+  border-color: #30363d !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-data-table,
+body.dark-mode #structuralThicknessTab .st-data-table {
+  background: #0d1117 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-data-table th,
+body.dark-mode #structuralThicknessTab .st-data-table th {
+  background: #161b22 !important;
+  color: #f0f6fc !important;
+  border-color: #262c36 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-data-table td,
+body.dark-mode #structuralThicknessTab .st-data-table td {
+  border-color: #21262d !important;
+  color: #c9d1d9 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-data-table th:first-child,
+html.dark-mode #structuralThicknessTab .st-data-table td:first-child,
+body.dark-mode #structuralThicknessTab .st-data-table th:first-child,
+body.dark-mode #structuralThicknessTab .st-data-table td:first-child {
+  background: #161b22 !important;
+  color: #f0f6fc !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-data-table tr:hover td,
+body.dark-mode #structuralThicknessTab .st-data-table tr:hover td {
+  background: #1f242c !important;
+}
+
+/* Dark Mode Table Matrix Highlights */
+html.dark-mode #structuralThicknessTab .st-data-table th.selected-col,
+body.dark-mode #structuralThicknessTab .st-data-table th.selected-col {
+  background: #1e40af !important;
+  color: #ffffff !important;
+  border-bottom-color: #388bfd !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-data-table td.selected-col-cell,
+body.dark-mode #structuralThicknessTab .st-data-table td.selected-col-cell {
+  background: #0d2744 !important;
+  color: #58a6ff !important;
+  border-left: 1px dashed #1e40af !important;
+  border-right: 1px dashed #1e40af !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-data-table tr.selected-row td,
+body.dark-mode #structuralThicknessTab .st-data-table tr.selected-row td {
+  background: #382404 !important;
+  color: #fef08a !important;
+  border-top: 2px solid #ca8a04 !important;
+  border-bottom: 2px solid #ca8a04 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-data-table tr.selected-row td:first-child,
+body.dark-mode #structuralThicknessTab .st-data-table tr.selected-row td:first-child {
+  background: #452c05 !important;
+  color: #fef08a !important;
+  border-left: 5px solid #eab308 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-data-table td.selected-cell,
+body.dark-mode #structuralThicknessTab .st-data-table td.selected-cell {
+  background: #059669 !important;
+  color: #ffffff !important;
+  border: 2px solid #10b981 !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.6) !important;
+}
+
+/* Dark Mode Details Panel & Reference Notes */
+html.dark-mode #structuralThicknessTab .st-details-panel,
+body.dark-mode #structuralThicknessTab .st-details-panel {
+  background: #161b22 !important;
+  border-color: #262c36 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-details-summary,
+body.dark-mode #structuralThicknessTab .st-details-summary {
+  background: #161b22 !important;
+  color: #f0f6fc !important;
+  border-bottom-color: #262c36 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-tol-ref-table th,
+body.dark-mode #structuralThicknessTab .st-tol-ref-table th {
+  background: #21262d !important;
+  color: #f0f6fc !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-tol-ref-table td,
+body.dark-mode #structuralThicknessTab .st-tol-ref-table td {
+  border-bottom-color: #262c36 !important;
+  color: #c9d1d9 !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-reference-notes,
+body.dark-mode #structuralThicknessTab .st-reference-notes {
+  background: #161b22 !important;
+  border-color: #262c36 !important;
+  color: #8b949e !important;
+}
+
+html.dark-mode #structuralThicknessTab .st-reference-notes h4,
+body.dark-mode #structuralThicknessTab .st-reference-notes h4 {
+  color: #f0f6fc !important;
+}
+
+/* Responsive Grid Breakpoints */
+@media (max-width: 1200px) {
+  .st-form-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .st-results-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .st-finder-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .st-wrapper {
+    padding: 12px;
+    margin: 4px 0 20px 0;
+  }
+  .st-form-container {
+    grid-template-columns: 1fr;
+  }
+  .st-results-grid {
+    grid-template-columns: 1fr;
+  }
+  .st-finder-grid {
+    grid-template-columns: 1fr;
+  }
+  .st-kpi-value {
+    font-size: 20px;
+  }
+}

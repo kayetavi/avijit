@@ -1,0 +1,6 @@
+{
+  "name": "KayetDMS - Integrity Digital Tools",
+  "description": "Industrial damage mechanism management, corrosion monitoring, remaining life calculation, and risk-based inspection dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

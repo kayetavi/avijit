@@ -1,0 +1,698 @@
+/* Container styling - updated for full screen like B31.3 style */
+#bkStressTab {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  width: 100%;             /* full width */
+  max-width: 100%;         /* no max-width limit */
+  margin: -30px 0 0 0;               /* no horizontal auto margin */
+  padding: 25px 30px;      /* padding inside container */
+  background-color: white; /* white background */
+  border-radius: 0;        /* flat edges for full screen */
+  box-shadow: none;        /* no shadow */
+  box-sizing: border-box;  /* include padding in width */
+  color: #2c3e50;
+}
+
+/* Headings */
+#bkStressTab h2 {
+  font-size: 22px;
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 20px;
+  border-bottom: 4px solid #2980b9; /* thicker blue underline */
+  padding-bottom: 8px;
+  font-weight: 700;
+}
+
+/* Labels */
+#bkStressTab label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #2c3e50;
+}
+
+/* Select dropdowns and input fields */
+#bkStressTab select,
+#bkStressTab input[type="number"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #ced6e0;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+  background-color: #fff;
+}
+
+/* Disabled inputs style */
+#bkStressTab select:disabled,
+#bkStressTab input:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+  color: #6c757d;
+}
+
+/* Focus & hover effect for enabled inputs */
+#bkStressTab select:hover:not(:disabled),
+#bkStressTab input:hover:not(:disabled),
+#bkStressTab select:focus:not(:disabled),
+#bkStressTab input:focus:not(:disabled) {
+  border-color: #2980b9;
+  outline: none;
+  box-shadow: 0 0 8px rgba(41, 128, 185, 0.3);
+}
+
+/* Flex containers spacing */
+#bkStressTab > form > div {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+/* Each input container */
+#bkStressTab > form > div > div {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* Output container */
+#bkStressTab #bkOutputDiv {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 15px 20px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+  color: #34495e;
+  font-weight: 600;
+  display: none; /* hidden by default */
+}
+
+/* Output paragraphs */
+#bkStressTab #bkOutputDiv p {
+  margin: 10px 0;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #e1e8f0;
+  padding-bottom: 8px;
+}
+
+/* Remove border from last paragraph */
+#bkStressTab #bkOutputDiv p:last-child {
+  border-bottom: none;
+}
+
+/* Highlight the stress values */
+#bkStressTab #bkOutputDiv span {
+  color: #2980b9;
+  font-weight: 700;
+}
+
+/* ======= Responsive for Mobile ======= */
+@media (max-width: 480px) {
+  #bkStressTab {
+    max-width: 100%;
+    padding: 15px 20px;  /* slightly less padding on mobile */
+    margin-top: 20px;
+    border-radius: 0;    /* flat edges on mobile */
+    box-shadow: none;
+  }
+
+  /* Stack inputs vertically */
+  #bkStressTab > form > div {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  #bkStressTab > form > div > div {
+    min-width: auto;
+    flex: unset;
+  }
+
+  /* Slightly larger font on inputs for easier tapping */
+  #bkStressTab select,
+  #bkStressTab input[type="number"] {
+    font-size: 1.15rem;
+    padding: 12px 15px;
+  }
+
+  /* Output container padding */
+  #bkStressTab #bkOutputDiv {
+    padding: 20px 15px;
+    font-size: 1.15rem;
+  }
+
+  /* Output paragraphs spacing */
+  #bkStressTab #bkOutputDiv p {
+    margin: 12px 0;
+  }
+}
+
+/* Warning & error input styling */
+.bk-warning {
+  color: red;
+  font-weight: bold;
+  display: none;
+  margin-top: 5px;
+}
+
+/* Shake animation */
+.error-border {
+  border-color: red !important;
+}
+
+.shake {
+  animation: shakeAnim 0.4s;
+}
+
+@keyframes shakeAnim {
+  0% { transform: translateX(0px); }
+  25% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+  75% { transform: translateX(-4px); }
+  100% { transform: translateX(0px); }
+}
+
+/* ========================================================================= */
+/* BULK STRESS VALUE DATALOADER & FIREBASE SYNC STYLING                      */
+/* ========================================================================= */
+
+.stress-module-header {
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+}
+
+.stress-tab-btn {
+  padding: 9px 18px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #475569;
+}
+
+.stress-tab-btn:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.stress-tab-btn.active {
+  background: #0284c7;
+  color: white;
+  border-color: #0284c7;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+}
+
+.stress-dataloader-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.stress-dropzone {
+  border: 2px dashed #94a3b8;
+  border-radius: 8px;
+  padding: 35px 20px;
+  text-align: center;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 15px 0;
+}
+
+.stress-dropzone:hover,
+.stress-dropzone.dragover {
+  border-color: #0284c7;
+  background: #f0f9ff;
+}
+
+.stress-btn-firebase {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: #ffffff;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stress-btn-firebase:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0369a1, #075985);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.4);
+}
+
+.stress-btn-firebase:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+.stress-btn-template {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stress-btn-template:hover {
+  background: #d1fae5;
+  border-color: #6ee7b7;
+}
+
+.stress-btn-secondary {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stress-btn-secondary:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.stress-btn-page {
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  background: #f8fafc;
+  color: #334155;
+  cursor: pointer;
+}
+
+.stress-btn-page:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.stress-btn-page:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* KPI Summary Cards */
+.stress-kpi-grid {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin: 18px 0;
+}
+
+.stress-kpi-card {
+  flex: 1;
+  min-width: 140px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #0284c7;
+  border-radius: 6px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.stress-kpi-num {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.stress-kpi-label {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Preview Table */
+.stress-preview-table-wrapper {
+  overflow-x: auto;
+  margin-top: 15px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+.stress-preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 850px;
+}
+
+.stress-preview-table th {
+  background: #f1f5f9;
+  color: #334155;
+  font-weight: 700;
+  padding: 10px 12px;
+  border-bottom: 2px solid #cbd5e1;
+  text-align: left;
+}
+
+.stress-preview-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #1e293b;
+}
+
+.stress-preview-table tr:hover {
+  background-color: rgba(2, 132, 199, 0.04);
+}
+
+.stress-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.stress-badge-valid {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.stress-badge-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+.stress-filter-pill {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #475569;
+}
+
+.stress-filter-pill.active {
+  background: #0284c7;
+  color: white;
+  border-color: #0284c7;
+}
+
+/* Spinners */
+.stress-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(2, 132, 199, 0.3);
+  border-top-color: #0284c7;
+  border-radius: 50%;
+  animation: stressSpin 0.8s linear infinite;
+  display: inline-block;
+}
+
+.stress-spinner-small {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: stressSpin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes stressSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Dark Mode Overrides for Stress Module */
+html.dark-mode .stress-module-header,
+body.dark-mode .stress-module-header {
+  border-bottom-color: #334155;
+}
+
+html.dark-mode .stress-tab-btn,
+body.dark-mode .stress-tab-btn {
+  background: #1e293b;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+html.dark-mode .stress-tab-btn.active,
+body.dark-mode .stress-tab-btn.active {
+  background: #0284c7;
+  color: white;
+  border-color: #0284c7;
+}
+
+html.dark-mode .stress-dataloader-card,
+body.dark-mode .stress-dataloader-card {
+  background: #14181e;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+html.dark-mode .stress-dropzone,
+body.dark-mode .stress-dropzone {
+  background: #0f172a;
+  border-color: #475569;
+  color: #cbd5e1;
+}
+
+html.dark-mode .stress-dropzone:hover,
+html.dark-mode .stress-dropzone.dragover,
+body.dark-mode .stress-dropzone:hover,
+body.dark-mode .stress-dropzone.dragover {
+  background: #1e293b;
+  border-color: #38bdf8;
+}
+
+html.dark-mode .stress-kpi-card,
+body.dark-mode .stress-kpi-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+html.dark-mode .stress-kpi-num,
+body.dark-mode .stress-kpi-num {
+  color: #f8fafc;
+}
+
+html.dark-mode .stress-preview-table-wrapper,
+body.dark-mode .stress-preview-table-wrapper {
+  border-color: #334155;
+}
+
+html.dark-mode .stress-preview-table th,
+body.dark-mode .stress-preview-table th {
+  background: #1e293b;
+  color: #f1f5f9;
+  border-bottom-color: #475569;
+}
+
+html.dark-mode .stress-preview-table td,
+body.dark-mode .stress-preview-table td {
+  border-bottom-color: #334155;
+  color: #e2e8f0;
+}
+
+html.dark-mode .stress-btn-secondary,
+body.dark-mode .stress-btn-secondary {
+  background: #1e293b;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+/* Year Manager & Delete Actions */
+.stress-year-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.stress-year-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.stress-btn-danger {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stress-btn-danger:hover:not(:disabled) {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #dc2626;
+}
+
+.stress-btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f1f5f9;
+  color: #94a3b8;
+  border-color: #cbd5e1;
+}
+
+.stress-btn-edit {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  padding: 5px 12px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.stress-btn-edit:hover {
+  background: #3b82f6;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.stress-btn-add {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+  padding: 7px 15px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stress-btn-add:hover {
+  background: #16a34a;
+  color: #ffffff;
+  border-color: #15803d;
+}
+
+/* Modal Popup Overlay */
+.stress-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(3px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.stress-modal-box {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  animation: stressModalIn 0.2s ease-out;
+}
+
+@keyframes stressModalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.stress-modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+}
+
+.stress-modal-body {
+  padding: 20px;
+}
+
+.stress-modal-footer {
+  padding: 14px 20px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  background: #f8fafc;
+}
+
+/* Dark mode overrides for modal and cards */
+html.dark-mode .stress-year-card,
+body.dark-mode .stress-year-card {
+  background: #14181e;
+  border-color: #334155;
+}
+
+html.dark-mode .stress-modal-box,
+body.dark-mode .stress-modal-box {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+html.dark-mode .stress-modal-header,
+html.dark-mode .stress-modal-footer,
+body.dark-mode .stress-modal-header,
+body.dark-mode .stress-modal-footer {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+

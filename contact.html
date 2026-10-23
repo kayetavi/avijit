@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact &amp; Licensing - KayetDMS</title>
+  <script>
+    (function () {
+      try {
+        var t = (typeof sessionStorage !== "undefined" ? sessionStorage.getItem("theme") : null) || "dark";
+        if (t === "dark") {
+          document.documentElement.classList.add("dark-mode");
+        } else {
+          document.documentElement.classList.add("light-mode");
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      color: #1e293b;
+      min-height: 100vh;
+      padding: 32px 16px 60px;
+      line-height: 1.5;
+    }
+
+    .contact-wrapper {
+      max-width: 640px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .top-nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-bottom: 4px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #0284c7;
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: color 0.15s ease;
+    }
+    .back-link:hover {
+      color: #0369a1;
+      text-decoration: underline;
+    }
+
+    /* ── Target Focus Element: div:nth-of-type(1) > div:nth-of-type(2) ── */
+    div:nth-of-type(1) > div:nth-of-type(2),
+    .contact-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 24px 28px;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .header-box {
+      text-align: center;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 14px;
+    }
+
+    .header-icon {
+      font-size: 2.2rem;
+      margin-bottom: 4px;
+      display: inline-block;
+    }
+
+    h1 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.015em;
+      margin-bottom: 4px;
+    }
+
+    .header-subtitle {
+      font-size: 0.86rem;
+      color: #64748b;
+    }
+
+    /* Direct Email Quick Banner */
+    .direct-email-banner {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+    }
+
+    .direct-email-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .direct-email-icon {
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+
+    .direct-email-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      opacity: 0.9;
+      font-weight: 700;
+    }
+
+    .direct-email-address {
+      font-size: 0.96rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    .direct-email-btn {
+      background: #ffffff;
+      color: #0369a1;
+      text-decoration: none;
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease, transform 0.1s ease;
+      white-space: nowrap;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    }
+
+    .direct-email-btn:hover {
+      background: #f0f9ff;
+      transform: translateY(-1px);
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #334155;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.92rem;
+      color: #1e293b;
+      background: #f8fafc;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      font-family: inherit;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #0284c7;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 480px) {
+      .btn-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #ffffff;
+      border: none;
+      padding: 11px 16px;
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      background: linear-gradient(135deg, #0369a1, #075985);
+      transform: translateY(-1px);
+    }
+
+    .email-app-btn {
+      background: #f1f5f9;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
+      padding: 11px 16px;
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .email-app-btn:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+    }
+
+    /* Response Notification Box */
+    .status-alert {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 6px;
+      font-size: 0.86rem;
+      line-height: 1.45;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .status-alert.success {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      color: #166534;
+    }
+
+    .status-alert.info {
+      background: #f0f9ff;
+      border: 1px solid #7dd3fc;
+      color: #0369a1;
+    }
+
+    .status-alert.error {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+    }
+
+    /* Admin Submissions Inbox Section */
+    .admin-inbox-section {
+      border-top: 1px dashed #cbd5e1;
+      padding-top: 14px;
+      margin-top: 6px;
+    }
+
+    .admin-inbox-toggle {
+      width: 100%;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.15s ease;
+    }
+
+    .admin-inbox-toggle:hover {
+      background: #f1f5f9;
+    }
+
+    .admin-inbox-container {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 280px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .inbox-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .inbox-item-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .inbox-item-badge {
+      font-size: 0.7rem;
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .inbox-item-email {
+      color: #0284c7;
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .inbox-item-reply {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+      color: #0284c7;
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-decoration: none;
+    }
+
+    /* Contact Details Info Card */
+    .info-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 0.83rem;
+      color: #475569;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-item strong {
+      color: #0f172a;
+    }
+
+    .info-item a {
+      color: #0284c7;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* Premium Services Badge Box */
+    .premium-box {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 0.83rem;
+      color: #92400e;
+      line-height: 1.45;
+    }
+
+    .premium-box strong {
+      color: #78350f;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Dark Mode Overrides */
+    html.dark-mode body {
+      background: linear-gradient(135deg, #090d16 0%, #0f172a 100%);
+      color: #f8fafc;
+    }
+    html.dark-mode div:nth-of-type(1) > div:nth-of-type(2),
+    html.dark-mode .contact-card,
+    html.dark-mode .info-card {
+      background: #1e293b;
+      border-color: #334155;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    }
+    html.dark-mode h1,
+    html.dark-mode .info-item strong,
+    html.dark-mode .inbox-item-header {
+      color: #f8fafc;
+    }
+    html.dark-mode .header-subtitle,
+    html.dark-mode .info-card {
+      color: #94a3b8;
+    }
+    html.dark-mode label {
+      color: #cbd5e1;
+    }
+    html.dark-mode input[type="text"],
+    html.dark-mode input[type="email"],
+    html.dark-mode select,
+    html.dark-mode textarea {
+      background: #0f172a;
+      border-color: #334155;
+      color: #f8fafc;
+    }
+    html.dark-mode input:focus,
+    html.dark-mode select:focus,
+    html.dark-mode textarea:focus {
+      background: #131c2e;
+      border-color: #38bdf8;
+    }
+    html.dark-mode .header-box {
+      border-bottom-color: #334155;
+    }
+    html.dark-mode .email-app-btn {
+      background: #334155;
+      color: #f8fafc;
+      border-color: #475569;
+    }
+    html.dark-mode .email-app-btn:hover {
+      background: #475569;
+    }
+    html.dark-mode .admin-inbox-toggle {
+      background: #0f172a;
+      border-color: #334155;
+      color: #cbd5e1;
+    }
+    html.dark-mode .admin-inbox-section {
+      border-top-color: #334155;
+    }
+    html.dark-mode .inbox-item {
+      background: #0f172a;
+      border-color: #334155;
+    }
+    html.dark-mode .premium-box {
+      background: #2d2412;
+      border-color: #594519;
+      color: #fde047;
+    }
+    html.dark-mode .premium-box strong {
+      color: #fef08a;
+    }
+    html.dark-mode .status-alert.success {
+      background: #062f1a;
+      border-color: #14532d;
+      color: #86efac;
+    }
+    html.dark-mode .status-alert.info {
+      background: #082f49;
+      border-color: #0369a1;
+      color: #7dd3fc;
+    }
+  </style>
+</head>
+<body>
+  <div class="contact-wrapper">
+
+    <!-- Top Navigation -->
+    <div class="top-nav-bar">
+      <a href="about.html" class="back-link">
+        About System <span>&rarr;</span>
+      </a>
+    </div>
+
+    <!-- Main Contact Card (Target: div:nth-of-type(1) > div:nth-of-type(2)) -->
+    <div class="contact-card">
+      <div class="header-box">
+        <div class="header-icon">🛡️</div>
+        <h1>Contact &amp; Subscriptions</h1>
+        <p class="header-subtitle">
+          KayetDMS Fixed Equipment Asset Integrity &amp; Damage Mechanism Platform
+        </p>
+      </div>
+
+      <!-- High-Visibility Direct Email Banner (Works 100% on any device) -->
+      <div class="direct-email-banner">
+        <div class="direct-email-info">
+          <span class="direct-email-icon">✉️</span>
+          <div>
+            <div class="direct-email-title">Official Lead Engineer &amp; APM Specialist</div>
+            <div class="direct-email-address">avijitkayet97@gmail.com</div>
+          </div>
+        </div>
+        <a id="topDirectMailBtn" href="mailto:avijitkayet97@gmail.com?subject=KayetDMS%20Licensing%20Inquiry&body=Hi%20Avijit,%0A%0AI%20would%20like%20to%20inquire%20about%20the%20KayetDMS%20platform.%0A%0AName:%20%0ACompany:%20%0APhone:%20%0APreferred%20Plan:%20" class="direct-email-btn" target="_blank" rel="noopener noreferrer">
+          🚀 Open Email App
+        </a>
+      </div>
+
+      <!-- In-Page Status Alert Banner -->
+      <div id="statusAlert" class="status-alert"></div>
+
+      <!-- Contact Form -->
+      <form id="contactForm">
+        <div class="form-group">
+          <label for="name">Your Full Name *</label>
+          <input type="text" id="name" name="name" placeholder="e.g. John Doe" required autocomplete="name">
+        </div>
+
+        <div class="form-group">
+          <label for="email">Work / Official Email *</label>
+          <input type="email" id="email" name="email" placeholder="e.g. engineer@plant.com" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label for="plan">Choose Subscription Plan *</label>
+          <select name="plan" id="plan" required>
+            <option value="">-- Select Plan --</option>
+            <option value="3month">3 Months License — ₹4,000</option>
+            <option value="6month">6 Months License — ₹7,000</option>
+            <option value="1year">1 Year License — ₹10,500</option>
+            <option value="custom">Custom Enterprise / Plant Deployment</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="customGroup" style="display: none;">
+          <label for="customMessage" id="customLabel">Project &amp; Facility Requirements *</label>
+          <textarea id="customMessage" name="customMessage" rows="4" placeholder="Describe your operating units, metallurgy, number of equipment, or specific custom modules needed..."></textarea>
+        </div>
+
+        <!-- Dual Action Buttons -->
+        <div class="btn-row">
+          <button type="submit" id="submitBtn" class="submit-btn">
+            <span>📨 Submit Online Request</span>
+          </button>
+          <button type="button" id="composeMailBtn" class="email-app-btn">
+            <span>✉️ Send via My Email App</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Admin Inquiries Viewer (Shows All Captured Submissions Real-Time) -->
+      <div class="admin-inbox-section">
+        <button type="button" id="toggleInboxBtn" class="admin-inbox-toggle">
+          <span>📬 View Received Submissions (Admin: avijitkayet97@gmail.com)</span>
+          <span id="inboxCountBadge">▼ Show</span>
+        </button>
+        <div id="inboxContainer" class="admin-inbox-container" style="display: none;">
+          <div style="font-size: 0.8rem; color: #64748b; padding: 6px;">Loading submissions from database...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Direct Contact Info Card -->
+    <div class="info-card">
+      <div class="info-item">
+        <span>✉️</span>
+        <div><strong>Official Support:</strong> <a href="mailto:avijitkayet97@gmail.com">avijitkayet97@gmail.com</a></div>
+      </div>
+      <div class="info-item">
+        <span>👨‍💻</span>
+        <div><strong>System Architect:</strong> Avijit Kayet (Lead APM &amp; Integrity Specialist)</div>
+      </div>
+      <div class="info-item">
+        <span>⏱️</span>
+        <div><strong>Response Time:</strong> Inquiries are typically reviewed within 24 hours.</div>
+      </div>
+    </div>
+
+    <!-- Premium Service Note -->
+    <div class="premium-box">
+      <strong>💰 Enterprise &amp; Dedicated Deployment:</strong>
+      Complete isolated database provisioning, multi-seat RBAC user authentication, plant-specific degradation modeling, and custom API 581 consequence calibration are available as dedicated engineering services.
+    </div>
+
+  </div>
+
+  <script>
+    const planSelect = document.getElementById("plan");
+    const customGroup = document.getElementById("customGroup");
+    const customMessage = document.getElementById("customMessage");
+    const statusAlert = document.getElementById("statusAlert");
+    const submitBtn = document.getElementById("submitBtn");
+    const composeMailBtn = document.getElementById("composeMailBtn");
+    const contactForm = document.getElementById("contactForm");
+    const toggleInboxBtn = document.getElementById("toggleInboxBtn");
+    const inboxContainer = document.getElementById("inboxContainer");
+    const inboxCountBadge = document.getElementById("inboxCountBadge");
+
+    planSelect.addEventListener("change", function () {
+      if (this.value === "custom") {
+        customGroup.style.display = "block";
+        customMessage.required = true;
+        customMessage.focus();
+      } else {
+        customGroup.style.display = "none";
+        customMessage.required = false;
+      }
+    });
+
+    // Helper: generate mailto URL based on filled form values
+    function getPrefilledMailtoUrl() {
+      const name = contactForm.name.value.trim() || "[User Name]";
+      const email = contactForm.email.value.trim() || "[User Email]";
+      const plan = planSelect.value || "Not selected";
+      const message = planSelect.value === "custom" ? customMessage.value.trim() : "";
+
+      const subject = encodeURIComponent(`KayetDMS Subscription Inquiry: ${name} (${plan})`);
+      const body = encodeURIComponent(
+        `Hi Avijit,\n\nI would like to inquire regarding the KayetDMS platform subscription.\n\nName: ${name}\nEmail: ${email}\nSelected Plan: ${plan}\nDetails: ${message || "N/A"}\n\nLooking forward to hearing from you.`
+      );
+      return `mailto:avijitkayet97@gmail.com?subject=${subject}&body=${body}`;
+    }
+
+    // Button 2: Compose in default email client with filled fields
+    composeMailBtn.addEventListener("click", function () {
+      const mailtoUrl = getPrefilledMailtoUrl();
+      window.location.href = mailtoUrl;
+    });
+
+    // Button 1: Submit to database
+    contactForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const name = this.name.value.trim();
+      const email = this.email.value.trim();
+      const plan = this.plan.value;
+      const message = plan === "custom" ? customMessage.value.trim() : "";
+
+      if (!name || !email || !plan) {
+        showAlert("error", "Please fill in all required fields.");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = "<span>⏳ Submitting...</span>";
+      statusAlert.style.display = "none";
+
+      const payload = {
+        name,
+        email,
+        plan,
+        customMessage: message
+      };
+
+      try {
+        const res = await fetch("/api/send-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        const mailtoUrl = getPrefilledMailtoUrl();
+
+        if (data.success) {
+          if (data.emailDispatched) {
+            showAlert(
+              "success",
+              "✅ <strong>Inquiry Sent!</strong> Your request has been emailed to our engineering team and recorded in our database. We will reply to " + email + " shortly."
+            );
+          } else {
+            showAlert(
+              "info",
+              "✅ <strong>Request Recorded in Database!</strong> (ID: <code>" + (data.submissionId || "Saved") + "</code>)<br>" +
+              "To also send a direct copy to Avijit's Gmail inbox immediately, <a href='" + mailtoUrl + "' target='_blank' style='color:#0284c7;font-weight:700;text-decoration:underline;'>click here to open in your Email App</a>."
+            );
+          }
+          contactForm.reset();
+          customGroup.style.display = "none";
+          loadInquiries(); // refresh inbox
+        } else {
+          showAlert(
+            "error",
+            "❌ " + (data.error || "Could not process request.") + " <a href='" + mailtoUrl + "' style='color:#b91c1c;font-weight:700;'>Click here to email directly</a>."
+          );
+        }
+      } catch (err) {
+        console.error(err);
+        const mailtoUrl = getPrefilledMailtoUrl();
+        showAlert(
+          "error",
+          "⚠️ Network issue encountered. <a href='" + mailtoUrl + "' style='color:#b91c1c;font-weight:700;'>Click here to email Avijit directly</a>."
+        );
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = "<span>📨 Submit Online Request</span>";
+      }
+    });
+
+    function showAlert(type, htmlMessage) {
+      statusAlert.className = "status-alert " + type;
+      statusAlert.innerHTML = htmlMessage;
+      statusAlert.style.display = "block";
+      statusAlert.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    // Toggle Admin Submissions Viewer
+    let inboxLoaded = false;
+    toggleInboxBtn.addEventListener("click", function () {
+      const isVisible = inboxContainer.style.display === "block";
+      if (isVisible) {
+        inboxContainer.style.display = "none";
+        inboxCountBadge.textContent = "▼ Show";
+      } else {
+        inboxContainer.style.display = "block";
+        inboxCountBadge.textContent = "▲ Hide";
+        if (!inboxLoaded) loadInquiries();
+      }
+    });
+
+    async function loadInquiries() {
+      try {
+        inboxContainer.innerHTML = "<div style='font-size:0.8rem;color:#64748b;padding:6px;'>Fetching submissions...</div>";
+        const res = await fetch("/api/send-email");
+        const data = await res.json();
+        inboxLoaded = true;
+
+        if (!data.submissions || data.submissions.length === 0) {
+          inboxContainer.innerHTML = "<div style='font-size:0.82rem;color:#64748b;padding:8px;'>No inquiries recorded yet.</div>";
+          return;
+        }
+
+        let html = "";
+        data.submissions.forEach((item) => {
+          const dateStr = item.createdAt ? new Date(item.createdAt).toLocaleString() : "Recent";
+          const replyMailto = `mailto:${encodeURIComponent(item.email)}?subject=${encodeURIComponent("Re: KayetDMS Subscription — " + (item.planText || item.plan))}&body=${encodeURIComponent("Hi " + item.name + ",\n\nThank you for reaching out regarding KayetDMS.\n\n")}`;
+          
+          html += `
+            <div class="inbox-item">
+              <div class="inbox-item-header">
+                <span>👤 ${escapeHtml(item.name)}</span>
+                <span class="inbox-item-badge">${escapeHtml(item.planText || item.plan)}</span>
+              </div>
+              <div><a href="${replyMailto}" class="inbox-item-email">✉️ ${escapeHtml(item.email)}</a></div>
+              ${item.customMessage ? `<div style="color:#64748b;font-size:0.78rem;margin-top:2px;">💬 ${escapeHtml(item.customMessage)}</div>` : ""}
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;border-top:1px dashed #e2e8f0;padding-top:4px;">
+                <span style="font-size:0.72rem;color:#94a3b8;">🕒 ${dateStr}</span>
+                <a href="${replyMailto}" class="inbox-item-reply">↩️ Reply to User</a>
+              </div>
+            </div>
+          `;
+        });
+
+        inboxContainer.innerHTML = html;
+        inboxCountBadge.textContent = `▲ Hide (${data.submissions.length})`;
+      } catch (e) {
+        console.error("Failed to load inquiries:", e);
+        inboxContainer.innerHTML = "<div style='font-size:0.8rem;color:#ef4444;padding:6px;'>Could not load submissions.</div>";
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>

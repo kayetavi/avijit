@@ -1,0 +1,320 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // GLOBAL SECURITY HELPER FUNCTIONS
+    // =========================================================================
+
+    // Authentication verification: caller must possess a valid, non-null Firebase Auth context
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Email verification check: prevents email spoofing attacks
+    function isEmailVerified() {
+      return isAuthenticated() && request.auth.token.email_verified == true;
+    }
+
+    // Owner verification by Firebase Authentication UID
+    function isOwnerUid(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    // Owner verification by user email (case-insensitive, requiring verified email)
+    function isOwnerEmail(email) {
+      return isAuthenticated() &&
+        isEmailVerified() &&
+        request.auth.token.email != null &&
+        email != null &&
+        request.auth.token.email.lower() == email.lower();
+    }
+
+    // Generalized ownership check supporting both UID and verified email document keys
+    function isOwner(userId) {
+      return isOwnerUid(userId) || isOwnerEmail(userId);
+    }
+
+    // Super Admin identity verification:
+    // Requires authenticated caller with verified primary super admin email
+    function isSuperAdmin() {
+      return isAuthenticated() &&
+        isEmailVerified() &&
+        request.auth.token.email != null &&
+        request.auth.token.email.lower() == 'avijitkayet97@gmail.com';
+    }
+
+    // Role resolution helper using least-privilege lookup across userRoles and users collections.
+    // Unverified email tokens are NEVER trusted for email-based role resolution.
+    function getUserRole() {
+      return isSuperAdmin() ? 'admin' : (
+        isEmailVerified() && request.auth.token.email != null && exists(/databases/$(database)/documents/userRoles/$(request.auth.token.email.lower()))
+          ? get(/databases/$(database)/documents/userRoles/$(request.auth.token.email.lower())).data.role
+          : (exists(/databases/$(database)/documents/users/$(request.auth.uid))
+              ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+              : (isEmailVerified() && request.auth.token.email != null && exists(/databases/$(database)/documents/users/$(request.auth.token.email.lower()))
+                  ? get(/databases/$(database)/documents/users/$(request.auth.token.email.lower())).data.role
+                  : 'viewer'))
+      );
+    }
+
+    // Role authorization helpers
+    function isAdmin() {
+      return isAuthenticated() && (isSuperAdmin() || getUserRole() == 'admin');
+    }
+
+    function isLeadEngineerOrAdmin() {
+      return isAuthenticated() && (isAdmin() || getUserRole() == 'lead_engineer');
+    }
+
+    function isEngineerOrAbove() {
+      return isAuthenticated() && (
+        isAdmin() ||
+        getUserRole() == 'lead_engineer' ||
+        getUserRole() == 'engineer' ||
+        getUserRole() == 'inspector'
+      );
+    }
+
+    // =========================================================================
+    // 1. SESSIONS (userSessions)
+    // =========================================================================
+    // Requirement 4:
+    // - userSessions documents are readable and writable by the authenticated owner
+    //   matching the document UID or owning session data.
+    // - Administrators can inspect or invalidate sessions.
+    match /userSessions/{sessionId} {
+      allow get: if isAuthenticated() && (
+        isOwnerUid(sessionId) ||
+        resource.data.uid == request.auth.uid ||
+        (isEmailVerified() && request.auth.token.email != null && resource.data.email.lower() == request.auth.token.email.lower()) ||
+        isAdmin()
+      );
+
+      allow list: if isAuthenticated() && (
+        isAdmin() ||
+        (resource.data.uid == request.auth.uid) ||
+        (isEmailVerified() && request.auth.token.email != null && resource.data.email.lower() == request.auth.token.email.lower())
+      );
+
+      allow create: if isAuthenticated() && (
+        isOwnerUid(sessionId) ||
+        request.resource.data.uid == request.auth.uid ||
+        (isEmailVerified() && request.auth.token.email != null && request.resource.data.email.lower() == request.auth.token.email.lower()) ||
+        isAdmin()
+      );
+
+      allow update: if isAuthenticated() && (
+        isOwnerUid(sessionId) ||
+        (resource != null && resource.data.uid == request.auth.uid) ||
+        (request.resource.data.uid == request.auth.uid) ||
+        isAdmin()
+      );
+
+      allow delete: if isAuthenticated() && (
+        isOwnerUid(sessionId) ||
+        (resource != null && resource.data.uid == request.auth.uid) ||
+        isAdmin()
+      );
+    }
+
+    // =========================================================================
+    // 2. USER ISOLATION (users, userRoles, deletedUsers)
+    // =========================================================================
+    // Requirement 1:
+    // - Users can only read and write their own profile and session/recent data.
+    // - Prevent unauthorized cross-user data tampering.
+    // - Role definitions are strictly managed by Administrators.
+    match /users/{userId} {
+      allow get: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow list: if isAdmin();
+
+      // Users can manage their own non-privileged profile data; admins have full access
+      allow create: if isAuthenticated() && (
+        isAdmin() || 
+        (isOwner(userId) && (!request.resource.data.keys().hasAny(['role', 'isSuperAdmin']) || request.resource.data.role == 'viewer'))
+      );
+
+      allow update: if isAuthenticated() && (
+        isAdmin() || 
+        (isOwner(userId) && 
+         !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'isSuperAdmin']))
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    match /userRoles/{targetUser} {
+      // Users can inspect their own permissions; Admins can review all roles
+      allow get: if isAuthenticated() && (isOwner(targetUser) || isAdmin());
+      allow list: if isAdmin();
+
+      // Strict role security: ONLY administrators can create, update, or revoke roles
+      allow write: if isAdmin();
+    }
+
+    match /deletedUsers/{targetUser} {
+      // Soft-deleted user tombstone records - Administrator access only
+      allow read, write: if isAdmin();
+    }
+
+    // =========================================================================
+    // 3. ENGINEERING DATA & CATALOGS
+    // =========================================================================
+    // Master Damage Mechanisms Catalog (API 571 & Custom mechanisms)
+    match /damageMechanisms/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isLeadEngineerOrAdmin();
+    }
+
+    match /customDamageMechanisms/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isLeadEngineerOrAdmin();
+    }
+
+    // ASME/ASTM Allowable Stress Data Tables (Section II Part D)
+    match /stressData/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isLeadEngineerOrAdmin();
+    }
+
+    // Representative Process Fluid Library & Stream Compositions
+    match /representativeFluids/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isLeadEngineerOrAdmin();
+    }
+
+    // Process Stream Datasets & Heat/Material Balances
+    match /streamDatasets/{datasetId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && (
+        isLeadEngineerOrAdmin() ||
+        (isEmailVerified() && request.auth.token.email != null && request.resource.data.savedBy == request.auth.token.email)
+      );
+      allow update, delete: if isAuthenticated() && (
+        isLeadEngineerOrAdmin() ||
+        (isEmailVerified() && request.auth.token.email != null && resource.data.savedBy == request.auth.token.email)
+      );
+    }
+
+    // Pipe Thickness, Remaining Life & Corrosion Rate Calculation Analyses
+    match /analyses/{tagNumber} {
+      allow read: if isAuthenticated();
+      allow write: if isEngineerOrAbove();
+    }
+
+    // Structural Minimum Thickness Assessments
+    match /structural_thickness_assessments/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isEngineerOrAbove();
+    }
+
+    // Corrosion Control Documents (CCD) Platform - Secured to authenticated users
+    match /documents/{docId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+
+    match /ccd_documents/{docId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+
+    match /doc_locks/{docId} {
+      // Document editing concurrency locks
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // API 581 Semi-Quantitative RBI Hierarchical Collections
+    match /rbi_functional_locations/{flocId} {
+      allow read: if isAuthenticated();
+      allow write: if isLeadEngineerOrAdmin();
+
+      match /assets/{assetId} {
+        allow read: if isAuthenticated();
+        allow write: if isLeadEngineerOrAdmin();
+
+        match /components/{componentId} {
+          allow read: if isAuthenticated();
+          allow write: if isLeadEngineerOrAdmin();
+
+          match /analyses/{analysisId} {
+            allow read: if isAuthenticated();
+            allow write: if isLeadEngineerOrAdmin();
+          }
+        }
+      }
+    }
+
+    match /semi_quantitative_rbi_workspace/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isLeadEngineerOrAdmin();
+    }
+
+    match /semi_quantitative_risk_assessments/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isEngineerOrAbove();
+    }
+
+    // Contact and feedback submissions (Hardened public creation & admin management)
+    match /contactSubmissions/{submissionId} {
+      allow create: if isAdmin() || (
+        request.resource.data.keys().hasAll(['name', 'email']) &&
+        request.resource.data.keys().hasOnly(['id', 'name', 'email', 'plan', 'planText', 'customMessage', 'message', 'price', 'createdAt']) &&
+        !('status' in request.resource.data) &&
+        !('emailDispatched' in request.resource.data) &&
+        !('dispatchedAt' in request.resource.data) &&
+        !('emailError' in request.resource.data) &&
+        request.resource.data.name is string &&
+        request.resource.data.name.size() > 0 &&
+        request.resource.data.name.size() <= 100 &&
+        request.resource.data.email is string &&
+        request.resource.data.email.size() > 0 &&
+        request.resource.data.email.size() <= 150 &&
+        request.resource.data.email.matches('^[^@]+@[^@]+\\.[^@]+$') &&
+        (!('id' in request.resource.data) || (request.resource.data.id is string && request.resource.data.id.size() <= 100)) &&
+        (!('plan' in request.resource.data) || (request.resource.data.plan is string && request.resource.data.plan.size() <= 50)) &&
+        (!('planText' in request.resource.data) || (request.resource.data.planText is string && request.resource.data.planText.size() <= 100)) &&
+        (!('customMessage' in request.resource.data) || (request.resource.data.customMessage is string && request.resource.data.customMessage.size() <= 2500)) &&
+        (!('message' in request.resource.data) || (request.resource.data.message is string && request.resource.data.message.size() <= 2500)) &&
+        (!('price' in request.resource.data) || (request.resource.data.price is string && request.resource.data.price.size() <= 50)) &&
+        (!('createdAt' in request.resource.data) || (request.resource.data.createdAt is string && request.resource.data.createdAt.size() <= 50))
+      );
+      allow read, update, delete: if isAdmin();
+    }
+
+    // =========================================================================
+    // 4. SYSTEM SETTINGS, METADATA & AUDIT LOGS
+    // =========================================================================
+    match /systemSettings/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /systemMeta/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /systemAuditLogs/{logId} {
+      // Only Administrators can view security audit logs
+      allow get, list: if isAdmin();
+      // Authenticated actions and workflows can append immutable audit records
+      allow create: if isAuthenticated();
+      // Immutable log integrity: Updates and deletions are strictly disallowed
+      allow update, delete: if false;
+    }
+
+    // =========================================================================
+    // 5. DEFAULT SAFETY NET (ZERO-TRUST CATCH-ALL)
+    // =========================================================================
+    // Explicit deny-by-default catch-all to prevent exposure of unspecified collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

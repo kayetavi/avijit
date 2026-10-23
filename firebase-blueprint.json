@@ -1,0 +1,221 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account identity and profile record in Firestore",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Authentication User UID" },
+        "email": { "type": "string", "description": "User email address" },
+        "displayName": { "type": "string", "description": "User display name" },
+        "role": { "type": "string", "description": "Assigned role (admin, lead_engineer, inspector, viewer, custom)" },
+        "isSuperAdmin": { "type": "boolean", "description": "Super admin flag" },
+        "updatedAt": { "type": "number", "description": "Timestamp in milliseconds" }
+      },
+      "required": ["email", "role"]
+    },
+    "PipeAnalysis": {
+      "title": "PipeAnalysis",
+      "description": "Pipe thickness, corrosion rates, and remaining life calculation records",
+      "type": "object",
+      "properties": {
+        "tagNumber": { "type": "string", "description": "Equipment tag number (e.g. E-101, P-201A)" },
+        "ccr": { "type": "string", "description": "Controlling Corrosion Rate" },
+        "ltcr": { "type": "string", "description": "Long Term Corrosion Rate" },
+        "stcr": { "type": "string", "description": "Short Term Corrosion Rate" },
+        "tminVal": { "type": "string", "description": "Minimum allowable thickness" },
+        "remLife": { "type": "string", "description": "Remaining life in years" },
+        "schedDate": { "type": "string", "description": "Scheduled next inspection date" },
+        "projDate": { "type": "string", "description": "Projected Tmin date" },
+        "savedAt": { "type": "string", "description": "ISO timestamp or formatted date string" }
+      },
+      "required": ["tagNumber"]
+    },
+    "UserRole": {
+      "title": "UserRole",
+      "description": "Granular role and module permissions for dashboard users",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "description": "User email address" },
+        "uid": { "type": "string", "description": "Firebase user UID" },
+        "role": { "type": "string", "description": "Role identifier: admin, lead_engineer, inspector, viewer, custom" },
+        "allowedModules": {
+          "type": "object",
+          "description": "Module access flags"
+        },
+        "subsections": {
+          "type": "object",
+          "description": "Submodule/section-level access permissions"
+        },
+        "updatedBy": { "type": "string", "description": "Email of admin who last updated the role" },
+        "updatedAt": { "type": "number", "description": "Timestamp in milliseconds" }
+      },
+      "required": ["email", "role"]
+    },
+    "UserSession": {
+      "title": "UserSession",
+      "description": "Active user sessions and heartbeats",
+      "type": "object",
+      "properties": {
+        "sessionId": { "type": "string" },
+        "email": { "type": "string" },
+        "uid": { "type": "string" },
+        "deviceId": { "type": "string" },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["sessionId", "timestamp"]
+    },
+    "StreamDataset": {
+      "title": "StreamDataset",
+      "description": "Saved Process Stream and Material Balance datasets",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique dataset ID" },
+        "title": { "type": "string", "description": "Case study or document title" },
+        "streamCount": { "type": "number", "description": "Total number of process streams" },
+        "streams": { "type": "array", "description": "Array of stream objects with properties and components" },
+        "propertiesList": { "type": "array", "description": "List of physical properties extracted" },
+        "componentsList": { "type": "array", "description": "List of chemical components extracted" },
+        "savedBy": { "type": "string", "description": "Email of user who saved dataset" },
+        "createdAt": { "type": "number", "description": "Timestamp in milliseconds" },
+        "updatedAt": { "type": "number", "description": "Timestamp in milliseconds" }
+      },
+      "required": ["id", "title", "streams"]
+    },
+    "CCDDocument": {
+      "title": "CCDDocument",
+      "description": "Corrosion Control Document assessment study record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique CCD document identifier" },
+        "documentNo": { "type": "string", "description": "Official refinery document reference number" },
+        "plantName": { "type": "string", "description": "Refinery plant / complex name" },
+        "unitName": { "type": "string", "description": "Operating processing unit" },
+        "status": { "type": "string", "description": "Workflow status: Draft, In Review, Approved, Published" },
+        "materialOfConstruction": { "type": "string", "description": "Primary metallurgy" },
+        "operatingTemperature": { "type": "string", "description": "Operating temperature range" },
+        "operatingPressure": { "type": "string", "description": "Operating pressure range" },
+        "service": { "type": "string", "description": "Process stream or fluid service" },
+        "corrosionLoopNumber": { "type": "string", "description": "Corrosion loop tag" },
+        "lastSavedDate": { "type": "string", "description": "ISO date string of last revision save" }
+      },
+      "required": ["id", "documentNo"]
+    },
+    "RBIFunctionalLocation": {
+      "title": "RBIFunctionalLocation",
+      "description": "Functional Location hierarchy node grouping plant assets",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique Functional Location Code" },
+        "name": { "type": "string", "description": "Functional Location description / plant name" },
+        "unit": { "type": "string", "description": "Operating unit" },
+        "facility": { "type": "string", "description": "Facility / complex" },
+        "totalAssets": { "type": "number", "description": "Total assets under this functional location" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp of last update" }
+      },
+      "required": ["id"]
+    },
+    "RBIAsset": {
+      "title": "RBIAsset",
+      "description": "Plant asset / equipment record under a functional location",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Asset ID" },
+        "tag": { "type": "string", "description": "Equipment tag number" },
+        "name": { "type": "string", "description": "Equipment name" },
+        "functionalLocation": { "type": "string", "description": "Parent Functional Location code" },
+        "equipmentCategory": { "type": "string", "description": "Equipment category" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["id", "tag"]
+    },
+    "RBIComponent": {
+      "title": "RBIComponent",
+      "description": "Asset component record such as Shell, Channel, Head, or Nozzle",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Component identifier (e.g. SHELL, CHANNEL)" },
+        "fullName": { "type": "string", "description": "Full name of the component" },
+        "equipmentType": { "type": "string", "description": "Component equipment type" },
+        "technicalData": { "type": "object", "description": "Mechanical and process design technical data" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["id"]
+    },
+    "RBIAnalysis": {
+      "title": "RBIAnalysis",
+      "description": "API 581 Semi-Quantitative risk analysis record under a component",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Analysis / scenario identifier" },
+        "name": { "type": "string", "description": "Analysis name" },
+        "isCalculated": { "type": "boolean", "description": "Whether analysis calculation is executed" },
+        "dateCriticalityCalculated": { "type": "string", "description": "Timestamp of calculation" },
+        "results": { "type": "object", "description": "Calculated POF, COF, risk level, and priority" }
+      },
+      "required": ["id"]
+    }
+  },
+  "firestore": {
+    "/users/{email}": {
+      "schema": "UserProfile",
+      "description": "User profiles indexed by normalized user email"
+    },
+    "/analyses/{tagNumber}": {
+      "schema": "PipeAnalysis",
+      "description": "Pipe thickness and remaining life analyses indexed by equipment tag number"
+    },
+    "/userRoles/{email}": {
+      "schema": "UserRole",
+      "description": "User role definitions and module permissions indexed by normalized email"
+    },
+    "/userSessions/{uid}": {
+      "schema": "UserSession",
+      "description": "Active session tokens and device tracking"
+    },
+    "/streamDatasets/{datasetId}": {
+      "schema": "StreamDataset",
+      "description": "Saved stream comparator datasets and heat and material balances"
+    },
+    "/documents/{documentId}": {
+      "schema": "CCDDocument",
+      "description": "Corrosion Control Document management datasets persisted in Firestore"
+    },
+    "/rbi_functional_locations/{flocId}": {
+      "schema": "RBIFunctionalLocation",
+      "description": "Functional location hierarchy nodes"
+    },
+    "/rbi_functional_locations/{flocId}/assets/{assetId}": {
+      "schema": "RBIAsset",
+      "description": "Assets under a functional location"
+    },
+    "/rbi_functional_locations/{flocId}/assets/{assetId}/components/{componentId}": {
+      "schema": "RBIComponent",
+      "description": "Components under an asset (Shell, Channel, etc.)"
+    },
+    "/rbi_functional_locations/{flocId}/assets/{assetId}/components/{componentId}/analyses/{analysisId}": {
+      "schema": "RBIAnalysis",
+      "description": "Analyses under a component"
+    },
+    "/damageMechanisms/{mechId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "API 571 Damage Mechanism catalog and screening parameters"
+    },
+    "/stressData/{gradeId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "ASME Section II Part D allowable stresses and design temperatures"
+    },
+    "/representativeFluids/{fluidId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Representative process fluid library streams and compositions"
+    },
+    "/systemSettings/{settingId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Global application configuration, layout configs, and banner tickers"
+    },
+    "/systemAuditLogs/{logId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Immutable security and administrative audit log records"
+    }
+  }
+}

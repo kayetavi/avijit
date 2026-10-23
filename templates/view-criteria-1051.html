@@ -1,0 +1,554 @@
+<div class="tab-content" id="a571-criteriaTab" style="display: none;">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
+    <h3 style="margin: 0; font-size: 22px; font-weight: 700;">🛡️ API 571 Damage Mechanism Screening Matrix</h3>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <span class="a571-pill a571-pill-indigo" title="API 571 3rd Edition Standards Engine">API 571 / API 581 Matrix</span>
+      <span class="a571-pill a571-pill-emerald" id="a571-headerStatusBadge">Ready for Screening</span>
+    </div>
+  </div>
+
+  <!-- ⚡ Auto-Load Stream Data & Industrial Presets Hub -->
+  <div class="a571-autoload-box" id="a571-autoloadSection">
+    
+    <!-- Screening Mode Toggle Header -->
+    <div class="a571-autoload-header">
+      <div class="a571-autoload-title">
+        <div class="a571-autoload-icon">🏭</div>
+        <div>
+          <h4>Operating Unit & Stream Presets Auto-Loader</h4>
+          <p id="a571-modeHelpText">Select an operating unit and stream to populate parameters automatically.</p>
+        </div>
+      </div>
+      
+      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <span style="font-size: 12px; font-weight: 700; color: #475569;">Screening Mode:</span>
+        <div style="display: inline-flex; background: #f1f5f9; padding: 3px; border-radius: 8px; border: 1px solid #cbd5e1; gap: 3px;">
+          <button type="button" id="a571-modeSingleBtn" onclick="if (typeof a571_setScreeningMode === 'function') a571_setScreeningMode('single');" style="padding: 5px 13px; font-size: 12px; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; background: #2563eb; color: #fff; transition: all 0.2s;">Single Stream</button>
+          <button type="button" id="a571-modeEnvelopeBtn" onclick="if (typeof a571_setScreeningMode === 'function') a571_setScreeningMode('envelope');" style="padding: 5px 13px; font-size: 12px; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; background: transparent; color: #475569; transition: all 0.2s;">⚡ Multi-Stream Envelope</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls Row: Grid of Selects + Aligned Action Toolbar -->
+    <div class="a571-autoload-controls">
+      <div class="a571-autoload-select-wrap a571-unit-wrap">
+        <label for="a571-unitSelector" class="a571-select-label">🏢 Operating Unit</label>
+        <select id="a571-unitSelector" class="a571-stream-select" onchange="if (typeof a571_onUnitSelectionChange === 'function') a571_onUnitSelectionChange(this.value);">
+          <option value="">-- Select Unit --</option>
+        </select>
+      </div>
+
+      <!-- Auto-Detected Operating Case Selector -->
+      <div class="a571-autoload-select-wrap a571-case-wrap" id="a571-caseWrap" style="display: none;">
+        <label for="a571-caseSelector" class="a571-select-label">⚙️ Operating Case</label>
+        <select id="a571-caseSelector" class="a571-stream-select" onchange="if (typeof a571_onCaseSelectionChange === 'function') a571_onCaseSelectionChange(this.value);">
+          <option value="all">-- All Cases --</option>
+        </select>
+      </div>
+
+      <!-- Single Stream Mode Container -->
+      <div class="a571-autoload-select-wrap a571-stream-wrap" id="a571-singleStreamWrap">
+        <label for="a571-streamPresetSelector" class="a571-select-label">🌊 Process Stream</label>
+        <select id="a571-streamPresetSelector" class="a571-stream-select" disabled onchange="if (typeof a571_onPresetSelectionChange === 'function') a571_onPresetSelectionChange(this.value);">
+          <option value="">-- Select Process Stream --</option>
+        </select>
+      </div>
+
+      <!-- Multi-Stream Envelope Mode Container (Hidden by default) -->
+      <div class="a571-autoload-select-wrap" id="a571-envelopeStreamWrap" style="display: none;">
+        <label class="a571-select-label">🌊 Select Process Streams</label>
+        <div id="a571-envelopeStreamContainer" style="border: 1.5px solid #c084fc; background: #faf5ff; border-radius: 8px; max-height: 130px; overflow-y: auto; padding: 6px 10px;">
+          <div style="color: #94a3b8; font-size: 12px; text-align: center; padding: 10px;">-- Select a Unit first --</div>
+        </div>
+        <div style="display: flex; gap: 6px; margin-top: 6px; font-size: 11.5px; align-items: center;">
+          <button type="button" onclick="if (typeof a571_envelopeSelectAll === 'function') a571_envelopeSelectAll(true);" style="background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; padding: 3px 10px; border-radius: 5px; cursor: pointer; font-weight: 700; transition: all 0.2s;">Select All</button>
+          <button type="button" onclick="if (typeof a571_envelopeSelectAll === 'function') a571_envelopeSelectAll(false);" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 3px 10px; border-radius: 5px; cursor: pointer; font-weight: 700; transition: all 0.2s;">Deselect All</button>
+          <span id="a571-envelopeSelectedCount" style="margin-left: auto; color: #7c3aed; font-weight: 700; background: #f3e8ff; padding: 2px 8px; border-radius: 12px; border: 1px solid #d8b4fe;">0 selected</span>
+        </div>
+      </div>
+
+      <div class="a571-btn-group">
+        <button type="button" class="a571-load-btn" onclick="if (typeof a571_loadSelectedStream === 'function') a571_loadSelectedStream();" id="a571-btnLoadStream">
+          📥 Load Stream
+        </button>
+        <button type="button" class="a571-load-btn" onclick="if (typeof a571_loadEnvelopeStreams === 'function') a571_loadEnvelopeStreams();" id="a571-btnLoadEnvelope" style="display: none; background: linear-gradient(135deg, #7c3aed, #6d28d9);" title="Compute worst-case parameters across selected streams">
+          ⚡ Load Enveloped
+        </button>
+        <button type="button" class="a571-sync-btn" onclick="if (typeof a571_syncFromComparator === 'function') a571_syncFromComparator();" title="Pulls whichever stream is currently selected in the Stream Comparator tab">
+          🔄 Sync
+        </button>
+        <button type="button" class="a571-reset-btn" onclick="if (typeof a571_resetForm === 'function') a571_resetForm(true);" title="Clear and reset form fields">
+          🧹 Clear Form
+        </button>
+      </div>
+    </div>
+
+    <!-- Active Stream Quick Badge / Notification -->
+    <div id="a571-autoloadAlert" class="a571-alert-badge" style="display:none;"></div>
+  </div>
+
+  <form id="a571-filterForm" class="grid-form">
+
+    <!-- =====================================================
+         STREAM / PROCESS DATA
+    ====================================================== -->
+
+    <div class="section-title full-row">
+      Stream / Process Data
+    </div>
+
+    <label>
+      Stream No. / Name
+      <input
+        type="text"
+        id="a571-streamName"
+        placeholder="e.g. Stream 172A - Reactor Effluent"
+      >
+    </label>
+
+    <label>
+      Phase
+      <select id="a571-phase">
+        <option value="Vapor">Vapor</option>
+        <option value="Liquid">Liquid</option>
+        <option value="Mixed">Mixed</option>
+      </select>
+    </label>
+
+    <label>
+      Temperature (°C)
+      <input
+        type="number"
+        id="a571-temperature"
+        step="any"
+        placeholder="e.g. 120"
+      >
+    </label>
+
+    <label>
+      Operating Pressure (kg/cm² g)
+      <input
+        type="number"
+        id="a571-pressure"
+        step="any"
+        min="0"
+        placeholder="e.g. 165"
+      >
+    </label>
+
+    <label>
+      H₂ (kg/h)
+      <input
+        type="number"
+        id="a571-h2"
+        step="any"
+        min="0"
+        placeholder="0 = none"
+      >
+    </label>
+
+    <label>
+      H₂ Concentration (mol % / vol %)
+      <input
+        type="number"
+        id="a571-h2MolFrac"
+        step="any"
+        min="0"
+        max="100"
+        placeholder="e.g. 75.0"
+      >
+    </label>
+
+    <label>
+      H₂S (kg/h)
+      <input
+        type="number"
+        id="a571-h2s"
+        step="any"
+        min="0"
+        placeholder="0 = none"
+      >
+    </label>
+
+    <label>
+      NH₃ (kg/h)
+      <input
+        type="number"
+        id="a571-nh3"
+        step="any"
+        min="0"
+        placeholder="0 = none"
+      >
+    </label>
+
+    <!-- FIX: was missing — JS already reads #nh3Significant via
+         getValue(), so without this select significantNH3 always
+         evaluated to "N" and the §3.58.1(b) ammonia scope-exclusion
+         for Sour Water Corrosion could never trigger. -->
+    <label>
+      NH₃ Significant? (affects sour water pH, 3.58.1b)
+      <select id="a571-nh3Significant">
+        <option value="N">No</option>
+        <option value="Y">Yes</option>
+      </select>
+    </label>
+
+    <!-- FIX: new field — §3.58.1(b) also excludes sour water with
+         significant chlorides/cyanides from the acidic Sour Water
+         Corrosion (§3.58) scope, same basis as ammonia. -->
+    <label>
+      Chlorides/Cyanides Significant? (3.58.1b)
+      <select id="a571-otherContamSignificant">
+        <option value="N">No</option>
+        <option value="Y">Yes</option>
+      </select>
+    </label>
+
+    <label>
+      H₂O (kg/h)
+      <input
+        type="number"
+        id="a571-h2o"
+        step="any"
+        min="0"
+        placeholder="0 = none"
+      >
+    </label>
+
+    <label>
+      CO₂ (kg/h)
+      <input
+        type="number"
+        id="a571-co2"
+        step="any"
+        min="0"
+        placeholder="0 = none"
+      >
+    </label>
+
+
+    <!-- =====================================================
+         MATERIAL / CRACKING
+    ====================================================== -->
+
+    <div class="section-title full-row">
+      Material / Cracking Susceptibility
+    </div>
+
+    <label>
+      Carbon Steel Construction?
+      <select id="a571-carbonSteel">
+        <option value="Y">Yes</option>
+        <option value="N">No</option>
+      </select>
+    </label>
+
+    <label>
+      Alloy Cr Content (%)
+      <input
+        type="number"
+        id="a571-crContent"
+        step="any"
+        min="0"
+        placeholder="0 = not entered"
+      >
+    </label>
+
+    <label>
+      Tensile Stress / Non-PWHT Weld?
+      <select id="a571-stress">
+        <option value="N">No</option>
+        <option value="Y">Yes</option>
+      </select>
+    </label>
+
+    <label>
+      Nelson Curve Metallurgy (API RP 941)
+      <select id="a571-nelsonMaterial">
+        <option value="CS_NON_PWHT">Carbon steel (welded with no PWHT)</option>
+        <option value="CS_PWHT">Carbon steel (non-welded or welded with PWHT)</option>
+        <option value="C_05MO">0.5Mo steel (Annex A / Conservative 500°F curve)</option>
+        <option value="125CR_05MO">1.00Cr-0.5Mo / 1.25Cr-0.5Mo steel</option>
+        <option value="225CR_1MO">2.25Cr-1.0Mo steel</option>
+        <option value="225CR_1MO_V">2.25Cr-1.0Mo-V / 3.0Cr-1.0Mo steel</option>
+        <option value="6CR_05MO">6.0Cr-0.5Mo steel</option>
+        <option value="AUSTENITIC_SS">Austenitic Stainless Steel (Immune to HTHA)</option>
+      </select>
+    </label>
+
+    <label>
+      Hardness &gt;237 HB?
+      <select id="a571-hardness">
+        <option value="N">No</option>
+        <option value="Y">Yes</option>
+      </select>
+    </label>
+
+    <label>
+      Oxygen Ingress Possible?
+      <select id="a571-oxygen">
+        <option value="N">No</option>
+        <option value="Y">Yes</option>
+      </select>
+    </label>
+
+
+    <!-- =====================================================
+         AMINE / CHEMISTRY
+    ====================================================== -->
+
+    <div class="section-title full-row">
+      Amine / Chemistry Data
+    </div>
+
+    <label>
+      Amine Flow (kg/h)
+      <input
+        type="number"
+        id="a571-amineFlow"
+        step="any"
+        min="0"
+        placeholder="0 = none"
+      >
+    </label>
+
+    <label>
+      Amine Type
+      <select id="a571-amineType">
+        <option value="None">None</option>
+        <option value="MEA">MEA</option>
+        <option value="DEA">DEA</option>
+        <option value="DGA">DGA</option>
+        <option value="DIPA">DIPA</option>
+        <option value="MDEA">MDEA</option>
+      </select>
+    </label>
+
+    <label>
+      Amine Service
+      <select id="a571-amineService">
+        <option value="Lean">Lean</option>
+        <option value="Rich">Rich</option>
+      </select>
+    </label>
+
+    <label>
+      HSAS (%)
+      <input
+        type="number"
+        id="a571-hsas"
+        step="any"
+        min="0"
+        placeholder="0 = unknown"
+      >
+    </label>
+
+    <label>
+      Measured pH
+      <input
+        type="number"
+        id="a571-ph"
+        step="any"
+        min="0"
+        max="14"
+        placeholder="0 = unknown"
+      >
+    </label>
+
+
+    <!-- =====================================================
+         FLOW / VELOCITY / EROSION
+    ====================================================== -->
+
+    <div class="section-title full-row">
+      Flow / Velocity / Erosion Conditions
+    </div>
+
+    <label>
+      Mass Flow (kg/h)
+      <input
+        type="number"
+        id="a571-velocityFlow"
+        step="any"
+        min="0"
+        placeholder="Mass flow kg/h"
+      >
+    </label>
+
+    <label>
+      Density (kg/m³)
+      <input
+        type="number"
+        id="a571-velocityDensity"
+        step="any"
+        min="0"
+        placeholder="Density kg/m³"
+      >
+    </label>
+
+    <label>
+      Pipe ID (mm)
+      <input
+        type="number"
+        id="a571-pipeDiameter"
+        step="any"
+        min="0"
+        placeholder="Pipe ID mm"
+      >
+    </label>
+
+    <label>
+      Manual Velocity (m/s)
+      <input
+        type="number"
+        id="a571-velocity"
+        step="any"
+        min="0"
+        placeholder="Manual velocity m/s"
+      >
+    </label>
+
+    <label>
+      High Velocity / Turbulence Location?
+      <select id="a571-turbulence">
+        <option value="N">No</option>
+        <option value="Y">Yes</option>
+      </select>
+    </label>
+
+    <label>
+      Entrained Solids / Corrosive Droplets?
+      <select id="a571-solids">
+        <option value="N">No</option>
+        <option value="Y">Yes</option>
+      </select>
+    </label>
+
+    <!-- FIX: new field — JS looks this up in EROSION_TABLE
+         (Table 3-27-1) but the select never existed, so the
+         erosion-rate lookup always fell through to "select a
+         material" regardless of what the user intended.
+         Option text/values must match EROSION_TABLE keys exactly. -->
+    <label>
+      Erosion Table Material (Table 3-27-1)
+      <select id="a571-eroMaterial">
+        <option value="">-- Select material --</option>
+        <option value="Carbon steel">Carbon steel</option>
+        <option value="Cast iron">Cast iron</option>
+        <option value="Silicon bronze">Silicon bronze</option>
+        <option value="Admiralty brass">Admiralty brass</option>
+        <option value="Hydraulic bronze">Hydraulic bronze</option>
+        <option value="G bronze">G bronze</option>
+        <option value="Al bronze">Al bronze</option>
+        <option value="Aluminum brass">Aluminum brass</option>
+        <option value="90-10 Cu-Ni">90-10 Cu-Ni</option>
+        <option value="70-30 Cu-Ni (0.05 %Fe)">70-30 Cu-Ni (0.05 %Fe)</option>
+        <option value="70-30 Cu-Ni (0.5 % Fe)">70-30 Cu-Ni (0.5 % Fe)</option>
+        <option value="Alloy 400">Alloy 400</option>
+        <option value="316 SS">316 SS</option>
+        <option value="Alloy C-276">Alloy C-276</option>
+        <option value="Titanium">Titanium</option>
+      </select>
+    </label>
+
+    <label>
+      Thermal Shock / Mixing Tee ΔT (°C)
+      <input
+        type="number"
+        id="a571-deltaT"
+        step="any"
+        min="0"
+        placeholder="0 = steady (|ΔT| ≥ 28°C)"
+      >
+    </label>
+
+    <label>
+      Thermal Fatigue Service Type (§3.64)
+      <select id="a571-thermalLocation">
+        <option value="MIX_POINT">Mixing Tee / Quench Injection Point / Attemperator</option>
+        <option value="COKE_DRUM">Coke Drum (Shell / Skirt / Cone attachment)</option>
+        <option value="TUBE_ATTACHMENT">Heater/Boiler Rigid Tube-to-Waterwall Attachment</option>
+        <option value="GENERAL_CYCLIC">General Piping / Vessel under Transient Cycling</option>
+      </select>
+    </label>
+
+
+    <!-- =====================================================
+         CUI
+    ====================================================== -->
+
+    <div class="section-title full-row">
+      Corrosion Under Insulation (CUI)
+    </div>
+
+    <label>
+      Equipment Insulated?
+      <select id="a571-insulated">
+        <option value="N">No</option>
+        <option value="Y">Yes</option>
+      </select>
+    </label>
+
+    <label>
+      CUI Material Category
+      <select id="a571-cuiMaterial">
+        <option value="CS">
+          Carbon Steel / Low Alloy / 400 SS
+        </option>
+        <option value="300SS">
+          300 Series SS
+        </option>
+        <option value="Duplex">
+          Duplex SS
+        </option>
+      </select>
+    </label>
+
+
+    <!-- =====================================================
+         SUBMIT
+    ====================================================== -->
+
+    <div class="full-row">
+      <button
+        type="submit"
+        class="screen-btn"
+      >
+        🔍 Screen Damage Mechanisms
+      </button>
+    </div>
+
+  </form>
+
+
+  <!-- =====================================================
+       STREAM SUMMARY CARD
+  ====================================================== -->
+
+  <div
+    id="a571-streamSummaryCard"
+    style="display:none;"
+  ></div>
+
+
+  <!-- =====================================================
+       CALCULATED PARAMETERS
+  ====================================================== -->
+
+  <div
+    id="a571-calculatedParameters"
+    style="display:none;"
+  ></div>
+
+
+  <!-- =====================================================
+       RESULTS
+  ====================================================== -->
+
+  <div
+    id="a571-result"
+    style="display:none;"
+  ></div>
+
+</div>

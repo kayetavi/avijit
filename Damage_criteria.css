@@ -1,0 +1,1790 @@
+/* 🌟 Unique namespace for API 581 Criteria Form */
+/* ✅ CRITERIA FORM 581 SECTION */
+
+/* ✅ Predictable sizing only inside criteriaTab */
+/* ================================================================
+   API 571 DAMAGE MECHANISM SCREENING
+   UPDATED CRITERIA TAB CSS
+   FIXED: RESULT TABLE TEXT WRAPPING / OVERLAPPING
+================================================================ */
+
+
+/* ================================================================
+   BOX SIZING
+================================================================ */
+
+#a571-criteriaTab *,
+#a571-criteriaTab *::before,
+#a571-criteriaTab *::after {
+    box-sizing: border-box;
+}
+
+
+/* ================================================================
+   MAIN TAB
+================================================================ */
+
+#a571-criteriaTab {
+    width: 100%;
+    color: var(--text);
+}
+
+
+/* ================================================================
+   PAGE TITLE
+================================================================ */
+
+#a571-criteriaTab > h3 {
+    margin: 0 0 8px 0;
+    color: var(--text);
+    font-size: 22px;
+    font-weight: 700;
+}
+
+
+/* ================================================================
+   INFORMATION / DESCRIPTION
+================================================================ */
+
+#a571-criteriaTab .criteria-note {
+    margin: 0 0 20px 0;
+    padding: 12px 15px;
+
+    background: var(--bg-light);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+
+    border-radius: 6px;
+
+    color: var(--text);
+
+    font-size: 13px;
+    line-height: 1.5;
+
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+
+/* ================================================================
+   FORM CONTAINER
+================================================================ */
+
+#a571-criteriaTab #a571-filterForm {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+
+    gap: 15px;
+
+    align-items: stretch;
+
+    padding: 20px;
+
+    margin-bottom: 20px;
+
+    background: var(--bg-medium);
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/* ================================================================
+   SECTION TITLE
+================================================================ */
+
+#a571-criteriaTab #a571-filterForm .section-title {
+    grid-column: 1 / -1;
+
+    min-height: auto;
+
+    margin-top: 8px;
+
+    padding: 10px 14px;
+
+    background: var(--accent);
+
+    color: #ffffff;
+
+    border: none;
+
+    border-radius: 6px;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.2px;
+}
+
+
+#a571-criteriaTab #a571-filterForm .section-title:first-child {
+    margin-top: 0;
+}
+
+
+/* ================================================================
+   FORM LABEL / INPUT CARD
+================================================================ */
+
+#a571-criteriaTab #a571-filterForm label {
+    min-width: 0;
+
+    min-height: 92px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: space-between;
+
+    gap: 7px;
+
+    padding: 11px 12px;
+
+    background: var(--bg-light);
+
+    border: 1px solid var(--border);
+
+    border-radius: 6px;
+
+    color: var(--text);
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        background-color 0.15s ease;
+}
+
+/* ================================================================
+   AUTOMATION STATUS (RED BOUNDARY FOR NON-STREAM AUTOMATED FIELDS)
+================================================================ */
+
+#a571-criteriaTab #a571-filterForm label.a571-manual-review-field {
+    border: 2px solid #ef4444 !important;
+    background: #fef2f2 !important;
+    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.25) !important;
+}
+
+#a571-criteriaTab #a571-filterForm label.a571-auto-filled-field {
+    border: 1.5px solid #10b981 !important;
+    background: #f0fdf4 !important;
+}
+
+#a571-criteriaTab #a571-filterForm label.a571-user-edited-field {
+    border: 1.5px solid #3b82f6 !important;
+    background: #eff6ff !important;
+    box-shadow: none !important;
+}
+
+#a571-criteriaTab #a571-filterForm label .a571-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    align-self: flex-start;
+}
+
+#a571-criteriaTab #a571-filterForm label .a571-status-pill.pill-manual {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+}
+
+#a571-criteriaTab #a571-filterForm label .a571-status-pill.pill-auto {
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #86efac;
+}
+
+#a571-criteriaTab #a571-filterForm label .a571-status-pill.pill-edited {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border: 1px solid #93c5fd;
+}
+
+/* Dark mode overrides */
+html:not(.light-mode) #a571-criteriaTab #a571-filterForm label.a571-manual-review-field,
+html.dark-mode #a571-criteriaTab #a571-filterForm label.a571-manual-review-field,
+body.dark-mode #a571-criteriaTab #a571-filterForm label.a571-manual-review-field {
+    border: 2px solid #f87171 !important;
+    background: rgba(239, 68, 68, 0.12) !important;
+    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.35) !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab #a571-filterForm label.a571-auto-filled-field,
+html.dark-mode #a571-criteriaTab #a571-filterForm label.a571-auto-filled-field,
+body.dark-mode #a571-criteriaTab #a571-filterForm label.a571-auto-filled-field {
+    border: 1.5px solid #34d399 !important;
+    background: rgba(16, 185, 129, 0.12) !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab #a571-filterForm label.a571-user-edited-field,
+html.dark-mode #a571-criteriaTab #a571-filterForm label.a571-user-edited-field,
+body.dark-mode #a571-criteriaTab #a571-filterForm label.a571-user-edited-field {
+    border: 1.5px solid #60a5fa !important;
+    background: rgba(59, 130, 246, 0.12) !important;
+}
+
+
+#a571-criteriaTab #a571-filterForm label:hover {
+    border-color: var(--accent);
+
+    box-shadow:
+        0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+
+/* ================================================================
+   INPUTS / SELECTS
+================================================================ */
+
+#a571-criteriaTab #a571-filterForm input,
+#a571-criteriaTab #a571-filterForm select {
+    width: 100%;
+
+    min-width: 0;
+
+    height: 38px;
+
+    padding: 8px 10px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 5px;
+
+    background: #ffffff;
+
+    color: #1f2937;
+
+    font-size: 13px;
+
+    line-height: 1.2;
+
+    outline: none;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+#a571-criteriaTab #a571-filterForm input::placeholder {
+    color: #9ca3af;
+}
+
+
+#a571-criteriaTab #a571-filterForm input:focus,
+#a571-criteriaTab #a571-filterForm select:focus {
+    border-color: var(--accent);
+
+    box-shadow:
+        0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
+
+/* ================================================================
+   NUMBER INPUT
+================================================================ */
+
+#a571-criteriaTab #a571-filterForm input[type="number"] {
+    appearance: textfield;
+}
+
+
+/* ================================================================
+   FULL ROW
+================================================================ */
+
+#a571-criteriaTab #a571-filterForm .full-row {
+    grid-column: 1 / -1;
+
+    width: 100%;
+}
+
+
+/* ================================================================
+   SCREEN BUTTON
+================================================================ */
+
+#a571-criteriaTab #a571-filterForm button {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: auto;
+
+    min-width: 240px;
+
+    min-height: 42px;
+
+    justify-self: center;
+
+    padding: 10px 22px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: var(--accent);
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 2px 5px rgba(0, 0, 0, 0.12);
+
+    transition:
+        background-color 0.15s ease,
+        transform 0.1s ease,
+        box-shadow 0.15s ease;
+}
+
+
+#a571-criteriaTab #a571-filterForm button:hover {
+    background-color: #0b5ed7;
+
+    box-shadow:
+        0 3px 8px rgba(0, 0, 0, 0.16);
+}
+
+
+#a571-criteriaTab #a571-filterForm button:active {
+    transform: translateY(1px);
+}
+
+
+/* ================================================================
+   CALCULATED PARAMETERS
+================================================================ */
+
+#a571-criteriaTab #a571-calculatedParameters {
+    width: 100%;
+
+    margin-top: 20px;
+}
+
+
+/* ================================================================
+   CALCULATION CARD
+================================================================ */
+
+#a571-criteriaTab .calc-card {
+    width: 100%;
+
+    padding: 18px;
+
+    background: var(--bg-medium);
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 2px 7px rgba(0, 0, 0, 0.07);
+}
+
+
+#a571-criteriaTab .calc-card h4 {
+    margin: 0 0 15px 0;
+
+    color: var(--text);
+
+    font-size: 16px;
+
+    font-weight: 700;
+}
+
+
+/* ================================================================
+   CALCULATED VALUE GRID
+================================================================ */
+
+#a571-criteriaTab .calc-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 12px;
+}
+
+
+#a571-criteriaTab .calc-grid > div {
+    min-width: 0;
+
+    padding: 12px;
+
+    background: var(--bg-light);
+
+    border: 1px solid var(--border);
+
+    border-radius: 6px;
+}
+
+
+#a571-criteriaTab .calc-grid strong {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #6b7280;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.3px;
+}
+
+
+#a571-criteriaTab .calc-grid span {
+    display: block;
+
+    color: var(--text);
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    white-space: normal;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* ================================================================
+   RESULT CONTAINER
+================================================================ */
+
+#a571-criteriaTab #a571-result {
+    width: 100%;
+
+    margin-top: 20px;
+
+    padding: 0;
+
+    background: transparent;
+
+    border: none;
+
+    border-radius: 0;
+
+    color: var(--text);
+
+    box-shadow: none;
+}
+
+
+/* ================================================================
+   RESULT HEADER
+================================================================ */
+
+#a571-criteriaTab .result-header {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 15px 18px;
+
+    background: var(--bg-medium);
+
+    border: 1px solid var(--border);
+
+    border-bottom: none;
+
+    border-radius: 8px 8px 0 0;
+}
+
+
+#a571-criteriaTab .result-header h3 {
+    margin: 0 0 4px 0;
+
+    color: var(--accent);
+
+    font-size: 17px;
+}
+
+
+#a571-criteriaTab .result-header p {
+    margin: 0;
+
+    color: var(--text);
+
+    font-size: 13px;
+
+    white-space: normal;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* ================================================================
+   APPLICABLE COUNT
+================================================================ */
+
+#a571-criteriaTab .result-count {
+    flex: 0 0 auto;
+
+    padding: 8px 14px;
+
+    background: #059669;
+
+    color: #ffffff;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+/* ================================================================
+   RESULT TABLE WRAPPER
+================================================================ */
+
+#a571-criteriaTab .result-table-wrapper {
+    width: 100%;
+
+    /*
+       Horizontal scroll only when screen is too narrow.
+       Vertical overflow must remain visible.
+    */
+    overflow-x: auto;
+    overflow-y: visible;
+
+    background: var(--bg-medium);
+
+    border: 1px solid var(--border);
+
+    border-radius: 0 0 8px 8px;
+
+    -webkit-overflow-scrolling: touch;
+}
+
+
+/* ================================================================
+   DAMAGE MECHANISM TABLE
+================================================================ */
+
+#a571-criteriaTab .damage-table {
+    width: 100%;
+    min-width: 1280px;
+    border-collapse: collapse;
+    border-spacing: 0;
+    table-layout: fixed;
+    font-size: 12.5px;
+    color: var(--text);
+}
+
+
+/* ================================================================
+   COLUMN WIDTHS (6 COLUMNS)
+================================================================ */
+
+/* ---------------------------------------------------------------
+   COLUMN 1 — DAMAGE MECHANISM
+---------------------------------------------------------------- */
+
+#a571-criteriaTab .damage-table th:nth-child(1),
+#a571-criteriaTab .damage-table td:nth-child(1) {
+    width: 18%;
+    min-width: 190px;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    vertical-align: top;
+    line-height: 1.45;
+}
+
+
+/* ---------------------------------------------------------------
+   COLUMN 2 — INTEGRITY FAMILY
+---------------------------------------------------------------- */
+
+#a571-criteriaTab .damage-table th:nth-child(2),
+#a571-criteriaTab .damage-table td:nth-child(2) {
+    width: 13%;
+    min-width: 135px;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    vertical-align: top;
+    line-height: 1.4;
+}
+
+
+/* ---------------------------------------------------------------
+   COLUMN 3 — STATUS
+---------------------------------------------------------------- */
+
+#a571-criteriaTab .damage-table th:nth-child(3),
+#a571-criteriaTab .damage-table td:nth-child(3) {
+    width: 12%;
+    min-width: 125px;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    vertical-align: top;
+    line-height: 1.4;
+}
+
+
+/* ---------------------------------------------------------------
+   COLUMN 4 — PROCESS BASIS / NEXT CHECK
+---------------------------------------------------------------- */
+
+#a571-criteriaTab .damage-table th:nth-child(4),
+#a571-criteriaTab .damage-table td:nth-child(4) {
+    width: 20%;
+    min-width: 220px;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    vertical-align: top;
+    line-height: 1.45;
+}
+
+
+/* ---------------------------------------------------------------
+   COLUMN 5 — DETAILED JUSTIFICATION
+---------------------------------------------------------------- */
+
+#a571-criteriaTab .damage-table th:nth-child(5),
+#a571-criteriaTab .damage-table td:nth-child(5) {
+    width: 20%;
+    min-width: 220px;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    vertical-align: top;
+    line-height: 1.45;
+}
+
+
+/* ---------------------------------------------------------------
+   COLUMN 6 — INSPECTION TECHNIQUES
+---------------------------------------------------------------- */
+
+#a571-criteriaTab .damage-table th:nth-child(6),
+#a571-criteriaTab .damage-table td:nth-child(6) {
+    width: 17%;
+    min-width: 200px;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    vertical-align: top;
+    line-height: 1.45;
+}
+
+
+/* ================================================================
+   TABLE HEADER
+================================================================ */
+
+#a571-criteriaTab .damage-table thead th {
+    padding: 11px 10px;
+
+    background: #374151;
+
+    color: #ffffff;
+
+    text-align: left;
+
+    vertical-align: middle;
+
+    border-right: 1px solid #4b5563;
+
+    border-bottom: 1px solid #4b5563;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.2px;
+
+    /*
+       Header text also wraps.
+    */
+    white-space: normal !important;
+
+    overflow-wrap: anywhere;
+
+    word-break: normal;
+
+    line-height: 1.35;
+}
+
+
+#a571-criteriaTab .damage-table thead th:last-child {
+    border-right: none;
+}
+
+
+/* ================================================================
+   TABLE BODY
+   IMPORTANT — AUTO ROW HEIGHT + WRAPPING
+================================================================ */
+
+#a571-criteriaTab .damage-table tbody tr {
+    /*
+       Never force a fixed row height.
+    */
+    height: auto !important;
+
+    min-height: 0 !important;
+}
+
+
+#a571-criteriaTab .damage-table tbody td {
+    height: auto !important;
+
+    min-height: 0 !important;
+
+    padding: 11px 10px;
+
+    vertical-align: top;
+
+    border-right: 1px solid var(--border);
+
+    border-bottom: 1px solid var(--border);
+
+    color: var(--text);
+
+    line-height: 1.45;
+
+    /*
+       IMPORTANT:
+       Allow all text to wrap.
+    */
+    white-space: normal !important;
+
+    overflow: visible !important;
+
+    overflow-wrap: anywhere;
+
+    word-break: normal;
+
+    /*
+       Prevent any hidden/clipped content.
+    */
+    max-height: none !important;
+}
+
+
+#a571-criteriaTab .damage-table tbody td:last-child {
+    border-right: none;
+}
+
+
+/* ================================================================
+   APPLICABLE ROW
+================================================================ */
+
+#a571-criteriaTab .damage-table .applicable-row {
+    height: auto !important;
+
+    background: rgba(16, 185, 129, 0.08);
+}
+
+
+#a571-criteriaTab .damage-table .applicable-row:hover {
+    background: rgba(16, 185, 129, 0.13);
+}
+
+
+#a571-criteriaTab .damage-table .applicable-row td {
+    height: auto !important;
+
+    min-height: 0 !important;
+
+    vertical-align: top;
+}
+
+
+/* ================================================================
+   NOT APPLICABLE ROW
+================================================================ */
+
+#a571-criteriaTab .damage-table .not-applicable-row {
+    height: auto !important;
+
+    background: var(--bg-light);
+}
+
+
+#a571-criteriaTab .damage-table .not-applicable-row td {
+    height: auto !important;
+
+    min-height: 0 !important;
+
+    color: #6b7280;
+
+    vertical-align: top;
+}
+
+
+#a571-criteriaTab .damage-table .not-applicable-row:hover {
+    background: rgba(107, 114, 128, 0.05);
+}
+
+
+/* ================================================================
+   DAMAGE MECHANISM NAME
+================================================================ */
+
+#a571-criteriaTab .damage-table td strong {
+    color: var(--text);
+
+    font-weight: 700;
+
+    white-space: normal !important;
+
+    overflow-wrap: anywhere;
+
+    word-break: normal;
+}
+
+
+/* ================================================================
+   STATUS BADGES
+   IMPORTANT FIX
+================================================================ */
+
+#a571-criteriaTab .status-badge {
+    /*
+       inline-flex was previously causing long status text
+       to stay in one line.
+    */
+
+    display: inline-flex;
+
+    align-items: flex-start;
+
+    justify-content: flex-start;
+
+    /*
+       Badge cannot become wider than its table cell.
+    */
+    max-width: 100%;
+
+    width: auto;
+
+    min-height: 24px;
+
+    padding: 5px 9px;
+
+    border-radius: 14px;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    line-height: 1.35;
+
+    /*
+       THIS IS THE MAIN FIX
+    */
+    white-space: normal !important;
+
+    overflow-wrap: anywhere;
+
+    word-break: normal;
+
+    text-align: left;
+
+    vertical-align: top;
+
+    /*
+       Never clip long text.
+    */
+    overflow: visible;
+}
+
+
+/* ================================================================
+   APPLICABLE STATUS
+================================================================ */
+
+#a571-criteriaTab .status-applicable {
+    background: #059669;
+
+    color: #ffffff;
+
+    white-space: normal !important;
+
+    overflow-wrap: anywhere;
+
+    word-break: normal;
+}
+
+
+/* ================================================================
+   NOT APPLICABLE STATUS
+================================================================ */
+
+#a571-criteriaTab .status-not {
+    background: #e5e7eb;
+
+    color: #4b5563;
+
+    white-space: normal !important;
+
+    overflow-wrap: anywhere;
+
+    word-break: normal;
+}
+
+
+/* ================================================================
+   CHECK / REVIEW STATUS
+================================================================ */
+
+#a571-criteriaTab .status-check {
+    background: #f59e0b;
+
+    color: #ffffff;
+
+    white-space: normal !important;
+
+    overflow-wrap: anywhere;
+
+    word-break: normal;
+}
+
+
+/* ================================================================
+   ANY CONTENT INSIDE APPLICABLE COLUMN
+================================================================ */
+
+#a571-criteriaTab .damage-table td:nth-child(2) span,
+#a571-criteriaTab .damage-table td:nth-child(2) div,
+#a571-criteriaTab .damage-table td:nth-child(2) p {
+    display: block;
+
+    max-width: 100%;
+
+    white-space: normal !important;
+
+    overflow-wrap: anywhere;
+
+    word-break: normal;
+
+    line-height: 1.4;
+}
+
+
+/* ================================================================
+   INSPECTION TECHNIQUE
+================================================================ */
+
+#a571-criteriaTab .inspection-box {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 8px 10px;
+    background: rgba(37, 99, 235, 0.08);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    border-left: 3.5px solid var(--accent, #2563eb);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 11.5px;
+    font-weight: 500;
+    line-height: 1.45;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    text-align: left;
+}
+
+
+/* ================================================================
+   EMPTY INSPECTION
+================================================================ */
+
+#a571-criteriaTab .inspection-empty {
+    color: #9ca3af;
+
+    font-size: 14px;
+
+    white-space: normal !important;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* ================================================================
+   REMOVE POSSIBLE FIXED HEIGHT / CLIPPING
+================================================================ */
+
+#a571-criteriaTab .damage-table tr,
+#a571-criteriaTab .damage-table td,
+#a571-criteriaTab .damage-table th {
+    max-height: none !important;
+}
+
+
+/* ================================================================
+   OLD UL RESULT SUPPORT
+================================================================ */
+
+#a571-criteriaTab #a571-result ul {
+    margin: 10px 0 0 20px;
+
+    padding: 0;
+}
+
+
+#a571-criteriaTab #a571-result li {
+    margin-bottom: 6px;
+
+    list-style-type: square;
+}
+
+
+/* ================================================================
+   SIDEBAR RESET
+================================================================ */
+
+#a571-criteriaTab .sidebar li {
+    background-color: transparent;
+
+    color: var(--text);
+
+    font-weight: normal;
+}
+
+
+/* ================================================================
+   TABLET / LARGE LAPTOP
+================================================================ */
+
+@media (max-width: 1400px) {
+
+    #a571-criteriaTab #a571-filterForm {
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr));
+    }
+
+    #a571-criteriaTab .calc-grid {
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr));
+    }
+
+}
+
+
+/* ================================================================
+   LAPTOP
+================================================================ */
+
+@media (max-width: 1200px) {
+
+    #a571-criteriaTab #a571-filterForm {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+    #a571-criteriaTab .calc-grid {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+
+/* ================================================================
+   TABLET
+================================================================ */
+
+@media (max-width: 992px) {
+
+    #a571-criteriaTab #a571-filterForm {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 12px;
+
+        padding: 15px;
+    }
+
+    #a571-criteriaTab .calc-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    #a571-criteriaTab .result-header {
+        align-items: flex-start;
+    }
+
+    /*
+       Keep result table readable on tablet.
+       User can horizontal-scroll.
+    */
+    #a571-criteriaTab .damage-table {
+        min-width: 1250px;
+    }
+
+}
+
+
+/* ================================================================
+   MOBILE
+================================================================ */
+
+@media (max-width: 600px) {
+
+    #a571-criteriaTab #a571-filterForm {
+        grid-template-columns: 1fr;
+
+        gap: 10px;
+
+        padding: 12px;
+    }
+
+
+    #a571-criteriaTab #a571-filterForm .section-title {
+        grid-column: 1;
+    }
+
+
+    #a571-criteriaTab #a571-filterForm .full-row {
+        grid-column: 1;
+    }
+
+
+    #a571-criteriaTab #a571-filterForm label {
+        min-height: 85px;
+    }
+
+
+    #a571-criteriaTab #a571-filterForm button {
+        width: 100%;
+
+        min-width: 0;
+    }
+
+
+    #a571-criteriaTab .calc-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    #a571-criteriaTab .result-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        padding: 13px;
+    }
+
+
+    #a571-criteriaTab .result-count {
+        width: 100%;
+
+        text-align: center;
+    }
+
+
+    /*
+       Horizontal scrolling for the 5-column
+       engineering screening result table.
+    */
+    #a571-criteriaTab .result-table-wrapper {
+        overflow-x: auto;
+
+        overflow-y: visible;
+    }
+
+
+    #a571-criteriaTab .damage-table {
+        min-width: 1250px;
+
+        table-layout: auto;
+    }
+
+}
+
+
+/* ================================================================
+   VERY SMALL MOBILE
+================================================================ */
+
+@media (max-width: 400px) {
+
+    #a571-criteriaTab > h3 {
+        font-size: 18px;
+    }
+
+
+    #a571-criteriaTab .criteria-note {
+        font-size: 12px;
+
+        padding: 10px;
+    }
+
+
+    #a571-criteriaTab #a571-filterForm {
+        padding: 10px;
+    }
+
+}
+
+/* ================================================================
+   AUTO-LOAD STREAM HUB & DAMAGE SCREENING MATRIX GRID
+================================================================ */
+
+.a571-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    font-size: 11.5px;
+    font-weight: 700;
+    border-radius: 9999px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.a571-pill-indigo {
+    background: #e0e7ff;
+    color: #4338ca;
+    border: 1px solid #c7d2fe;
+}
+.a571-pill-emerald {
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+/* Auto-Loader Box - Enterprise Control Panel */
+.a571-autoload-box {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 22px;
+    box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05);
+}
+
+.a571-autoload-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.a571-autoload-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.a571-autoload-icon {
+    font-size: 20px;
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.a571-autoload-title h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.01em;
+}
+
+.a571-autoload-title p {
+    margin: 2px 0 0 0;
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+.a571-autoload-controls {
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.a571-autoload-select-wrap {
+    flex: 1;
+    min-width: 190px;
+}
+
+.a571-select-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.a571-stream-select {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #0f172a;
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    outline: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+#a571-unitSelector {
+    border-color: #3b82f6;
+    background-color: #ffffff;
+    font-weight: 700;
+}
+
+#a571-unitSelector:hover:not(:disabled) {
+    border-color: #1d4ed8;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
+}
+
+#a571-caseSelector {
+    border-color: #a855f7;
+    background-color: #faf5ff;
+    font-weight: 700;
+    color: #6b21a8;
+}
+
+#a571-caseSelector:hover:not(:disabled) {
+    border-color: #7c3aed;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.12);
+}
+
+#a571-caseSelector:focus:not(:disabled) {
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+.a571-stream-select:disabled {
+    background: #f8fafc;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: 0.85;
+}
+
+.a571-stream-select:focus:not(:disabled) {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+.a571-btn-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-self: flex-end;
+}
+
+.a571-load-btn {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: #ffffff;
+    border: none;
+    height: 40px;
+    padding: 0 16px;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.a571-load-btn:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+.a571-sync-btn {
+    background: #ffffff;
+    color: #2563eb;
+    border: 1.5px solid #cbd5e1;
+    height: 40px;
+    padding: 0 14px;
+    font-size: 12.5px;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.a571-sync-btn:hover {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    color: #1d4ed8;
+}
+
+.a571-reset-btn {
+    background: #ffffff;
+    color: #64748b;
+    border: 1.5px solid #cbd5e1;
+    height: 40px;
+    padding: 0 14px;
+    font-size: 12.5px;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.a571-reset-btn:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: #b91c1c;
+}
+
+.a571-alert-badge {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 6px;
+    color: #065f46;
+    font-size: 13px;
+}
+
+.a571-alert-inner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.a571-alert-icon {
+    font-weight: 900;
+    color: #059669;
+    font-size: 16px;
+}
+
+/* Pulsing field animation */
+@keyframes a571Pulse {
+    0% { background-color: #ecfdf5; border-color: #10b981; }
+    50% { background-color: #d1fae5; border-color: #059669; }
+    100% { background-color: transparent; }
+}
+
+.a571-highlight-pulse {
+    animation: a571Pulse 0.8s ease-out;
+}
+
+/* Matrix Results Section */
+.a571-result-container {
+    margin-top: 24px;
+}
+
+.a571-matrix-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1.5px solid var(--border, #e2e8f0);
+}
+
+.a571-export-btn {
+    background: #ffffff;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    transition: all 0.15s ease;
+}
+
+.a571-export-btn:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #0f172a;
+}
+
+/* KPI Summary Cards */
+.a571-kpi-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.a571-kpi-box {
+    flex: 1;
+    min-width: 140px;
+    background: var(--bg-medium, #ffffff);
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.a571-kpi-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-light, #64748b);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.a571-kpi-val {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 4px 0 2px 0;
+}
+
+.a571-kpi-sub {
+    font-size: 11.5px;
+    color: var(--text-light, #94a3b8);
+}
+
+/* Category Filter Chips */
+.a571-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.a571-filter-chip {
+    background: var(--bg-light, #f1f5f9);
+    color: var(--text, #475569);
+    border: 1px solid var(--border, #cbd5e1);
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.a571-filter-chip:hover {
+    background: var(--bg-medium, #e2e8f0);
+}
+
+.a571-filter-chip.active {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #1d4ed8;
+}
+
+/* Matrix Cards Grid */
+.a571-matrix-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.a571-matrix-card {
+    background: var(--bg-medium, #ffffff);
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.a571-matrix-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.a571-matrix-card.applicable-border {
+    border-left: 4.5px solid #dc2626;
+    background: linear-gradient(135deg, var(--bg-medium, #ffffff) 0%, rgba(254, 242, 242, 0.4) 100%);
+}
+
+.a571-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.a571-card-cat {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-light, #64748b);
+    letter-spacing: 0.3px;
+}
+
+.a571-card-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2.5px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.a571-badge-danger {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+
+.a571-badge-warning {
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+
+.a571-badge-neutral {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+.a571-card-title {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--text, #0f172a);
+    line-height: 1.3;
+}
+
+.a571-card-basis {
+    font-size: 12.5px;
+    color: var(--text, #334155);
+    line-height: 1.4;
+    background: var(--bg-light, #f8fafc);
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border, #f1f5f9);
+}
+
+.a571-card-inspection {
+    font-size: 12px;
+    color: #1e3a8a;
+    background: #eff6ff;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #dbeafe;
+    line-height: 1.35;
+}
+
+.a571-bridge-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    border: none;
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(16, 185, 129, 0.3);
+    transition: all 0.15s ease;
+    align-self: flex-start;
+    margin-top: 4px;
+}
+
+.a571-bridge-btn:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(16, 185, 129, 0.4);
+}
+
+.a571-category-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+.a571-status-pill {
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 3px 8px;
+    background: #eff6ff;
+    color: #2563eb;
+    border-radius: 4px;
+    border: 1px solid #bfdbfe;
+}
+

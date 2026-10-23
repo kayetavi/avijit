@@ -1,0 +1,352 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NRL RPTU CCD Dashboard</title>
+    <link rel="stylesheet" href="rptu.css">
+    
+</head>
+<body>
+
+<div class="app-container">
+    <div class="sidebar">
+        <h2>RPTU CCD Manager</h2>
+        <button class="nav-btn active" onclick="switchView('overview', this)">Overview Metrics</button>
+        <button class="nav-btn" onclick="switchView('plant-info', this)">Plant Overview</button>
+        <button class="nav-btn" onclick="switchView('loop-basis', this)">Basis for Loops</button>
+        <button class="nav-btn" onclick="switchView('feed-assays', this)">Feed Properties</button>
+        <button class="nav-btn" onclick="switchView('guidelines', this)">Operating Guidelines</button>
+        <button class="nav-btn" onclick="switchView('dm-matrix', this)" style="color: #60a5fa; font-weight: bold;">DM Matrix</button>
+        <button class="nav-btn" onclick="switchView('process', this)">Process Loops (30)</button>
+        <button class="nav-btn" onclick="switchView('utility', this)">Utility Loops (13)</button>
+        <button class="nav-btn" onclick="switchView('mitigation', this)">Mitigation Guide</button>
+    </div>
+
+    <div class="main-content">
+        
+        <div id="overview" class="view-section active">
+
+    <h1 style="margin-bottom: 10px;">
+        NRL RPTU Corrosion Control Dashboard
+    </h1>
+
+    <p style="margin-bottom: 20px; color: #64748b;">
+        Interactive guide for LC-FINING, ISOTREATING, Utilities and Corrosion Control Document (CCD) management.
+    </p>
+
+    <div class="grid">
+
+        <div class="card">
+            <h3>Total Loops</h3>
+            <h1 style="font-size: 3rem; color: var(--primary);">
+                47
+            </h1>
+            <p style="color:#64748b;">
+                34 Process + 13 Utility
+            </p>
+        </div>
+
+        <div class="card"
+             onclick="switchView('process', document.querySelectorAll('.nav-btn')[6])">
+            <h3>Process Loops</h3>
+            <h1 style="font-size: 3rem; color: #0f766e;">
+                34
+            </h1>
+            <p style="color:#64748b;">
+                CCD Verified Process Circuits
+            </p>
+        </div>
+
+        <div class="card"
+             onclick="switchView('utility', document.querySelectorAll('.nav-btn')[7])">
+            <h3>Utility Loops</h3>
+            <h1 style="font-size: 3rem; color: #b45309;">
+                13
+            </h1>
+            <p style="color:#64748b;">
+                Utility Corrosion Circuits
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+        <div id="plant-info" class="view-section">
+    <h1 style="margin-bottom: 20px;">RPTU Plant Overview</h1>
+
+    <div class="text-panel">
+
+        <p>
+            The Resid Processing and Treating Unit (RPTU) at Numaligarh Refinery Limited (NRL)
+            is designed using Chevron Lummus Global (CLG) LC-FINING and integrated
+            ISOTREATING technologies for processing heavy refinery streams and converting
+            them into valuable lighter products.
+        </p>
+
+        <h3>Process Description</h3>
+
+        <p>
+            The RPTU consists of an Ebullated Bed Vacuum Residue Hydrocracking Unit
+            (LC-FINING Unit) fully integrated with a Vacuum Gas Oil (VGO)
+            ISOTREATING Unit (HDT). The unit is designed to process Vacuum Residue (VR),
+            PFCC Clarified Oil, Straight Run Vacuum Gas Oil (SR-VGO),
+            and Heavy Coker Gas Oil (HCGO) feedstocks.
+        </p>
+
+        <h3>Major Process Sections</h3>
+
+        <ul style="margin-left: 20px; line-height: 1.8;">
+
+            <li>
+                <strong>LC-FINING Section:</strong>
+                Ebullated-bed hydrocracking section for processing heavy residue feedstocks
+                such as Vacuum Residue (VR) and PFCC Clarified Oil.
+            </li>
+
+            <li>
+                <strong>Integrated ISOTREATING (HDT) Section:</strong>
+                Fixed-bed hydrotreating section designed for treatment of
+                SR-VGO, HCGO and hydrotreated intermediate streams.
+            </li>
+
+            <li>
+                <strong>Hydrogen System:</strong>
+                Includes make-up hydrogen and recycle hydrogen systems for maintaining
+                required hydrogen partial pressure during hydroprocessing.
+            </li>
+
+            <li>
+                <strong>Amine Treating Section:</strong>
+                Lean amine is used for removal of acid gases such as H₂S from sour gas streams.
+            </li>
+
+            <li>
+                <strong>Injection Water System:</strong>
+                Injection water is provided to control salt deposition and corrosion
+                in reactor effluent systems.
+            </li>
+
+            <li>
+                <strong>Fractionation Section:</strong>
+                Product separation system for recovery of LPG, naphtha, diesel,
+                hydrotreated VGO and unconverted oil.
+            </li>
+
+        </ul>
+
+        <h3>Main Feed Streams</h3>
+
+        <ul style="margin-left: 20px;">
+            <li><strong>Vacuum Residue (VR)</strong></li>
+            <li><strong>PFCC Clarified Oil</strong></li>
+            <li><strong>Straight Run VGO (SR-VGO)</strong></li>
+            <li><strong>Heavy Coker Gas Oil (HCGO)</strong></li>
+            <li><strong>Make-up Hydrogen</strong></li>
+            <li><strong>Lean Amine</strong></li>
+            <li><strong>Injection Water</strong></li>
+            <li><strong>Catalysts & Chemicals</strong></li>
+        </ul>
+
+        <h3>Main Products</h3>
+
+        <ul style="margin-left: 20px;">
+            <li><strong>Treated Fuel Gas</strong></li>
+            <li><strong>RPTU LPG</strong></li>
+            <li><strong>RPTU Naphtha</strong></li>
+            <li><strong>RPTU Diesel</strong></li>
+            <li><strong>Hydrotreated VGO</strong></li>
+            <li><strong>Unconverted Oil / Residue (UCO)</strong></li>
+        </ul>
+
+        <h3>Main By-Products</h3>
+
+        <ul style="margin-left: 20px;">
+            <li><strong>Rich Amine</strong></li>
+            <li><strong>Off-gases to Fuel Gas Header</strong></li>
+            <li><strong>Sour Water</strong></li>
+            <li><strong>Vacuum Tower Hotwell Water</strong></li>
+            <li><strong>Filter Backwash</strong></li>
+        </ul>
+
+    </div>
+        </div>
+
+        <div id="loop-basis" class="view-section">
+            <h1 style="margin-bottom: 20px;">Basis for Corrosion Loop Segregation</h1>
+            <div class="text-panel">
+                <p>In accordance with API RP 970 (Corrosion Control Documents) and API 581 (Risk-Based Inspection), the RPTU has been divided into distinct Corrosion Loops. A Corrosion Loop (or Circuit) is defined as a section of the plant that is subject to the same general environment and similar damage mechanisms, allowing for a unified inspection strategy.</p>
+                
+                <h3>Primary Criteria for Loop Boundaries</h3>
+                <p>A new corrosion loop is established when there is a significant change in one or more of the following five parameters:</p>
+                
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li style="margin-bottom: 10px;"><strong>1. Material of Construction (Metallurgy):</strong> Changes in base metal generally trigger a new loop.</li>
+                    <li style="margin-bottom: 10px;"><strong>2. Process Fluid & Chemistry:</strong> Drastic changes in the process environment.</li>
+                    <li style="margin-bottom: 10px;"><strong>3. Operating Temperature & Pressure:</strong> Equipment crossing critical degradation thresholds.</li>
+                    <li style="margin-bottom: 10px;"><strong>4. Applicable Damage Mechanisms:</strong> Unique damage mechanisms mandate separate tracking.</li>
+                    <li style="margin-bottom: 10px;"><strong>5. Phase Changes & Wash Points:</strong> Any point where chemical treatments or wash water is injected.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="feed-assays" class="view-section">
+            <h1 style="margin-bottom: 20px;">Feed Properties & Assays</h1>
+            <div class="controls">
+                <select id="feedSelector" onchange="renderFeedTable()">
+                    <option value="vr">Vacuum Residue (VR) - LC-Fining Feed</option>
+                    <option value="pfcc">PFCC Clarified Oil - LC-Fining Feed</option>
+                    <option value="vgo">Straight-Run VGO - HDT Feed</option>
+                    <option value="hcgo">Heavy Coker Gasoil (HCGO) - HDT Feed</option>
+                    <option value="hydrogen">Make-up / Recycle Hydrogen</option>
+                    <option value="washwater">Injection / Wash Water</option>
+                    <option value="amine">Lean Amine (MDEA)</option>
+                    <option value="designcase">Design Case Feed Properties LC-Fining</option>
+                    <option value="hydrogen_design">Make-up Hydrogen Composition</option>
+                    <option value="amine_design">Amine Properties</option>
+                    <option value="injection_water_design">Injection Water Specification</option>
+                    <option value="chemical_requirements">Chemical Requirement</option>
+                    <option value="lcf_catalyst_design">LC-FINING Catalyst Summary</option>
+                    <option value="vgo_hdt_catalyst_design">VGO HDT Catalyst Summary</option>
+                    <option value="designcase_vgo">Design Case Feed VGO Hydrotreating Design Case</option>
+                </select>
+            </div>
+            <div class="text-panel" id="feed-details-container"></div>
+        </div>
+
+        <div id="guidelines" class="view-section">
+            <h1 style="margin-bottom: 20px;">Operating Guidelines & IOWs</h1>
+            <div class="text-panel">
+                <h3>Integrity Operating Windows (IOWs)</h3>
+                <table>
+                    <thead><tr><th>Parameter</th><th>Critical Limit</th><th>Consequence of Deviation</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Wash Water Injection Rate</strong></td><td class="alert-text">Minimum 25% remains as liquid</td><td>Severe under-deposit pitting and erosion from dry NH4HS salt.</td></tr>
+                        <tr><td><strong>Sour Water NH4HS Concentration</strong></td><td class="alert-text">Maximum 12 wt%</td><td>Accelerated erosion-corrosion of piping.</td></tr>
+                        <tr><td><strong>Reactor Operating Temp</strong></td><td class="alert-text">Maintain 28°C (50°F) below API 941</td><td>High Temperature Hydrogen Attack (HTHA).</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="dm-matrix" class="view-section">
+            <h1 style="margin-bottom: 20px;">Applicable Damage Mechanism Matrix</h1>
+            <div class="text-panel" style="overflow-x: auto;">
+                <p>Summary of critical threats to the RPTU equipment and standard mitigation strategies.</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Damage Mechanism</th>
+                            <th>Description</th>
+                            <th>Critical Process Variables</th>
+                            <th>Mitigation / Inspection</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>HTHA</strong><br>(High Temp Hydrogen Attack)</td>
+                            <td>Internal decarburization and fissuring of steel caused by hydrogen diffusing into the metal at high temperatures and pressures, forming methane gas blisters.</td>
+                            <td>Temperature, Hydrogen Partial Pressure, Time in service.</td>
+                            <td>Base metallurgy on API 941 curves (use 2-¼ Cr-1 Mo for reactors). Operate at least 50°F below limits. Inspect using PAUT / TOFD on welds.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>High Temp Sulfidation</strong></td>
+                            <td>Uniform thinning of carbon and low-alloy steels from reaction with H2S and reactive sulfur compounds at temperatures above 260°C (500°F).</td>
+                            <td>Temperature, Total Sulfur content, Presence of Hydrogen.</td>
+                            <td>Upgrade to 12Cr (410S) in non-hydrogen services. Upgrade to 347/321 SS in high-temp hydrogen/H2S services. UT thickness monitoring.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ammonium Bisulfide (NH4HS) Corrosion</strong></td>
+                            <td>High-velocity localized erosion-corrosion and under-deposit pitting due to precipitation of NH4HS salts in the reactor effluent coolers.</td>
+                            <td>NH4HS concentration in sour water, Fluid Velocity, Wash Water injection rate.</td>
+                            <td>Continuous wash water injection (min 25% liquid at cooler inlet). Keep NH4HS < 12 wt%. Use Alloy 825 in REAC. IRIS/Eddy Current on tubes.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ammonium Chloride (NH4Cl) Corrosion</strong></td>
+                            <td>Highly aggressive, localized pitting and under-deposit corrosion occurring when NH4Cl sublimates from vapor into a damp salt in fractionator overheads.</td>
+                            <td>Temperature, Chloride concentration, Nitrogen concentration in feed.</td>
+                            <td>Limit feed chlorides. Continuous water wash. Upgrade to Alloy 625 cladding in fractionator overheads. Monitor wash water chlorides/pH.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Polythionic Acid SCC (PTASCC)</strong></td>
+                            <td>Intergranular cracking of sensitized austenitic stainless steels (300 series) when sulfide scales are exposed to moisture and oxygen during plant shutdowns.</td>
+                            <td>Presence of sulfide scale, Oxygen, Moisture, Sensitization of stainless steel.</td>
+                            <td>Purge high-temp loops with Nitrogen during shutdown. Apply 2% Soda Ash wash before opening to air. Use stabilized grades (Type 347/321 SS).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Wet H2S Damage (SSC, HIC, SOHIC)</strong></td>
+                            <td>Hydrogen blistering, Sulfide Stress Cracking, or Hydrogen Induced Cracking from atomic hydrogen generated by aqueous H2S corrosion entering the steel.</td>
+                            <td>H2S concentration in water, pH, Cyanide presence, Temperature.</td>
+                            <td>Limit carbon steel hardness to 200 BHN. Mandate PWHT. Use HIC-tested steel. Inspect via WFMT on welds and UT scans.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Temper Embrittlement</strong></td>
+                            <td>Loss of metallurgical toughness in heavy-wall 2-¼ Cr-1 Mo reactors after long-term exposure to operating temperatures.</td>
+                            <td>Time at temperature, Concentration of tramp elements in steel.</td>
+                            <td>Strictly control heating and cooling rates. Do not pressurize vessels >20% until metal reaches Minimum Pressurization Temp (MPT).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Amine Corrosion</strong></td>
+                            <td>General or localized thinning in the MDEA treating section, usually caused by dissolved acid gases (H2S, CO2) flashing or high velocities removing the protective film.</td>
+                            <td>Amine concentration, Acid gas loading, Velocity, Temperature, Turbulence.</td>
+                            <td>Maintain MDEA < 40 wt%. Restrict rich amine velocities (< 6.5 ft/s). Use Type 304L SS in high-velocity/turbulent areas.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Flow Accelerated Corrosion (FAC)</strong></td>
+                            <td>Rapid thinning of carbon steel piping in boiler feed water and steam condensate systems due to dissolution of the protective magnetite layer.</td>
+                            <td>Fluid velocity, pH, Temperature, Dissolved Oxygen.</td>
+                            <td>Upgrade susceptible elbows/tees to low-alloy steel. Control water chemistry. Inspect via RT/UT on outer radii of elbows.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Coking & Under-Deposit Corrosion</strong></td>
+                            <td>Thermal degradation of heavy resid (LCF feed) causing coke formation, leading to localized hot spots (in heaters) and under-deposit chemical attack.</td>
+                            <td>Conradson Carbon (CCR) in feed, Heater tube skin temperatures, Flow velocity.</td>
+                            <td>Monitor feed CCR and asphaltenes. Decoke heater tubes periodically. IR thermography on heater tubes to detect hot spots.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="database" class="view-section">
+            <h1 id="db-title" style="margin-bottom: 20px;">Database</h1>
+            <div class="controls">
+                <input type="text" id="searchInput" placeholder="Search loops by name or ID..." onkeyup="filterData()">
+                <select id="mechFilter" onchange="filterData()">
+                    <option value="All">All Damage Mechanisms</option>
+                    <option value="HTHA">HTHA</option>
+                    <option value="Sulfidation">Sulfidation</option>
+                    <option value="Wet H2S">Wet H2S Damage</option>
+                    <option value="NH4HS">NH4HS Corrosion</option>
+                    <option value="NH4Cl">NH4Cl Corrosion</option>
+                    <option value="Sour Water">Sour Water Corrosion</option>
+                    <option value="FAC">Flow Accelerated Corrosion (FAC)</option>
+                    <option value="Amine">Amine Corrosion</option>
+                </select>
+            </div>
+            <div id="loopGrid" class="grid"></div>
+        </div>
+
+        <div id="mitigation" class="view-section">
+            <h1 style="margin-bottom: 20px;">Mitigation Strategies</h1>
+            <div id="mitigationGrid" class="grid"></div>
+        </div>
+
+    </div>
+</div>
+
+<div id="mitigation-modal">
+    <div class="modal-content">
+        <h3 id="modal-title">Loop Details</h3>
+        <div id="modal-body"></div>
+        <button class="close-btn" onclick="document.getElementById('mitigation-modal').style.display='none'">Close</button>
+    </div>
+</div>
+
+
+    <script src="rptu.js"></script                            
+</body>
+</html>

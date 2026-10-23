@@ -1,0 +1,254 @@
+#cof_calculator {
+  --bg: #f9f9f9;
+  --card: #ffffff;
+  --text: #1a1a1a;
+  --muted: #6c757d;
+  --accent: #007bff;
+  --accent-2: #17a2b8;
+  --border: #b0b0b0;
+  --danger: #dc3545;
+  --success: #28a745;
+  --warning: #ffc107;
+}
+
+#cof_calculator * {
+  box-sizing: border-box;
+}
+
+#cof_calculator {
+  margin: 0;
+  padding: 24px;
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ----------------------------
+   Typography
+---------------------------- */
+#cof_calculator h1 {
+  margin-bottom: 20px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+#cof_calculator h2 {
+  margin-bottom: 14px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+#cof_calculator h3 {
+  margin: 12px 0 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent-2);
+}
+
+/* ----------------------------
+   Cards
+---------------------------- */
+#cof_calculator .card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#cof_calculator .card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 12px rgba(0, 123, 255, 0.08);
+}
+
+/* ----------------------------
+   Grid Layouts
+---------------------------- */
+#cof_calculator .grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+#cof_calculator .grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+#cof_calculator .grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* exactly 5 per row */
+  gap: 8px; /* kam gap */
+}
+
+
+/* ----------------------------
+   Labels & Inputs
+---------------------------- */
+#cof_calculator label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+#cof_calculator input,
+#cof_calculator select {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+#cof_calculator input:focus,
+#cof_calculator select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+/* ----------------------------
+   Hint Text
+---------------------------- */
+#cof_calculator .hint {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: -4px;
+  margin-bottom: 8px;
+}
+
+/* ----------------------------
+   Action Buttons
+---------------------------- */
+#cof_calculator .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+#cof_calculator button {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, #f0f0f0, #e0e0e0);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.1s ease, background 0.2s ease;
+}
+
+#cof_calculator button:hover {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, #e8f0ff, #d9eaff);
+  transform: translateY(-1px);
+}
+
+#cof_calculator button:active {
+  transform: translateY(0);
+}
+
+#cof_calculator button.secondary {
+  background: transparent;
+  border-color: var(--muted);
+  color: var(--muted);
+}
+
+#cof_calculator button.secondary:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ----------------------------
+   Output Display
+---------------------------- */
+#cof_calculator pre#cof_output {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  white-space: pre-wrap;
+  font-size: 13px;
+  line-height: 1.5;
+  font-family: Consolas, Monaco, monospace;
+  overflow-x: auto;
+  color: var(--text);
+}
+
+#cof_calculator pre#cof_output strong {
+  color: var(--accent-2);
+}
+
+/* ----------------------------
+   Media Queries / Responsive
+---------------------------- */
+@media (max-width: 1000px) {
+  #cof_calculator .grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  #cof_calculator {
+    padding: 16px;
+  }
+
+  #cof_calculator .grid,
+  #cof_calculator .grid-2,
+  #cof_calculator .grid.four {
+    grid-template-columns: 1fr;
+  }
+
+  #cof_calculator h1 {
+    font-size: 22px;
+  }
+}
+
+/* Normal editable inputs */
+#cof_calculator input[type="number"] {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #ccc;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+/* Readonly inputs (autofill case) */
+#cof_calculator input[readonly] {
+  background-color: #f0f0f0; /* light grey */
+  color: #666;              /* dim text */
+  border: 1px solid #bbb;
+  cursor: not-allowed;
+}
+
+/* Optional: highlight editable fields on focus */
+#cof_calculator input[type="number"]:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.4);
+}
+
+/* Make dropdown text smaller */
+#cof_calculator select {
+  font-size: 12px;   /* dropdown ke andar text chhota ho jayega */
+  padding: 8px 10px; /* height bhi thodi kam ho jayegi */
+}
+
+

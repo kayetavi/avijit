@@ -1,0 +1,615 @@
+/* ============================================================================
+   ⚗️ CHEMISTRY & CHEMICAL SUITE - STYLING (KayetDMS)
+   Complies with industrial asset integrity UI, dark/light theme, and WCAG AA
+============================================================================ */
+
+.chem-suite-container {
+  max-width: 1300px;
+  margin: 0 auto 40px auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #1e293b;
+}
+
+html.dark-mode .chem-suite-container,
+body.dark-mode .chem-suite-container {
+  color: #f1f5f9;
+}
+
+/* Header Banner */
+.chem-suite-header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0369a1 100%);
+  color: #ffffff;
+  padding: 24px 28px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  margin-bottom: 24px;
+  border-left: 6px solid #38bdf8;
+}
+
+.chem-suite-header h2 {
+  margin: 0 0 8px 0;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chem-suite-header p {
+  margin: 0;
+  color: #cbd5e1;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Navigation Pills */
+.chem-nav-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 12px;
+}
+
+html.dark-mode .chem-nav-pills,
+body.dark-mode .chem-nav-pills {
+  border-bottom-color: #334155;
+}
+
+.chem-nav-btn {
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.chem-nav-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+.chem-nav-btn.active {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+}
+
+html.dark-mode .chem-nav-btn,
+body.dark-mode .chem-nav-btn {
+  background: #1e293b;
+  color: #94a3b8;
+  border-color: #334155;
+}
+
+html.dark-mode .chem-nav-btn:hover,
+body.dark-mode .chem-nav-btn:hover {
+  background: #334155;
+  color: #f8fafc;
+}
+
+html.dark-mode .chem-nav-btn.active,
+body.dark-mode .chem-nav-btn.active {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #38bdf8;
+}
+
+/* Section Panes */
+.chem-section-pane {
+  display: none;
+  animation: chemFadeIn 0.25s ease-in-out;
+}
+
+.chem-section-pane.active {
+  display: block;
+}
+
+@keyframes chemFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cards & Layout */
+.chem-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+html.dark-mode .chem-card,
+body.dark-mode .chem-card {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.chem-card-header {
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+html.dark-mode .chem-card-header,
+body.dark-mode .chem-card-header {
+  border-bottom-color: #334155;
+}
+
+.chem-card-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+html.dark-mode .chem-card-header h3,
+body.dark-mode .chem-card-header h3 {
+  color: #f8fafc;
+}
+
+.chem-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chem-badge-blue { background: #e0f2fe; color: #0369a1; }
+.chem-badge-green { background: #dcfce7; color: #15803d; }
+.chem-badge-amber { background: #fef3c7; color: #b45309; }
+.chem-badge-red { background: #fee2e2; color: #b91c1c; }
+.chem-badge-purple { background: #f3e8ff; color: #7e22ce; }
+
+html.dark-mode .chem-badge-blue, body.dark-mode .chem-badge-blue { background: #075985; color: #e0f2fe; }
+html.dark-mode .chem-badge-green, body.dark-mode .chem-badge-green { background: #166534; color: #dcfce7; }
+html.dark-mode .chem-badge-amber, body.dark-mode .chem-badge-amber { background: #92400e; color: #fef3c7; }
+html.dark-mode .chem-badge-red, body.dark-mode .chem-badge-red { background: #991b1b; color: #fee2e2; }
+html.dark-mode .chem-badge-purple, body.dark-mode .chem-badge-purple { background: #6b21a8; color: #f3e8ff; }
+
+/* Grid Forms */
+.chem-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.chem-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.chem-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.chem-form-group {
+  margin-bottom: 16px;
+}
+
+.chem-form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #334155;
+}
+
+html.dark-mode .chem-form-group label,
+body.dark-mode .chem-form-group label {
+  color: #cbd5e1;
+}
+
+.chem-input, .chem-select {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+html.dark-mode .chem-input,
+html.dark-mode .chem-select,
+body.dark-mode .chem-input,
+body.dark-mode .chem-select {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.chem-input:focus, .chem-select:focus {
+  outline: none;
+  border-color: #0284c7;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.chem-btn {
+  background: #0284c7;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 11px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.chem-btn:hover {
+  background: #0369a1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+.chem-btn-secondary {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.chem-btn-secondary:hover {
+  background: #cbd5e1;
+  color: #0f172a;
+}
+
+html.dark-mode .chem-btn-secondary,
+body.dark-mode .chem-btn-secondary {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+html.dark-mode .chem-btn-secondary:hover,
+body.dark-mode .chem-btn-secondary:hover {
+  background: #475569;
+  color: #ffffff;
+}
+
+/* 🦺 Chemical Suit Recommendation Box */
+.chem-suit-hero {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+html.dark-mode .chem-suit-hero,
+body.dark-mode .chem-suit-hero {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.chem-suit-icon-badge {
+  font-size: 48px;
+  line-height: 1;
+  padding: 16px;
+  background: #e0f2fe;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+html.dark-mode .chem-suit-icon-badge,
+body.dark-mode .chem-suit-icon-badge {
+  background: #0369a1;
+}
+
+.chem-suit-details h4 {
+  margin: 0 0 6px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0284c7;
+}
+
+.chem-suit-details p {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+html.dark-mode .chem-suit-details p,
+body.dark-mode .chem-suit-details p {
+  color: #cbd5e1;
+}
+
+/* Permeation & Breakthrough Table */
+.chem-table-wrap {
+  overflow-x: auto;
+  margin: 16px 0;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+html.dark-mode .chem-table-wrap,
+body.dark-mode .chem-table-wrap {
+  border-color: #334155;
+}
+
+.chem-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.chem-table th {
+  background: #f1f5f9;
+  color: #334155;
+  font-weight: 700;
+  padding: 12px 14px;
+  border-bottom: 2px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+html.dark-mode .chem-table th,
+body.dark-mode .chem-table th {
+  background: #0f172a;
+  color: #cbd5e1;
+  border-bottom-color: #334155;
+}
+
+.chem-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #1e293b;
+}
+
+html.dark-mode .chem-table td,
+body.dark-mode .chem-table td {
+  border-bottom-color: #334155;
+  color: #e2e8f0;
+}
+
+.chem-table tr:hover td {
+  background: #f8fafc;
+}
+
+html.dark-mode .chem-table tr:hover td,
+body.dark-mode .chem-table tr:hover td {
+  background: #1e293b;
+}
+
+/* Rating Chips */
+.rating-excellent { color: #16a34a; font-weight: 700; }
+.rating-good { color: #0284c7; font-weight: 600; }
+.rating-fair { color: #d97706; font-weight: 600; }
+.rating-poor { color: #dc2626; font-weight: 700; }
+
+/* 🧪 NFPA 704 Fire Diamond Widget */
+.nfpa-diamond-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.nfpa-diamond {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  transform: rotate(45deg);
+  margin: 30px auto;
+  border: 2px solid #334155;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.nfpa-cell {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif;
+  font-weight: 900;
+  font-size: 26px;
+  user-select: none;
+}
+
+.nfpa-cell span {
+  transform: rotate(-45deg);
+}
+
+.nfpa-top-red {
+  top: 0;
+  left: 0;
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.nfpa-left-blue {
+  top: 70px;
+  left: 0;
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.nfpa-right-yellow {
+  top: 0;
+  left: 70px;
+  background: #eab308;
+  color: #0f172a;
+}
+
+.nfpa-bottom-white {
+  top: 70px;
+  left: 70px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+/* GHS Pictograms */
+.ghs-badges-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.ghs-badge-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 2px solid #ef4444;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #991b1b;
+}
+
+html.dark-mode .ghs-badge-item,
+body.dark-mode .ghs-badge-item {
+  background: #1e293b;
+  color: #fca5a5;
+  border-color: #ef4444;
+}
+
+/* Reactivity Matrix Cards */
+.reactivity-alert-card {
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 20px;
+  border-left: 6px solid #ef4444;
+  background: #fef2f2;
+}
+
+html.dark-mode .reactivity-alert-card,
+body.dark-mode .reactivity-alert-card {
+  background: #450a0a;
+  border-left-color: #f87171;
+}
+
+.reactivity-alert-card.safe {
+  border-left-color: #22c55e;
+  background: #f0fdf4;
+}
+
+html.dark-mode .reactivity-alert-card.safe,
+body.dark-mode .reactivity-alert-card.safe {
+  background: #052e16;
+  border-left-color: #4ade80;
+}
+
+.reactivity-alert-card.warning {
+  border-left-color: #f59e0b;
+  background: #fffbeb;
+}
+
+html.dark-mode .reactivity-alert-card.warning,
+body.dark-mode .reactivity-alert-card.warning {
+  background: #451a03;
+  border-left-color: #fbbf24;
+}
+
+/* Neutralization Results */
+.neut-metric-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+html.dark-mode .neut-metric-box,
+body.dark-mode .neut-metric-box {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.neut-metric-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0284c7;
+  margin-bottom: 4px;
+}
+
+.neut-metric-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+html.dark-mode .neut-metric-label,
+body.dark-mode .neut-metric-label {
+  color: #94a3b8;
+}
+
+.reaction-equation-box {
+  background: #0f172a;
+  color: #38bdf8;
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 15px;
+  font-weight: 600;
+  margin: 16px 0;
+  overflow-x: auto;
+  border: 1px solid #1e293b;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .chem-suite-header {
+    padding: 18px 20px;
+  }
+  .chem-suite-header h2 {
+    font-size: 20px;
+  }
+  .chem-nav-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  .chem-suit-hero {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}

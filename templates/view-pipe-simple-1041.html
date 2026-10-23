@@ -1,0 +1,233 @@
+<div class="tab-content" id="simplePipingTab" style="display: none;">
+
+  <h2>Thickness Calculation (PD / 2SE)</h2>
+
+  <!-- 🔹 Row 1: Pressure + Unit -->
+  <div class="simple-row">
+    <div class="simple-col">
+      <label>Pressure (P):</label>
+      <input type="number" id="simple_pressure" placeholder="Enter Pressure">
+    </div>
+
+    <div class="simple-col">
+      <label>Unit:</label>
+      <select id="simple_pressureUnit">
+        <option value="MPa">MPa</option>
+        <option value="bar">bar</option>
+        <option value="kgcm2">kg/cm²</option>
+        <option value="psi">psi</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 🔹 Row 2: Diameter & Schedule (SCH) -->
+  <div class="simple-row">
+    <div class="simple-col">
+      <label for="simple_diameter">Nominal Pipe Size (NPS):</label>
+      <select id="simple_diameter" onchange="if (typeof updateSimpleScheduleList === 'function') updateSimpleScheduleList();">
+        <option value="">-- Select NPS / OD --</option>
+
+        <!-- Small Bores -->
+        <optgroup label="Small Bore Piping">
+          <option value="10.3">NPS 1/8" - 10.3 mm</option>
+          <option value="13.7">NPS 1/4" - 13.7 mm</option>
+          <option value="17.1">NPS 3/8" - 17.1 mm</option>
+          <option value="21.3">NPS 1/2" - 21.3 mm</option>
+          <option value="26.7">NPS 3/4" - 26.7 mm</option>
+          <option value="33.4">NPS 1" - 33.4 mm</option>
+          <option value="42.2">NPS 1 1/4" - 42.2 mm</option>
+          <option value="48.3">NPS 1 1/2" - 48.3 mm</option>
+          <option value="60.3" selected>NPS 2" - 60.3 mm</option>
+          <option value="73.0">NPS 2 1/2" - 73.0 mm</option>
+          <option value="88.9">NPS 3" - 88.9 mm</option>
+          <option value="101.6">NPS 3 1/2" - 101.6 mm</option>
+          <option value="114.3">NPS 4" - 114.3 mm</option>
+          <option value="141.3">NPS 5" - 141.3 mm</option>
+          <option value="168.3">NPS 6" - 168.3 mm</option>
+        </optgroup>
+
+        <!-- Medium Sizes -->
+        <optgroup label="Medium Bore Piping">
+          <option value="219.1">NPS 8" - 219.1 mm</option>
+          <option value="273.0">NPS 10" - 273.0 mm</option>
+          <option value="323.9">NPS 12" - 323.9 mm</option>
+          <option value="355.6">NPS 14" - 355.6 mm</option>
+          <option value="406.4">NPS 16" - 406.4 mm</option>
+          <option value="457.0">NPS 18" - 457.0 mm</option>
+          <option value="508.0">NPS 20" - 508.0 mm</option>
+          <option value="559.0">NPS 22" - 559.0 mm</option>
+          <option value="610.0">NPS 24" - 610.0 mm</option>
+        </optgroup>
+
+        <!-- Large Bores -->
+        <optgroup label="Large Bore Piping">
+          <option value="660.4">NPS 26" - 660.4 mm</option>
+          <option value="711.2">NPS 28" - 711.2 mm</option>
+          <option value="762.0">NPS 30" - 762.0 mm</option>
+          <option value="812.8">NPS 32" - 812.8 mm</option>
+          <option value="863.6">NPS 34" - 863.6 mm</option>
+          <option value="914.4">NPS 36" - 914.4 mm</option>
+          <option value="965.2">NPS 38" - 965.2 mm</option>
+          <option value="1016.0">NPS 40" - 1016.0 mm</option>
+          <option value="1066.8">NPS 42" - 1066.8 mm</option>
+          <option value="1117.6">NPS 44" - 1117.6 mm</option>
+          <option value="1168.4">NPS 46" - 1168.4 mm</option>
+          <option value="1219.2">NPS 48" - 1219.2 mm</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <div class="simple-col">
+      <label for="simple_schedule">Schedule (SCH):</label>
+      <select id="simple_schedule" onchange="if (typeof onSimpleScheduleChange === 'function') onSimpleScheduleChange();">
+        <option value="">-- Select SCH --</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 🔹 Row 3: Stress + Unit (with Auto Lookup Automation) -->
+  <div class="simple-form-group" style="margin-top: 15px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
+      <label for="simple_stress" style="margin-bottom: 0;">Allowable Stress (S):</label>
+      <label class="simple-auto-stress-toggle-label" style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; font-weight: 600; color: #2563eb; background: rgba(37, 99, 235, 0.08); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(37, 99, 235, 0.25); user-select: none;">
+        <input type="checkbox" id="simple_autoStressToggle" checked onchange="if (typeof toggleSimpleAutoStress === 'function') toggleSimpleAutoStress();" style="cursor: pointer; width: 16px; height: 16px; accent-color: #2563eb;">
+        <span>⚡ Auto Lookup Allowable Stress (Live DB)</span>
+      </label>
+    </div>
+    <div class="simple-row" style="margin-top: 0;">
+      <div class="simple-col" style="flex: 1;">
+        <input type="number" id="simple_stress" step="0.1" placeholder="Auto-populated from Live Stress DB" readonly class="readonly-field" title="Allowable Stress is automatically determined from selected Code/Material data">
+      </div>
+      <div class="simple-col" style="flex: 0 0 140px;">
+        <select id="simple_stressUnit" onchange="if (typeof onSimpleStressUnitChange === 'function') onSimpleStressUnitChange();">
+          <option value="MPa" selected>MPa</option>
+          <option value="ksi">ksi</option>
+          <option value="kgcm2">kg/cm²</option>
+          <option value="psi">psi</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 🔸 Automatic Allowable Stress Lookup Card for Simple Tab -->
+    <div id="simple_autoStressPanel" class="simple-auto-stress-panel" style="display: block; margin-top: 12px; padding: 16px; border-radius: 8px; border: 1px solid #93c5fd; background: rgba(239, 246, 255, 0.7);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(59, 130, 246, 0.2); padding-bottom: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 16px;">📚</span>
+          <strong style="font-size: 13px; color: #1e40af; text-transform: uppercase; letter-spacing: 0.5px;">Code Allowable Stress Table Automation</strong>
+        </div>
+        <span class="simple-auto-badge" style="font-size: 11px; font-weight: 700; background: #2563eb; color: #fff; padding: 2px 8px; border-radius: 12px;">AUTO MODE</span>
+      </div>
+
+      <!-- Automation Parameters Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;">
+        <div>
+          <label for="simple_stressYear" style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">Lookup Stress Value Year:</label>
+          <select id="simple_stressYear" class="simple-auto-input" onchange="if (typeof onSimpleStressYearChange === 'function') onSimpleStressYearChange();" style="width: 100%;">
+            <option value="">-- Select Year --</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="simple_stressMaterial" style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">Select Material:</label>
+          <select id="simple_stressMaterial" class="simple-auto-input" disabled onchange="if (typeof onSimpleStressMaterialChange === 'function') onSimpleStressMaterialChange();" style="width: 100%;">
+            <option value="">-- Select Material --</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="simple_stressGrade" style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">Select Grade:</label>
+          <select id="simple_stressGrade" class="simple-auto-input" disabled onchange="if (typeof onSimpleStressGradeChange === 'function') onSimpleStressGradeChange();" style="width: 100%;">
+            <option value="">-- Select Grade --</option>
+          </select>
+        </div>
+
+        <div id="simple_stressThicknessGroup">
+          <label for="simple_stressThickness" style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">Select Thickness (mm):</label>
+          <select id="simple_stressThickness" class="simple-auto-input" disabled onchange="if (typeof onSimpleStressThicknessChange === 'function') onSimpleStressThicknessChange();" style="width: 100%;">
+            <option value="">-- Select Thickness --</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="simple_stressTemp" style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">Enter Temperature (°C):</label>
+          <input type="number" id="simple_stressTemp" class="simple-auto-input" placeholder="e.g. 100" step="1" disabled oninput="if (typeof onSimpleStressTempInput === 'function') onSimpleStressTempInput();" style="width: 100%;" />
+        </div>
+      </div>
+
+      <!-- Dynamic Validation Messages & Warnings -->
+      <div id="simple_stressValidationMsg" class="simple-val-msg" style="margin-top: 10px; font-size: 12px; padding: 6px 10px; border-radius: 4px; background: rgba(100, 116, 139, 0.08); color: #475569;">
+        ℹ️ Please select Material, Grade, Thickness and Temperature to determine Allowable Stress.
+      </div>
+
+      <!-- Automatic Allowable Stress Result Banner -->
+      <div id="simple_autoStressResultDiv" style="display: none; margin-top: 10px; padding: 10px 14px; background: rgba(34, 197, 94, 0.12); border-left: 4px solid #16a34a; border-radius: 6px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <span style="font-size: 13px; font-weight: 700; color: #166534;">Allowable Stress Value:</span>
+            <span id="simple_autoStressDisplay" style="font-size: 17px; font-weight: 800; color: #15803d; margin-left: 6px;">--</span>
+            <span style="font-size: 13px; font-weight: 600; color: #166534;">MPa</span>
+          </div>
+          <div style="font-size: 12px; color: #334155; display: flex; gap: 14px;">
+            <span>Yield Strength: <strong id="simple_autoYieldDisplay" style="color: #0f172a;">--</strong> MPa</span>
+            <span>Tensile Strength: <strong id="simple_autoTensileDisplay" style="color: #0f172a;">--</strong> MPa</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔹 Row 4: Efficiency + CA -->
+  <div class="simple-row">
+    <div class="simple-col">
+      <label for="simple_efficiency">Joint Efficiency (E):</label>
+      <input type="number" id="simple_efficiency" value="1">
+    </div>
+
+    <div class="simple-col">
+      <label for="simple_ca">Corrosion Allowance (mm):</label>
+      <input type="number" id="simple_ca" value="0">
+    </div>
+  </div>
+
+  <!-- 🔹 Row 5: Actual Thickness -->
+  <div class="simple-row">
+    <div class="simple-col">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+        <label for="simple_actual" style="margin-bottom: 0;">Actual Thickness (mm):</label>
+        <span id="simple_act_source_badge" style="font-size: 11px; font-weight: 600; color: #16a34a; background: rgba(22, 163, 74, 0.1); padding: 2px 8px; border-radius: 4px; display: none;">Auto from SCH</span>
+      </div>
+      <input type="number" id="simple_actual" step="0.01" placeholder="Enter Measured Thickness or Auto-fill via SCH">
+    </div>
+  </div>
+  
+  <!-- 🔹 Row 6: Design Temperature -->
+<div class="simple-row">
+  <div class="simple-col">
+    <label>Design Temperature:</label>
+    <select id="simple_temp">
+      <option value="low">&lt; 400°F (205°C)</option>
+<option value="high">&ge; 400°F (205°C)</option>
+    </select>
+  </div>
+</div>
+
+  <!-- 🔹 Row 7: Auto Structural Thickness -->
+<div class="simple-row">
+  <div class="simple-col">
+    <label>Structural Thickness (Auto mm):</label>
+    <input type="number" id="simple_struct_display" readonly>
+  </div>
+</div>
+
+  <!-- 🔹 Calculate -->
+  <button onclick="calculateSimpleThickness()" class="simple-btn">
+    Calculate
+  </button>
+
+  <!-- 🔹 Result -->
+  <div class="simple-row">
+    <div class="simple-col">
+      <label>Required Thickness:</label>
+      <div id="simple_resultBox" class="simple-result">--</div>
+    </div>
+  </div>

@@ -1,0 +1,135 @@
+/* 🌐 Global Reset (Scoped to ASME Section VIII Tab Only) */
+#ASMESECTIONVIIIDIV1Tab * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ✅ Main Tab Container */
+#ASMESECTIONVIIIDIV1Tab {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f0f8ff;
+  color: #222;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+/* ✅ White Box Container */
+#ASMESECTIONVIIIDIV1Tab .container {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 800px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ✅ Headings */
+#ASMESECTIONVIIIDIV1Tab h1 {
+  font-size: 24px;
+  color: #003366;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+#ASMESECTIONVIIIDIV1Tab h3 {
+  margin-bottom: 8px;
+  color: #004080;
+  font-size: 18px;
+}
+
+/* ✅ Labels */
+#ASMESECTIONVIIIDIV1Tab label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* ✅ Inputs & Selects (General) */
+#ASMESECTIONVIIIDIV1Tab input,
+#ASMESECTIONVIIIDIV1Tab select {
+  width: 100%;
+  padding: 8px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+#ASMESECTIONVIIIDIV1Tab input:focus,
+#ASMESECTIONVIIIDIV1Tab select:focus {
+  border-color: #0077cc;
+}
+
+/* ✅ NEW 4-Column Grid Layout (Input + Unit Side-by-Side) */
+#ASMESECTIONVIIIDIV1Tab .input-grid {
+  display: grid;
+  grid-template-columns: 1fr 90px 1fr 90px; /* ✅ Input | Unit | Input | Unit */
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 12px;
+}
+
+#ASMESECTIONVIIIDIV1Tab .input-grid label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+#ASMESECTIONVIIIDIV1Tab .input-grid select {
+  width: 100%;
+  background-color: #f9f9f9;
+  font-size: 13px;
+}
+
+/* ✅ Buttons */
+#ASMESECTIONVIIIDIV1Tab button {
+  margin-top: 12px;
+  width: 100%;
+  padding: 10px;
+  background-color: #004080;
+  color: white;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#ASMESECTIONVIIIDIV1Tab button:hover {
+  background-color: #0066cc;
+}
+
+/* ✅ Results Box */
+#ASMESECTIONVIIIDIV1Tab #results {
+  margin-top: 15px;
+  padding: 12px;
+  background-color: #e6f2ff;
+  border-left: 5px solid #3399ff;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+/* ✅ Form Section Margin */
+#ASMESECTIONVIIIDIV1Tab .form-section {
+  margin-top: 12px;
+}
+
+/* ✅ Responsive for Mobile */
+@media screen and (max-width: 700px) {
+  #ASMESECTIONVIIIDIV1Tab .input-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  #ASMESECTIONVIIIDIV1Tab .input-grid {
+    grid-template-columns: 1fr;
+  }
+}

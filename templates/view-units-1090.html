@@ -1,0 +1,913 @@
+  <div class="tab-content" id="unitConverterTab" style="display: none;">
+    <div class="uc-container">
+      
+      <!-- Top Banner -->
+      <div class="uc-header">
+        <div>
+          <h2><span>📐</span> Plant & Integrity Core Unit Converters</h2>
+          <p>Instant reactive conversions across 10 core mechanical, metallurgical, and chemical domains. Type in any field to calculate all equivalents with zero delay.</p>
+        </div>
+        <div class="uc-header-actions">
+          <button type="button" class="uc-btn-back" onclick="hideAllMainPanels(); showWelcomePanel();">
+            ← Back to Dashboard
+          </button>
+          <button type="button" class="uc-btn-reset-all" onclick="window.UnitConverter.resetAll()" title="Reset all converters to standard engineering seeds">
+            🔄 Reset All
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Category Filter & Search Toolbar -->
+      <div class="uc-toolbar">
+        <div class="uc-pills">
+          <button type="button" class="uc-pill active" onclick="window.filterUnitCategory('all', this)">All (10)</button>
+          <button type="button" class="uc-pill" onclick="window.filterUnitCategory('corrosion', this)">Corrosion & NDT</button>
+          <button type="button" class="uc-pill" onclick="window.filterUnitCategory('pressure', this)">Pressure & Stress</button>
+          <button type="button" class="uc-pill" onclick="window.filterUnitCategory('temp', this)">Temperature</button>
+          <button type="button" class="uc-pill" onclick="window.filterUnitCategory('flow', this)">Flow Rates</button>
+          <button type="button" class="uc-pill" onclick="window.filterUnitCategory('fluids', this)">Fluids & Crude</button>
+          <button type="button" class="uc-pill" onclick="window.filterUnitCategory('torque', this)">Torque & Energy</button>
+        </div>
+        <div class="uc-search-wrap">
+          <span class="uc-search-icon">🔍</span>
+          <input type="text" class="uc-search-input" placeholder="Search parameter (e.g. mpy, bar, api, torque)..." oninput="window.filterUnitSearch(this.value)" />
+        </div>
+      </div>
+
+      <!-- Converter Cards Grid -->
+      <div class="uc-grid">
+
+        <!-- CARD 1: Corrosion Rate -->
+        <div class="uc-card" data-uc-cat="corrosion ndt" id="card_corrosion_rate">
+          <div class="uc-card-header">
+            <div class="uc-card-title">
+              <span>📉</span> Corrosion Rate (API / NACE)
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <span class="uc-card-badge">Integrity</span>
+              <button type="button" class="uc-card-reset" onclick="window.UnitConverter.clearCorrosionRate()" title="Clear card">Clear</button>
+            </div>
+          </div>
+          <div class="uc-fields">
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Millimeter / Year</span>
+                <span class="uc-field-sublabel">SI / International</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_cr_mmyr" class="uc-input" placeholder="0.0000" />
+                <span class="uc-unit-tag">mm/yr</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_cr_mmyr', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Mils / Year (Thou/yr)</span>
+                <span class="uc-field-sublabel">API 510 / 570 / 581</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_cr_mpy" class="uc-input" placeholder="0.00" />
+                <span class="uc-unit-tag">mpy</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_cr_mpy', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Micrometer / Year</span>
+                <span class="uc-field-sublabel">Precision NDT / UT</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_cr_umyr" class="uc-input" placeholder="0.0" />
+                <span class="uc-unit-tag">µm/yr</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_cr_umyr', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Nanometer / Hour</span>
+                <span class="uc-field-sublabel">ER / LPR Online Probes</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_cr_nmhr" class="uc-input" placeholder="0.0" />
+                <span class="uc-unit-tag">nm/hr</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_cr_nmhr', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Inches / Year</span>
+                <span class="uc-field-sublabel">Imperial</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_cr_inyr" class="uc-input" placeholder="0.00000" />
+                <span class="uc-unit-tag">in/yr</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_cr_inyr', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <!-- Severity Assessment Box -->
+            <div id="uc_cr_status" class="uc-status-box uc-status-blue">
+              <span>ℹ️</span>
+              <div>Type a corrosion rate in any field to calculate all engineering equivalents.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 2: Pressure & Stress -->
+        <div class="uc-card" data-uc-cat="pressure stress" id="card_pressure_stress">
+          <div class="uc-card-header">
+            <div class="uc-card-title">
+              <span>⚙️</span> Pressure & Stress (Gauge ⟷ Abs)
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <span class="uc-card-badge">Process</span>
+              <button type="button" class="uc-card-reset" onclick="window.UnitConverter.clearPressure()" title="Clear card">Clear</button>
+            </div>
+          </div>
+
+          <!-- Gauge vs Absolute Toggle Switch -->
+          <div class="uc-switch-bar">
+            <button type="button" id="uc_btn_press_gauge" class="uc-switch-btn active" onclick="setPressureMode('gauge')">
+              Gauge Pressure (g)
+            </button>
+            <button type="button" id="uc_btn_press_abs" class="uc-switch-btn" onclick="setPressureMode('abs')">
+              Absolute Pressure (a)
+            </button>
+          </div>
+
+          <div class="uc-fields">
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Bar</span>
+                <span class="uc-field-sublabel">Refinery Standard</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_pr_bar" class="uc-input" placeholder="0.000" />
+                <span id="uc_tag_press_bar" class="uc-unit-tag">bar(g)</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_pr_bar', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Pounds / Sq. Inch</span>
+                <span class="uc-field-sublabel">ASME B31.3 / Section VIII</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_pr_psi" class="uc-input" placeholder="0.00" />
+                <span id="uc_tag_press_psi" class="uc-unit-tag">psig</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_pr_psi', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Kilogram / Sq. Centimeter</span>
+                <span class="uc-field-sublabel">Metric Plant Standard</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_pr_kgcm2" class="uc-input" placeholder="0.000" />
+                <span id="uc_tag_press_kg" class="uc-unit-tag">kg/cm²(g)</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_pr_kgcm2', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Megapascal (MPa / N/mm²)</span>
+                <span class="uc-field-sublabel">Stress & Allowable S</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_pr_mpa" class="uc-input" placeholder="0.0000" />
+                <span class="uc-unit-tag">MPa</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_pr_mpa', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Kilopascal</span>
+                <span class="uc-field-sublabel">Vapor pressure & instrumentation</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_pr_kpa" class="uc-input" placeholder="0.00" />
+                <span class="uc-unit-tag">kPa</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_pr_kpa', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Atmospheres (atm)</span>
+                <span class="uc-field-sublabel">Standard atm (1.01325 bar)</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_pr_atm" class="uc-input" placeholder="0.000" />
+                <span class="uc-unit-tag">atm</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_pr_atm', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Millimeter Water Column</span>
+                <span class="uc-field-sublabel">Draft / Low Pressure Fans</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_pr_mmh2o" class="uc-input" placeholder="0.0" />
+                <span class="uc-unit-tag">mmH₂O</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_pr_mmh2o', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Inches / Millimeters of Mercury</span>
+                <span class="uc-field-sublabel">Vacuum Tower / Condenser</span>
+              </label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_pr_inhg" class="uc-input" placeholder="inHg" />
+                  <span class="uc-unit-tag" style="min-width: 48px;">inHg</span>
+                </div>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_pr_mmhg" class="uc-input" placeholder="mmHg" />
+                  <span class="uc-unit-tag" style="min-width: 48px;">mmHg</span>
+                </div>
+              </div>
+            </div>
+
+            <div id="uc_pr_status" class="uc-status-box uc-status-blue">
+              <span>ℹ️</span>
+              <div>Toggle between Gauge (g) and Absolute (a) pressure at the top.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 3: Temperature -->
+        <div class="uc-card" data-uc-cat="temp" id="card_temperature">
+          <div class="uc-card-header">
+            <div class="uc-card-title">
+              <span>🌡️</span> Process & Metallurgy Temperature
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <span class="uc-card-badge">Thermal</span>
+              <button type="button" class="uc-card-reset" onclick="window.UnitConverter.clearTemperature()" title="Clear card">Clear</button>
+            </div>
+          </div>
+          <div class="uc-fields">
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Degrees Celsius</span>
+                <span class="uc-field-sublabel">SI Metric Standard</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_temp_c" class="uc-input" placeholder="0.0" />
+                <span class="uc-unit-tag">°C</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_temp_c', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Degrees Fahrenheit</span>
+                <span class="uc-field-sublabel">US Customary Standard</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_temp_f" class="uc-input" placeholder="0.0" />
+                <span class="uc-unit-tag">°F</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_temp_f', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Kelvin</span>
+                <span class="uc-field-sublabel">Thermodynamic Absolute</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_temp_k" class="uc-input" placeholder="0.0" />
+                <span class="uc-unit-tag">K</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_temp_k', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Degrees Rankine</span>
+                <span class="uc-field-sublabel">Imperial Absolute</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_temp_r" class="uc-input" placeholder="0.0" />
+                <span class="uc-unit-tag">°R</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_temp_r', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div id="uc_temp_status" class="uc-status-box uc-status-blue">
+              <span>ℹ️</span>
+              <div>Instant conversion across Celsius, Fahrenheit, Kelvin, and Rankine scales.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 4: Thickness, Length & Corrosion Allowance -->
+        <div class="uc-card" data-uc-cat="corrosion ndt" id="card_thickness_length">
+          <div class="uc-card-header">
+            <div class="uc-card-title">
+              <span>📏</span> Thickness & Pipe Wall Dimensions
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <span class="uc-card-badge">Dimension</span>
+              <button type="button" class="uc-card-reset" onclick="window.UnitConverter.clearThickness()" title="Clear card">Clear</button>
+            </div>
+          </div>
+          <div class="uc-fields">
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Millimeter</span>
+                <span class="uc-field-sublabel">Tmin / Actual Thickness</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_th_mm" class="uc-input" placeholder="0.00" />
+                <span class="uc-unit-tag">mm</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_th_mm', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Mil (Thou / 0.001 inch)</span>
+                <span class="uc-field-sublabel">DFT Paint / Thinning Allowance</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_th_mil" class="uc-input" placeholder="0.0" />
+                <span class="uc-unit-tag">mil</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_th_mil', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Inches (Decimal)</span>
+                <span class="uc-field-sublabel">Nominal Pipe Size / Schedule</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_th_in_dec" class="uc-input" placeholder="0.000" />
+                <span class="uc-unit-tag">in</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_th_in_dec', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Inches (Nearest Standard Fraction)</span>
+                <span class="uc-field-sublabel">Shop & Field Measurement</span>
+              </label>
+              <div class="uc-input-group" style="background: #f1f5f9;">
+                <input type="text" id="uc_th_in_frac" class="uc-input" readonly placeholder="--" style="color: #0284c7; font-weight: 700;" />
+                <span class="uc-unit-tag">fraction</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_th_in_frac', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Meter (m) & Feet (ft)</span>
+                <span class="uc-field-sublabel">Pipeline & Elevation Span</span>
+              </label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_th_m" class="uc-input" placeholder="meters" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">m</span>
+                </div>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_th_ft" class="uc-input" placeholder="feet" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">ft</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 5: Flow Rates -->
+        <div class="uc-card" data-uc-cat="flow" id="card_flow_rates">
+          <div class="uc-card-header">
+            <div class="uc-card-title">
+              <span>🚰</span> Process Flow Rates (Mass & Volume)
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <span class="uc-card-badge">Hydraulics</span>
+              <button type="button" class="uc-card-reset" onclick="window.UnitConverter.clearFlow()" title="Clear card">Clear</button>
+            </div>
+          </div>
+          <div class="uc-fields">
+            <div style="font-size: 11px; font-weight: 700; color: #0284c7; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 2px;">
+              Mass Flow Rate
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>kg/hr</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_fl_kghr" class="uc-input" placeholder="0" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">kg/hr</span>
+                </div>
+              </div>
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>MT/day</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_fl_mtday" class="uc-input" placeholder="0" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">MT/d</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>lb/hr</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_fl_lbhr" class="uc-input" placeholder="0" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">lb/hr</span>
+                </div>
+              </div>
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>Ton/hr (Metric)</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_fl_tonhr" class="uc-input" placeholder="0" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">t/hr</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="font-size: 11px; font-weight: 700; color: #0284c7; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 2px; margin-top: 6px;">
+              Liquid Volumetric Flow
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>m³/hr</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_fl_m3hr" class="uc-input" placeholder="0" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">m³/h</span>
+                </div>
+              </div>
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>BPD (Barrels/day)</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_fl_bpd" class="uc-input" placeholder="0" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">BPD</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>US GPM</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_fl_gpm" class="uc-input" placeholder="0" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">gpm</span>
+                </div>
+              </div>
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>L/min</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_fl_lmin" class="uc-input" placeholder="0" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">L/m</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="font-size: 11px; font-weight: 700; color: #0284c7; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 2px; margin-top: 6px;">
+              Gas Volumetric Flow (Standard / Normal)
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>MMSCFD</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_fl_mmscfd" class="uc-input" placeholder="0" />
+                  <span class="uc-unit-tag" style="min-width: 55px;">MMSCFD</span>
+                </div>
+              </div>
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>Nm³/hr (@ 0°C, 1 atm)</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_fl_nm3hr" class="uc-input" placeholder="0" />
+                  <span class="uc-unit-tag" style="min-width: 55px;">Nm³/h</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 6: Density, Specific Gravity & API Gravity -->
+        <div class="uc-card" data-uc-cat="fluids crude" id="card_density_api">
+          <div class="uc-card-header">
+            <div class="uc-card-title">
+              <span>⚖️</span> Density, SG & Crude °API Gravity
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <span class="uc-card-badge">Petroleum</span>
+              <button type="button" class="uc-card-reset" onclick="window.UnitConverter.clearDensity()" title="Clear card">Clear</button>
+            </div>
+          </div>
+          <div class="uc-fields">
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Density (kg/m³)</span>
+                <span class="uc-field-sublabel">Standard SI Density</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_den_kgm3" class="uc-input" placeholder="0.0" />
+                <span class="uc-unit-tag">kg/m³</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_den_kgm3', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Specific Gravity (SG @ 60°F)</span>
+                <span class="uc-field-sublabel">Water = 1.0000</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_den_sg" class="uc-input" placeholder="0.0000" />
+                <span class="uc-unit-tag">SG</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_den_sg', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Degrees API Gravity (°API)</span>
+                <span class="uc-field-sublabel">ASTM / Oilfield Standard</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_den_api" class="uc-input" placeholder="0.0" />
+                <span class="uc-unit-tag">°API</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_den_api', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>g/cm³</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_den_gcm3" class="uc-input" placeholder="0.000" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">g/cm³</span>
+                </div>
+              </div>
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>lb/gal (ppg)</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_den_ppg" class="uc-input" placeholder="0.00" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">ppg</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Pounds / Cubic Foot (lb/ft³)</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_den_lbft3" class="uc-input" placeholder="0.00" />
+                <span class="uc-unit-tag">lb/ft³</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_den_lbft3', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <!-- Crude Assay Diagnostic Badge -->
+            <div id="uc_den_status" class="uc-status-box uc-status-blue">
+              <span>ℹ️</span>
+              <div>Enter density or SG to automatically calculate °API and identify crude classification.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 7: Concentration & Water/Gas Chemistry -->
+        <div class="uc-card" data-uc-cat="fluids crude" id="card_concentration">
+          <div class="uc-card-header">
+            <div class="uc-card-title">
+              <span>🧪</span> Concentration & Chemistry
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <span class="uc-card-badge">Analysis</span>
+              <button type="button" class="uc-card-reset" onclick="window.UnitConverter.clearConcentration()" title="Clear card">Clear</button>
+            </div>
+          </div>
+          <div class="uc-fields">
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Parts Per Million by Weight (ppmw)</span>
+                <span class="uc-field-sublabel">Chloride, H2S, NH3 in stream</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_conc_ppmw" class="uc-input" placeholder="0.0" />
+                <span class="uc-unit-tag">ppmw</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_conc_ppmw', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Weight Percent (wt%)</span>
+                <span class="uc-field-sublabel">Concentration (1 wt% = 10,000 ppm)</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_conc_wtpct" class="uc-input" placeholder="0.0000" />
+                <span class="uc-unit-tag">wt%</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_conc_wtpct', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>ppmv (Gas)</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_conc_ppmv" class="uc-input" placeholder="0.0" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">ppmv</span>
+                </div>
+              </div>
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>mol% (Gas)</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_conc_molpct" class="uc-input" placeholder="0.0000" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">mol%</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>mg/L (Water)</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_conc_mgl" class="uc-input" placeholder="0.0" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">mg/L</span>
+                </div>
+              </div>
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>mg/m³ (Air)</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_conc_mgm3" class="uc-input" placeholder="0.0" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">mg/m³</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Grains / 100 SCF</span>
+                <span class="uc-field-sublabel">Refinery Fuel Gas / H2S Standard</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_conc_grains" class="uc-input" placeholder="0.00" />
+                <span class="uc-unit-tag">gr/100SCF</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_conc_grains', this)" title="Copy">📋</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 8: Viscosity -->
+        <div class="uc-card" data-uc-cat="fluids" id="card_viscosity">
+          <div class="uc-card-header">
+            <div class="uc-card-title">
+              <span>🌊</span> Dynamic & Kinematic Viscosity
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <span class="uc-card-badge">Rheology</span>
+              <button type="button" class="uc-card-reset" onclick="window.UnitConverter.clearViscosity()" title="Clear card">Clear</button>
+            </div>
+          </div>
+          <div class="uc-fields">
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Fluid Specific Gravity (SG Reference)</span>
+                <span class="uc-field-sublabel">Used for cP ⟷ cSt</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_visc_sg_ref" class="uc-input" value="0.85" placeholder="1.0" />
+                <span class="uc-unit-tag">SG</span>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Centipoise (cP) / mPa·s</span>
+                <span class="uc-field-sublabel">Dynamic Viscosity (μ)</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_visc_cp" class="uc-input" placeholder="0.00" />
+                <span class="uc-unit-tag">cP</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_visc_cp', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Centistokes (cSt) / mm²/s</span>
+                <span class="uc-field-sublabel">Kinematic Viscosity (ν = μ / ρ)</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_visc_cst" class="uc-input" placeholder="0.00" />
+                <span class="uc-unit-tag">cSt</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_visc_cst', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>Pa·s (SI)</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_visc_pas" class="uc-input" placeholder="0.00" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">Pa·s</span>
+                </div>
+              </div>
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>Poise (P)</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_visc_poise" class="uc-input" placeholder="0.00" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">Poise</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Saybolt Universal Seconds (SSU)</span>
+                <span class="uc-field-sublabel">ASTM D2161 Standard</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_visc_ssu" class="uc-input" placeholder="0.0" />
+                <span class="uc-unit-tag">SSU</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_visc_ssu', this)" title="Copy">📋</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 9: Energy, Enthalpy & Heat Duty -->
+        <div class="uc-card" data-uc-cat="torque energy" id="card_energy_heat">
+          <div class="uc-card-header">
+            <div class="uc-card-title">
+              <span>🔥</span> Heat Duty, Power & Enthalpy
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <span class="uc-card-badge">Thermal</span>
+              <button type="button" class="uc-card-reset" onclick="window.UnitConverter.clearEnergy()" title="Clear card">Clear</button>
+            </div>
+          </div>
+          <div class="uc-fields">
+            <div style="font-size: 11px; font-weight: 700; color: #0284c7; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 2px;">
+              Heat Duty / Exchanger Power
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>kW (Kilowatts)</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_en_kw" class="uc-input" placeholder="0.0" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">kW</span>
+                </div>
+              </div>
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>MW (Megawatts)</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_en_mw" class="uc-input" placeholder="0.0" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">MW</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>MMBtu/hr</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_en_mmbtu" class="uc-input" placeholder="0.0" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">MMBtu/h</span>
+                </div>
+              </div>
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>kcal/hr</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_en_kcalhr" class="uc-input" placeholder="0.0" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">kcal/h</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Horsepower (hp)</span>
+                <span class="uc-field-sublabel">Pump & Compressor Shaft Power</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_en_hp" class="uc-input" placeholder="0.0" />
+                <span class="uc-unit-tag">hp</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_en_hp', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div style="font-size: 11px; font-weight: 700; color: #0284c7; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 2px; margin-top: 6px;">
+              Specific Enthalpy (h)
+            </div>
+            <div class="uc-field-row">
+              <label class="uc-field-label"><span>kJ/kg</span></label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_en_kjkg" class="uc-input" placeholder="0.0" />
+                <span class="uc-unit-tag">kJ/kg</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_en_kjkg', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>BTU/lb</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_en_btulb" class="uc-input" placeholder="0.0" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">BTU/lb</span>
+                </div>
+              </div>
+              <div class="uc-field-row">
+                <label class="uc-field-label"><span>kcal/kg</span></label>
+                <div class="uc-input-group">
+                  <input type="number" step="any" id="uc_en_kcalkg" class="uc-input" placeholder="0.0" />
+                  <span class="uc-unit-tag" style="min-width: 45px;">kcal/kg</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 10: Flange Bolting Torque (ASME PCC-1) -->
+        <div class="uc-card" data-uc-cat="torque stress" id="card_torque_bolting">
+          <div class="uc-card-header">
+            <div class="uc-card-title">
+              <span>🔧</span> Flange Bolting Torque (ASME PCC-1)
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <span class="uc-card-badge">Mechanical</span>
+              <button type="button" class="uc-card-reset" onclick="window.UnitConverter.clearTorque()" title="Clear card">Clear</button>
+            </div>
+          </div>
+          <div class="uc-fields">
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Newton-Meter (N·m)</span>
+                <span class="uc-field-sublabel">Metric Standard</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_tq_nm" class="uc-input" placeholder="0.0" />
+                <span class="uc-unit-tag">N·m</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_tq_nm', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Foot-Pounds (ft·lbf)</span>
+                <span class="uc-field-sublabel">US Customary / ASME Standard</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_tq_ftlb" class="uc-input" placeholder="0.0" />
+                <span class="uc-unit-tag">ft·lbf</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_tq_ftlb', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Inch-Pounds (in·lbf)</span>
+                <span class="uc-field-sublabel">Small Instruments / Tubing</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_tq_inlb" class="uc-input" placeholder="0.0" />
+                <span class="uc-unit-tag">in·lbf</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_tq_inlb', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="uc-field-row">
+              <label class="uc-field-label">
+                <span>Kilogram-Force Meter (kgf·m)</span>
+                <span class="uc-field-sublabel">Legacy Metric</span>
+              </label>
+              <div class="uc-input-group">
+                <input type="number" step="any" id="uc_tq_kgfm" class="uc-input" placeholder="0.0" />
+                <span class="uc-unit-tag">kgf·m</span>
+                <button type="button" class="uc-copy-btn" onclick="copyFieldValue('uc_tq_kgfm', this)" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <!-- Bolt Size Range Guidance Box -->
+            <div id="uc_tq_status" class="uc-status-box uc-status-blue">
+              <span>🔧</span>
+              <div>Calculates torque across N·m, ft·lbf, in·lbf, and kgf·m for ASME PCC-1 make-up bolt tightening.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>

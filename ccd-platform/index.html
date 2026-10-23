@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CCD Platform • Corrosion Control Document Management System</title>
+    <link rel="stylesheet" crossorigin href="/ccd-platform/ccd.css?v=20261005_cloud1">
+    <script>
+      (function() {
+        try {
+          if (!localStorage.getItem("ccd_theme")) {
+            localStorage.setItem("ccd_theme", "dark");
+          }
+        } catch (e) {
+          console.warn("Storage seed warning:", e);
+        }
+      })();
+
+      // Unhandled error catcher to ensure visibility
+      window.addEventListener('error', function(e) {
+        console.error("CCD Platform Error caught:", e.message, e.filename, e.lineno, e.error);
+        var r = document.getElementById("root");
+        if (r && r.children.length === 0) {
+          // If root is still empty after an error, show fallback notice
+          console.warn("Root is empty on error, checking recovery...");
+        }
+      });
+    </script>
+  </head>
+  <body class="bg-slate-950 text-slate-100 antialiased min-h-screen">
+    <div id="root"></div>
+    <script type="module" crossorigin src="/ccd-platform/ccd.js?v=20261005_cloud1"></script>
+  </body>
+</html>

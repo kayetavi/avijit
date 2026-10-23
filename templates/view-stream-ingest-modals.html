@@ -1,0 +1,167 @@
+  <!-- 📥 Process Stream Ingestion & Sheet Manager Pop Screen Modal -->
+  <div id="streamIngestModal" class="rbac-modal-backdrop" style="display: none;">
+    <div class="rbac-modal-card" style="max-width: 840px; border-radius: 14px; border: 1px solid #cbd5e1; box-shadow: 0 25px 60px rgba(0,0,0,0.3); overflow: hidden;">
+      <!-- Pop Screen Header -->
+      <div class="rbac-modal-header" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; border-bottom: 2px solid #3b82f6; padding: 16px 22px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(59, 130, 246, 0.2); display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1px solid rgba(59, 130, 246, 0.4);">
+            📥
+          </div>
+          <div>
+            <h3 style="margin: 0; font-size: 17px; font-weight: 700; color: #f8fafc; letter-spacing: -0.2px;">
+              Process Stream Ingestion & Sheet Manager
+            </h3>
+            <p style="margin: 3px 0 0 0; font-size: 12.5px; color: #94a3b8;">
+              Ingest HMB stream data, run high-throughput multi-stream parsing, or load benchmark refinery cases
+            </p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 11px; padding: 4px 10px; border-radius: 9999px; background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4); font-weight: 600;">
+            ⚡ 500+ Stream Parsing Engine
+          </span>
+          <button class="rbac-close-btn" onclick="window.StreamComparator.closeIngestModal()" type="button" aria-label="Close" style="color: #cbd5e1; font-size: 24px; line-height: 1; cursor: pointer; background: none; border: none; padding: 4px 8px;">&times;</button>
+        </div>
+      </div>
+
+      <!-- Pop Screen Body -->
+      <div style="padding: 20px; max-height: calc(88vh - 120px); overflow-y: auto; display: flex; flex-direction: column; gap: 16px; background: #ffffff;">
+        <!-- Active Dataset Telemetry Strip in Pop Screen -->
+        <div style="padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span style="font-size: 12px; font-weight: 600; color: #64748b;">Current Active Dataset:</span>
+            <span id="modalStreamDocTitle" style="font-family: ui-monospace, SFMono-Regular, monospace; font-size: 13px; font-weight: 700; color: #0f172a; background: #ffffff; padding: 3px 10px; border-radius: 6px; border: 1px solid #cbd5e1;">Loading...</span>
+            <span id="modalStreamCount" style="font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: #e0f2fe; color: #0369a1;">-- Streams</span>
+            <span id="modalStreamSaveBadge" style="display: none; font-size: 11px; padding: 2px 8px; border-radius: 9999px; background: #dcfce7; color: #15803d; font-weight: 600; border: 1px solid #bbf7d0;">☁️ Cloud Saved</span>
+          </div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button type="button" id="btnMergeStreamFile" class="stream-btn" style="padding: 5px 11px; font-size: 12px; background: #f1f5f9; color: #4338ca; border: 1px solid #c7d2fe; border-radius: 6px; font-weight: 600;" onclick="window.StreamComparator.openMergeFileInput()" title="Merge secondary sheet (Properties + Components)">
+              ➕ Merge 2nd Sheet
+            </button>
+            <button type="button" class="stream-btn" style="padding: 5px 11px; font-size: 12px; background: #fff5f5; color: #dc2626; border: 1px solid #fecaca; border-radius: 6px; font-weight: 600;" onclick="window.StreamComparator.clearDataset()" title="Clear active dataset">
+              🗑️ Clear
+            </button>
+          </div>
+        </div>
+
+        <!-- Dropzone Area -->
+        <div id="streamDropzone" class="stream-dropzone" style="border: 2px dashed #93c5fd; background: linear-gradient(180deg, #f8fafc 0%, #eff6ff 100%); border-radius: 12px; padding: 28px 20px; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+          <input type="file" id="streamFileInput" accept=".xlsx,.xls,.csv,.pdf,.png,.jpg,.jpeg" multiple style="display: none;" />
+          
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <div style="width: 52px; height: 52px; border-radius: 14px; background: #dbeafe; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+            </div>
+            
+            <div style="font-size: 15.5px; font-weight: 700; color: #1e3a8a; margin-top: 4px;">
+              Drag & Drop your Process Stream Sheet here, or <span style="color: #2563eb; text-decoration: underline; text-underline-offset: 3px;">browse local files</span>
+            </div>
+            
+            <div style="font-size: 12.5px; color: #64748b; max-width: 540px; line-height: 1.45;">
+              Auto-parses column-wise HMBs, multi-stream property tables, and SOR component breakdowns. Zero limit on streams or components.
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; justify-content: center;">
+              <span style="font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 5px; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;">.XLSX</span>
+              <span style="font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 5px; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;">.XLS</span>
+              <span style="font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 5px; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;">.CSV</span>
+              <span style="font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 5px; background: #fef3c7; color: #b45309; border: 1px solid #fde68a;">.PDF</span>
+              <span style="font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 5px; background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff;">OCR IMAGES</span>
+            </div>
+
+            <div style="margin-top: 8px;">
+              <button type="button" class="stream-btn stream-btn-primary" style="padding: 8px 22px; font-size: 13px; font-weight: 600; border-radius: 8px; box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3); display: inline-flex; align-items: center; gap: 8px;" onclick="event.stopPropagation(); document.getElementById('streamFileInput').click()">
+                <span>📁</span> Browse Local Document(s)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Benchmark Scenarios & Template -->
+        <div style="padding: 12px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+            <span style="font-size: 12.5px; font-weight: 700; color: #334155; display: flex; align-items: center; gap: 6px;">
+              <span style="color: #f59e0b;">⚡</span> Benchmark Refinery Scenarios & Ready Template:
+            </span>
+            <span style="font-size: 11.5px; color: #64748b;">Instant One-Click Load</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="stream-btn" style="padding: 6px 12px; font-size: 12px; background: #ffffff; color: #4338ca; border: 1px solid #c7d2fe; border-radius: 6px; font-weight: 600;" onclick="window.StreamComparator.loadSampleCombined()" title="Load Combined NRL Case (Properties + Components)">
+              🔗 Combined NRL Case
+            </button>
+            <button type="button" class="stream-btn" style="padding: 6px 12px; font-size: 12px; background: #ffffff; color: #7c3aed; border: 1px solid #ddd6fe; border-radius: 6px; font-weight: 600;" onclick="window.StreamComparator.loadSampleMultiCase()" title="Load Multi-Operating Case Study (SOR ↔ EOR ↔ Case 2)">
+              ⚖️ Multi-Case Study (SOR / EOR / Case 2)
+            </button>
+            <button type="button" class="stream-btn" style="padding: 6px 12px; font-size: 12px; background: #ffffff; color: #b45309; border: 1px solid #fde68a; border-radius: 6px; font-weight: 600;" onclick="window.StreamComparator.loadSampleProperties()" title="Load NRL Physical Properties (Streams 100 - 100D)">
+              ⚡ Physical Properties (100 - 100D)
+            </button>
+            <button type="button" class="stream-btn" style="padding: 6px 12px; font-size: 12px; background: #ffffff; color: #047857; border: 1px solid #a7f3d0; border-radius: 6px; font-weight: 600;" onclick="window.StreamComparator.loadSampleComponents()" title="Load NRL Component Breakdown (Streams 172A - 174A)">
+              🧪 Components (172A - 174A)
+            </button>
+            <button type="button" class="stream-btn" style="padding: 6px 12px; font-size: 12px; background: #ffffff; color: #0284c7; border: 1px solid #bae6fd; border-radius: 6px; font-weight: 600;" onclick="window.StreamComparator.downloadExcelTemplate()" title="Download Excel Template">
+              📥 Download Template (.xlsx)
+            </button>
+          </div>
+        </div>
+
+        <!-- Operations & Cloud Storage Bar -->
+        <div style="padding: 12px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div style="font-size: 12px; font-weight: 700; color: #475569; display: flex; align-items: center; gap: 6px;">
+            <span>☁️</span> Cloud & Export Actions:
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="stream-btn" style="padding: 6px 12px; font-size: 12px; background: #ffffff; color: #334155; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: 600;" onclick="window.StreamComparator.openSavedDatasetsModal()" title="View and load saved datasets from Firestore">
+              📂 Cloud Datasets (<span id="savedDatasetsCountModal">0</span>)
+            </button>
+            <button type="button" class="stream-btn" style="padding: 6px 12px; font-size: 12px; background: #16a34a; color: #ffffff; border: 1px solid #15803d; border-radius: 6px; font-weight: 600;" onclick="window.StreamComparator.saveToFirestore()" title="Save current dataset to Firestore">
+              💾 Save to Cloud
+            </button>
+            <button type="button" class="stream-btn" style="padding: 6px 12px; font-size: 12px; background: #059669; color: #ffffff; border: 1px solid #047857; border-radius: 6px; font-weight: 600;" onclick="window.StreamComparator.exportFullDatasetToExcel()" title="Export all streams to Excel">
+              📊 Export All (.xlsx)
+            </button>
+            <button type="button" class="stream-btn" style="padding: 6px 12px; font-size: 12px; background: #ffffff; color: #334155; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: 600;" onclick="window.StreamComparator.exportToExcel()" title="Export comparison to Excel">
+              📑 Export A/B (.xlsx)
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading Spinner Indicator inside Pop Screen -->
+        <div id="streamLoadingSpinner" class="stream-spinner-wrap" style="display: none; padding: 20px; text-align: center;">
+          <div class="stream-spinner" style="margin: 0 auto 10px auto;"></div>
+          <div id="streamLoadingMsg" style="font-size: 13.5px; font-weight: 600; color: #2563eb;">Processing Document...</div>
+        </div>
+      </div>
+
+      <!-- Pop Screen Footer -->
+      <div style="padding: 12px 20px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div style="font-size: 12px; color: #64748b;">
+          💡 Uploaded stream data automatically updates all Deep Differential & Matrix tables in real time.
+        </div>
+        <button type="button" class="stream-btn stream-btn-primary" style="padding: 7px 18px; font-size: 12.5px; font-weight: 600; border-radius: 8px;" onclick="window.StreamComparator.closeIngestModal()">
+          ✓ View Comparisons & Charts
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ☁️ Saved Stream Datasets (Firestore) Modal -->
+  <div id="savedStreamsModal" class="rbac-modal-backdrop" style="display: none;">
+    <div class="rbac-modal-card" style="max-width: 650px;">
+      <div class="rbac-modal-header">
+        <h3>☁️ Saved Process Stream Datasets (Firestore)</h3>
+        <button class="rbac-close-btn" onclick="window.StreamComparator.closeSavedDatasetsModal()" type="button" aria-label="Close">&times;</button>
+      </div>
+      <div style="padding: 16px;">
+        <p style="font-size: 13px; color: #64748b; margin-top: 0; line-height: 1.5;">
+          All Heat & Material Balance datasets persisted in your cloud <strong>Firestore database</strong>. Click <strong>Load</strong> to compare streams (Delete is reserved for Administrators).
+        </p>
+        <div id="savedDatasetsList" style="max-height: 380px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
+          <div style="text-align: center; color: #94a3b8; padding: 24px;">Loading saved datasets...</div>
+        </div>
+      </div>
+    </div>
+  </div>

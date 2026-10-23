@@ -1,0 +1,353 @@
+      <div class="tab-content" id="ASMEB31_3Tab" style="display: none;">  
+        <div class="b313-calc-card">
+          <!-- Compact Premium Header -->
+          <div class="b313-header-card">
+            <div class="b313-badge-wrap">
+              <span class="b313-pill-badge">ASME B31.3</span>
+              <span class="b313-pill-sub">Clause 304.1.2</span>
+            </div>
+            <h2>Process Piping Thickness Calculator</h2>
+            <p class="b313-subtitle">Straight Pipe Minimum Required Wall Thickness Under Internal Pressure</p>
+          </div>
+
+          <!-- 🔹 Row 1: Design Pressure (P) & Design Temperature (T) IN ONE SINGLE COMPACT ROW -->
+          <div class="b313-row">
+            <div class="b313-col">
+              <label for="b313_pressure">Design Pressure (P):</label>
+              <div class="b313-input-unit-group">
+                <input type="number" id="b313_pressure" step="0.01" placeholder="Enter Pressure">
+                <select id="b313_pressureUnit">
+                  <option value="MPa" selected>MPa</option>
+                  <option value="bar">bar</option>
+                  <option value="kgcm2">kg/cm²</option>
+                  <option value="psi">psi</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="b313-col">
+              <label for="b313_temperature">Design Temperature (T):</label>
+              <div class="b313-input-unit-group">
+                <input type="number" id="b313_temperature" step="1" placeholder="Enter Temperature">
+                <select id="b313_tempUnit">
+                  <option value="C" selected>°C</option>
+                  <option value="F">°F</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 🔹 Row 2: Allowable Stress (S) + Unit (with Auto Lookup Automation) -->
+          <div class="b313-form-group">
+            <div class="b313-stress-label-row">
+              <label for="b313_stress" id="b313_stressLabel" style="margin-bottom: 0;">Allowable Stress (S):</label>
+              <label class="b313-auto-stress-toggle-label">
+                <input type="checkbox" id="b313_autoStressToggle" onchange="toggleB313AutoStress()" style="cursor: pointer; width: 15px; height: 15px; accent-color: #2563eb;">
+                <span>⚡ Auto Lookup Allowable Stress (Live DB)</span>
+              </label>
+            </div>
+            <div class="b313-input-unit-group" id="b313_manualStressGroup">
+              <input type="number" id="b313_stress" step="0.1" placeholder="Enter Allowable Stress">
+              <select id="b313_stressUnit">
+                <option value="MPa" selected>MPa</option>
+                <option value="ksi">ksi</option>
+                <option value="kgcm2">kg/cm²</option>
+                <option value="psi">psi</option>
+              </select>
+            </div>
+
+            <!-- 🔸 Automatic Allowable Stress Lookup Card -->
+            <div id="b313_autoStressPanel" class="b313-auto-stress-panel" style="display: none; margin-top: 10px; padding: 12px 14px; border-radius: 8px; border: 1px solid #93c5fd; background: rgba(239, 246, 255, 0.75);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(59, 130, 246, 0.2); padding-bottom: 6px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="font-size: 15px;">📚</span>
+                  <strong style="font-size: 12px; color: #1e40af; text-transform: uppercase; letter-spacing: 0.5px;">Code Allowable Stress Table Automation</strong>
+                </div>
+                <span class="b313-auto-badge" style="font-size: 10.5px; font-weight: 700; background: #2563eb; color: #fff; padding: 2px 7px; border-radius: 10px;">AUTO MODE</span>
+              </div>
+
+              <!-- Automation Parameters Grid -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+                <div>
+                  <label for="b313_stressYear" style="display: block; font-size: 11.5px; font-weight: 600; margin-bottom: 3px;">Lookup Year:</label>
+                  <select id="b313_stressYear" class="b313-auto-input" style="width: 100%;">
+                    <option value="">-- Select Year --</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="b313_stressMaterial" style="display: block; font-size: 11.5px; font-weight: 600; margin-bottom: 3px;">Select Material:</label>
+                  <select id="b313_stressMaterial" class="b313-auto-input" disabled style="width: 100%;">
+                    <option value="">-- Select Material --</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="b313_stressGrade" style="display: block; font-size: 11.5px; font-weight: 600; margin-bottom: 3px;">Select Grade:</label>
+                  <select id="b313_stressGrade" class="b313-auto-input" disabled style="width: 100%;">
+                    <option value="">-- Select Grade --</option>
+                  </select>
+                </div>
+
+                <div id="b313_stressThicknessGroup">
+                  <label for="b313_stressThickness" style="display: block; font-size: 11.5px; font-weight: 600; margin-bottom: 3px;">Thickness (mm):</label>
+                  <select id="b313_stressThickness" class="b313-auto-input" disabled style="width: 100%;">
+                    <option value="">-- Select Thickness --</option>
+                  </select>
+                </div>
+
+                <input type="hidden" id="b313_stressTemp" value="" />
+              </div>
+
+              <!-- Dynamic Validation Messages & Warnings -->
+              <div id="b313_stressValidationMsg" class="b313-val-msg" style="margin-top: 8px; font-size: 11.5px; padding: 5px 8px; border-radius: 4px; background: rgba(100, 116, 139, 0.08); color: #475569;">
+                ℹ️ Please select Material, Grade, and Thickness to determine Allowable Stress using Design Temperature (T).
+              </div>
+
+              <!-- Automatic Allowable Stress Result Banner -->
+              <div id="b313_autoStressResultDiv" style="display: none; margin-top: 8px; padding: 8px 12px; background: rgba(34, 197, 94, 0.12); border-left: 4px solid #16a34a; border-radius: 6px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                  <div>
+                    <span style="font-size: 12.5px; font-weight: 700; color: #166534;">Allowable Stress:</span>
+                    <span id="b313_autoStressDisplay" style="font-size: 16px; font-weight: 800; color: #15803d; margin-left: 6px;">--</span>
+                    <span style="font-size: 12px; font-weight: 600; color: #166534;">MPa</span>
+                  </div>
+                  <div style="font-size: 11.5px; color: #334155; display: flex; gap: 12px;">
+                    <span>Yield: <strong id="b313_autoYieldDisplay" style="color: #0f172a;">--</strong> MPa</span>
+                    <span>Tensile: <strong id="b313_autoTensileDisplay" style="color: #0f172a;">--</strong> MPa</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 🔹 Row 3: Nominal Pipe Size (NPS) + Weld Joint Efficiency (E) -->
+          <div class="b313-row">
+            <div class="b313-col">
+              <label for="b313_diameter">Nominal Pipe Size (NPS / OD):</label>
+              <select id="b313_diameter">
+                <option value="" selected>-- Select NPS / OD Size --</option>
+                <!-- Small Bores -->
+                <option value="21.3">NPS 1/2" - 21.3 mm</option>
+                <option value="26.7">NPS 3/4" - 26.7 mm</option>
+                <option value="33.4">NPS 1" - 33.4 mm</option>
+                <option value="42.2">NPS 1 1/4" - 42.2 mm</option>
+                <option value="48.3">NPS 1 1/2" - 48.3 mm</option>
+                <option value="60.3">NPS 2" - 60.3 mm</option>
+                <option value="73.0">NPS 2 1/2" - 73.0 mm</option>
+                <option value="88.9">NPS 3" - 88.9 mm</option>
+                <option value="101.6">NPS 3 1/2" - 101.6 mm</option>
+                <option value="114.3">NPS 4" - 114.3 mm</option>
+                <option value="141.3">NPS 5" - 141.3 mm</option>
+                <option value="168.3">NPS 6" - 168.3 mm</option>
+                <!-- Medium Sizes -->
+                <option value="219.1">NPS 8" - 219.1 mm</option>
+                <option value="273.0">NPS 10" - 273.0 mm</option>
+                <option value="323.9">NPS 12" - 323.9 mm</option>
+                <option value="355.6">NPS 14" - 355.6 mm</option>
+                <option value="406.4">NPS 16" - 406.4 mm</option>
+                <option value="457.0">NPS 18" - 457.0 mm</option>
+                <option value="508.0">NPS 20" - 508.0 mm</option>
+                <option value="559.0">NPS 22" - 559.0 mm</option>
+                <option value="610.0">NPS 24" - 610.0 mm</option>
+                <!-- Large Bores -->
+                <option value="660.4">NPS 26" - 660.4 mm</option>
+                <option value="711.2">NPS 28" - 711.2 mm</option>
+                <option value="762.0">NPS 30" - 762.0 mm</option>
+                <option value="812.8">NPS 32" - 812.8 mm</option>
+                <option value="863.6">NPS 34" - 863.6 mm</option>
+                <option value="914.4">NPS 36" - 914.4 mm</option>
+                <option value="965.2">NPS 38" - 965.2 mm</option>
+                <option value="1016.0">NPS 40" - 1016.0 mm</option>
+                <option value="1066.8">NPS 42" - 1066.8 mm</option>
+                <option value="1117.6">NPS 44" - 1117.6 mm</option>
+                <option value="1168.4">NPS 46" - 1168.4 mm</option>
+                <option value="1219.2">NPS 48" - 1219.2 mm</option>
+              </select>
+            </div>
+            <div class="b313-col">
+              <label for="b313_efficiency">Weld Joint Efficiency (E):</label>
+              <select id="b313_efficiency">
+                <option value="" selected>-- Select Weld Joint Efficiency (E) --</option>
+                <option value="1.0">Seamless / 100% RT (1.00)</option>
+                <option value="0.95">Double Butt Welded (0.95)</option>
+                <option value="0.90">Spot RT (0.90)</option>
+                <option value="0.85">ERW Not RT (0.85)</option>
+                <option value="0.80">Single Butt Seam (0.80)</option>
+                <option value="0.60">Furnace Butt Welded (0.60)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 🔹 Row 4: Y Factor Material + Corrosion Allowance (Grouped in 1 clean compact row) -->
+          <div class="b313-row">
+            <div class="b313-col">
+              <label for="b313_yMaterial">Y Factor Material:</label>
+              <select id="b313_yMaterial">
+                <option value="ferritic" selected>Ferritic Steel (Carbon & Low Alloy)</option>
+                <option value="austenitic">Austenitic Stainless Steel</option>
+                <option value="nickel">Nickel Alloy</option>
+                <option value="grayiron">Gray Iron</option>
+                <option value="other">Other Ductile Metals</option>
+              </select>
+            </div>
+
+            <!-- Include CA Toggle and CA [mm] Input Side-by-Side -->
+            <div class="b313-col">
+              <div style="display: flex; gap: 10px; width: 100%;">
+                <div style="flex: 1; min-width: 110px;">
+                  <label for="b313_includeCA">Include CA?</label>
+                  <select id="b313_includeCA">
+                    <option value="yes" selected>Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                </div>
+                <div class="b313-col" id="b313_caBox" style="flex: 1.4; min-width: 120px;">
+                  <label for="b313_corrosion">CA [mm]:</label>
+                  <input type="number" id="b313_corrosion" value="" step="0.1" placeholder="e.g. 3.0">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 🔒 HIDDEN FROM UI (Fully operational in background for ASME B31.3 Table 304.1.1 Y calculation) -->
+          <div style="display: none !important;" aria-hidden="true">
+            <label for="b313_yFactor">Y Factor (Design Temperature):</label>
+            <select id="b313_yFactor">
+              <option value="0.4" selected>≤ 482°C (900°F) — Y = 0.4 (General Service)</option>
+              <option value="0.5">510°C (950°F) — Y = 0.5</option>
+              <option value="0.7">538°C (1000°F) — Y = 0.7</option>
+              <option value="0.7">566°C (1050°F) — Y = 0.7</option>
+              <option value="0.7">593°C (1100°F) — Y = 0.7</option>
+              <option value="0.7">≥ 621°C (≥ 1150°F) — Y = 0.7</option>
+            </select>
+            <span id="b313_yAutoHint"></span>
+          </div>
+
+          <!-- 🔹 Row 5: High-Temperature Service Section (Configured with Temperature: hidden until T > 427°C / 800°F) -->
+          <div class="b313-section-card b313-hightemp-card" id="b313_highTempCard" style="display: none; margin-top: 10px; border-color: #f97316; background: rgba(254, 243, 199, 0.35);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 15px;">🔥</span>
+                <strong style="font-size: 12px; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px;">High-Temperature Service (T > 427°C / 800°F)</strong>
+              </div>
+              <span style="font-size: 10.5px; background: #ea580c; color: #fff; padding: 2px 7px; border-radius: 10px; font-weight: 700;">W-FACTOR ACTIVE</span>
+            </div>
+            <div class="b313-row" style="margin-top: 0;">
+              <div class="b313-col">
+                <label for="b313_highTemp">High-Temperature Service?</label>
+                <select id="b313_highTemp">
+                  <option value="no" selected>No</option>
+                  <option value="yes">Yes (T > 427°C / 800°F)</option>
+                </select>
+              </div>
+              <div class="b313-col hidden" id="b313_weldFactorSection">
+                <label for="b313_wFactor">Weld Strength Reduction Factor (W):</label>
+                <select id="b313_wFactor">
+                  <option value="1.0" selected>≤ 427°C — W = 1.00</option>
+                  <option value="0.95">454°C — W = 0.95</option>
+                  <option value="0.91">482°C — W = 0.91</option>
+                  <option value="0.88">510°C — W = 0.88</option>
+                  <option value="0.85">538°C — W = 0.85</option>
+                  <option value="0.82">566°C — W = 0.82</option>
+                  <option value="0.78">593°C — W = 0.78</option>
+                  <option value="0.75">621°C — W = 0.75</option>
+                  <option value="0.72">649°C — W = 0.72</option>
+                  <option value="0.70">677°C — W = 0.70</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 🔹 Row 6: Mill Tolerance, Schedule (SCH) & Nominal Thickness Section -->
+          <div class="b313-section-card b313-mill-card" style="margin-top: 10px;">
+            <div class="b313-row" style="margin-top: 0;">
+              <div class="b313-col">
+                <label for="b313_includeMillTol">Include Mill Tolerance?</label>
+                <select id="b313_includeMillTol">
+                  <option value="no" selected>No (Standard Minimum Required Thickness Only)</option>
+                  <option value="yes">Yes (Verify Against Standard Pipe Schedule)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Fields below Include Mill Tolerance: Hidden when NO, Visible when YES -->
+            <div id="b313_millTolSection" style="margin-top: 10px; display: none;">
+              <div class="b313-row" style="margin-top: 0;">
+                <div class="b313-col">
+                  <label for="b313_materialStd">Material Standard:</label>
+                  <select id="b313_materialStd">
+                    <option value="" selected>-- Select Material Standard --</option>
+                    <option value="A106">A106 (ASTM A106 Seamless — 12.5%)</option>
+                    <option value="A53">A53 (ASTM A53 — 12.5%)</option>
+                    <option value="A134">A134 (Electric-Fusion Welded)</option>
+                    <option value="A135/A135M">A135/A135M (Electric-Resistance Welded)</option>
+                    <option value="A312/A312M">A312/A312M (Austenitic Stainless — 12.5%)</option>
+                    <option value="A358/A358M">A358/A358M (Electric-Fusion Welded Stainless)</option>
+                    <option value="A409/A409M">A409/A409M (Welded Large OD Stainless)</option>
+                    <option value="A451/A451M">A451/A451M (Centrifugally Cast)</option>
+                    <option value="A524">A524 (Seamless for Atmospheric & Lower Temp)</option>
+                    <option value="A530/A530M">A530/A530M (General Requirements)</option>
+                    <option value="A587">A587 (Electric-Resistance Welded)</option>
+                    <option value="A600/A600M">A600/A600M (Structural Tubing)</option>
+                    <option value="A671/A671M">A671/A671M (EFW for Atmospheric & Lower Temp)</option>
+                    <option value="A672/A672M">A672/A672M (EFW for Moderate Temperatures)</option>
+                    <option value="A691/A691M">A691/A691M (Carbon & Alloy Steel EFW Pipe)</option>
+                    <option value="A731/A731M">A731/A731M (Seamless & Welded Ferritic Stainless)</option>
+                    <option value="A790/A790M">A790/A790M (Seamless & Welded Duplex Stainless)</option>
+                    <option value="A335/A335M">A335/A335M (Alloy Steel Seamless — 12.5%)</option>
+                    <option value="API 5L (Seamless)">API 5L (Seamless)</option>
+                    <option value="API 5L (Welded Pipe)">API 5L (Welded Pipe)</option>
+                    <option value="IS-3589 (SAW & Seamless Pipe)">IS-3589 (SAW & Seamless Pipe)</option>
+                    <option value="IS-3589 (ERW Pipe)">IS-3589 (ERW Pipe)</option>
+                    <option value="IS-1239 (Welded: Light Tubes)">IS-1239 (Welded: Light Tubes)</option>
+                    <option value="IS-1239 (Welded: Medium/Heavy)">IS-1239 (Welded: Medium/Heavy)</option>
+                    <option value="IS-1239 (Seamless)">IS-1239 (Seamless)</option>
+                  </select>
+                </div>
+                <div class="b313-col">
+                  <label>Auto Mill Tolerance:</label>
+                  <input type="text" id="b313_autoMillTol" readonly class="readonly-field" value="--">
+                </div>
+              </div>
+
+              <!-- Pipe Schedule & Nominal Thickness Row (Placed BELOW Include Mill Tolerance) -->
+              <div class="b313-row" style="margin-top: 10px;">
+                <div class="b313-col">
+                  <label for="b313_schedule">Schedule (SCH):</label>
+                  <select id="b313_schedule" disabled>
+                    <option value="" selected>-- Select SCH --</option>
+                  </select>
+                </div>
+                <div class="b313-col">
+                  <label for="b313_nomThickness" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Nominal Thickness (mm):</span>
+                    <button type="button" onclick="autoFillNominalThickness()" style="border: none; background: none; color: #2563eb; cursor: pointer; font-size: 11px; font-weight: 700; padding: 0;" title="Click to auto-calculate nominal thickness from ASME B31.3 design formula">⚡ Auto-fill</button>
+                  </label>
+                  <input type="number" id="b313_nomThickness" step="0.01" value="" placeholder="Enter Nominal Thickness">
+                </div>
+              </div>
+            </div>
+            <!-- Hidden Input for JS Calculation -->
+            <input type="hidden" id="b313_millTolerance" value="0">
+          </div>
+
+          <!-- 🔹 Action Buttons: Full Calculation & Quick Tolerance Check -->
+          <div class="b313-btn-row">
+            <button type="button" class="calculate-btn b313-primary-btn" id="b313_calcBtn" onclick="calculateThickness()">Calculate T-min</button>
+            <button type="button" class="calculate-btn b313-secondary-btn" id="b313_checkTolBtn" onclick="checkToleranceOnly()" disabled title="Mill Tolerance is currently set to NO. Set to YES to check tolerance.">⚙️ Check Tolerance Only</button>
+          </div>
+          
+          <!-- ✅ Spinner (Unique Classes) -->
+          <div id="b313_spinner" class="b313-hidden">
+            <div class="b313-loader"></div>
+            <p style="font-size: 13px; color: #64748b; margin: 4px 0 0 0;">Calculating ASME B31.3 Thickness...</p>
+          </div>
+          
+          <!-- 🔹 Result Output -->
+          <div class="b313-result-wrapper" style="margin-top: 14px;">  
+            <label style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">Calculation Results:</label>  
+            <div id="b313_resultBox" class="result">--</div>  
+          </div>  
+        </div>
+      </div>  

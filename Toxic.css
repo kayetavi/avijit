@@ -1,0 +1,558 @@
+/* ================================================================
+   ☣️ TOXIC % STRICT CALCULATOR — MODERN RESPONSIVE STYLES
+   Scoped exclusively to #TOXIC_CALCULATIONTab
+================================================================ */
+
+#TOXIC_CALCULATIONTab {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+#TOXIC_CALCULATIONTab .toxic-main-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ---------------------------------------------------------------
+   HEADER BANNER
+---------------------------------------------------------------- */
+#TOXIC_CALCULATIONTab .toxic-header-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+#TOXIC_CALCULATIONTab .toxic-title-wrap h3 {
+  margin: 0 0 4px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text, #1e293b);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#TOXIC_CALCULATIONTab .toxic-title-wrap p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-light, #64748b);
+}
+
+#TOXIC_CALCULATIONTab .toxic-badges-wrap {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#TOXIC_CALCULATIONTab .toxic-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+#TOXIC_CALCULATIONTab .toxic-badge-purple {
+  background: #f3e8ff;
+  color: #7e22ce;
+  border: 1px solid #d8b4fe;
+}
+
+#TOXIC_CALCULATIONTab .toxic-badge-green {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+/* ---------------------------------------------------------------
+   CARDS COMMON STYLES
+---------------------------------------------------------------- */
+#TOXIC_CALCULATIONTab .toxic-card {
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+}
+
+#TOXIC_CALCULATIONTab .toxic-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border, #f1f5f9);
+  padding-bottom: 12px;
+}
+
+#TOXIC_CALCULATIONTab .toxic-card-icon {
+  font-size: 20px;
+  line-height: 1;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+#TOXIC_CALCULATIONTab .toxic-card-header h4 {
+  margin: 0 0 2px 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text, #1e293b);
+}
+
+#TOXIC_CALCULATIONTab .toxic-card-header p {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--text-light, #64748b);
+}
+
+/* ---------------------------------------------------------------
+   AUTOLOADER SECTION
+---------------------------------------------------------------- */
+#TOXIC_CALCULATIONTab .toxic-autoload-card {
+  border-left: 4px solid #2563eb;
+  background: linear-gradient(to right, rgba(37, 99, 235, 0.02), var(--bg-card, #ffffff));
+}
+
+#TOXIC_CALCULATIONTab .toxic-autoload-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr auto;
+  gap: 14px;
+  align-items: flex-end;
+}
+
+#TOXIC_CALCULATIONTab .toxic-autoload-btn-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ---------------------------------------------------------------
+   FORM FIELDS & INPUTS
+---------------------------------------------------------------- */
+#TOXIC_CALCULATIONTab .toxic-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#TOXIC_CALCULATIONTab .toxic-input-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text, #334155);
+}
+
+#TOXIC_CALCULATIONTab .toxic-select,
+#TOXIC_CALCULATIONTab .toxic-input {
+  width: 100%;
+  height: 40px;
+  padding: 8px 12px;
+  background: var(--bg-input, #ffffff);
+  border: 1px solid var(--border-input, #cbd5e1);
+  border-radius: 6px;
+  font-size: 13.5px;
+  color: var(--text, #1e293b);
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+#TOXIC_CALCULATIONTab .toxic-select:focus,
+#TOXIC_CALCULATIONTab .toxic-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+#TOXIC_CALCULATIONTab .toxic-select:disabled,
+#TOXIC_CALCULATIONTab .toxic-input:disabled {
+  background: var(--bg-disabled, #f1f5f9);
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+#TOXIC_CALCULATIONTab .toxic-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+#TOXIC_CALCULATIONTab .toxic-subgrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* ---------------------------------------------------------------
+   BUTTONS
+---------------------------------------------------------------- */
+#TOXIC_CALCULATIONTab .toxic-btn {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+#TOXIC_CALCULATIONTab .toxic-btn-primary {
+  background: #2563eb;
+  color: #ffffff;
+}
+#TOXIC_CALCULATIONTab .toxic-btn-primary:hover {
+  background: #1d4ed8;
+}
+
+#TOXIC_CALCULATIONTab .toxic-btn-secondary {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+#TOXIC_CALCULATIONTab .toxic-btn-secondary:hover {
+  background: #e2e8f0;
+}
+
+#TOXIC_CALCULATIONTab .toxic-btn-ghost {
+  background: transparent;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+}
+#TOXIC_CALCULATIONTab .toxic-btn-ghost:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+#TOXIC_CALCULATIONTab .toxic-action-bar {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+#TOXIC_CALCULATIONTab .toxic-calc-submit-btn {
+  min-width: 260px;
+  height: 44px;
+  padding: 0 24px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+  transition: transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+#TOXIC_CALCULATIONTab .toxic-calc-submit-btn:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+}
+
+#TOXIC_CALCULATIONTab .toxic-calc-submit-btn:active {
+  transform: translateY(1px);
+}
+
+/* ---------------------------------------------------------------
+   ALERT / NOTIFICATION BANNER
+---------------------------------------------------------------- */
+#TOXIC_CALCULATIONTab .toxic-alert-banner {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  border: 1px solid transparent;
+}
+
+/* ---------------------------------------------------------------
+   RESULT CARD
+---------------------------------------------------------------- */
+#TOXIC_CALCULATIONTab .toxic-result-box {
+  margin-top: 20px;
+}
+
+#TOXIC_CALCULATIONTab .toxic-result-card {
+  padding: 18px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  border-left: 4px solid #10b981;
+}
+
+#TOXIC_CALCULATIONTab .toxic-result-header {
+  margin-bottom: 12px;
+}
+
+#TOXIC_CALCULATIONTab .toxic-result-badge-success {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #d1fae5;
+  color: #065f46;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 14px;
+}
+
+#TOXIC_CALCULATIONTab .toxic-result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+#TOXIC_CALCULATIONTab .toxic-kpi-item {
+  background: #ffffff;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+#TOXIC_CALCULATIONTab .toxic-kpi-highlight {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+#TOXIC_CALCULATIONTab .toxic-kpi-lbl {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.3px;
+  margin-bottom: 4px;
+}
+
+#TOXIC_CALCULATIONTab .toxic-kpi-val {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+#TOXIC_CALCULATIONTab .toxic-kpi-val small {
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+/* ---------------------------------------------------------------
+   GAS COMPOSITION SECTION (WT %)
+---------------------------------------------------------------- */
+#TOXIC_CALCULATIONTab .toxic-gascomp-card {
+  border-left: 4px solid #8b5cf6;
+}
+
+#TOXIC_CALCULATIONTab .toxic-gascomp-inputs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 14px;
+  align-items: flex-end;
+  margin-bottom: 14px;
+}
+
+#TOXIC_CALCULATIONTab .toxic-custom-gas-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 14px;
+  margin: 14px 0;
+}
+
+#TOXIC_CALCULATIONTab .toxic-custom-gas-header {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #475569;
+  margin-bottom: 10px;
+}
+
+#TOXIC_CALCULATIONTab .toxic-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin: 14px 0;
+}
+
+#TOXIC_CALCULATIONTab .toxic-table {
+  width: 100%;
+  min-width: 650px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+#TOXIC_CALCULATIONTab .toxic-table th {
+  background: #334155;
+  color: #ffffff;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+#TOXIC_CALCULATIONTab .toxic-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #1e293b;
+}
+
+#TOXIC_CALCULATIONTab .toxic-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+#TOXIC_CALCULATIONTab .toxic-table input.editableMolePercent {
+  width: 80px;
+  padding: 4px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 12.5px;
+}
+
+#TOXIC_CALCULATIONTab .toxic-table button.removeBtn {
+  padding: 4px 8px;
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#TOXIC_CALCULATIONTab .toxic-table button.removeBtn:hover {
+  background: #fecaca;
+}
+
+#TOXIC_CALCULATIONTab .toxic-gascomp-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+#TOXIC_CALCULATIONTab .toxic-total-mass-badge {
+  padding: 8px 14px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1e40af;
+}
+
+/* ---------------------------------------------------------------
+   DARK MODE ADAPTATIONS
+---------------------------------------------------------------- */
+html:not(.light-mode) #TOXIC_CALCULATIONTab .toxic-card,
+html.dark-mode #TOXIC_CALCULATIONTab .toxic-card,
+body.dark-mode #TOXIC_CALCULATIONTab .toxic-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) #TOXIC_CALCULATIONTab .toxic-header-banner,
+html.dark-mode #TOXIC_CALCULATIONTab .toxic-header-banner,
+body.dark-mode #TOXIC_CALCULATIONTab .toxic-header-banner {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) #TOXIC_CALCULATIONTab .toxic-title-wrap h3,
+html.dark-mode #TOXIC_CALCULATIONTab .toxic-title-wrap h3,
+body.dark-mode #TOXIC_CALCULATIONTab .toxic-title-wrap h3,
+html:not(.light-mode) #TOXIC_CALCULATIONTab .toxic-card-header h4,
+html.dark-mode #TOXIC_CALCULATIONTab .toxic-card-header h4,
+body.dark-mode #TOXIC_CALCULATIONTab .toxic-card-header h4 {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #TOXIC_CALCULATIONTab .toxic-select,
+html:not(.light-mode) #TOXIC_CALCULATIONTab .toxic-input,
+html.dark-mode #TOXIC_CALCULATIONTab .toxic-select,
+html.dark-mode #TOXIC_CALCULATIONTab .toxic-input,
+body.dark-mode #TOXIC_CALCULATIONTab .toxic-select,
+body.dark-mode #TOXIC_CALCULATIONTab .toxic-input {
+  background: #0f172a !important;
+  color: #f1f5f9 !important;
+  border-color: #475569 !important;
+}
+
+html:not(.light-mode) #TOXIC_CALCULATIONTab .toxic-input-group label,
+html.dark-mode #TOXIC_CALCULATIONTab .toxic-input-group label,
+body.dark-mode #TOXIC_CALCULATIONTab .toxic-input-group label {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light-mode) #TOXIC_CALCULATIONTab .toxic-result-card,
+html.dark-mode #TOXIC_CALCULATIONTab .toxic-result-card,
+body.dark-mode #TOXIC_CALCULATIONTab .toxic-result-card {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) #TOXIC_CALCULATIONTab .toxic-kpi-item,
+html.dark-mode #TOXIC_CALCULATIONTab .toxic-kpi-item,
+body.dark-mode #TOXIC_CALCULATIONTab .toxic-kpi-item {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) #TOXIC_CALCULATIONTab .toxic-kpi-val,
+html.dark-mode #TOXIC_CALCULATIONTab .toxic-kpi-val,
+body.dark-mode #TOXIC_CALCULATIONTab .toxic-kpi-val {
+  color: #f8fafc !important;
+}
+
+html:not(.light-mode) #TOXIC_CALCULATIONTab .toxic-table td,
+html.dark-mode #TOXIC_CALCULATIONTab .toxic-table td,
+body.dark-mode #TOXIC_CALCULATIONTab .toxic-table td {
+  color: #f1f5f9 !important;
+  border-color: #334155 !important;
+}
+
+html:not(.light-mode) #TOXIC_CALCULATIONTab .toxic-custom-gas-box,
+html.dark-mode #TOXIC_CALCULATIONTab .toxic-custom-gas-box,
+body.dark-mode #TOXIC_CALCULATIONTab .toxic-custom-gas-box {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+/* ---------------------------------------------------------------
+   RESPONSIVE LAYOUT
+---------------------------------------------------------------- */
+@media (max-width: 850px) {
+  #TOXIC_CALCULATIONTab .toxic-autoload-grid,
+  #TOXIC_CALCULATIONTab .toxic-gascomp-inputs-grid {
+    grid-template-columns: 1fr;
+  }
+  #TOXIC_CALCULATIONTab .toxic-form-grid,
+  #TOXIC_CALCULATIONTab .toxic-subgrid {
+    grid-template-columns: 1fr;
+  }
+}

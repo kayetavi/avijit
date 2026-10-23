@@ -1,0 +1,87 @@
+/* Scope all styles inside crackingMechanismTab */
+#crackingMechanismTab {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+/* Headings */
+#crackingMechanismTab h2 {
+  margin-bottom: 20px;
+}
+
+/* Grid layout for form */
+#crackingMechanismTab .mechanism-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px 20px;
+  align-items: center;
+}
+
+/* Labels */
+#crackingMechanismTab .mechanism-form-grid label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Inputs and selects */
+#crackingMechanismTab .mechanism-form-grid input,
+#crackingMechanismTab .mechanism-form-grid select {
+  width: 100%;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+/* Button */
+#crackingMechanismTab button {
+  margin-top: 20px;
+  padding: 10px 15px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+#crackingMechanismTab button:hover {
+  background-color: #0056b3;
+}
+
+/* Result text */
+#crackingMechanismTab #mechanismResult {
+  margin-top: 20px;
+  font-size: 18px;
+  color: green;
+}
+
+/* === Responsive for mobile devices === */
+/* Mobile responsive adjustments */
+@media (max-width: 600px) {
+  #crackingMechanismTab {
+    padding: 10px 15px; /* reduce padding on mobile */
+  }
+
+  #crackingMechanismTab .mechanism-form-grid {
+    grid-template-columns: 1fr !important; /* stack vertically */
+    gap: 10px 0; /* smaller vertical gap */
+  }
+
+  #crackingMechanismTab .mechanism-form-grid label,
+  #crackingMechanismTab .mechanism-form-grid input,
+  #crackingMechanismTab .mechanism-form-grid select {
+    width: 100% !important; /* full width */
+    margin: 0;
+  }
+
+  #crackingMechanismTab .mechanism-form-grid input,
+  #crackingMechanismTab .mechanism-form-grid select {
+    font-size: 16px;
+    padding: 8px;
+  }
+
+  #crackingMechanismTab button {
+    width: 100% !important;
+    padding: 12px;
+    font-size: 16px;
+  }
+}

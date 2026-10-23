@@ -1,0 +1,26 @@
+/* ==========================================================================
+   MSP CORROSION FLOW DIAGRAM - THEME ACCENTS
+   Layout and Fullscreen handled by Flowdiagrams.css
+   ========================================================================== */
+
+#mspModal .sidebar {
+  background-color: #f0fdfa !important;
+  border-right: 1px solid #99f6e4 !important;
+}
+
+#mspModal .sidebar h3 {
+  color: #0f766e;
+  border-bottom: 2px solid #0d9488;
+}
+
+#mspModal .diagram-dm-list li.active {
+  background: #ccfbf1 !important;
+  border-color: #0d9488 !important;
+  box-shadow: inset 3px 0 0 #0d9488, 0 1px 4px rgba(13, 148, 136, 0.15) !important;
+  color: #0f766e !important;
+}
+
+#mspModal .diagram-dm-list li.active .dm-item-code {
+  background: #0d9488 !important;
+  color: #ffffff !important;
+}

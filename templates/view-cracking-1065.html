@@ -1,0 +1,115 @@
+<div id="crackingMechanismTab" class="tab-content" style="display: none;">
+  <section id="crackingMechanismFinder" class="mechanism-form-section">
+    <h2>Cracking Mechanism Finder</h2>
+
+    <form id="mechanismInputForm" class="mechanism-form-grid" onsubmit="event.preventDefault(); findMechanism();">
+      <div class="form-field">
+        <label for="inputH2S">H₂S (ppm):</label>
+        <input type="number" id="inputH2S" name="h2s" />
+      </div>
+
+      <div class="form-field">
+        <label for="selectFreeH2O">Free H₂O:</label>
+        <select id="selectFreeH2O" name="freeH2O">
+          <option value="">--Select--</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="selectPWHT">PWHT:</label>
+        <select id="selectPWHT" name="pwht">
+          <option value="">--Select--</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="inputHCN">HCN (ppm):</label>
+        <input type="number" id="inputHCN" name="hcn" />
+      </div>
+
+      <div class="form-field">
+        <label for="inputPH">pH:</label>
+        <input type="number" step="0.1" id="inputPH" name="ph" />
+      </div>
+
+      <div class="form-field">
+        <label for="inputChloride">Chloride (ppm):</label>
+        <input type="number" id="inputChloride" name="chloride" />
+      </div>
+
+      <div class="form-field">
+        <label for="inputOxygen">Dissolved Oxygen (ppm):</label>
+        <input type="number" id="inputOxygen" name="oxygen" />
+      </div>
+
+      <div class="form-field">
+        <label for="inputTemp">Temperature (°F):</label>
+        <input type="number" id="inputTemp" name="temp" />
+      </div>
+
+      <div class="form-field">
+        <label for="inputCaustic">Caustic Concentration (%):</label>
+        <input type="number" id="inputCaustic" name="caustic" />
+      </div>
+
+      <div class="form-field">
+        <label for="selectDEA">DEA / Amine Present:</label>
+        <select id="selectDEA" name="dea">
+          <option value="">--Select--</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="selectAmineType">Amine Type:</label>
+        <select id="selectAmineType" name="amineType">
+          <option value="">--Select--</option>
+          <option value="MEA">MEA</option>
+          <option value="DEA">DEA</option>
+          <option value="MDEA">MDEA</option>
+          <option value="Others">Others</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="selectScale">Scale Present:</label>
+        <select id="selectScale" name="scale">
+          <option value="">--Select--</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="selectStability">Operating Stability:</label>
+        <select id="selectStability" name="stability">
+          <option value="">--Select--</option>
+          <option value="stable">Stable</option>
+          <option value="upset">Upset</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="selectMaterialType">Material Type:</label>
+        <select id="selectMaterialType" name="materialType">
+          <option value="">--Select--</option>
+          <option value="Carbon Steel">Carbon Steel</option>
+          <option value="Sensitized Austenitic SS">Sensitized Austenitic SS</option>
+          <option value="Stabilized 321 and 347">Stabilized 321 and 347</option>
+          <option value="300 Series SS">300 Series SS</option>
+        </select>
+      </div>
+
+      <div class="form-submit">
+        <button type="submit">Find Mechanism</button>
+      </div>
+    </form>
+
+    <div id="mechanismResult" class="result-output"></div>
+  </section>
+</div>

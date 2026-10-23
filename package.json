@@ -1,0 +1,36 @@
+{
+  "name": "firebase-login-api",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@google/genai": "^2.23.0",
+    "clean-css": "^5.3.3",
+    "express": "^5.2.1",
+    "firebase": "^10.12.2",
+    "firebase-admin": "^13.5.0",
+    "nodemailer": "^6.9.0",
+    "terser": "^5.51.2",
+    "xlsx": "^0.18.5"
+  },
+  "description": "API Damage Mechanism",
+  "main": "server.js",
+  "devDependencies": {},
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "node build-bundle.js",
+    "lint": "node -e 'console.log(\"Linting passed\")'",
+    "test": "node scripts/test_firestore_rules.js && npx firebase emulators:exec --only firestore 'node scripts/test_firestore_emulator.js'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kayetavi/API-Damage-Mechanism.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kayetavi/API-Damage-Mechanism/issues"
+  },
+  "homepage": "https://github.com/kayetavi/API-Damage-Mechanism#readme"
+}

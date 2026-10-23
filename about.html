@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en" class="about-page">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About - KayetDMS Integrity &amp; Damage Mechanism Dashboard</title>
+  <script>
+    (function() {
+      try {
+        var t = (typeof sessionStorage !== "undefined" ? sessionStorage.getItem("theme") : null) || "dark";
+        if (t === "dark") {
+          document.documentElement.classList.add("dark-mode");
+          document.documentElement.classList.remove("light-mode");
+        } else {
+          document.documentElement.classList.add("light-mode");
+          document.documentElement.classList.remove("dark-mode");
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <style>
+    /* ── Reset & Baseline ── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      min-height: 100%;
+      background-color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #1e293b;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    /* ── Fullscreen Outer Container & Responsive Centered Wrapper ── */
+    .page-container {
+      width: 100%;
+      min-height: 100vh;
+      padding: 20px 24px 44px;
+      background-color: #f8fafc;
+      box-sizing: border-box;
+    }
+
+    .page-content-wrapper {
+      max-width: 1240px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ── Executive Hero Banner ── */
+    .about-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 65%, #0369a1 100%);
+      color: #ffffff;
+      border-radius: 10px;
+      padding: 18px 22px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .about-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 9px;
+      background: rgba(56, 189, 248, 0.18);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .about-hero-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 4px;
+      letter-spacing: -0.015em;
+      line-height: 1.25;
+    }
+
+    .about-hero-subtitle {
+      font-size: 0.88rem;
+      color: #cbd5e1;
+      margin-bottom: 10px;
+      line-height: 1.45;
+      max-width: 1100px;
+    }
+
+    .about-tags-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .about-code-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.12);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    /* ── Section Structure ── */
+    .about-section {
+      width: 100%;
+    }
+
+    .about-section-header {
+      margin-bottom: 8px;
+      border-left: 3.5px solid #0284c7;
+      padding-left: 9px;
+    }
+
+    .about-section-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 1px;
+      line-height: 1.3;
+    }
+
+    .about-section-desc {
+      font-size: 0.82rem;
+      color: #64748b;
+      margin: 0;
+      line-height: 1.35;
+    }
+
+    /* ── Grids with Content-Sized Alignment (height: auto, no vertical stretch) ── */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      width: 100%;
+      align-items: start; /* Fits height to text, prevents tall empty panels */
+    }
+
+    .grid-3col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      width: 100%;
+      align-items: start; /* Fits height to text */
+    }
+
+    .grid-4col {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      width: 100%;
+      align-items: start;
+    }
+
+    /* Responsive Grid Breakpoints */
+    @media (max-width: 1024px) {
+      .grid-3col {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .grid-4col {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .grid-2col,
+      .grid-3col,
+      .grid-4col {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .page-container {
+        padding: 14px 12px 32px;
+      }
+      .about-hero {
+        padding: 14px 16px;
+      }
+      .about-hero-title {
+        font-size: 1.3rem;
+      }
+    }
+
+    /* ── Content-Sized Clean Card (No tall empty space) ── */
+    .clean-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 14px 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      height: auto; /* Fits to content text */
+      box-sizing: border-box;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .clean-card:hover {
+      border-color: #93c5fd;
+      box-shadow: 0 3px 10px rgba(2, 132, 199, 0.08);
+    }
+
+    .card-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 6px;
+      margin-bottom: 2px;
+    }
+
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      line-height: 1.3;
+    }
+
+    .card-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #e0f2fe;
+      color: #0369a1;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .card-desc {
+      font-size: 0.82rem;
+      color: #475569;
+      line-height: 1.4;
+    }
+
+    /* ── Compact Industry Role Cards (3-Col Grid) ── */
+    .role-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 11px 13px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+      height: auto; /* Fits exactly to text */
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .role-card:hover {
+      border-color: #93c5fd;
+      box-shadow: 0 3px 8px rgba(2, 132, 199, 0.08);
+    }
+
+    .role-icon {
+      font-size: 1.15rem;
+      line-height: 1;
+      padding: 6px;
+      background: #e0f2fe;
+      border-radius: 6px;
+      color: #0284c7;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .role-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .role-title {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 2px;
+      line-height: 1.25;
+    }
+
+    .role-desc {
+      font-size: 0.78rem;
+      color: #64748b;
+      line-height: 1.35;
+    }
+
+    /* ── Feature Bullet Lists & Compact Badges ── */
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 2px;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      font-size: 0.81rem;
+      color: #334155;
+      line-height: 1.35;
+    }
+
+    .feature-list li::before {
+      content: "✔";
+      color: #0284c7;
+      font-weight: 800;
+      font-size: 0.78rem;
+      line-height: 1.35;
+      flex-shrink: 0;
+    }
+
+    .subtags-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 8px; /* Tightly attached, no large gap */
+      padding-top: 6px;
+      border-top: 1px dashed #e2e8f0;
+    }
+
+    .subtag {
+      font-size: 0.68rem;
+      background: #f1f5f9;
+      color: #475569;
+      padding: 1px 6px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+      white-space: nowrap;
+    }
+
+    /* ── Compact Developer Profiles ── */
+    .dev-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+      height: auto; /* Fits to content */
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .dev-card:hover {
+      border-color: #93c5fd;
+      box-shadow: 0 3px 10px rgba(2, 132, 199, 0.08);
+    }
+
+    .dev-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 7px;
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      box-shadow: 0 2px 5px rgba(2, 132, 199, 0.2);
+    }
+
+    .dev-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .dev-name {
+      font-size: 0.94rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 1px;
+      line-height: 1.25;
+    }
+
+    .dev-role {
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: #0284c7;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+
+    .dev-desc {
+      font-size: 0.8rem;
+      color: #475569;
+      line-height: 1.4;
+    }
+
+    /* ── Compact Footer Bar ── */
+    .about-footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 12px 18px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    .about-footer-info {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .about-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #0284c7;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 7px 16px;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      transition: background 0.15s ease, transform 0.1s ease;
+      box-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);
+      white-space: nowrap;
+    }
+
+    .about-back-btn:hover {
+      background: #0369a1;
+      transform: translateY(-1px);
+    }
+
+    /* ── Dark Mode Consistency ── */
+    html.dark-mode, html.dark-mode body {
+      background-color: #0f172a;
+      color: #f8fafc;
+    }
+    html.dark-mode .page-container {
+      background-color: #0f172a;
+    }
+    html.dark-mode .about-section-title {
+      color: #f8fafc;
+    }
+    html.dark-mode .about-section-desc {
+      color: #94a3b8;
+    }
+    html.dark-mode .clean-card,
+    html.dark-mode .role-card,
+    html.dark-mode .dev-card,
+    html.dark-mode .about-footer {
+      background-color: #1e293b;
+      border-color: #334155;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    }
+    html.dark-mode .card-title,
+    html.dark-mode .role-title,
+    html.dark-mode .dev-name {
+      color: #f8fafc;
+    }
+    html.dark-mode .card-desc,
+    html.dark-mode .role-desc,
+    html.dark-mode .dev-desc,
+    html.dark-mode .feature-list li {
+      color: #cbd5e1;
+    }
+    html.dark-mode .card-header-row {
+      border-bottom-color: #334155;
+    }
+    html.dark-mode .subtags-row {
+      border-top-color: #334155;
+    }
+    html.dark-mode .subtag {
+      background-color: #0f172a;
+      border-color: #334155;
+      color: #94a3b8;
+    }
+    html.dark-mode .role-icon {
+      background-color: #0c4a6e;
+      color: #38bdf8;
+    }
+    html.dark-mode .about-footer-info {
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body class="about-page">
+  <div class="page-container">
+    <div class="page-content-wrapper">
+
+      <!-- Hero Header Banner -->
+      <header class="about-hero">
+        <div class="about-hero-badge">
+          🛡️ Industrial Integrity &amp; Reliability Suite
+        </div>
+        <h1 class="about-hero-title">KayetDMS — Damage Mechanism &amp; Integrity Dashboard</h1>
+        <p class="about-hero-subtitle">
+          An engineering-grade digital platform developed for Fixed Equipment Asset Integrity Management (AIM),
+          Risk-Based Inspection (RBI), Degradation Screening, Corrosion Rate Modeling, and Code-Compliant Life Verification.
+        </p>
+        <div class="about-tags-row">
+          <span class="about-code-tag">📘 API 571</span>
+          <span class="about-code-tag">📊 API 580 / 581</span>
+          <span class="about-code-tag">🛢️ API 510</span>
+          <span class="about-code-tag">⚙️ API 570</span>
+          <span class="about-code-tag">🏗️ API 653</span>
+          <span class="about-code-tag">📐 ASME B31.3</span>
+          <span class="about-code-tag">🛡️ ASME Section VIII Div 1</span>
+          <span class="about-code-tag">📚 ASME Section II-D</span>
+        </div>
+      </header>
+
+      <!-- Section 1: Purpose & Engineering Scope (4 Symmetrical Compact Cards) -->
+      <section class="about-section">
+        <div class="about-section-header">
+          <h2 class="about-section-title">🎯 Purpose &amp; Engineering Scope</h2>
+          <p class="about-section-desc">
+            Bridging statutory inspection codes with advanced calculation engines to safeguard process facilities against loss of primary containment (LOPC).
+          </p>
+        </div>
+        <div class="grid-4col">
+          <div class="clean-card" style="border-top: 3px solid #0284c7;">
+            <div class="card-title">🔍 Damage Screening</div>
+            <p class="card-desc">
+              Identify and evaluate 68+ standardized industrial degradation mechanisms based on operating windows, metallurgy, and process service.
+            </p>
+          </div>
+
+          <div class="clean-card" style="border-top: 3px solid #059669;">
+            <div class="card-title">📊 Quantitative RBI</div>
+            <p class="card-desc">
+              Execute quantitative POF &amp; COF modeling with fluid inventory thermodynamics, release mass estimation, and confidence scoring.
+            </p>
+          </div>
+
+          <div class="clean-card" style="border-top: 3px solid #d97706;">
+            <div class="card-title">📐 Code Calculations</div>
+            <p class="card-desc">
+              Perform ASME B31.3 piping minimum thickness and ASME Section VIII Div 1 pressure vessel shell and formed head calculations.
+            </p>
+          </div>
+
+          <div class="clean-card" style="border-top: 3px solid #7c3aed;">
+            <div class="card-title">⚡ Life Assessment</div>
+            <p class="card-desc">
+              Compute short/long term corrosion rates, structural retirement limits, and remaining useful life per API 510/570/653.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Target Industry Professionals (3 Columns x 2 Rows = 6 Compact Cards) -->
+      <section class="about-section">
+        <div class="about-section-header">
+          <h2 class="about-section-title">👥 Target Industry Professionals</h2>
+          <p class="about-section-desc">Empowering multidisciplinary plant reliability and asset integrity teams:</p>
+        </div>
+        <div class="grid-3col">
+          <div class="role-card">
+            <div class="role-icon">📋</div>
+            <div class="role-body">
+              <div class="role-title">Inspection &amp; RBI Specialists</div>
+              <p class="role-desc">Optimize inspection plans, non-destructive testing (NDT), and confidence intervals.</p>
+            </div>
+          </div>
+
+          <div class="role-card">
+            <div class="role-icon">🧪</div>
+            <div class="role-body">
+              <div class="role-title">Corrosion &amp; Materials Engineers</div>
+              <p class="role-desc">Assess metallurgy vulnerabilities, estimate corrosion rates, and select corrosion diagrams.</p>
+            </div>
+          </div>
+
+          <div class="role-card">
+            <div class="role-icon">🛡️</div>
+            <div class="role-body">
+              <div class="role-title">Asset Integrity &amp; APM Leaders</div>
+              <p class="role-desc">Enforce statutory standards, audit degradation risks, and ensure fitness-for-service.</p>
+            </div>
+          </div>
+
+          <div class="role-card">
+            <div class="role-icon">⚙️</div>
+            <div class="role-body">
+              <div class="role-title">Fixed Equipment Reliability Engineers</div>
+              <p class="role-desc">Determine retirement limits, piping code thickness, and remaining useful life (RUL).</p>
+            </div>
+          </div>
+
+          <div class="role-card">
+            <div class="role-icon">🚨</div>
+            <div class="role-body">
+              <div class="role-title">Process Safety &amp; Operations Managers</div>
+              <p class="role-desc">Analyze consequence of failure, toxic fluid inventories, and environmental cracking.</p>
+            </div>
+          </div>
+
+          <div class="role-card">
+            <div class="role-icon">🔬</div>
+            <div class="role-body">
+              <div class="role-title">Process Chemistry Specialists</div>
+              <p class="role-desc">Ingest live process streams, audit stream sensitivity matrices, and screen sour service risks.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Master Key Features Matrix (2 Columns x 3 Rows = 6 Cards Content-Fitted) -->
+      <section class="about-section">
+        <div class="about-section-header">
+          <h2 class="about-section-title">🔍 Comprehensive Engineering Modules &amp; Features</h2>
+          <p class="about-section-desc">Six integrated domains delivering end-to-end asset integrity governance:</p>
+        </div>
+        <div class="grid-2col">
+
+          <!-- Feature 1: API 571 Damage Explorer -->
+          <div class="clean-card">
+            <div class="card-header-row">
+              <div class="card-title">🛡️ Damage Mechanisms Explorer</div>
+              <span class="card-badge">API 571</span>
+            </div>
+            <ul class="feature-list">
+              <li>Repository covering 68+ standardized industrial degradation mechanisms.</li>
+              <li>Affected materials, critical factors, morphology, and mitigation.</li>
+              <li>Recommended NDT inspection techniques (UT, RT, WFMT, EC, ACFM).</li>
+              <li>Interactive corrosion diagrams &amp; damage indicator mapping.</li>
+            </ul>
+            <div class="subtags-row">
+              <span class="subtag">Uniform Corrosion</span>
+              <span class="subtag">High Temperature</span>
+              <span class="subtag">Cracking</span>
+            </div>
+          </div>
+
+          <!-- Feature 2: ASME Equipment Design -->
+          <div class="clean-card">
+            <div class="card-header-row">
+              <div class="card-title">📐 ASME Equipment Design</div>
+              <span class="card-badge">B31.3 &amp; VIII Div 1</span>
+            </div>
+            <ul class="feature-list">
+              <li><strong>ASME B31.3 Piping:</strong> Internal design pressure &amp; minimum thickness.</li>
+              <li><strong>ASME Section VIII Div 1:</strong> Shells, ellipsoidal, torispherical &amp; hemispherical heads.</li>
+              <li><strong>ASME Section II-D Database:</strong> Allowable Stress Master Manager (14+ editions).</li>
+              <li>Weld joint quality factors (E), temperature coefficients (Y), and mill tolerances.</li>
+            </ul>
+            <div class="subtags-row">
+              <span class="subtag">Piping PD / 2SE</span>
+              <span class="subtag">Formed Heads</span>
+              <span class="subtag">Section II-D Stress</span>
+            </div>
+          </div>
+
+          <!-- Feature 3: Corrosion Rates & Remaining Life -->
+          <div class="clean-card">
+            <div class="card-header-row">
+              <div class="card-title">⚡ Corrosion &amp; Remaining Life</div>
+              <span class="card-badge">API 510 / 570 / 653</span>
+            </div>
+            <ul class="feature-list">
+              <li>Short-term, long-term, and historical corrosion rate calculators.</li>
+              <li>Minimum required thickness (t<sub>min</sub>) and structural limits.</li>
+              <li>Remaining Useful Life (RL) and statutory inspection scheduling.</li>
+              <li>Corrosion Rate Estimator linked to process stream conditions.</li>
+            </ul>
+            <div class="subtags-row">
+              <span class="subtag">Short &amp; Long Term CR</span>
+              <span class="subtag">Remaining Life (RUL)</span>
+              <span class="subtag">Retirement Thickness</span>
+            </div>
+          </div>
+
+          <!-- Feature 4: API 581 RBI Consequence -->
+          <div class="clean-card">
+            <div class="card-header-row">
+              <div class="card-title">🧪 Quantitative RBI Consequence</div>
+              <span class="card-badge">API 581 Part 2</span>
+            </div>
+            <ul class="feature-list">
+              <li><strong>Representative Fluid Selector:</strong> Thermodynamic fluid properties.</li>
+              <li><strong>Inventory Calculator:</strong> Component liquid mass &amp; vapor volume.</li>
+              <li><strong>Consequence Analysis:</strong> Toxic fraction &amp; instantaneous release rates.</li>
+              <li><strong>Inspection Confidence:</strong> Effectiveness scoring from Category A to E.</li>
+            </ul>
+            <div class="subtags-row">
+              <span class="subtag">Representative Fluids</span>
+              <span class="subtag">Inventory Mass</span>
+              <span class="subtag">Confidence A-E</span>
+            </div>
+          </div>
+
+          <!-- Feature 5: Chemical Suite & Stream Ingestion -->
+          <div class="clean-card">
+            <div class="card-header-row">
+              <div class="card-title">🔬 Stream Ingestion &amp; Chemistry</div>
+              <span class="card-badge">Process Chemistry</span>
+            </div>
+            <ul class="feature-list">
+              <li>Ingest multi-component streams with operating temperatures &amp; pressures.</li>
+              <li>Multi-stream sensitivity comparison matrix for material audits.</li>
+              <li>Cracking screening: HIC, SOHIC, SSC, Amine SCC, Polythionic Acid SCC.</li>
+              <li>Fluid stream corrosion risk correlation and degradation flags.</li>
+            </ul>
+            <div class="subtags-row">
+              <span class="subtag">Stream Comparator</span>
+              <span class="subtag">Chemical Suite</span>
+              <span class="subtag">Sour &amp; Acid Gas</span>
+            </div>
+          </div>
+
+          <!-- Feature 6: Enterprise Security & Utilities -->
+          <div class="clean-card">
+            <div class="card-header-row">
+              <div class="card-title">⚙️ Enterprise Security &amp; Tools</div>
+              <span class="card-badge">System Core</span>
+            </div>
+            <ul class="feature-list">
+              <li><strong>Multi-Unit Converter:</strong> Pressure, stress, temperature, and corrosion units.</li>
+              <li><strong>Role-Based Access Control:</strong> Super Admin, Admin, Analyst, and Viewer.</li>
+              <li><strong>Cloud Database Explorer:</strong> Dual-project Firestore sync and live browsing.</li>
+              <li>Responsive architecture optimized for engineering workstations and tablets.</li>
+            </ul>
+            <div class="subtags-row">
+              <span class="subtag">Unit Converter</span>
+              <span class="subtag">RBAC Security</span>
+              <span class="subtag">Multi-Project Firestore</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Section 4: Developers & Engineering Leadership (2 Symmetrical Cards) -->
+      <section class="about-section">
+        <div class="about-section-header">
+          <h2 class="about-section-title">👨‍💻 Engineering Leadership &amp; Development</h2>
+          <p class="about-section-desc">Key contributors responsible for technical conceptualization, methodology, and software architecture:</p>
+        </div>
+        <div class="grid-2col">
+          <div class="dev-card">
+            <div class="dev-avatar">AK</div>
+            <div class="dev-info">
+              <div class="dev-name">Avijit Kayet</div>
+              <div class="dev-role">Lead Asset Performance Management (APM) &amp; Integrity Specialist</div>
+              <p class="dev-desc">
+                Specializes in fixed equipment asset integrity, risk-based inspection (RBI), degradation modeling,
+                and digital engineering tools. Architected the complete system logic, algorithm implementations (API 571, API 581, ASME B31.3, ASME Section VIII),
+                and full-stack software infrastructure.
+              </p>
+            </div>
+          </div>
+
+          <div class="dev-card">
+            <div class="dev-avatar" style="background: linear-gradient(135deg, #059669, #047857);">VM</div>
+            <div class="dev-info">
+              <div class="dev-name">Viswa Manoj</div>
+              <div class="dev-role">Risk-Based Inspection (RBI) Engineer</div>
+              <p class="dev-desc">
+                Provided core conceptual frameworks, industry domain insights, consequence analysis methodology,
+                and technical suggestions during the functional design and engineering calibration of this dashboard.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer Bar -->
+      <footer class="about-footer">
+        <div class="about-footer-info">
+          <strong>KayetDMS Digital Integrity Platform</strong> &bull; Version 3.4 &bull; Built for High-Hazard Industrial Processing Facilities
+        </div>
+      </footer>
+
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<div id="bkStressTab" class="tab-content" style="display:none; margin-top: 30px;">
+  <div class="stress-module-header">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+      <div>
+        <h2 style="margin: 0; text-align: left; border: none; padding: 0;">Allowable Stress Value Database</h2>
+        <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px; flex-wrap: wrap;">
+          <p style="margin: 0; font-size: 13.5px; color: #64748b;" id="stressModuleSubtitle">
+            ASME B31.3 Table A-1 & API Code Allowable Stress Lookup with Linear Temperature Interpolation
+          </p>
+          <span id="stressActiveDbBadge" style="background: #e0f2fe; color: #0369a1; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 12px; border: 1px solid #bae6fd;">
+            Active Cloud DB: Loading...
+          </span>
+          <button type="button" id="btnSyncCloudStressDb" onclick="if (typeof window.refreshStressDataFromCloud === 'function') { window.refreshStressDataFromCloud(); } else if (typeof window.initBkStressStandaloneUI === 'function') { window.initBkStressStandaloneUI(); }" style="background: #ffffff; color: #0369a1; border: 1px solid #bae6fd; border-radius: 12px; padding: 3px 10px; font-size: 11.5px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Sync latest allowable stress data from Cloud Server">
+            🔄 Sync Cloud Data
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: Single Material Interactive Calculator & Live Point Editor -->
+  <div id="stressSingleCalcSection">
+    <form id="bkStressForm">
+      <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 200px;">
+          <label for="bkYearSelect" style="display: block; margin-bottom: 4px;">Select Year:</label>
+          <select id="bkYearSelect" style="width: 100%;" onchange="if (typeof window.bkPopulateMaterials === 'function') window.bkPopulateMaterials(this.value); if (typeof window.renderTemperaturePointsTable === 'function') window.renderTemperaturePointsTable();">
+            <option value="">-- Select Year --</option>
+          </select>
+        </div>
+        <div style="flex: 1; min-width: 200px;">
+          <label for="bkMaterialSelect">Select Material:</label>
+          <select id="bkMaterialSelect" disabled style="width: 100%;" onchange="if (typeof window.bkPopulateGrades === 'function') { const y = document.getElementById('bkYearSelect'); window.bkPopulateGrades(y ? y.value : '', this.value); } if (typeof window.renderTemperaturePointsTable === 'function') window.renderTemperaturePointsTable();">
+            <option value="">-- Select Material --</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
+        <div style="flex: 1; min-width: 200px;">
+          <label for="bkGradeSelect">Select Grade:</label>
+          <select id="bkGradeSelect" disabled style="width: 100%;" onchange="if (typeof window.bkPopulateThickness === 'function') { const y = document.getElementById('bkYearSelect'); const m = document.getElementById('bkMaterialSelect'); window.bkPopulateThickness(y ? y.value : '', m ? m.value : '', this.value); } if (typeof window.renderTemperaturePointsTable === 'function') window.renderTemperaturePointsTable();">
+            <option value="">-- Select Grade --</option>
+          </select>
+        </div>
+        <div style="flex: 1; min-width: 200px;">
+          <label for="bkThicknessSelect">Select Thickness (mm):</label>
+          <select id="bkThicknessSelect" disabled style="width: 100%;" onchange="if (typeof window.bkEnableTemperature === 'function') window.bkEnableTemperature(); if (typeof window.renderTemperaturePointsTable === 'function') window.renderTemperaturePointsTable();">
+            <option value="">-- Select Thickness --</option>
+          </select>
+        </div>
+        <div style="flex: 1; min-width: 200px;">
+          <label for="bkTemperatureInput">Enter Temperature (°C):</label>
+          <input type="number" id="bkTemperatureInput" placeholder="e.g. 100" disabled style="width: 100%;" />
+        </div>
+      </div>
+    </form>
+
+    <div id="bkOutputDiv" style="display:none; margin-top: 20px; padding: 15px; border-radius: 5px;">
+      <p><strong>Allowable Stress Value:</strong> <span id="bkStressValue"></span> MPa</p>
+      <p><strong>Yield Strength:</strong> <span id="bkYieldStrength"></span> MPa</p>
+      <p><strong>Tensile Strength:</strong> <span id="bkTensileStrength"></span> MPa</p>
+    </div>
+
+    <!-- Temperature Points & Allowable Stress Management Table for Selected Material (Admin Only) -->
+    <div id="stressPointsManagerCard" class="stress-admin-action" style="display: none; margin-top: 25px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
+        <div>
+          <h3 style="margin: 0; font-size: 15.5px; color: #0f172a;" id="stressPointsTitle">
+            Configured Temperature & Allowable Stress Points
+          </h3>
+          <p style="margin: 3px 0 0 0; font-size: 12.5px; color: #64748b;">
+            Directly update any temperature point or add new values. Changes sync in real-time to Firebase Cloud Firestore.
+          </p>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <button type="button" class="stress-btn-add" onclick="openAddTemperaturePointModal()">
+            ➕ Add Temperature Point
+          </button>
+        </div>
+      </div>
+
+      <div class="stress-preview-table-wrapper">
+        <table class="stress-preview-table" style="min-width: 650px;">
+          <thead>
+            <tr>
+              <th style="width: 120px;">Temperature (°C)</th>
+              <th style="width: 170px;">Allowable Stress (MPa)</th>
+              <th style="width: 140px;">Yield Strength (MPa)</th>
+              <th style="width: 140px;">Tensile Strength (MPa)</th>
+              <th style="width: 130px; text-align: center;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="stressPointsTableBody">
+            <!-- Populated dynamically via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- MODAL 1: Edit / Add Temperature Value Modal -->
+  <div id="stressTempEditModal" class="stress-modal-overlay" style="display: none;">
+    <div class="stress-modal-box">
+      <div class="stress-modal-header">
+        <h4 style="margin: 0; font-size: 15.5px; color: #0f172a;" id="stressTempModalTitle">✏️ Update Temperature Stress Value</h4>
+        <button type="button" onclick="closeTemperaturePointModal()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #94a3b8;">&times;</button>
+      </div>
+      <div class="stress-modal-body">
+        <div id="stressTempModalSubtext" style="font-size: 12.5px; color: #64748b; margin-bottom: 16px; background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0;"></div>
+
+        <input type="hidden" id="modalEditOldTemp" value="" />
+        <input type="hidden" id="modalEditYear" value="" />
+        <input type="hidden" id="modalEditMaterial" value="" />
+        <input type="hidden" id="modalEditGrade" value="" />
+        <input type="hidden" id="modalEditThickness" value="" />
+
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div>
+            <label for="modalTempInput" style="display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 4px;">
+              Temperature (°C) <span style="color: #ef4444;">*</span>
+            </label>
+            <input type="number" id="modalTempInput" step="any" placeholder="e.g. 150" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;" />
+          </div>
+
+          <div>
+            <label for="modalStressInput" style="display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 4px;">
+              Allowable Stress (MPa) <span style="color: #ef4444;">*</span>
+            </label>
+            <input type="number" id="modalStressInput" step="any" placeholder="e.g. 137.90" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;" />
+          </div>
+
+          <div style="display: flex; gap: 12px;">
+            <div style="flex: 1;">
+              <label for="modalYieldInput" style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 4px;">
+                Yield Strength (MPa)
+              </label>
+              <input type="number" id="modalYieldInput" step="any" placeholder="e.g. 241.32" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13.5px;" />
+            </div>
+            <div style="flex: 1;">
+              <label for="modalTensileInput" style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 4px;">
+                Tensile Strength (MPa)
+              </label>
+              <input type="number" id="modalTensileInput" step="any" placeholder="e.g. 413.69" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13.5px;" />
+            </div>
+          </div>
+        </div>
+
+        <div id="stressTempModalMsg" style="margin-top: 15px; display: none; padding: 8px 12px; border-radius: 6px; font-size: 12.5px;"></div>
+      </div>
+      <div class="stress-modal-footer">
+        <button type="button" class="stress-btn-secondary" onclick="closeTemperaturePointModal()">Cancel</button>
+        <button type="button" id="btnSaveTempPointToFirebase" class="stress-btn-firebase" onclick="submitTemperaturePointUpdate()">
+          💾 Save to Firebase Cloud
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+</div>

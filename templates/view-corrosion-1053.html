@@ -1,0 +1,108 @@
+<div class="tab-content" id="corrosionRateTab" style="display: none;">
+          <h3>🛠️ Damage Mechanism – Corrosion Rate Estimator</h3>
+          <label>Select Damage Mechanism:
+            <select id="dmSelector" onchange="loadCriteria()"></select>
+          </label>
+          <div id="criteriaForm"></div>
+          <button onclick="calculateCorrosion()">🔍 Calculate</button>
+          <div id="corrosionResult"></div>
+        </div>
+
+        <div class="tab-content" id="corrosionFullTab" style="display: none;">
+          <div class="crd-main-container">
+            <!-- Header Banner -->
+            <div class="crd-header-banner">
+              <div class="crd-title-wrap">
+                <div class="crd-icon-box">🧪</div>
+                <div>
+                  <h3>API 581 Corrosion Rate Dashboard</h3>
+                  <p>Quantitative degradation modeling, environmental acceleration factors & degradation curve projection</p>
+                </div>
+              </div>
+              <div class="crd-badges-wrap">
+                <span class="crd-badge crd-badge-blue">API 581 Part 2</span>
+                <span class="crd-badge crd-badge-green" id="crd-statusBadge">● Ready for Modeling</span>
+              </div>
+            </div>
+
+            <!-- Main 2-Column Responsive Grid -->
+            <div class="crd-content-grid">
+              <!-- Left Column: Parameters & Form -->
+              <div class="crd-card crd-form-card">
+                <div class="crd-card-header">
+                  <span class="crd-card-icon">⚙️</span>
+                  <div>
+                    <h4>Degradation Mechanism & Operating Inputs</h4>
+                    <p>Select target degradation mechanism and specify operational conditions.</p>
+                  </div>
+                </div>
+
+                <div class="form-section">
+                  <div class="crd-input-group crd-mechanism-group">
+                    <label for="dmSelectFull" class="crd-label">
+                      <span>⚙️ Select Damage Mechanism:</span>
+                      <span class="crd-required">*</span>
+                    </label>
+                    <select id="dmSelectFull" class="crd-select">
+                      <option value="">-- Choose Mechanism --</option>
+                      <option value="Alkaline Sour Water Corrosion">Alkaline Sour Water Corrosion (NH₄HS / ASW)</option>
+                      <option value="Acid Sour Water Corrosion">Acid Sour Water Corrosion (H₂S / Acidic SW)</option>
+                      <option value="cui">CUI (Corrosion Under Insulation)</option>
+                      <option value="co2">CO₂ Corrosion (de Waard / Milliams)</option>
+                      <option value="oxidation">High-Temperature Oxidation</option>
+                      <option value="HCl Corrosion">HCl Corrosion (Hydrochloric Acid)</option>
+                      <option value="H2SO4 Corrosion">H₂SO₄ Corrosion (Sulfuric Acid)</option>
+                      <option value="sulfidation">Sulfidation & NAP Acid Corrosion</option>
+                    </select>
+                  </div>
+
+                  <!-- Dynamic Mechanism Inputs Container -->
+                  <div id="formContainerFull" class="crd-dynamic-form-area"></div>
+
+                  <!-- Primary Action Button -->
+                  <button id="calculateBtnFull" class="crd-btn-calculate" type="button">
+                    <span>🚀 Calculate Corrosion Rate</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Right Column: Results & Interactive Curve Chart -->
+              <div class="crd-card-stack">
+                <!-- Evaluation Result Card -->
+                <div class="crd-card crd-result-card">
+                  <div class="crd-card-header">
+                    <span class="crd-card-icon">📊</span>
+                    <div>
+                      <h4>Corrosion Evaluation Summary</h4>
+                      <p>Computed degradation rate, unit conversions, and inspection basis</p>
+                    </div>
+                  </div>
+
+                  <div id="corrosionResultFull" class="result-section crd-result-box">
+                    <div class="crd-empty-placeholder">
+                      <div class="crd-empty-icon">📈</div>
+                      <div>
+                        <strong>Awaiting Calculation</strong>
+                        <p>Select a damage mechanism from the left and click <em>Calculate Corrosion Rate</em> to view the quantitative assessment.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Trend Chart Card -->
+                <div class="crd-card crd-chart-card">
+                  <div class="crd-card-header">
+                    <span class="crd-card-icon">📉</span>
+                    <div>
+                      <h4>Degradation Sensitivity & Profile Curve</h4>
+                      <p>Operating temperature and parameter sensitivity distribution</p>
+                    </div>
+                  </div>
+                  <div class="crd-chart-container">
+                    <canvas id="myChart"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> <!-- closes corrosionFullTab -->

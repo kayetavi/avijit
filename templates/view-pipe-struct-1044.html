@@ -1,0 +1,228 @@
+<div id="structuralThicknessTab" class="tab-content" style="display:none;">
+  <div class="st-wrapper">
+    <!-- Header -->
+    <div class="st-header">
+      <div class="st-title-group">
+        <div class="st-icon-box">🛡️</div>
+        <div>
+          <h2>API Structural Min-T & Tolerance Lookup</h2>
+          <p>Minimum structural thickness standards for piping systems per API 574 & API 581 Annex D (Tables D.2b, D.2d, D.3b, D.3d, D.4b, D.4d)</p>
+        </div>
+      </div>
+      <div class="st-header-badges">
+        <div class="st-unit-toggle">
+          <button type="button" id="stUnitBtn_imperial" class="st-unit-btn active" onclick="stSwitchUnit('imperial')">US (in / °F)</button>
+          <button type="button" id="stUnitBtn_metric" class="st-unit-btn" onclick="stSwitchUnit('metric')">SI (mm / °C)</button>
+        </div>
+        <span class="st-pill-badge api-standard">API 574 / 581</span>
+        <span id="stCloudBadge" class="st-pill-badge cloud-synced">☁️ Cloud Connected</span>
+      </div>
+    </div>
+
+    <!-- Dropdowns & Input Form -->
+    <div class="st-form-container">
+      <div class="st-form-group">
+        <label for="stMaterialSelect">Material Group <span class="hint">API 581 Annex D</span></label>
+        <select id="stMaterialSelect" class="st-select" onchange="stOnMaterialOrTempChange()">
+          <option value="" selected>-- Select Material Group --</option>
+          <option value="carbon_steel">Carbon Steel &amp; Low Alloy (Tables D.2b / D.2d)</option>
+          <option value="stainless_steel">Austenitic Stainless Steel (Tables D.3b / D.3d)</option>
+          <option value="nickel_alloy">Nickel &amp; High Alloys (Tables D.4b / D.4d)</option>
+        </select>
+      </div>
+
+      <div class="st-form-group">
+        <label for="stTempSelect">Design Temperature <span class="hint">API Suffix b / d</span></label>
+        <select id="stTempSelect" class="st-select" onchange="stOnMaterialOrTempChange()">
+          <option value="" selected>-- Select Design Temp --</option>
+          <option value="400">400 °F (205 °C) — Suffix [b]</option>
+          <option value="750">750 °F (400 °C) — Suffix [d]</option>
+        </select>
+      </div>
+
+      <div class="st-form-group">
+        <label for="stTableSelect">Standard API Table <span class="hint">Annex D (mm)</span></label>
+        <select id="stTableSelect" class="st-select" onchange="stOnTableChange()">
+          <option value="" selected>-- Select API Table --</option>
+          <option value="D.2b">Table D.2b - Carbon Steel at 400 °F (205 °C)</option>
+          <option value="D.2d">Table D.2d - Carbon Steel at 750 °F (400 °C)</option>
+          <option value="D.3b">Table D.3b - Austenitic SS at 400 °F (205 °C)</option>
+          <option value="D.3d">Table D.3d - Austenitic SS at 750 °F (400 °C)</option>
+          <option value="D.4b">Table D.4b - Nickel &amp; Alloys at 400 °F (205 °C)</option>
+          <option value="D.4d">Table D.4d - Nickel &amp; Alloys at 750 °F (400 °C)</option>
+        </select>
+      </div>
+
+      <div class="st-form-group">
+        <label for="stNpsSelect">Nominal Pipe Size (NPS) <span class="hint">Dropdown</span></label>
+        <select id="stNpsSelect" class="st-select" onchange="stOnNpsChange()">
+          <option value="" selected>-- Select NPS Size --</option>
+        </select>
+      </div>
+
+      <div class="st-form-group">
+        <label for="stScheduleSelect">Pipe Schedule (SCH) <span class="hint">ASME B36.10M</span></label>
+        <select id="stScheduleSelect" class="st-select" onchange="stOnScheduleChange()">
+          <option value="" selected>-- Select Pipe Schedule --</option>
+        </select>
+      </div>
+
+      <div class="st-form-group">
+        <label for="stToleranceMaterialSelect">Mfg Tolerance Spec <span class="hint">ASTM / API</span></label>
+        <select id="stToleranceMaterialSelect" class="st-select" onchange="stOnToleranceMaterialChange()">
+          <option value="" selected>-- Select Mfg Standard --</option>
+        </select>
+      </div>
+
+      <div class="st-form-group">
+        <label for="stFlangeClassSelect">Flange Pressure Class <span class="hint">ASME B16.5</span></label>
+        <select id="stFlangeClassSelect" class="st-select" onchange="calculateStructuralThickness()">
+          <option value="" selected>-- Select Flange Class --</option>
+          <option value="150">Class 150 (PN 20)</option>
+          <option value="300">Class 300 (PN 50)</option>
+          <option value="600">Class 600 (PN 100)</option>
+          <option value="900">Class 900 (PN 150)</option>
+          <option value="1500">Class 1500 (PN 250)</option>
+          <option value="2500">Class 2500 (PN 420)</option>
+        </select>
+      </div>
+
+      <div class="st-form-group">
+        <label for="stCorrosionAllowanceInput">Corrosion Allowance (CA, mm) <span class="hint">Optional</span></label>
+        <input type="number" id="stCorrosionAllowanceInput" class="st-input" placeholder="0.0" step="0.1" min="0" value="" oninput="calculateStructuralThickness()">
+      </div>
+    </div>
+
+    <!-- KPI Results Cards -->
+    <div class="st-results-grid">
+      <!-- Card 1: Minimum Structural Thickness -->
+      <div class="st-kpi-card primary">
+        <div class="st-kpi-header">
+          <span>Structural Min-T (t<sub>struct</sub>)</span>
+          <span>🛡️ API 581</span>
+        </div>
+        <div class="st-kpi-value">
+          <span id="stKpiMinStructVal">1.27</span>
+          <span id="stKpiMinStructUnit" class="st-kpi-unit">mm</span>
+        </div>
+        <div id="stKpiMinStructAlt" class="st-kpi-subtext">Equivalent: 0.0500 in (inches)</div>
+      </div>
+
+      <!-- Card 2: Selected Schedule Nominal WT (from Pipe Thickness Finder) -->
+      <div class="st-kpi-card accent">
+        <div class="st-kpi-header">
+          <span>Selected Pipe WT (t<sub>nom</sub>)</span>
+          <span>📐 Pipe Finder DB</span>
+        </div>
+        <div class="st-kpi-value">
+          <span id="stKpiNomReqVal">3.91</span>
+          <span id="stKpiNomReqUnit" class="st-kpi-unit">mm</span>
+        </div>
+        <div id="stKpiNomReqSub" class="st-kpi-subtext">Includes manufacturing under-tolerance</div>
+      </div>
+
+      <!-- Card 3: Total Required with CA -->
+      <div class="st-kpi-card warning">
+        <div class="st-kpi-header">
+          <span>Total Required (t<sub>struct</sub> + CA)</span>
+          <span>⚗️ Service</span>
+        </div>
+        <div class="st-kpi-value">
+          <span id="stKpiTotalReqVal">1.27</span>
+          <span id="stKpiTotalReqUnit" class="st-kpi-unit">mm</span>
+        </div>
+        <div id="stKpiTotalReqSub" class="st-kpi-subtext">t_struct + Corrosion Allowance</div>
+      </div>
+
+      <!-- Card 4: Standard Table & Temp Reference -->
+      <div class="st-kpi-card info">
+        <div class="st-kpi-header">
+          <span>Active Standard Table</span>
+          <span>📊 Temp Spec</span>
+        </div>
+        <div class="st-kpi-value" style="font-size: 20px;">
+          <span id="stKpiSchRecVal">Table D.2b (400 °F / 205 °C)</span>
+        </div>
+        <div id="stKpiSchRecSub" class="st-kpi-subtext">NPS 2 (2") | OD: 60.3 mm (2.375")</div>
+      </div>
+    </div>
+
+    <!-- 🔌 Pipe Thickness Finder Connected Verification Box -->
+    <div id="stPipeFinderAssessmentBox"></div>
+
+    <!-- Interactive Table View Matrix -->
+    <div class="st-table-section">
+      <!-- 🎯 Dynamic Live Match Callout Banner -->
+      <div id="stMatchBanner" class="st-match-banner"></div>
+
+      <div class="st-table-header">
+        <div class="st-table-title">
+          <span>📑 Live Reference Table Matrix</span>
+          <span class="hint" style="font-size: 12px; font-weight: 400; color: #64748b;">(Selected NPS row &amp; Flange rating column highlighted)</span>
+        </div>
+        <div class="st-table-actions">
+          <button type="button" class="st-btn st-btn-primary" onclick="stSaveToCloud()">💾 Save to Cloud</button>
+          <button type="button" class="st-btn st-btn-outline" onclick="stCopySummary()">📋 Copy Summary</button>
+          <button type="button" class="st-btn st-btn-outline" onclick="stResetForm()">🔄 Reset Inputs</button>
+          <button type="button" class="st-btn st-btn-outline" onclick="window.print()">🖨️ Print / PDF</button>
+        </div>
+      </div>
+
+      <div class="st-table-container">
+        <table class="st-data-table">
+          <thead id="stTableMatrixHead">
+            <!-- Rendered by JS -->
+          </thead>
+          <tbody id="stTableMatrixBody">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 🏭 Original Manufacturer Tolerance Chart Section -->
+      <div class="st-tolerance-chart-section">
+        <details class="st-details-panel" open>
+          <summary class="st-details-summary" onclick="if(typeof window.renderToleranceReferenceTable==='function'){window.renderToleranceReferenceTable();}">
+            <span>🏭 Original Manufacturer Tolerance Chart (ASTM / API / IS Standards)</span>
+            <span class="st-details-badge">☁️ Cloud Synced</span>
+          </summary>
+          <div class="st-details-content">
+            <div class="st-table-responsive">
+              <table class="st-data-table st-tol-ref-table">
+                <thead>
+                  <tr>
+                    <th style="min-width: 160px;">Standard Specification</th>
+                    <th style="min-width: 200px;">Title &amp; Application</th>
+                    <th style="min-width: 140px;">Manufacturing Tolerance</th>
+                    <th>Specification Rule &amp; Tolerance Limit</th>
+                  </tr>
+                </thead>
+                <tbody id="stToleranceRefTableBody">
+                  <tr><td><strong style="color: #0284c7;">ASTM A106 / A106M</strong></td><td>Seamless Carbon Steel for High-Temp</td><td><span class="st-tol-tag" style="background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 12px;">-12.5%</span></td><td style="font-size: 12px; color: #64748b;">Standard ASTM seamless carbon steel under-tolerance (max 12.5% under nominal).</td></tr>
+                  <tr><td><strong style="color: #0284c7;">ASTM A53 / A53M</strong></td><td>Welded &amp; Seamless Black / Hot-Dipped</td><td><span class="st-tol-tag" style="background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 12px;">-12.5%</span></td><td style="font-size: 12px; color: #64748b;">Standard ASTM pipe specification under-tolerance.</td></tr>
+                  <tr><td><strong style="color: #0284c7;">ASTM A335 / A335M</strong></td><td>Seamless Ferritic Alloy-Steel (Cr-Mo)</td><td><span class="st-tol-tag" style="background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 12px;">-12.5%</span></td><td style="font-size: 12px; color: #64748b;">Seamless chromium-molybdenum alloy steel piping.</td></tr>
+                  <tr><td><strong style="color: #0284c7;">ASTM A312 / A312M</strong></td><td>Seamless &amp; Welded Austenitic Stainless Steel</td><td><span class="st-tol-tag" style="background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 12px;">-12.5%</span></td><td style="font-size: 12px; color: #64748b;">Standard 304, 316, 321 austenitic stainless steel piping.</td></tr>
+                  <tr><td><strong style="color: #0284c7;">ASTM A358 / A358M</strong></td><td>Electric-Fusion-Welded Stainless Steel</td><td><span class="st-tol-tag" style="background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 12px;">-0.30 mm</span></td><td style="font-size: 12px; color: #64748b;">Minimum wall thickness shall not be more than 0.01 in (0.3 mm) under nominal.</td></tr>
+                  <tr><td><strong style="color: #0284c7;">ASTM A409 / A409M</strong></td><td>Welded Large Diameter Austenitic SS</td><td><span class="st-tol-tag" style="background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 12px;">-0.46 mm</span></td><td style="font-size: 12px; color: #64748b;">Large diameter welded SS under-tolerance (0.018 in / 0.46 mm).</td></tr>
+                  <tr><td><strong style="color: #0284c7;">ASTM A790 / A790M</strong></td><td>Seamless &amp; Welded Duplex Stainless Steel</td><td><span class="st-tol-tag" style="background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 12px;">-12.5%</span></td><td style="font-size: 12px; color: #64748b;">Duplex (2205) and Super Duplex stainless steel pipe.</td></tr>
+                  <tr><td><strong style="color: #0284c7;">API Spec 5L (Seamless)</strong></td><td>Line Pipe - Seamless</td><td><span class="st-tol-tag" style="background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 12px;">-12.5% / -0.5mm</span></td><td style="font-size: 12px; color: #64748b;">t ≤ 4.0 mm: -0.5 mm; 4.0 &lt; t &lt; 25.0 mm: -12.5%; t ≥ 25.0 mm: -10.0%.</td></tr>
+                  <tr><td><strong style="color: #0284c7;">API Spec 5L (Welded)</strong></td><td>Line Pipe - Welded (ERW/SAW)</td><td><span class="st-tol-tag" style="background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 12px;">-10.0% / -0.5mm</span></td><td style="font-size: 12px; color: #64748b;">t ≤ 5.0 mm: -0.5 mm; 5.0 &lt; t &lt; 15.0 mm: -10.0%; t ≥ 15.0 mm: -1.5 mm.</td></tr>
+                  <tr><td><strong style="color: #0284c7;">IS 3589</strong></td><td>Steel Pipes for Water and Sewage</td><td><span class="st-tol-tag" style="background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 12px;">-10% to -12.5%</span></td><td style="font-size: 12px; color: #64748b;">Indian Standard IS 3589 for water/gas lines.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <div class="st-reference-notes">
+        <h4>📌 Engineering Basis & Standards Applicability:</h4>
+        <ul>
+          <li><strong>API 574 (Piping Inspection) Section 11 & API 581 (RBI Methodology) Annex D:</strong> Structural minimum thickness ($t_{\text{struct}}$) governs over pressure design thickness for smaller pipe sizes or low-pressure systems due to mechanical span loads, self-weight, vibration, and handling.</li>
+          <li><strong>ASME B36.10M / B36.19M & ASTM Mill Under-Tolerance:</strong> Standard commercial pipe manufacturing allows up to 12.5% under-nominal wall thickness tolerance. Design specification must ensure nominal pipe thickness satisfies: $t_{\text{nom}} \ge \frac{t_{\text{struct}}}{1 - \text{Mill\_Tol}} + \text{CA}$.</li>
+          <li><strong>ASME B16.5 Flange Ratings:</strong> Classes 150, 300, 600, 900, 1500, and 2500 correspond to pressure-temperature rating classes governing the pipe connection integrity.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

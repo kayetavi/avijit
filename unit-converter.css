@@ -1,0 +1,523 @@
+/* ============================================================================
+   📐 Plant & Integrity Core Unit Converters Stylesheet (Section 1)
+   Theme-aware, high-contrast, responsive engineering UI
+   ============================================================================ */
+
+#unitConverterTab {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+.uc-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 16px 28px 40px 28px;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #1e293b;
+}
+
+/* Header Banner */
+.uc-header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0284c7 100%);
+  color: #ffffff;
+  padding: 24px 28px;
+  border-radius: 12px;
+  margin-bottom: 22px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.uc-header h2 {
+  margin: 0 0 6px 0;
+  font-size: 22px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: -0.3px;
+}
+
+.uc-header p {
+  margin: 0;
+  font-size: 13.5px;
+  color: #94a3b8;
+  max-width: 750px;
+  line-height: 1.5;
+}
+
+.uc-header-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.uc-btn-back {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.uc-btn-back:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.uc-btn-reset-all {
+  background: #f87171;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.uc-btn-reset-all:hover {
+  background: #ef4444;
+}
+
+/* Search and Category Filter Toolbar */
+.uc-toolbar {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin-bottom: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.uc-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.uc-pill {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.uc-pill:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.uc-pill.active {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+}
+
+.uc-search-wrap {
+  position: relative;
+  min-width: 260px;
+}
+
+.uc-search-input {
+  width: 100%;
+  padding: 8px 14px 8px 34px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  background: #f8fafc;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.uc-search-input:focus {
+  border-color: #0284c7;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.uc-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+/* Grid of Converters */
+.uc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 640px) {
+  .uc-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Individual Converter Card */
+.uc-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.uc-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.uc-card.highlighted {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.25);
+}
+
+.uc-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.uc-card-title {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.uc-card-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.uc-card-reset {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.uc-card-reset:hover {
+  color: #ef4444;
+  background: #fee2e2;
+}
+
+/* Fields Layout inside Card */
+.uc-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.uc-field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.uc-field-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.uc-field-sublabel {
+  font-size: 10.5px;
+  color: #94a3b8;
+  font-weight: 400;
+  text-transform: none;
+}
+
+.uc-input-group {
+  display: flex;
+  align-items: center;
+  position: relative;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  overflow: hidden;
+}
+
+.uc-input-group:focus-within {
+  border-color: #0284c7;
+  background: #ffffff;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+}
+
+.uc-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-family: "JetBrains Mono", Consolas, Menlo, Monaco, monospace;
+  font-weight: 600;
+  color: #0f172a;
+  outline: none;
+  width: 100%;
+}
+
+.uc-unit-tag {
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 8px 12px;
+  white-space: nowrap;
+  border-left: 1px solid #cbd5e1;
+  user-select: none;
+  min-width: 65px;
+  text-align: center;
+}
+
+.uc-copy-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 6px 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.uc-copy-btn:hover {
+  color: #0284c7;
+}
+
+/* Quick Status Badges / Info Panes inside Cards */
+.uc-status-box {
+  margin-top: 14px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.45;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.uc-status-green {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+
+.uc-status-blue {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+}
+
+.uc-status-amber {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+.uc-status-red {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+/* Pressure Reference Switch (Gauge vs Absolute) */
+.uc-switch-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: 8px;
+}
+
+.uc-switch-btn {
+  flex: 1;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.uc-switch-btn.active {
+  background: #ffffff;
+  color: #0284c7;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* ============================================================================
+   🌙 Dark Mode Overrides
+   ============================================================================ */
+.dark-mode .uc-container {
+  color: #f1f5f9;
+}
+
+.dark-mode .uc-toolbar {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: none;
+}
+
+.dark-mode .uc-pill {
+  background: #0f172a;
+  color: #94a3b8;
+  border-color: #334155;
+}
+
+.dark-mode .uc-pill:hover {
+  background: #1e293b;
+  color: #f1f5f9;
+}
+
+.dark-mode .uc-pill.active {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+}
+
+.dark-mode .uc-search-input {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.dark-mode .uc-search-input:focus {
+  background: #1e293b;
+  border-color: #38bdf8;
+}
+
+.dark-mode .uc-card {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .uc-card-header {
+  border-bottom-color: #334155;
+}
+
+.dark-mode .uc-card-title {
+  color: #f8fafc;
+}
+
+.dark-mode .uc-card-badge {
+  background: #0f172a;
+  color: #94a3b8;
+}
+
+.dark-mode .uc-field-label {
+  color: #94a3b8;
+}
+
+.dark-mode .uc-input-group {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.dark-mode .uc-input-group:focus-within {
+  background: #1e293b;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+.dark-mode .uc-input {
+  color: #f8fafc;
+}
+
+.dark-mode .uc-unit-tag {
+  background: #334155;
+  color: #cbd5e1;
+  border-left-color: #475569;
+}
+
+.dark-mode .uc-switch-bar {
+  background: #0f172a;
+}
+
+.dark-mode .uc-switch-btn {
+  color: #94a3b8;
+}
+
+.dark-mode .uc-switch-btn.active {
+  background: #334155;
+  color: #38bdf8;
+}
+
+.dark-mode .uc-status-green {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #34d399;
+}
+
+.dark-mode .uc-status-blue {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #60a5fa;
+}
+
+.dark-mode .uc-status-amber {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+}
+
+.dark-mode .uc-status-red {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}

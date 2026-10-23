@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Help & User Guide — Integrity Digital Tools Dashboard</title>
+  <!-- Link external CSS -->
+  <link rel="stylesheet" href="rbi-help.css">
+</head>
+<body>
+  <header>
+    <div style="display:flex;flex-direction:column;">
+      <h1>Help & User Guide</h1>
+      <p style="opacity:0.9;font-size:13px">Integrity Digital Tools Dashboard — complete manual and examples</p>
+    </div>
+    <div class="actions">
+      <a class="btn" href="#getting-started">Jump to Getting Started</a>
+      <a href="javascript:void(0)" id="helpHeaderContactLink" onclick="if(window.SYSTEM_CONFIG?.adminContactEmail){location.href='mailto:'+window.SYSTEM_CONFIG.adminContactEmail;}else{alert('Please contact your System Administrator.');}">Contact Support</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="layout">
+      <!-- LEFT SIDEBAR / TOC -->
+      <aside>
+        <div class="logo">
+          <div class="dot">AV</div>
+          <div>
+            <div style="font-weight:700;color:var(--brand)">API Dashboard Help</div>
+            <div class="small">Comprehensive user guide</div>
+          </div>
+        </div>
+
+        <div class="toc-search">
+          <input id="tocFilter" placeholder="Search topics..." aria-label="Search topics">
+        </div>
+
+        <!-- Replace your current <nav class="toc"> ... </nav> with this block -->
+<nav class="toc" aria-label="Table of contents">
+  <h3>Contents</h3>
+  <ul class="tree">
+    <li class="group">
+      <button class="group-toggle">Damage Categories </button>
+      <ul class="children">
+        <li><a href="#api571" data-target="api571">API 571 Damage Mechanism</a></li>
+          </ul>
+    </li>
+        
+        
+        <li class="group">
+          <button class="group-toggle">API 581 Risk-Based Inspection Methodology </button>
+          <ul class="children">
+            <li><a href="#criteria-finding" data-target="criteria-finding">Criteria of Finding Damage Mechanism</a></li>
+            <li><a href="#api571-corrosion-estimator" data-target="api571-corrosion-estimator">Damage Mechanism – Corrosion Rate Estimator</a></li>
+            <li><a href="#representative-fluid" data-target="representative-fluid">Representative Fluid</a></li>
+            <li><a href="#inventory-calculator" data-target="inventory-calculator">Inventory Calculator</a></li>
+            <li><a href="#inspection-confidence" data-target="inspection-confidence">Inspection Confidence</a></li>
+            <li><a href="#toxic-percent" data-target="toxic-percent">Toxic % Calculation</a></li>
+          </ul>
+        </li>
+    
+    
+    
+
+    <li class="group">
+      <button class="group-toggle">API 570 </button>
+      <ul class="children">
+        <li><a href="#api570" data-target="api570">Remaining Life</a></li>
+      </ul>
+    </li>
+
+    <li class="group">
+      <button class="group-toggle">Design Thickness Calculator </button>
+      <ul class="children">
+        <li><a href="#asme-b31" data-target="asme-b31">ASME B31.3</a></li>
+        <li><a href="#asme-viii" data-target="asme-viii">ASME Section VIII Div 1</a></li>
+      </ul>
+    </li>
+
+    <li class="group">
+      <button class="group-toggle">Corrosion Diagrams </button>
+      <ul class="children">
+        <li><a href="#hydroprocessing" data-target="hydroprocessing">HYDROPROCESSING</a></li>
+        <li><a href="#cdu-vdu" data-target="cdu-vdu">CDU / VDU</a></li>
+        <li><a href="#msp" data-target="msp">MSP</a></li>
+        <li><a href="#h2u" data-target="h2u">H2U</a></li>
+      </ul>
+    </li>
+
+    <li class="group">
+      <button class="group-toggle">Cracking Mechanism Finder </button>
+      <ul class="children">
+        <li><a href="#cracking-finder" data-target="cracking-finder">Open Finder</a></li>
+      </ul>
+    </li>
+
+    <li class="group">
+      <button class="group-toggle">Stress & Material Data </button>
+      <ul class="children">
+        <li><a href="#stress-material" data-target="stress-material">Stress value</a></li>
+      </ul>
+    </li>
+
+    <li><a href="#examples" data-target="examples">Worked Examples</a></li>
+    <li><a href="#faq" data-target="faq">FAQ & Troubleshooting</a></li>
+    <li><a href="appendix.html" target="_blank">Appendix (Formulas & Notes)</a></li>
+  </ul>
+</nav>
+
+      </aside>
+
+
+      <!-- MAIN CONTENT -->
+      <main>
+        <!-- Overview -->
+        <section id="overview" class="card" tabindex="-1">
+          <h2>Overview</h2>
+          <p class="muted">
+This dashboard is a comprehensive platform for pressure equipment integrity management and inspection. 
+It centralizes all essential tools and references for damage mechanism analysis as per <b>API 571</b>, risk-based inspection (RBI) and corrosion rate estimation in accordance with <b>API 581</b>, and inspection confidence & remaining life calculations following <b>API 570</b>. 
+Inspectors and engineers can explore over 60 damage mechanisms affecting pressure equipment, identify the most likely mechanisms using smart input-driven rules, and access detailed information on each mechanism, including affected materials, operating conditions, temperature ranges, and prevention strategies. 
+The dashboard allows precise corrosion rate calculations for various processes such as CUI (Corrosion Under Insulation), CO₂ corrosion, sulfidation, and other process-specific mechanisms. 
+It includes a built-in fluid library for estimating release rates, total inventory, potential leak consequences, and mass release calculations. 
+Users can calculate leak rates, remaining life, and schedule inspection intervals based on data-driven insights. 
+Additional tools include design thickness calculators as per ASME B31.3 and ASME VIII Div 1, corrosion diagrams, a cracking mechanism finder, and stress & material data references. 
+Overall, this platform enables inspectors and engineers to streamline integrity assessments, improve risk evaluation, optimize inspection planning, and make informed decisions for safe and efficient operation of pressure equipment.
+</p>
+
+          <div class="note">Layout summary: <strong>Left</strong> — navigation & quick links. <strong>Center</strong> — primary modules (API 571, API 581, Find Mechanism, Representative Fluids, Inventory Calculator). Use module cards to open detailed calculators and data entry forms.</div>
+        </section>
+
+        <!-- Getting Started -->
+        <section id="getting-started" class="card" tabindex="-1">
+          <h2>Getting Started</h2>
+          <p class="muted">Follow these steps to begin using the dashboard effectively.</p>
+          <ol>
+            <li>Open the dashboard and <strong>log in</strong> with your account.</li>
+            <li>Review available modules from the left panel and open the one you need.</li>
+            <li>Before calculations, collect required data: <strong>material spec</strong>, <strong>temperature</strong>, <strong>fluid composition</strong>, <strong>pressure</strong>, and <strong>inspection thickness readings</strong>.</li>
+            <li>Use Representative Fluids to select validated fluid properties for consequence/inventory analysis.</li>
+            <li>Save/export results using the Export button (Excel / PDF) in each module.</li>
+          </ol>
+          <div class="note">Tip: Use the "Find Mechanism" to narrow possibilities before running specific corrosion or remaining-life calculators.</div>
+        </section>
+
+        <!-- API 571 -->
+<section id="api571" class="card" tabindex="-1">
+  <h2>API 571 — Damage Mechanism Explorer</h2>
+  <p class="muted">
+    API 571 lists common degradation mechanisms affecting fixed equipment. 
+    This explorer helps you study causes, indicators, susceptible materials, inspection methods, and mitigation strategies in a structured and interactive way.
+  </p>
+
+  <!-- Placeholder for image -->
+  <div style="text-align:center; margin:20px 0;">
+    <img src="image/api571_dashboard.png" alt="API 571 Damage Mechanism Explorer Screenshot" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:5px;">
+    <p class="muted" style="font-size:0.9em; margin-top:5px;">Example screenshot of the API 571 Damage Mechanism Explorer interface</p>
+  </div>
+
+  <h4>How to use the explorer</h4>
+  <ul>
+    <li>On the left pane under <b>API 571 Damage Mechanisms</b>, browse or search for a specific mechanism by name (e.g., SCC, CUI, sulfidation).</li>
+    <li>Click on any mechanism to display its detailed information in the right panel.</li>
+    <li>The right panel contains multiple tabs for each mechanism, including:
+      <ul>
+        <li><b>Description:</b> Explains the mechanism and its causes.</li>
+        <li><b>Affected Materials:</b> Lists materials most susceptible to this mechanism.</li>
+        <li><b>Operating Conditions:</b> Highlights conditions under which this mechanism occurs.</li>
+        <li><b>Inspection Methods:</b> Recommended inspection techniques (UT, radiography, visual, etc.).</li>
+        <li><b>Mitigation:</b> Strategies to prevent or reduce the mechanism's impact.</li>
+      </ul>
+    </li>
+    <li>You can easily switch between tabs to view different aspects of the selected mechanism without leaving the page.</li>
+    <li>Use filters to narrow mechanisms by category (corrosion, cracking, mechanical) or by material type for faster exploration.</li>
+  </ul>
+
+  </section>
+
+
+        <section id="criteria-finding" class="card" tabindex="-1">
+  <h2>Criteria for Identifying Likely Damage Mechanisms</h2>
+  <p class="muted">
+    This section helps inspectors and engineers determine which damage mechanism(s) are most likely to occur on a given item based on operating conditions, materials, and observed evidence. 
+    By systematically applying these criteria, you can prioritize inspections and choose appropriate NDT techniques.
+  </p>
+
+  <!-- Placeholder for image -->
+  <div style="text-align:center; margin:20px 0;">
+    <img src="image/criteria_finding.png" alt="Criteria for Finding Damage Mechanism" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:5px;">
+    <p class="muted" style="font-size:0.9em; margin-top:5px;">Example diagram illustrating criteria for identifying damage mechanisms</p>
+  </div>
+
+  <h4>Key Criteria</h4>
+  <ul>
+    <li><strong>Process Fluid Composition:</strong> Identify corrosive or reactive components such as H₂S, CO₂, chlorides, acids, and alkalinity levels. Different compositions favor different mechanisms (e.g., sulfide stress cracking in H₂S-rich environments).</li>
+    <li><strong>Temperature Range:</strong> Many mechanisms are active only within specific temperature windows. For example, CUI typically occurs between 0–200°C depending on insulation, while sulfidation requires higher temperatures.</li>
+    <li><strong>Material:</strong> The type of material (carbon steel, stainless steel, duplex, nickel alloys) significantly affects susceptibility. For example, austenitic stainless steels are prone to chloride SCC.</li>
+    <li><strong>Stress Environment:</strong> Static or cyclic stresses can promote cracking-type mechanisms such as stress corrosion cracking (SCC) or fatigue cracking. Consider operating pressures, thermal cycles, and mechanical loading.</li>
+    <li><strong>Evidence from Inspection:</strong> Look for physical signs such as pits, cracks, thinning patterns, deposits, discoloration, or blistering. Historical inspection data also provides clues to recurring mechanisms.</li>
+  </ul>
+
+  <div class="note">
+    <strong>Workflow:</strong> Collect process and material data → screen potential mechanisms using the above criteria → prioritize inspections and select appropriate NDT techniques. 
+    Using this structured approach ensures a data-driven and efficient integrity assessment.
+  </div>
+</section>
+
+        <!-- API 581 -->
+      <section id="api571-corrosion-estimator" class="card" tabindex="-1">
+  <h2>Damage Mechanism — Corrosion Rate Estimator (API 571 / 581)</h2>
+  <p class="muted">
+    This estimator calculates corrosion rates associated with different damage mechanisms such as CUI, sulfidation, and others. 
+    Using inspection data, material properties, operating conditions, and mechanism-specific rules from <b>API 581</b>, the tool estimates the expected corrosion rate for inspection planning.
+  </p>
+
+  <!-- Placeholder for image -->
+  <div style="text-align:center; margin:20px 0;">
+    <img src="image/corrosion_rate_estimator.png" alt="Corrosion Rate Estimator Interface" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:5px;">
+    <p class="muted" style="font-size:0.9em; margin-top:5px;">Example screenshot of the Damage Mechanism Corrosion Rate Estimator interface</p>
+  </div>
+
+  <h4>Inputs Required (API 581 Flowchart Specific)</h4>
+<ul>
+  <li><strong>Damage Mechanism:</strong> Select the mechanism identified from API 571 explorer (e.g., CUI, CO₂ corrosion, sulfidation, high-temperature oxidation). This determines which calculation path to follow.</li>
+  
+  <li><strong>Material:</strong> Base material of the component (e.g., Carbon Steel, Stainless Steel, Duplex, Nickel Alloy). This affects mechanism susceptibility factors.</li>
+  
+  <li><strong>Process Fluid / Environment:</strong> Specify fluid composition and environment characteristics:
+    <ul>
+      <li>H₂S content, CO₂ content, chloride levels</li>
+      <li>Acidic/alkaline conditions</li>
+      <li>Presence of wet/dry cycles or aqueous condensate (important for CUI)</li>
+    </ul>
+  </li>
+  
+  <li><strong>Operating Temperature Range (°C):</strong> Minimum and maximum metal temperature affecting the selected mechanism. E.g., 0–200°C for CUI, 350–550°C for sulfidation.</li>
+  
+  <li><strong>Exposure Conditions:</strong> Mechanism-specific factors such as:
+    <ul>
+      <li>Insulation type and condition for CUI (mineral wool, fiberglass, wet/dry)</li>
+      <li>Gas flow composition for CO₂ corrosion</li>
+      <li>High-temperature exposure duration for sulfidation or oxidation</li>
+    </ul>
+  </li>
+  
+  <li><strong>Process Operating Factors:</strong> Mechanism-specific multipliers such as:
+    <ul>
+      <li>pH and water chemistry factors for CUI</li>
+      <li>Partial pressure of CO₂/H₂S for CO₂ corrosion</li>
+      <li>Metal temperature factor for high-temperature oxidation/sulfidation</li>
+    </ul>
+  </li>
+  
+  <li><strong>Inspection Strategy Input:</strong> Optional — indicates frequency and type of inspection planned (used to refine corrosion rate prediction in API 581 methodology).</li>
+</ul>
+
+  <h4>Calculation & Flow</h4>
+  <ul>
+    <li>The estimator follows the <b>API 581 corrosion rate methodology</b>:
+      <ul>
+        <li>Step 1: Determine damage mechanism and operating conditions.</li>
+        <li>Step 2: Apply mechanism-specific factors from API 581 (e.g., temperature multiplier, H₂S/CO₂ correction, insulation effects for CUI).</li>
+        <li>Step 3: Calculate average metal loss rate over the observed inspection interval.</li>
+        <li>Step 4: Project the remaining life by comparing current thickness with minimum required thickness (Tmin) using process design criteria.</li>
+        <li>Step 5: Recommend the next inspection interval based on risk and corrosion trend.</li>
+      </ul>
+    </li>
+    <li>All calculations consider both historical inspection data and process-specific adjustment factors to produce a realistic corrosion rate prediction.</li>
+  </ul>
+
+  <h4>Outputs Provided</h4>
+  <ul>
+    <li>Estimated corrosion rate (mm/year) tailored to the selected damage mechanism and operating conditions.</li>
+    <li>Projected Tmin date and estimated remaining life of the component.</li>
+    <li>Recommended inspection frequency or interval based on risk, corrosion rate, and API 581 guidelines.</li>
+    <li>Visual trend charts and data tables showing thickness loss over time for informed decision-making.</li>
+  </ul>
+
+  <div class="note">
+    <strong>Workflow Summary:</strong> Identify mechanism → Input process/material/inspection data → Apply API 581 mechanism-specific factors → Estimate corrosion rate → Predict remaining life → Schedule next inspection.
+  </div>
+</section>
+
+        <section id="representative-fluid" class="card" tabindex="-1">
+  <h2>Representative Fluid — Fluid Property Library (API 581)</h2>
+  <p class="muted">
+    This module stores validated representative fluid records used for inventory, release-rate and consequence modelling (API-581 style). 
+    Records focus on the exact properties required by release and consequence engines: phase, vapor pressure, molecular weight, flammability & toxicity endpoints, and a short source/reference audit.
+  </p>
+
+  <!-- Placeholder for image -->
+  <div style="text-align:center; margin:20px 0;">
+    <img src="image/representative_fluid.png"
+         alt="Representative Fluid - Example UI"
+         style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:5px;">
+    <p class="muted" style="font-size:0.9em; margin-top:6px;">
+      Example: Representative Fluid selector and property summary (replace with your screenshot).
+    </p>
+  </div>
+
+  <h4>Inputs Required (what each fluid record must contain)</h4>
+  <ul>
+    <li><strong>Name / Alias:</strong> Standard name and optional plant tag (e.g., Propane — LPG blend).</li>
+    <li><strong>Phase / State:</strong> Gas, Liquid, or Two-phase (liquid + vapour) — determines scenario type.</li>
+    <li><strong>Reference T &amp; P:</strong> Temperature (°C) and Pressure (bar) at which the properties are reported.</li>
+    <li><strong>Molecular Weight (g/mol):</strong> Required for choked flow, dispersion and concentration calculations.</li>
+    <li><strong>Vapor Pressure (bar) @ ref T:</strong> Critical to decide flashing behaviour and two-phase releases.</li>
+    <li><strong>Normal Boiling Point (NBP, °C/°F):</strong> Useful for phase classification and flash behaviour.</li>
+    <li><strong>Density (liquid @ ref T, kg/m³):</strong> For inventory (mass ↔ volume) calculations.</li>
+    <li><strong>Heat of Vaporization (kJ/kg):</strong> For flashing fraction and pool evaporation estimates.</li>
+    <li><strong>Flammability:</strong> Flash point (°C), LFL / UFL (% vol), Auto-ignition Temp (°C/°F), Heat of Combustion (kJ/kg).</li>
+    <li><strong>Toxicity / Health:</strong> LC50 (or equivalent), IDLH, ERPG values or other accepted toxic endpoints.</li>
+    <li><strong>Release Behaviour:</strong> Recommended scenario: Jet / Pool / Flash / Boiling release / Two-phase.</li>
+    <li><strong>Vapor Density (air=1) &amp; Solubility:</strong> Affects dispersion and pooling tendency.</li>
+    <li><strong>Source / Reference:</strong> Data origin (MSDS, NIST, manufacturer) and date — mandatory for audits.</li>
+  </ul>
+
+  <h4>Calculation &amp; Flow (how fluid records are used)</h4>
+  <ul>
+    <li><strong>Step 1 — Select fluid record:</strong> Choose the representative fluid for the asset scenario (single record per calculation).</li>
+    <li><strong>Step 2 — Normalize properties:</strong> Convert all supplied values to the calculation reference conditions (SI units recommended).</li>
+    <li><strong>Step 3 — Determine release scenario:</strong> Use phase, vapor pressure and stored pressure to decide: gas leak, liquid pool, flashing two-phase, or jet release.</li>
+    <li><strong>Step 4 — Calculate release rate:</strong>
+      <ul>
+        <li><em>Gas:</em> Apply choked/subsonic orifice flow equations using MW, vapor pressure (if stored) and temperature.</li>
+        <li><em>Liquid (non-flashing):</em> Use orifice/tank emptying models with liquid density.</li>
+        <li><em>Two-phase / flashing:</em> Estimate flashing fraction using vapor pressure &amp; enthalpy (heat of vaporization) then compute vapour mass release.</li>
+      </ul>
+    </li>
+    <li><strong>Step 5 — Consequence inputs:</strong> Feed MW, vapor density, LFL/UFL, heat of combustion, and toxicity endpoints to dispersion/fire/toxicity engines.</li>
+    <li><strong>Step 6 — Results validation:</strong> Present mass/time, vapour fraction, HRR (kW), and toxic concentration/time; attach data quality flags where properties are estimated.</li>
+  </ul>
+
+  <h4>Outputs Provided</h4>
+  <ul>
+    <li><strong>Property Summary:</strong> Concise table with MW, Density, Vapor Pressure, NBP, Flash point, LFL/UFL, AIT and toxicity endpoints + data source.</li>
+    <li><strong>Inventory:</strong> Computed stored mass (kg) &amp; volume (m³) at reference conditions.</li>
+    <li><strong>Suggested Release Scenario:</strong> Based on phase / vapor pressure / stored condition.</li>
+    <li><strong>Estimated Release Rate:</strong> Mass flow (kg/s) and volumetric flow (m³/s) with choked/un-choked state indicated.</li>
+    <li><strong>Derived Consequences:</strong> Indicative HRR (kW), toxic exposure concentration and protective distances (using your consequence toolchain).</li>
+    <li><strong>Assumptions &amp; Data Quality Notes:</strong> Flag missing/assumed values, and list recommended measurements to reduce uncertainty.</li>
+  </ul>
+
+  <h4>Example Records (matching your UI columns)</h4>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; margin-bottom:12px;">
+    <div style="border:1px solid #e9eef5; padding:10px; border-radius:8px;">
+      <strong>C₃–C₄</strong>
+      <div style="font-size:0.95em; margin-top:6px;">
+        <div>Applicable Materials: Propane, butane, isobutane, LPG</div>
+        <div>MW: 51</div>
+        <div>NBP: -21 °C / -6.3 °F</div>
+        <div>AIT: 369 °C / 696 °F</div>
+      </div>
+    </div>
+
+    <div style="border:1px solid #e9eef5; padding:10px; border-radius:8px;">
+      <strong>C₁₇–C₂₅</strong>
+      <div style="font-size:0.95em; margin-top:6px;">
+        <div>Applicable Materials: Gas oil, typical crude</div>
+        <div>MW: 280</div>
+        <div>NBP: 344 °C / 651 °F</div>
+        <div>AIT: 202 °C / 396 °F</div>
+      </div>
+    </div>
+
+    <div style="border:1px solid #e9eef5; padding:10px; border-radius:8px;">
+      <strong>Acid</strong>
+      <div style="font-size:0.95em; margin-top:6px;">
+        <div>Applicable Materials: Acid, caustic</div>
+        <div>MW: 18</div>
+        <div>NBP: 100 °C / 212 °F</div>
+        <div>AIT: N/A</div>
+      </div>
+    </div>
+
+    <div style="border:1px solid #e9eef5; padding:10px; border-radius:8px;">
+      <strong>EG</strong>
+      <div style="font-size:0.95em; margin-top:6px;">
+        <div>Applicable Materials: Ethylene glycol</div>
+        <div>MW: 62</div>
+        <div>NBP: 197 °C / 387 °F</div>
+        <div>AIT: 396 °C / 745 °F</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note" style="margin-top:12px; padding:10px; background:#f8f9fb; border-left:4px solid #0b66c2; border-radius:6px;">
+    <strong>Workflow Summary:</strong> Choose fluid group → select representative fluid → confirm reference conditions &amp; data source → use properties to determine release scenario and compute release rate → feed results to consequence engines. 
+    <br><strong>Note:</strong> Always record data source and flag any estimated property before using results in high-consequence decisions.
+  </div>
+</section>
+
+                <!-- Inventory Calculator — detailed (matches your example style) -->
+<section id="inventory-calculator" class="card" tabindex="-1">
+  <h2>Inventory Calculator</h2>
+  <p class="muted">
+  Easily calculate stored volume and liquid inventory (mass) using simple geometry and fluid density. 
+  Supports cylinders, spheres, cuboids, and dished-end vessels with full unit conversion, fill-percentage, and manual overrides.  
+  In addition, bulk data upload is supported so you can instantly view and analyze complete inventory inside the dashboard.
+</p>
+
+  <!-- Placeholder for image -->
+  <div style="text-align:center; margin:18px 0;">
+    <img src="image/inventory_ui.png"
+         alt="Inventory Calculator UI Example"
+         style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:6px;">
+    <p class="muted" style="font-size:0.9em; margin-top:6px;">Example: geometry inputs, unit selector, equipment & fluid type, density and Calculate button.</p>
+  </div>
+
+  <h4>Inputs Required</h4>
+  <ul>
+    <li><strong>Shape / Geometry:</strong> Cylinder, Cylinder with Dished Ends (approx), Sphere, Cuboid (rectangular tank).</li>
+    <li><strong>Diameter / Width (ID):</strong> Internal diameter or width in selected linear unit.</li>
+    <li><strong>Length / Height:</strong> Length for cylinder / cuboid or height for other shapes (selected unit).</li>
+    <li><strong>Units (linear):</strong> m, cm, mm or ft — converted internally to metres for calculation.</li>
+    <li><strong>Add Dished Ends?</strong> Checkbox — approximate heads are added to cylinder volume when selected.</li>
+    <li><strong>Use Manual Volume?</strong> Checkbox + Manual Volume (m³) — overrides geometric calculation when checked.</li>
+    <li><strong>Fill Percentage:</strong> Percentage fill of the vessel (0–100%) — used for partial inventories.</li>
+    <li><strong>Equipment Type / Orientation:</strong> Top / Bottom / Full / other tags (for record-keeping; does not change geometry math).</li>
+    <li><strong>Fluid Type:</strong> Dropdown (pre-filled common fluids + Custom option).</li>
+    <li><strong>Density (kg/m³):</strong> Required for mass calculation (inventory in kg). Ensure density matches reference T/P.</li>
+  </ul>
+
+  <h4>Flow</h4>
+  <ul>
+    <li><strong>Unit normalization:</strong> All linear inputs are converted to metres (m) before geometry computations.</li>
+    
+    <li><strong>Partial fill:</strong> Multiply geometric volume by Fill % (0–100%) to get liquid volume in service.</li>
+    <li><strong>Manual override:</strong> If manual volume is enabled, that volume (m³) is used instead of geometry-based volume.</li>
+    <li><strong>Mass calculation:</strong> Inventory mass (kg) = Volume (m³) × Density (kg/m³).</li>
+    <li><strong>Rounding & units:</strong> Volumes rounded to 3 decimals (m³), mass rounded to 2 decimals (kg). Display notes about approximations for dished ends or estimated densities.</li>
+  </ul>
+  
+  <div class="note" style="margin-top:12px; padding:10px; background:#fff7e6; border-left:4px solid #f09f00; border-radius:6px;">
+    <strong>Workflow Summary:</strong> Choose shape &amp; units → enter geometry → (optionally add dished ends or manual volume) → set fill % and density → Calculate → Review volume &amp; mass. Replace density with reference-temperature value for accurate inventory.
+  </div>
+</section>
+
+        
+
+            <!-- Inspection Confidence (IIC & AIC) — detailed module (copy into dashboard) -->
+<section id="inspection-confidence" class="card" tabindex="-1">
+  <h2>Inspection Confidence — IIC & AIC Calculator (API-581 style)</h2>
+
+  <p class="muted">
+    Estimate Individual Inspection Confidence (IIC) for each inspection and compute the Aggregate Inspection Confidence (AIC).
+    Use this tool to log inspection records (method, coverage, category, inspector type) and get a combined confidence that at least one inspection will detect the damage mechanism.
+    (Mappings & combination rules are configurable in the script.)
+  </p>
+
+  <!-- placeholder for screenshot -->
+  <div style="text-align:center; margin:14px 0;">
+    <img src="image/inspection_confidence.png" alt="Inspection Confidence UI" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:6px;">
+    <p class="muted" style="font-size:0.9em; margin-top:6px;">Example: add inspection rows, see IIC per inspection and final aggregated AIC (with ANI).</p>
+  </div>
+
+  <h4>Inputs Required</h4>
+  <ul>
+    <li><strong>Year:</strong> Year of inspection.</li>
+    <li><strong>Inspection Method:</strong> The NDE/inspection technique used (e.g., 100% Internal Visual, UT grid, RT, On-line thickness, Guided wave).</li>
+    <li><strong>Coverage (%):</strong> Fraction of the susceptible area covered by this inspection (0–100%).</li>
+    <li><strong>Inspection Category / Target:</strong> The damage mechanism or area targeted (CUI, SCC, general corrosion, nozzle, weld, etc.).</li>
+    <li><strong>Inspector Type / Skill:</strong> Internal / External, or experience multiplier (affects accuracy).</li>
+    <li><strong>Technique Condition / Access:</strong> Good / Limited / Restricted (affects effective detection probability).</li>
+  </ul>
+
+  <h4>Calculation & Flow</h4>
+  <ul>
+    <li><strong>Step 1 — Map method → base detection probability:</strong> Each inspection method has an expected detection probability for the target damage (configurable constants).</li>
+    <li><strong>Step 2 — Apply modifiers:</strong> Multiply base detection by coverage fraction (area inspected), inspector skill multiplier, and access/condition multiplier to produce IIC.</li>
+    <li><strong>Step 3 — Aggregate across inspections:</strong> Combine multiple independent inspections using the rule <code>AIC = 1 − ∏(1 − IIC_i)</code> which gives probability that at least one inspection will detect the damage.</li>
+    <li><strong>Step 4 — Compute ANI (Aggregate Number of Inspections):</strong> Optionally show summed equivalents or alternative ANI metrics (configurable).</li>
+    <li><strong>Step 5 — Report:</strong> Show per-inspection IIC, total AIC, ANI, and assumptions/uncertainty notes for audit.</li>
+  </ul>
+
+  
+
+  <!-- added inspections table -->
+  <div style="max-width:1100px; margin:8px auto;">
+    <h4 style="margin:6px 0 10px;">Added Inspections</h4>
+    <div style="overflow-x:auto; border:1px solid #e6e6e6; border-radius:6px;">
+      <table id="icTable" style="width:100%; border-collapse:collapse; min-width:980px;">
+        <thead style="background:#f7fafc;">
+          <tr>
+            <th style="padding:10px; text-align:left; border-bottom:1px solid #ececec;">Year</th>
+            <th style="padding:10px; text-align:left; border-bottom:1px solid #ececec;">Method</th>
+            <th style="padding:10px; text-align:right; border-bottom:1px solid #ececec;">Coverage %</th>
+            <th style="padding:10px; text-align:left; border-bottom:1px solid #ececec;">Category</th>
+            <th style="padding:10px; text-align:left; border-bottom:1px solid #ececec;">Inspector</th>
+            <th style="padding:10px; text-align:left; border-bottom:1px solid #ececec;">Condition</th>
+            <th style="padding:10px; text-align:right; border-bottom:1px solid #ececec;">IIC</th>
+            <th style="padding:10px; text-align:right; border-bottom:1px solid #ececec;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="icTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- summary -->
+  <div style="max-width:1100px; margin:14px auto 0; display:flex; gap:16px; align-items:flex-start;">
+    <div style="flex:0 0 160px; display:flex; flex-direction:column; gap:8px;">
+      <button class="ic-level-btn" data-level="VH" style="background:#0b66c2; color:#fff; border:none; padding:10px; border-radius:6px; cursor:default;">VH</button>
+      <button class="ic-level-btn" data-level="H" style="background:#9bbce6; color:#fff; border:none; padding:10px; border-radius:6px; cursor:default;">H</button>
+      <button class="ic-level-btn" data-level="M" style="background:#d3e3f9; color:#111; border:none; padding:10px; border-radius:6px; cursor:default;">M</button>
+      <button class="ic-level-btn" data-level="L" style="background:#eef6ff; color:#111; border:none; padding:10px; border-radius:6px; cursor:default;">L</button>
+    </div>
+
+    <div style="flex:1;">
+      <div style="padding:12px; border-radius:8px; background:#fff; border:1px solid #e6e6e6;">
+        <h4 style="margin:0 0 8px 0;">Summary</h4>
+        <div id="icSummary" style="font-size:0.95em; color:#333;">
+          <div><strong>Per-inspection IIC (listed in table)</strong></div>
+          <div style="margin-top:8px;"><strong>Aggregate Inspection Confidence (AIC):</strong> <span id="icAIC">0.000</span></div>
+          <div style="margin-top:6px;"><strong>Aggregate Number of Inspections (ANI - sum equiv):</strong> <span id="icANI">0.000</span></div>
+          <div style="margin-top:8px; color:#666;" id="icNotes">Notes: Combination rule uses independence assumption: AIC = 1 − Π(1 − IIC_i).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+       <section id="toxic-percent" class="card" tabindex="-1">
+  <h2>Damage Mechanism — Toxic % Calculator (API 581)</h2>
+  <p class="muted">
+    The Toxic % Calculator converts stream composition and measured flows into mass-based toxic fractions used by inventory and consequence models (API-581 style).
+    It supports three calculation workflows (direct component mass flow, mass%-based, and mole%→mass% conversion) and produces the toxic mass flow and toxic mass released for consequence analysis.
+  </p>
+
+  <!-- General Interface Screenshot -->
+  <div style="text-align:center; margin:20px 0;">
+    <img src="image/toxic_percent_calculator_1.png"
+         alt="Toxic % Calculator Interface"
+         style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:5px;">
+    <p class="muted" style="font-size:0.9em; margin-top:6px;">
+      Example screenshot of the Toxic % Calculator interface (replace with your screenshot).
+    </p>
+  </div>
+
+  <h4>Inputs Required</h4>
+  <ul>
+    <li><strong>Calculation Type:</strong> Select one — <em>Direct mass flow (kg/hr)</em>, <em>Composition (mass %)</em>, or <em>Composition (mole %)</em>.</li>
+    <li><strong>Toxic Component:</strong> Select toxic species from library (e.g., H₂S, NH₃, Cl₂) which contains MW and toxic endpoints (IDLH, ERPG, LC50).</li>
+    <li><strong>Total stream mass flow (kg/hr):</strong> Required for mass%- or mole%-based modes.</li>
+    <li><strong>Component value:</strong> either component mass flow (kg/hr), component mass% (%, decimal) or component mole% (%, decimal).</li>
+    <li><strong>Full composition list (mole% mode):</strong> Mole% values and MW for all components in the stream (required for conversion).</li>
+    <li><strong>Release scenario inputs (optional):</strong> Release rate (kg/s or kg/hr), duration (s or hr) — to compute toxic mass released.</li>
+    <li><strong>Metadata:</strong> temperature/pressure (for density corrections), data source, and uncertainty flags.</li>
+  </ul>
+
+  <h4>Calculation & Flow</h4>
+  <ul>
+    <li>The calculator supports three workflows — choose the workflow matching your input data:
+      <ul>
+        <li>
+          <strong>Workflow A — Direct component mass flow</strong><br>
+         
+          <!-- Image Placeholder -->
+          <div style="text-align:center; margin:18px 0;">
+            <img src="image/toxic_percent_calculator_2.png"
+                 alt="Workflow A Direct Mass Flow"
+                 style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:5px;">
+            <p class="muted" style="font-size:0.9em; margin-top:6px;">
+              Example: Workflow A — Direct Mass Flow Input (replace with your screenshot)
+            </p>
+          </div>
+        </li>
+
+        <li>
+          <strong>Workflow B — Composition given as mass %</strong><br>
+         
+          <!-- Image Placeholder -->
+          <div style="text-align:center; margin:18px 0;">
+            <img src="image/toxic_percent_calculator_3.png"
+                 alt="Workflow B Mass Percent Input"
+                 style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:5px;">
+            <p class="muted" style="font-size:0.9em; margin-top:6px;">
+              Example: Workflow B — Mass% Input (replace with your screenshot)
+            </p>
+          </div>
+        </li>
+
+        <li>
+          <strong>Workflow C — Composition given as mole % (convert to mass%)</strong><br>
+          
+          <!-- Image Placeholder -->
+          <div style="text-align:center; margin:18px 0;">
+            <img src="image/toxic_percent_calculator_4.png"
+                 alt="Workflow C Mole to Mass Conversion"
+                 style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:5px;">
+            <p class="muted" style="font-size:0.9em; margin-top:6px;">
+              Example: Workflow C — Mole% → Mass% Conversion (replace with your screenshot)
+            </p>
+          </div>
+        </li>
+      </ul>
+    </li>
+
+  
+    
+    
+    <li>
+      <strong>Notes on units & consistency:</strong> Ensure MW and mole fractions use consistent units (e.g., MW in g/mol). If MW in g/mol, normalization cancels units — conversion is dimensionless. Always state whether composition input is percent (%) or fraction (0–1).
+    </li>
+  </ul>
+
+  <h4>Outputs Provided</h4>
+  <ul>
+    <li><strong>Toxic Mass Flow:</strong> Absolute toxic species mass in kg/hr (or chosen unit).</li>
+    <li><strong>Toxic Fraction / mass%:</strong> Mass fraction (decimal) and mass% of toxic species in stream.</li>
+    <li><strong>Toxic Mass Released:</strong> Toxic mass (kg) corresponding to a user-defined release scenario (rate × duration × toxic fraction).</li>
+    <li><strong>Data provenance & quality flags:</strong> Source of composition, MW lookup reference, and any estimated values are recorded for auditability.</li>
+  </ul>
+
+  <div class="note">
+    <strong>Workflow Summary:</strong> Select calculation type → provide component/stream data → if mole% convert to mass% using MW → compute toxic mass flow → apply to release scenario to obtain toxic mass released → compare against toxic thresholds (IDLH/ERPG/LC50) for consequence assessment.
+  </div>
+
+ </section>
+
+
+       <section id="corrosion-probability" class="card" tabindex="-1" style="padding:20px; max-width:900px; margin:auto; background:#fff; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
+  <h2>Internal Corrosion Probability Calculator</h2>
+  <p style="color:#555; font-size:1rem; line-height:1.4;">
+    This tool calculates the probability category of internal corrosion based on years in service, corrosion rates, and wall thickness data. It follows industry best practices to assist in inspection planning and risk-based decision-making.
+  </p>
+
+  <div style="text-align:center; margin:20px 0;">
+    <img src="image/probability.png" alt="Corrosion Rate Calculator Dashboard" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:5px;">
+    <p class="muted" style="font-size:0.9em; margin-top:5px;">Screenshot: Internal Corrosion Probability Calculator interface</p>
+  </div>
+
+  <h3>Inputs Required</h3>
+  <ul>
+    <li><strong>Operating Time (Years in Service):</strong> Duration the equipment has been in operation.</li>
+    <li><strong>Estimated Corrosion Rate (mm/year):</strong> Rate at which wall thickness is expected to reduce.</li>
+    <li><strong>Original/Nominal Thickness (mm):</strong> Initial wall thickness when the equipment was new.</li>
+    <li><strong>Required Thickness (mm):</strong> Minimum wall thickness required for safe operation.</li>
+  </ul>
+
+  <h3>Example Input & Results</h3>
+  <table style="width:100%; border-collapse: collapse; margin-top:10px; font-size:0.95rem;">
+    <thead style="background:#f0f0f0;">
+      <tr>
+        <th style="border:1px solid #ccc; padding:8px; text-align:left;">Parameter</th>
+        <th style="border:1px solid #ccc; padding:8px; text-align:center;">Value</th>
+        <th style="border:1px solid #ccc; padding:8px; text-align:left;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">Operating Time (Years)</td>
+        <td style="border:1px solid #ccc; padding:8px; text-align:center;">5</td>
+        <td style="border:1px solid #ccc; padding:8px;">Time the component has been in service.</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">Estimated Corrosion Rate (mm/year)</td>
+        <td style="border:1px solid #ccc; padding:8px; text-align:center;">1.5</td>
+        <td style="border:1px solid #ccc; padding:8px;">Expected corrosion rate.</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">Original/Nominal Thickness (mm)</td>
+        <td style="border:1px solid #ccc; padding:8px; text-align:center;">10</td>
+        <td style="border:1px solid #ccc; padding:8px;">Initial wall thickness of the component.</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">Required Thickness (mm)</td>
+        <td style="border:1px solid #ccc; padding:8px; text-align:center;">8</td>
+        <td style="border:1px solid #ccc; padding:8px;">Minimum thickness to maintain safety.</td>
+      </tr>
+      <tr style="background:#f9f9f9;">
+        <td style="border:1px solid #ccc; padding:8px;">Wall Loss</td>
+        <td style="border:1px solid #ccc; padding:8px; text-align:center;">7.500 mm</td>
+        <td style="border:1px solid #ccc; padding:8px;">Total wall thickness lost over time (Rate × Years).</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">Remaining Thickness</td>
+        <td style="border:1px solid #ccc; padding:8px; text-align:center;">2.500 mm</td>
+        <td style="border:1px solid #ccc; padding:8px;">Remaining wall after corrosion.</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">Wall Ratio (Remaining / Required)</td>
+        <td style="border:1px solid #ccc; padding:8px; text-align:center;">0.31</td>
+        <td style="border:1px solid #ccc; padding:8px;">Ratio of remaining wall to required thickness.</td>
+      </tr>
+      <tr style="background:#f9f9f9;">
+        <td style="border:1px solid #ccc; padding:8px;">Corrosion Factor (CF)</td>
+        <td style="border:1px solid #ccc; padding:8px; text-align:center;">3.00</td>
+        <td style="border:1px solid #ccc; padding:8px;">CF = Years × Estimated Corrosion Rate.</td>
+      </tr>
+      <tr style="background:#f0f0f0;">
+        <td style="border:1px solid #ccc; padding:8px;">Probability Category</td>
+        <td style="border:1px solid #ccc; padding:8px; text-align:center;">2</td>
+        <td style="border:1px solid #ccc; padding:8px;">Category based on CF and wall ratio.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:20px; padding:10px; background:#e0f7ff; border-left:4px solid #2196f3;">
+    <strong>Workflow Summary:</strong> Enter operating time, corrosion rate, nominal and required thickness → System calculates wall loss, remaining thickness, wall ratio, and CF → Outputs corrosion probability category to guide inspection frequency and risk mitigation.
+  </div>
+</section>
+
+
+
+
+
+        
+        <!-- API 570 -->
+       <!-- Corrosion Rate Calculator -->
+<section id="api570" class="card" tabindex="-1">
+  <h2>Corrosion Rate Calculator — Thickness Data Evaluation Tool</h2>
+  <p class="muted">
+    This tool estimates corrosion rates, remaining life, and inspection dates for pressure-retaining components using thickness data over time. It aligns with industry standards such as <b>API 570</b> and <b>API 581</b>, helping engineers perform timely inspections and prevent failures.
+  </p>
+
+  <!-- Screenshot Placeholder -->
+  <div style="text-align:center; margin:20px 0;">
+    <img src="image/api570_dashboard.png" alt="Corrosion Rate Calculator Dashboard" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:5px;">
+    <p class="muted" style="font-size:0.9em; margin-top:5px;">Example: Corrosion Rate Calculator interface with sample input</p>
+  </div>
+
+  <h4>Inputs Required</h4>
+  <ul>
+    <li><strong>Base Date:</strong> Date of the first thickness reading.</li>
+    <li><strong>Base Thickness:</strong> Measured thickness on the base date (in mm).</li>
+    <li><strong>Middle Date (optional):</strong> Optional intermediate inspection date for short-term corrosion rate.</li>
+    <li><strong>Middle Thickness:</strong> Thickness reading on the middle date (in mm).</li>
+    <li><strong>Last Date:</strong> Date of the latest thickness measurement.</li>
+    <li><strong>Last Thickness:</strong> Most recent measured thickness (in mm).</li>
+    <li><strong>T-Min:</strong> Minimum allowable thickness for safe operation (in mm).</li>
+    <li><strong>OISD Frequency:</strong> Inspection interval in months (e.g., 36 for 3 years).</li>
+  </ul>
+
+  <h4>Calculation Flow</h4>
+  <ul>
+    <li>Follows the <b>API 570 / API 581 methodology</b>:
+      <ul>
+        <li>Step 1: Enter thickness readings and corresponding dates.</li>
+        <li>Step 2: System calculates corrosion rates based on changes in thickness over time.</li>
+        <li>Step 3: The tool estimates the remaining service life of the component.</li>
+        <li>Step 4: It projects when the minimum thickness (T-Min) will be reached.</li>
+        <li>Step 5: Based on rates and intervals, the next inspection dates are suggested.</li>
+      </ul>
+    </li>
+  </ul>
+
+<h4>Example Input & Results</h4>
+<table style="width:100%; border-collapse: collapse; margin-top:10px;">
+  <tr style="background:#f0f0f0;">
+    <th style="border:1px solid #ccc; padding:8px;">Parameter</th>
+    <th style="border:1px solid #ccc; padding:8px;">Value</th>
+    <th style="border:1px solid #ccc; padding:8px;">Description</th>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ccc; padding:8px;">Base Date</td>
+    <td style="border:1px solid #ccc; padding:8px;">10-01-2024</td>
+    <td style="border:1px solid #ccc; padding:8px;">The initial date when the component thickness was first measured, serving as a reference for corrosion calculations.</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ccc; padding:8px;">Base Thickness</td>
+    <td style="border:1px solid #ccc; padding:8px;">6.5 mm</td>
+    <td style="border:1px solid #ccc; padding:8px;">Thickness measured on the Base Date, representing the starting point for corrosion tracking.</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ccc; padding:8px;">Middle Date</td>
+    <td style="border:1px solid #ccc; padding:8px;">08-10-2024</td>
+    <td style="border:1px solid #ccc; padding:8px;">Intermediate inspection date used to calculate short-term corrosion trends.</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ccc; padding:8px;">Middle Thickness</td>
+    <td style="border:1px solid #ccc; padding:8px;">5.6 mm</td>
+    <td style="border:1px solid #ccc; padding:8px;">Thickness measured on the Middle Date, used to assess recent corrosion rates.</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ccc; padding:8px;">Last Date</td>
+    <td style="border:1px solid #ccc; padding:8px;">06-08-2025</td>
+    <td style="border:1px solid #ccc; padding:8px;">Most recent inspection date for the component’s thickness measurement.</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ccc; padding:8px;">Last Thickness</td>
+    <td style="border:1px solid #ccc; padding:8px;">5.0 mm</td>
+    <td style="border:1px solid #ccc; padding:8px;">Thickness measured during the latest inspection, indicating current condition.</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ccc; padding:8px;">T-Min</td>
+    <td style="border:1px solid #ccc; padding:8px;">3.0 mm</td>
+    <td style="border:1px solid #ccc; padding:8px;">Minimum safe thickness. Component should not operate below this value.</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ccc; padding:8px;">OISD Frequency</td>
+    <td style="border:1px solid #ccc; padding:8px;">36 months</td>
+    <td style="border:1px solid #ccc; padding:8px;">Recommended inspection interval according to OISD or company standards.</td>
+  </tr>
+  <tr style="background:#f9f9f9;">
+    <td style="border:1px solid #ccc; padding:8px;">Controlling Corrosion Rate</td>
+    <td style="border:1px solid #ccc; padding:8px;">0.9545</td>
+    <td style="border:1px solid #ccc; padding:8px;">The highest corrosion rate used for safety and inspection planning to ensure a conservative approach.</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ccc; padding:8px;">Short-Term Corrosion Rate</td>
+    <td style="border:1px solid #ccc; padding:8px;">0.7257</td>
+    <td style="border:1px solid #ccc; padding:8px;">Corrosion rate calculated between Middle and Last inspections to detect any recent acceleration.</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ccc; padding:8px;">Estimated Life</td>
+    <td style="border:1px solid #ccc; padding:8px;">2 Years, 0 Month, 6 Days</td>
+    <td style="border:1px solid #ccc; padding:8px;">Remaining service life before reaching T-Min, useful for maintenance and replacement planning.</td>
+  </tr>
+  <tr style="background:#f9f9f9;">
+    <td style="border:1px solid #ccc; padding:8px;">Projected Tmin Date</td>
+    <td style="border:1px solid #ccc; padding:8px;">10-09-2027</td>
+    <td style="border:1px solid #ccc; padding:8px;">Expected date when the component will reach its minimum allowable thickness if current corrosion continues.</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ccc; padding:8px;">Next Inspection (Scheduled)</td>
+    <td style="border:1px solid #ccc; padding:8px;">24-08-2026</td>
+    <td style="border:1px solid #ccc; padding:8px;">System-recommended date for the next inspection based on corrosion rate and estimated life.</td>
+  </tr>
+  <tr style="background:#f9f9f9;">
+    <td style="border:1px solid #ccc; padding:8px;">Interval Next Inspection</td>
+    <td style="border:1px solid #ccc; padding:8px;">06-08-2028</td>
+    <td style="border:1px solid #ccc; padding:8px;">Next inspection date based on fixed intervals as per OISD or company policy.</td>
+  </tr>
+</table>
+
+<div class="note" style="margin-top:15px;">
+  <strong>Workflow Summary:</strong> Input base, middle, and last thickness data → Calculate corrosion rates → Estimate remaining life → Project Tmin date → Schedule next inspection.
+</div>
+</section>
+
+
+
+        <!-- Design Thickness Calculators -->
+       <!-- ASME B31.3 — Piping Design Thickness (detailed section) -->
+<section id="asme-b31" class="card" tabindex="-1">
+  <h2>ASME B31.3 — Piping Design Thickness Calculator & Guidance</h2>
+  <p class="muted">
+    Guidance for determining minimum required piping thickness, accounting for internal pressure,
+    corrosion allowance (CA), joint efficiency (E), mill tolerance and applicable material factors.
+    Use B31.3 clauses and tables for final verification.
+  </p>
+
+  <!-- Image placeholder -->
+  <div style="text-align:center; margin:18px 0;">
+    <img src="image/b31_calculator.png" alt="ASME B31.3 Calculator Interface" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:5px;">
+    <p class="muted" style="font-size:0.9em; margin-top:6px;">Example: B31.3 piping thickness calculator interface</p>
+  </div>
+
+  <h4>Inputs Required</h4>
+  <ul>
+    <li><strong>Design pressure (P):</strong> Internal pressure at design conditions (convert to MPa or consistent units).</li>
+    <li><strong>Outside or Inside Diameter (D or Di):</strong> Use consistent D (OD) or Di (ID) as per chosen equation.</li>
+    <li><strong>Allowable stress (S):</strong> Material allowable at design temperature (from code tables).</li>
+    <li><strong>Joint efficiency (E):</strong> Weld joint efficiency or seamless value depending on fabrication and inspection.</li>
+    <li><strong>Y-factor / Temperature factor (Y):</strong> If required by the governing equation (depends on material and temperature).</li>
+    <li><strong>Corrosion allowance (CA):</strong> Specified extra thickness for corrosion (mm).</li>
+    <li><strong>Mill tolerance / Nominal thickness:</strong> If using nominal plate/tube sizes and to calculate as-built thickness after manufacturing tolerance.</li>
+    <li><strong>Design code edition & referenced notes:</strong> Which B31.3 edition and applicable appendices.</li>
+  </ul>
+
+  <h4>Flow</h4>
+  <ul>
+    
+
+    <li>
+      <strong>Step-wise flow</strong>
+      <ol>
+        <li>Collect P, D/Di, S (at design temperature), E, CA and mill tolerance / nominal thickness.</li>
+        <li>Convert units (MPa, mm) and apply the B31.3 equation variant appropriate for the case (thin-wall assumption, reinforcement, fittings).</li>
+        <li>Compute required thickness <em>without</em> CA, then add CA to get installed/required thickness.</li>
+        <li>Compare to available nominal thickness after mill tolerance; if nominal < required, select higher schedule/material or increase CA or revise design.</li>
+        <li>Document joint efficiency basis, weld type, and inspection coverage (RT, PWHT, etc.).</li>
+      </ol>
+    </li>
+
+    <li>
+      <strong>Special considerations</strong>
+      <ul>
+        <li>For branch connections, nozzles, and fittings use reinforcement and local stress checks per B31.3.</li>
+        <li>For cyclic or high-temperature services check additional fatigue / sustained load rules.</li>
+        <li>Include allowances for corrosion under insulation (CUI) if applicable and environment-driven CA.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h4>Outputs Provided</h4>
+  <ul>
+    <li>Pressure design thickness (t press.design)   =    Design Thickness (t Design) =   Retirement thickness (t Retirement Thickness) and total thickness including CA (t_total).</li>
+    <li>Nominal pipe/plate thickness comparison and mill-tolerance adjusted thickness (is installed thickness ≥ required?).</li>
+    <li>Margin/shortfall (mm) and recommended corrective action (increase schedule, reduce CA assumptions, etc.).</li>
+    <li>Summary of assumptions: material S @ T, joint efficiency E, Y-factor used, CA, and applicable code clause references.</li>
+  </ul>
+
+  <div class="note">
+    <strong>Quick workflow:</strong> Input P, D, S, E, CA → pick correct B31.3 equation variant → calculate t_req → add CA & mill tolerances → verify against nominal thickness and code limits.
+    <br><strong>Always cross-check results with the specific B31.3 clauses and material tables before final design or procurement.</strong>
+  </div>
+</section>
+
+<!-- ASME Section VIII, Div. 1 — Pressure Vessel Design Thickness (detailed section) -->
+<section id="asme-viii" class="card" tabindex="-1">
+  <h2>ASME Section VIII, Div. 1 — Shell & Head Required Thickness Guidance</h2>
+  <p class="muted">
+    Guidance for calculating minimum required thicknesses for pressure vessel shells and heads per ASME Section VIII, Division 1.
+    Includes input requirements, representative formulae, head types, corrosion allowance and design factor considerations.
+  </p>
+
+  <!-- Image placeholder -->
+  <div style="text-align:center; margin:18px 0;">
+    <img src="image/viii_calculator.png" alt="ASME VIII Calculator Interface" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:5px;">
+    <p class="muted" style="font-size:0.9em; margin-top:6px;">Example: ASME Sec VIII shell & head thickness calculator</p>
+  </div>
+
+  <h4>Inputs Required</h4>
+  <ul>
+    <li><strong>Design Pressure (P):</strong> Internal design pressure (gauge) at design temperature.</li>
+    <li><strong>Inside Radius (R) or Inside Diameter (Di):</strong> Geometry of shell/head.</li>
+    <li><strong>Material allowable stress (S):</strong> From ASME material tables at design temperature.</li>
+    <li><strong>Joint efficiency (E):</strong> Based on weld type, construction code stamping, and NDE level.</li>
+    <li><strong>Corrosion Allowance (CA):</strong> Specified mm to allow for corrosion.</li>
+    <li><strong>Head type:</strong> (e.g., hemispherical, torispherical, elliptical) — each has its own head formula.</li>
+    <li><strong>Minimum required thickness limits and additional stiffening or local reinforcement needs.</strong></li>
+  </ul>
+
+        <div style="margin-top:6px;">
+        <em>Notes:</em> This expression assumes thin-wall derivation and uses inside radius R. For high-pressure or thick-wall cases, other forms or stress analyses may be required.
+      </div>
+    </li>
+
+  
+
+    <li>
+      <strong>Step-wise flow</strong>
+      <ol>
+        <li>Identify vessel geometry (shell, head type) and gather P, R/Di, S (at design T), E, CA.</li>
+        <li>Apply the appropriate ASME VIII equation for shell or head to compute required thickness without CA.</li>
+        <li>Add corrosion allowance (and consider mill tolerance) to determine required purchased thickness.</li>
+        <li>Check against minimum thickness limitations, nozzle reinforcement rules, and local stiffening requirements.</li>
+        <li>Document assumptions, including whether corrosion allowance covers CUI, internal corrosion, and whether wall loss monitoring is planned.</li>
+      </ol>
+    </li>
+
+    <li>
+      <strong>Fabrication & inspection effects</strong>
+      <ul>
+        <li>Joint efficiency E depends on welding procedure and NDE (e.g., E = 1.0 for seamless or fully radiographed welds where permitted).</li>
+        <li>For vessels subject to cyclic loads, consider fatigue design and local stress concentration checks.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h4>Outputs Provided</h4>
+  <ul>
+    <li>Required shell thickness and required head thickness (both without and with corrosion allowance).</li>
+    <li>Comparison vs available nominal plate/thickness (after mill tolerance); margin of safety or deficiency (mm).</li>
+    <li>Assumptions summary: S @ design T, E, CA, geometric inputs, and the ASME clause used.</li>
+    <li>Recommended next steps: increase thickness, change material (S), increase joint efficiency via NDE, or adjust CA/inspection plan.</li>
+  </ul>
+
+  <div class="note">
+    <strong>Workflow Summary:</strong> Select shell/head type → Input P, R/Di, S, E, CA → apply Section VIII equation for geometry → compute t_req → add CA & tolerance → verify against code minima and reinforcement rules.
+    <br><strong>Important:</strong> Always use the exact equations, tables and notes from the ASME Section VIII code edition applicable to your project for final calculations and stamping.
+  </div>
+</section>
+
+
+        <!-- Corrosion Diagrams -->
+        <section id="corrosion-diagrams" class="card" tabindex="-1">
+          <h2>Corrosion Diagrams</h2>
+          <p class="muted">Reference diagrams and maps for common unit types — help to identify most likely corrosion mechanisms by region of the plant and process conditions.</p>
+
+          <h4>Unit maps</h4>
+          <ul>
+            <li>Hydroprocessing: sulfidation & high-temperature degradation.</li>
+            <li>CDU / VDU: naphtha, kerosene, and crude-related corrosion regions.</li>
+            <li>MSP: multiphase separators — erosion-corrosion & internal corrosion.</li>
+            <li>H2U (hydrogen units): hydrogen attack and embrittlement concerns at elevated temperatures and pressures.</li>
+          </ul>
+          <div class="note">Use these diagrams as a quick screening tool; always verify with process data and inspections.</div>
+        </section>
+
+        <!-- Cracking Finder -->
+       <!-- Cracking Mechanism Finder — Detailed Help Section (API 571 style) -->
+<section id="cracking-finder" class="card" tabindex="-1">
+  <h2>Damage Mechanism — Cracking Mechanism Finder (API 571)</h2>
+  <p class="muted">
+    The Cracking Mechanism Finder helps screen and identify likely cracking/failure mechanisms
+    (e.g., HIC, SOHIC, SSC, SCC, caustic cracking, hydrogen embrittlement, stress relief cracking,
+    thermal fatigue, chloride SCC, CUI-associated cracking) using operational data, material, and inspection inputs.
+    This is a screening-level tool — final diagnosis requires metallurgical examination and lab testing.
+  </p>
+
+  <!-- Placeholder for image -->
+  <div style="text-align:center; margin:18px 0;">
+    <img src="image/cracking_finder.png" alt="Cracking Mechanism Finder Interface" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:5px;">
+    <p class="muted" style="font-size:0.9em; margin-top:6px;">Example screenshot of the Cracking Mechanism Finder interface</p>
+  </div>
+
+  <h4>Inputs Required</h4>
+  <ul>
+    <li><strong>Process Chemistry:</strong> H₂S (ppm), CO₂ (ppm), chlorides (ppm), dissolved oxygen (ppm), HCN, cyanides, ammonia, caustic concentration (%) — identify corrosive species and their concentrations.</li>
+    <li><strong>Water / Condensate Presence:</strong> Free water, condensate, or hygroscopic liquids — presence of liquid phase strongly influences mechanisms like HIC, SSC, corrosion-fatigue and chloride SCC.</li>
+    <li><strong>pH & Local Chemistry:</strong> Bulk and expected local pH (e.g., crevice acidification), presence of sulfides, naphthenic acids, organic acids.</li>
+    <li><strong>Temperature:</strong> Operating temperature (°C / °F) — many cracking mechanisms are temperature-dependent (e.g., chloride SCC, caustic cracking, H₂ damage ranges).</li>
+    <li><strong>Material & Condition:</strong> Base metal type (carbon steel, low-alloy, austenitic stainless, sensitized stainless, aluminum, copper alloy), heat treatment (PWHT), sensitization, hardness, and known metallurgy issues.</li>
+    <li><strong>Fabrication & Stress:</strong> Presence of welds/HAZ, residual or applied stress level (approx. stress/MPa), bolted joints, and known stress concentrations.</li>
+    <li><strong>Surface Condition & Deposits:</strong> Scale, deposits, chloride-containing salts, soils, or ML/crevice deposits that create local aggressive environments.</li>
+    <li><strong>Inspection Evidence:</strong> Type of cracks (surface vs subsurface), orientation (axial/circumferential), morphology (intergranular, transgranular, branching), presence of blistering, and UT/RT/ET results.</li>
+    <li><strong>Operational Behavior:</strong> Transients, ramping, thermal cycling, pressure cycling, acid cleanings, chemical dosing (amines, caustic), inhibitors present.</li>
+  </ul>
+
+  <h4>Screening Logic & Flow</h4>
+  <ul>
+    <li>
+      <strong>Step 1 — Identify environment:</strong> Is the environment wet or dry? If free water + H₂S → HIC / SOHIC / SSC screening. If chlorides + elevated T → chloride SCC screening.
+    </li>
+    <li>
+      <strong>Step 2 — Match material susceptibility:</strong> 
+      <ul>
+        <li>Carbon / low-alloy steels susceptible to HIC / SOHIC, SSC (welds/HAZ) in wet H₂S.</li>
+        <li>Austenitic stainless steels susceptible to chloride SCC at moderate-high temperature and chlorides/crevice conditions.</li>
+        <li>Sensitized stainless — intergranular SCC; duplex/low-alloy — separate susceptibility rules.</li>
+      </ul>
+    </li>
+    <li>
+      <strong>Step 3 — Check stress & fabrication:</strong> High tensile/residual stresses (welds, notched parts, mechanical loads) increase risk of SCC/SSC. Absence of PWHT on susceptible steels increases SSC risk.
+    </li>
+    <li>
+      <strong>Step 4 — Evaluate chemistry thresholds & indicators:</strong>
+      <ul>
+        <li>HIC / SOHIC: H₂S present (ppm scale), free water, near-neutral pH, sulfide film formation and wetting cycles.</li>
+        <li>SSC: H₂S present + high stress/residual stress + susceptible microstructure/weld HAZ and little/no PWHT.</li>
+        <li>Chloride SCC: Chloride > tens-hundreds ppm (threshold depends on alloy & T), tensile stress, and temperature typically > 40°C for many austenitics.</li>
+        <li>Caustic cracking: Local high-pH (caustic) environments, stressed welds/heat-affected zones.</li>
+      </ul>
+    </li>
+    <li>
+      <strong>Step 5 — Combine evidence to produce candidate list:</strong> Use inspection morphology (e.g., flattened blisters, subsurface cracks, IGSCC features, transgranular brittle facets) to prioritize mechanisms.
+    </li>
+  </ul>
+
+  <h4>Outputs Provided by Tool (Screening)</h4>
+  <ul>
+    <li><strong>List of Likely Mechanisms:</strong> Ordered by likelihood (e.g., High/Medium/Low) with short rationale links to why they were flagged.</li>
+    <li><strong>Initial Potential:</strong> H / M / L for each mechanism based on combined inputs.</li>
+    <li><strong>Confidence Flag:</strong> Screening confidence (Low = need more lab data, Medium = supportive evidence, High = consistent field + chemistry + morphology).</li>
+    <li><strong>Recommended Immediate Actions:</strong> Suggested sampling (water/condensate chemistry), deposit analysis, metallographic sectioning, fractography, hardness checks, and targeted NDE (UT/ET/RT).</li>
+    <li><strong>Suggested Mitigations:</strong> Operational changes (dewater, lower chloride, change amine dosing), metallurgical fixes (PWHT, stress relief), and inspection planning updates (shorter interval, focused NDE).</li>
+  </ul>
+
+  <h4>Recommended Follow-up Tests & Evidence to Collect</h4>
+  <ul>
+    <li><strong>Water / condensate analysis:</strong> pH, chlorides, sulfide, alkalinity, dissolved oxygen, ammonia, caustic, organics.</li>
+    <li><strong>Deposit / scale sampling:</strong> Composition (chloride salts, sulfides, naphthenates), profile of deposits from affected areas.</li>
+    <li><strong>Metallurgical exam:</strong> Macro/micro sections, fractography (SEM if possible), hydrogen mapping, inclusion analysis, hardness (HRC/HV).</li>
+    <li><strong>Operational logs:</strong> Pressure/temperature transients, chemical dosing, maintenance activities (hot work, pickling, cleaning), and recent upset events.</li>
+    <li><strong>NDE focus:</strong> Full UT mapping, focused RT/ET on welds/HAZ, magnetic particle for surface-breaking cracks, and dye-penetrant for non-porous surfaces.</li>
+  </ul>
+
+  <div class="note">
+    <strong>Important:</strong> This finder is a screening aid only. Final root cause determination ALWAYS requires field sampling, lab-based analyses and metallurgical examination. Do not rely on screening results alone for repair or operational shutdown decisions.
+  </div>
+
+  <h4>Quick Examples (Screening cases)</h4>
+  <ul>
+    <li><strong>Case A (Wet H₂S, carbon steel, free water, multiple blisters):</strong> High probability of HIC/SOHIC; collect condensate sample, perform metallography and measure H₂S partial pressure.</li>
+    <li><strong>Case B (Austenitic SS, chloride 200 ppm, T = 65°C, tensile stress high):</strong> Likely chloride SCC; recommend deposit sampling, DO measurement, crevice assessment and consider material replacement or mitigation.</li>
+    <li><strong>Case C (Carbon steel, caustic wash, welded nozzle with cracking at HAZ):</strong> Consider caustic cracking / caustic embrittlement; sample for hydroxide and review cleaning/chemical practices and PWHT history.</li>
+  </ul>
+
+  <h4>References & Further Reading</h4>
+  <ul>
+    <li>API 571 — Damage Mechanisms Affecting Fixed Equipment in the Petroleum and Petrochemical Industries.</li>
+    <li>API 578 / API 580 / API 581 — Inspection practices and RBI methodologies related to corrosion and damage mechanism assessment.</li>
+    <li>ISO and NACE standards on H₂S-related cracking, SCC testing and water chemistry analysis.</li>
+    <li>Materials handbooks and metallurgy references for microstructure susceptibility (e.g., sensitization charts for stainless steels).</li>
+  </ul>
+
+  <div class="note" style="margin-top:12px;">
+    <strong>Workflow Summary:</strong> Gather field chemistry & inspection morphology → screen mechanisms with this tool → collect targeted samples and NDE → perform metallurgical exam → confirm root cause → implement mitigation and update inspection plan.
+  </div>
+</section>
+
+
+        <!-- Stress & Material -->
+        <section id="stress-material" class="card" tabindex="-1">
+  <h2>Stress & Material Data — Allowable Stress Estimator (API / ASME)</h2>
+  <p class="muted">
+    This tool estimates the allowable stress values, yield strength, and tensile strength for various materials and grades based on ASME and API standards. 
+    By providing the material type, grade, thickness, and operating temperature, it calculates allowable design stresses for pressure-containing components and aids engineering assessments.
+  </p>
+
+  <!-- Placeholder for image -->
+  <div style="text-align:center; margin:20px 0;">
+    <img src="image/stress_material.png" alt="Stress & Material Data Interface" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:5px;">
+    <p class="muted" style="font-size:0.9em; margin-top:5px;">Example screenshot of the Stress & Material Data interface</p>
+  </div>
+
+  <h4>Inputs Required</h4>
+  <ul>
+    <li><strong>Year / Code Reference:</strong> Select the design code or year (e.g., ASME Section II, 2016 edition) to determine stress allowable values.</li>
+    <li><strong>Material Type:</strong> Base material specification (e.g., A312, A106, SA-516) is required to select correct properties.</li>
+    <li><strong>Material Grade:</strong> Specify the grade (e.g., TP321, Gr 70) to accurately determine mechanical properties.</li>
+    <li><strong>Component Thickness:</strong> Provide actual or nominal thickness (mm) to adjust allowable stress if thickness-dependent rules apply.</li>
+    <li><strong>Operating Temperature (°C):</strong> Temperature directly affects allowable stress values; enter the service temperature for correct estimation.</li>
+  </ul>
+
+  <h4>Calculation & Flow</h4>
+  <ul>
+    <li>The estimator follows <b>ASME / API material property methodology</b>:
+      <ul>
+        <li>Step 1: Select year/code, material, and grade.</li>
+        <li>Step 2: Adjust allowable stress for thickness and temperature according to ASME Section II rules.</li>
+        <li>Step 3: Retrieve yield strength (σy) and ultimate tensile strength (σu) from standard tables.</li>
+        <li>Step 4: Calculate allowable stress value (S) based on material properties and design factors.</li>
+        <li>Step 5: Present outputs clearly, including recommended design limits for engineering calculations.</li>
+      </ul>
+    </li>
+    <li>All calculations take into account temperature derating, material-specific design factors, and ASME/API code compliance to ensure safe and accurate values.</li>
+  </ul>
+
+  <h4>Outputs Provided</h4>
+  <ul>
+    <li><strong>Allowable Stress Value (S):</strong> MPa value adjusted for material, thickness, and operating temperature.</li>
+    <li><strong>Yield Strength (σy):</strong> Material yield strength in MPa.</li>
+    <li><strong>Tensile Strength (σu):</strong> Material ultimate tensile strength in MPa.</li>
+    <li>Clear tabular representation for quick reference and design validation.</li>
+  </ul>
+
+  <h4>Example Inputs & Results</h4>
+  <table style="width:100%; border-collapse: collapse; margin-top:10px;">
+    <tr style="background:#f0f0f0;">
+      <th style="border:1px solid #ccc; padding:8px;">Input</th>
+      <th style="border:1px solid #ccc; padding:8px;">Value</th>
+    </tr>
+    <tr>
+      <td style="border:1px solid #ccc; padding:8px;">Select Year</td>
+      <td style="border:1px solid #ccc; padding:8px;">2016</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #ccc; padding:8px;">Select Material</td>
+      <td style="border:1px solid #ccc; padding:8px;">A312</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #ccc; padding:8px;">Select Grade</td>
+      <td style="border:1px solid #ccc; padding:8px;">TP321</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #ccc; padding:8px;">Thickness (mm)</td>
+      <td style="border:1px solid #ccc; padding:8px;">>10 mm</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #ccc; padding:8px;">Operating Temperature (°C)</td>
+      <td style="border:1px solid #ccc; padding:8px;">456</td>
+    </tr>
+    <tr style="background:#f9f9f9;">
+      <td style="border:1px solid #ccc; padding:8px;">Allowable Stress Value</td>
+      <td style="border:1px solid #ccc; padding:8px;">96.06 MPa</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #ccc; padding:8px;">Yield Strength</td>
+      <td style="border:1px solid #ccc; padding:8px;">172 MPa</td>
+    </tr>
+    <tr style="background:#f9f9f9;">
+      <td style="border:1px solid #ccc; padding:8px;">Tensile Strength</td>
+      <td style="border:1px solid #ccc; padding:8px;">483 MPa</td>
+    </tr>
+  </table>
+
+  <div class="note" style="margin-top:15px;">
+    <strong>Workflow Summary:</strong> Select code/year → Input material & grade → Enter thickness & operating temperature → Calculate allowable stress → Retrieve yield and tensile strengths → Validate for design use.
+  </div>
+</section>
+
+
+
+        <!-- FAQ -->
+       <!-- FAQ -->
+<section id="faq" class="card" tabindex="-1">
+  <h2>FAQ & Troubleshooting</h2>
+  <dl>
+    <!-- Corrosion Rate -->
+
+      
+    <dt>Q: How is the estimated corrosion rate calculated?</dt>
+    <dd>A: Corrosion rate is calculated from ultrasonic thickness measurements over time using:<br>
+        <strong>Corrosion Rate (mm/year) = (Initial Thickness – Current Thickness) ÷ Time Interval</strong>.<br>
+        Tips: Measure at multiple points to reduce variability, avoid damaged or rusty spots, and document all readings.</dd>
+
+    <dt>Q: Short-term vs long-term corrosion rates — what's the difference?</dt>
+    <dd>Short-term corrosion rate (STCR) reflects recent operating conditions, whereas long-term corrosion rate (LTCR) uses historical data to predict trends. Use both for accurate remaining life estimates.</dd>
+
+    <dt>Q: What should I do if corrosion readings fluctuate a lot?</dt>
+    <dd>Check measurement location, probe calibration, and surface condition. Consider averaging nearby readings and investigating unusual spikes for process changes.</dd>
+
+    <!-- Remaining Life -->
+    <dt>Q: How is remaining life determined?</dt>
+    <dd>Remaining life is estimated by: <br>
+        <strong>Remaining Life = (Current Thickness – Minimum Allowable Thickness) ÷ Corrosion Rate</strong>.<br>
+        Notes: Use the lower of STCR or LTCR for safety. Ensure all units match (e.g., mm and years).</dd>
+
+    <dt>Q: Can I predict remaining life for equipment with irregular corrosion?</dt>
+    <dd>Yes, but use localized thinning data and trend analysis. Document assumptions and use conservative estimates for safety-critical components.</dd>
+
+    <!-- Projected Failure -->
+    <dt>Q: How to estimate projected failure date?</dt>
+    <dd>Calculate the date when thickness reaches T-min:<br>
+        <strong>Projected Failure Date = Last Measurement Date + Remaining Life</strong>.<br>
+        Tip: Consider corrosion rate variability and safety margin; always document calculations.</dd>
+
+    <!-- Inventory Calculations -->
+    <dt>Q: Inventory calculations are incorrect or missing fluids — what to check?</dt>
+    <dd>Ensure all fluid properties are entered correctly and marked as active. Refresh the page, verify unit consistency, and check console for errors. Use SI units whenever possible.</dd>
+
+    <dt>Q: How are mass and volume flow rates converted for inventory?</dt>
+    <dd>Use <strong>Density × Volume = Mass</strong> and <strong>Mass ÷ Density = Volume</strong>. For gas mixtures, use mole fractions and ideal gas laws as needed.</dd>
+
+    <!-- Inspection Confidence -->
+    <dt>Q: How is Individual Inspection Confidence (IIC) calculated?</dt>
+    <dd>IIC depends on inspection method, coverage, and probability of detection (POD). Follow API-581 guidelines for numeric values and documentation.</dd>
+
+    <dt>Q: How is Aggregate Inspection Confidence (AIC) derived?</dt>
+    <dd>AIC combines multiple IIC values using a statistical approach to reflect overall confidence in detecting damage in a system or component.</dd>
+
+    <!-- Design Thickness -->
+    <dt>Q: How to calculate design thickness as per B31.3?</dt>
+    <dd>Use B31.3 formulas considering:<br>
+        - Internal pressure<br>
+        - Corrosion allowance<br>
+        - Material allowable stress<br>
+        - Joint efficiency (E)<br>
+        Ensure consistent units (e.g., mm, MPa) and check code tables for allowable stresses.</dd>
+
+    <dt>Q: How to calculate design thickness as per ASME Sec VIII Div 1?</dt>
+    <dd>Consider:<br>
+        - Internal or external pressure<br>
+        - Corrosion allowance<br>
+        - Weld/joint efficiency<br>
+        - Material design stress<br>
+        Follow ASME formulas for cylinders, spheres, cones, and heads.</dd>
+
+    <!-- Corrosion Diagrams -->
+    <dt>Q: How to interpret corrosion diagrams according to damage mechanisms?</dt>
+    <dd>Match process parameters (temperature, pH, stress, chemical environment) with typical damage mechanisms such as:<br>
+        - SCC (Stress Corrosion Cracking)<br>
+        - HIC (Hydrogen Induced Cracking)<br>
+        - Pitting or Erosion-Corrosion<br>
+        Use diagrams to identify high-risk areas and preventive measures.</dd>
+
+    <!-- Toxic Value -->
+    <dt>Q: What does the toxic value indicate in process fluids?</dt>
+    <dd>It indicates the hazard level of fluid exposure. Always follow PPE guidelines, Material Safety Data Sheets (MSDS), and safe handling procedures.</dd>
+
+    <!-- Electrochemical Criteria -->
+    <dt>Q: How to find initial potential as per criteria?</dt>
+    <dd>Measure using reference electrodes according to standard test conditions. Calibrate instruments and follow temperature, pH, and chemical criteria specified for the material.</dd>
+
+    <!-- Additional Tips -->
+    <dt>Q: Any general tips for better monitoring and calculations?</dt>
+    <dd>
+        <ul>
+            <li>Document all readings and assumptions.</li>
+            <li>Maintain calibration logs for measurement instruments.</li>
+            <li>Use conservative estimates for safety-critical components.</li>
+            <li>Check historical data for trend validation.</li>
+            <li>Regularly review and update material and process data.</li>
+        </ul>
+    </dd>
+
+  </dl>
+
+  <h4>Troubleshooting Checklist</h4>
+  <ul>
+    <li>Clear cache and hard reload for accurate display.</li>
+    <li>Use latest Chrome, Edge, or Firefox browsers.</li>
+    <li>Check DevTools (F12) for JS/CSS errors.</li>
+    <li>Ensure all units are consistent before calculations.</li>
+    <li>Verify historical and current measurement data are correctly saved.</li>
+    <li>Check code compliance and formulas used for B31.3/ASME calculations.</li>
+    <li>Confirm environmental parameters for corrosion diagrams and criteria.</li>
+    <li>Use conservative assumptions for remaining life and projected failure dates.</li>
+  </ul>
+</section>
+
+  
+        <div class="footer">
+          <div style="margin-bottom:8px">Still need help? <a id="helpFooterContactLink" href="javascript:void(0)" onclick="if(window.SYSTEM_CONFIG?.adminContactEmail){location.href='mailto:'+window.SYSTEM_CONFIG.adminContactEmail;}else{alert('Please contact your System Administrator.');}">Contact System Administrator</a></div>
+          <div style="font-size:12px;color:#9aa4b2">© 2025 Created by Avijit Kayet</div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="help.js"></script>
+
+  </body>
+</html>

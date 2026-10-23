@@ -1,0 +1,26 @@
+/* ==========================================================================
+   H2U CORROSION FLOW DIAGRAM - THEME ACCENTS
+   Layout and Fullscreen handled by Flowdiagrams.css
+   ========================================================================== */
+
+#h2uModal .sidebar {
+  background-color: #f5f3ff !important;
+  border-right: 1px solid #ddd6fe !important;
+}
+
+#h2uModal .sidebar h3 {
+  color: #6d28d9;
+  border-bottom: 2px solid #7c3aed;
+}
+
+#h2uModal .diagram-dm-list li.active {
+  background: #ede9fe !important;
+  border-color: #7c3aed !important;
+  box-shadow: inset 3px 0 0 #7c3aed, 0 1px 4px rgba(124, 58, 237, 0.15) !important;
+  color: #6d28d9 !important;
+}
+
+#h2uModal .diagram-dm-list li.active .dm-item-code {
+  background: #7c3aed !important;
+  color: #ffffff !important;
+}

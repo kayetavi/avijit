@@ -1,0 +1,218 @@
+<div id="cof_calculatorTab" class="tab-content" style="display:none;">
+
+  <section id="cof_calculator">
+    <h1>API 581 Level 2 – Consequence of Failure Calculator</h1>
+
+  
+    <!-- ================= Storage / Operating ================= -->
+<section class="card">
+  <h2>Storage / Operating Conditions (Sec 4.1)</h2>
+  <div class="grid">
+    <label>Storage Pressure, Ps (kg/cm²)
+      <input type="number" id="cof_ps_bar" step="0.01" placeholder="e.g. 15" />
+    </label>
+    <label>Storage Temperature, Ts (°C)
+      <input type="number" id="cof_ts_c" step="0.1" placeholder="e.g. 35" />
+    </label>
+    <label>Ambient Pressure, Patm (bar abs)
+      <input type="number" id="cof_patm_bar" step="0.001" value="1.013" />
+    </label>
+    <label>Ambient Temp, Tamb (°C)
+      <input type="number" id="cof_tamb_c" step="0.1" value="21" />
+    </label>
+    <label>Stored Phase
+  <select id="cof_stored_phase">
+    <option value="" selected disabled hidden>-- Select Phase --</option>
+    <option value="liquid">Liquid</option>
+    <option value="vapor">Gas/Vapor</option>
+    <option value="two_phase">Two-phase</option>
+    <option value="supercritical">Supercritical</option>
+  </select>
+</label>
+
+  </div>
+</section>
+
+<!-- ================= Fluid Properties ================= -->
+<section class="card">
+  <h2>Fluid Properties</h2>
+  <div class="grid">
+    <label>Fluid
+  <select id="cof_fluid" onchange="autofillFluidProperties()">
+    <option value="">-- Select Fluid --</option>
+  </select>
+</label>
+
+    
+
+    <label>Density (liquid) ρl (kg/m³)
+      <input type="number" id="cof_rho_l" step="0.1" readonly />
+    </label>
+    <label>Molecular Weight, MW (kg/kmol)
+      <input type="number" id="cof_mw" step="0.001" readonly />
+    </label>
+    <label>Normal Boiling Point, NBP (°C)
+      <input type="number" id="cof_nbp_c" step="0.1" readonly />
+    </label>
+    <label>Specific Heat Ratio, k (= Cp/Cv)
+      <input type="number" id="cof_k_ratio" step="0.001" />
+    </label>
+    <label>Autoignition Temp, AIT (°C)
+      <input type="number" id="cof_ait_c" step="0.1" />
+    </label>
+  </div>
+</section>
+
+
+    <!-- ================= Geometry & Inventory ================= -->
+<!-- ================= Geometry & Inventory ================= -->
+<section class="card">
+  <h2>Release Geometry / Inventory (Sec 4.2, 4.4)</h2>
+  <div class="grid">
+
+    <!-- 🔽 New Dropdown for Hole Size (AUTO SELECTION) -->
+   <label>Release Hole Size
+  <select id="cof_release_size">
+    <option value="small">Small (0–6.4 mm)</option>
+    <option value="medium">Medium (>6.4–51 mm)</option>
+    <option value="large">Large (>51–152 mm)</option>
+    <option value="rupture">Rupture (>152 mm)</option>
+    <option value="user">User Input</option> <!-- ✅ Add this -->
+  </select>
+</label>
+
+<label>Hole Diameter dn (mm)
+  <input type="number" id="cof_dn_mm" step="0.1" disabled /> <!-- ✅ Start as disabled -->
+</label>
+
+
+    <!-- 🔁 Pipe/Component Diameter -->
+    <label>Component ID D (mm)
+      <input type="number" id="cof_D_mm" step="0.1" />
+    </label>
+
+    <label>Discharge Coefficient Cd
+      <input type="number" id="cof_cd" step="0.01" value="1.0" />
+    </label>
+    <label>Viscosity Factor Kv
+      <input type="number" id="cof_kv" step="0.001" value="1.0" />
+    </label>
+    <label>Inventory Group Mass (kg)
+      <input type="number" id="cof_inv_group_mass" step="0.1" />
+    </label>
+   
+    <label>Flash Fraction (0–1)
+      <input type="number" id="cof_flash_frac" step="0.01" value="0.0" />
+    </label>
+
+    <!-- ✅ New dropdowns for Table 4.6/4.7M -->
+<label>Detection Effectiveness
+  <select id="cof_detect_label">
+    <option value="A">A (Best)</option>
+    <option value="B">B (Medium)</option>
+    <option value="C" selected>C (Poor)</option>
+  </select>
+</label>
+
+<label>Isolation Effectiveness
+  <select id="cof_iso_label">
+    <option value="A">A (Best)</option>
+    <option value="B">B (Medium)</option>
+    <option value="C" selected>C (Poor)</option>
+  </select>
+</label>
+    
+    <label>Release Type
+      <select id="cof_release_type">
+        <option value="auto">Auto (based on duration)</option>
+        <option value="continuous">Continuous</option>
+        <option value="instantaneous">Instantaneous</option>
+      </select>
+    </label>
+  </div>
+</section>
+
+
+
+    <!-- ================= Outcome Coefficients ================= -->
+    <section class="card">
+      <h2>Outcome Model Coefficients (Sec 4.8–4.10)</h2>
+      <p class="hint">CA = a·rateᵇ (continuous) or CA = c·massᵈ (instantaneous). Enter API 581 table values.</p>
+      <div class="grid grid-2">
+        <div>
+          <h3>Continuous (a·rateᵇ)</h3>
+          <label>a_flash <input type="number" id="cof_a_flash" /></label>
+          <label>b_flash <input type="number" id="cof_b_flash" /></label>
+          <label>a_jet <input type="number" id="cof_a_jet" /></label>
+          <label>b_jet <input type="number" id="cof_b_jet" /></label>
+          <label>a_pool <input type="number" id="cof_a_pool" /></label>
+          <label>b_pool <input type="number" id="cof_b_pool" /></label>
+          <label>a_vce <input type="number" id="cof_a_vce" /></label>
+          <label>b_vce <input type="number" id="cof_b_vce" /></label>
+        </div>
+        <div>
+          <h3>Instantaneous (c·massᵈ)</h3>
+          <label>c_flash <input type="number" id="cof_c_flash" /></label>
+          <label>d_flash <input type="number" id="cof_d_flash" /></label>
+          <label>c_jet <input type="number" id="cof_c_jet" /></label>
+          <label>d_jet <input type="number" id="cof_d_jet" /></label>
+          <label>c_pool <input type="number" id="cof_c_pool" /></label>
+          <label>d_pool <input type="number" id="cof_d_pool" /></label>
+          <label>c_vce <input type="number" id="cof_c_vce" /></label>
+          <label>d_vce <input type="number" id="cof_d_vce" /></label>
+        </div>
+      </div>
+
+      <div class="grid">
+        <label>Flash-fire equipment-damage fraction
+          <input type="number" id="cof_flash_area_fraction" step="0.01" value="0.25" />
+        </label>
+      </div>
+    </section>
+
+    <!-- ================= Auto Ignition ================= -->
+    <section class="card">
+      <h2>Ignition Probability (auto, Sec 4.11)</h2>
+      <div class="grid">
+        <label>Ignition scale k1 <input type="number" id="cof_ign_k1" step="0.001" value="0.02" /></label>
+        <label>Ignition exponent k2 <input type="number" id="cof_ign_k2" step="0.001" value="1.0" /></label>
+        <label>AIT sensitivity k3 <input type="number" id="cof_ign_k3" step="1" value="50" /></label>
+        <label>Late ignition min fraction <input type="number" id="cof_late_min" step="0.01" value="0.25" /></label>
+        <label>Late ignition max fraction <input type="number" id="cof_late_max" step="0.01" value="0.75" /></label>
+      </div>
+    </section>
+
+    <!-- ================= Toxic + Non-Toxic + Financial ================= -->
+    <section class="card">
+      <h2>Toxic, Non-Toxic & Financial Parameters</h2>
+      <div class="grid">
+        <label>Toxic coeff a (continuous) <input type="number" id="cof_tox_a" /></label>
+        <label>Toxic coeff b (continuous) <input type="number" id="cof_tox_b" /></label>
+        <label>Toxic coeff c (instant) <input type="number" id="cof_tox_c" /></label>
+        <label>Toxic coeff d (instant) <input type="number" id="cof_tox_d" /></label>
+
+        <label>Non-toxic coeff a <input type="number" id="cof_ntox_a" /></label>
+        <label>Non-toxic coeff b <input type="number" id="cof_ntox_b" /></label>
+        <label>Non-toxic coeff c <input type="number" id="cof_ntox_c" /></label>
+        <label>Non-toxic coeff d <input type="number" id="cof_ntox_d" /></label>
+
+        <label>Equipment Damage Cost ($/m²) <input type="number" id="cof_cost_equipment" value="1000" /></label>
+        <label>Injury/Fatality Cost ($/m²) <input type="number" id="cof_cost_injury" value="5000" /></label>
+        <label>Production Loss Cost ($/m²) <input type="number" id="cof_cost_production" value="2000" /></label>
+      </div>
+    </section>
+
+    <!-- ================= Actions + Results ================= -->
+    <section class="actions">
+      <button id="cof_calcBtn">Calculate COF</button>
+      <button id="cof_resetBtn" class="secondary">Reset</button>
+    </section>
+
+    <section class="card">
+      <h2>Results</h2>
+      <pre id="cof_output">Press "Calculate COF"</pre>
+    </section>
+
+  </section> <!-- end of cof_calculator -->
+
+</div> <!-- end of cof_calculatorTab -->

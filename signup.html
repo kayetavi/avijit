@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sign Up</title>
+  <style>
+    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+    .container { max-width: 300px; margin: auto; background: white; padding: 20px; border-radius: 5px; }
+    input { width: 100%; padding: 8px; margin: 10px 0; }
+    button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Sign Up</h2>
+    <input type="text" id="newUsername" placeholder="New Username" required />
+    <input type="password" id="newPassword" placeholder="New Password" required />
+    <button onclick="signUp()">Create Account</button>
+    <p id="signupMsg"></p>
+  </div>
+
+  <script>
+    async function signUp() {
+      const username = document.getElementById('newUsername').value;
+      const password = document.getElementById('newPassword').value;
+      const msg = document.getElementById('signupMsg');
+
+      const res = await fetch('/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+      msg.textContent = data.message;
+
+      if (res.ok) {
+        msg.style.color = 'green';
+      } else {
+        msg.style.color = 'red';
+      }
+    }
+  </script>
+</body>
+</html>

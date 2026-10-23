@@ -1,0 +1,211 @@
+<div class="tab-content" id="ASMESECTIONVIIIDIV1Tab" style="display: none;">
+  <h1>Pressure Vessel – Shell & Head Thickness Calculator</h1>
+
+  <!-- Component Type Selection -->
+  <label>Select Type:</label>
+  <select id="typeSelector" onchange="updateASMEForm()">
+    <option value="" disabled selected>-- Select Component Type --</option>
+    <option value="shell">Shell</option>
+    <option value="ellipsoidal">Ellipsoidal Head</option>
+    <option value="torispherical">Torispherical Head</option>
+    <option value="hemispherical">Hemispherical Head</option>
+  </select>
+
+  <!-- ✅ SHELL FORM -->
+  <div id="shellForm" class="form-section" style="display: none;">
+  <h3>Cylindrical Shell Inputs:</h3>
+
+  <!-- ✅ Row 1: P & S -->
+  <div class="input-grid">
+    <div>
+      <label>Internal Pressure (P)</label>
+      <input type="number" id="pressure" step="0.01" />
+    </div>
+    <div>
+      <label>Unit</label>
+      <select id="pressureUnit">
+        <option value="MPa">MPa</option>
+        <option value="bar">bar</option>
+        <option value="kgcm2">kg/cm²</option>
+        <option value="psi">psi</option>
+      </select>
+    </div>
+    <div>
+      <label>Design Stress (S)</label>
+      <input type="number" id="stress" step="0.01" />
+    </div>
+    <div>
+      <label>Unit</label>
+      <select id="stressUnit">
+        <option value="MPa">MPa</option>
+        <option value="ksi">ksi</option>
+        <option value="psi">psi</option>
+        <option value="kgcm2">kg/cm²</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ✅ Row 2: R & E -->
+  <div class="input-grid" style="margin-top:10px;">
+    <div>
+      <label>Inside Radius (R)</label>
+      <input type="number" id="radius" step="0.01" />
+    </div>
+    <div>
+      <label>Unit</label>
+      <select id="radiusUnit">
+        <option value="mm">mm</option>
+        <option value="inch">inch</option>
+      </select>
+    </div>
+    <div>
+      <label>Joint Efficiency (E)</label>
+      <input type="number" id="efficiency" step="0.01" value="1.0" />
+    </div>
+    <div></div> <!-- ✅ empty cell to keep grid alignment -->
+  </div>
+</div>
+
+  <!-- ✅ ELLIPSOIDAL HEAD -->
+  <div id="dishedEndForm" class="form-section" style="display: none;">
+    <h3>Ellipsoidal Head Inputs:</h3>
+    <div class="input-grid">
+      <div>
+        <label>Internal Pressure (P)</label>
+        <div class="input-with-unit">
+          <input type="number" id="pressureDished" step="0.01" />
+          <select id="pressureDishedUnit">
+            <option value="MPa">MPa</option>
+            <option value="bar">bar</option>
+            <option value="kgcm2">kg/cm²</option>
+            <option value="psi">psi</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label>Inside Diameter (D)</label>
+        <div class="input-with-unit">
+          <input type="number" id="diameterDished" step="0.01" />
+          <select id="diameterDishedUnit">
+            <option value="mm">mm</option>
+            <option value="inch">inch</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label>Design Stress (S)</label>
+        <div class="input-with-unit">
+          <input type="number" id="stressDished" step="0.01" />
+          <select id="stressDishedUnit">
+            <option value="MPa">MPa</option>
+            <option value="ksi">ksi</option>
+            <option value="psi">psi</option>
+            <option value="kgcm2">kg/cm²</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label>Joint Efficiency (E)</label>
+        <input type="number" id="efficiencyDished" step="0.01" value="1.0" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ TORISPHERICAL HEAD -->
+  <div id="torisphericalForm" class="form-section" style="display: none;">
+    <h3>Torispherical Head Inputs:</h3>
+    <div class="input-grid">
+      <div>
+        <label>Internal Pressure (P)</label>
+        <div class="input-with-unit">
+          <input type="number" id="pressureTori" step="0.01" />
+          <select id="pressureToriUnit">
+            <option value="MPa">MPa</option>
+            <option value="bar">bar</option>
+            <option value="kgcm2">kg/cm²</option>
+            <option value="psi">psi</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label>Inside Diameter (D)</label>
+        <div class="input-with-unit">
+          <input type="number" id="diameterTori" step="0.01" />
+          <select id="diameterToriUnit">
+            <option value="mm">mm</option>
+            <option value="inch">inch</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label>Design Stress (S)</label>
+        <div class="input-with-unit">
+          <input type="number" id="stressTori" step="0.01" />
+          <select id="stressToriUnit">
+            <option value="MPa">MPa</option>
+            <option value="ksi">ksi</option>
+            <option value="psi">psi</option>
+            <option value="kgcm2">kg/cm²</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label>Joint Efficiency (E)</label>
+        <input type="number" id="efficiencyTori" step="0.01" value="1.0" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ HEMISPHERICAL HEAD -->
+  <div id="hemiForm" class="form-section" style="display: none;">
+    <h3>Hemispherical Head Inputs:</h3>
+    <div class="input-grid">
+      <div>
+        <label>Internal Pressure (P)</label>
+        <div class="input-with-unit">
+          <input type="number" id="pressureHemi" step="0.01" />
+          <select id="pressureHemiUnit">
+            <option value="MPa">MPa</option>
+            <option value="bar">bar</option>
+            <option value="kgcm2">kg/cm²</option>
+            <option value="psi">psi</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label>Inside Diameter (D)</label>
+        <div class="input-with-unit">
+          <input type="number" id="diameterHemi" step="0.01" />
+          <select id="diameterHemiUnit">
+            <option value="mm">mm</option>
+            <option value="inch">inch</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label>Design Stress (S)</label>
+        <div class="input-with-unit">
+          <input type="number" id="stressHemi" step="0.01" />
+          <select id="stressHemiUnit">
+            <option value="MPa">MPa</option>
+            <option value="ksi">ksi</option>
+            <option value="psi">psi</option>
+            <option value="kgcm2">kg/cm²</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label>Joint Efficiency (E)</label>
+        <input type="number" id="efficiencyHemi" step="0.01" value="1.0" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Calculate Button -->
+  <button onclick="calculateASMEThickness()">Calculate</button>
+
+
+
+  <!-- ✅ Results -->
+  <div id="results"></div>
+</div>

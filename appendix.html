@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Appendix — Formulas & Notes</title>
+  <link rel="stylesheet" href="rbi-helpformu.css" />
+</head>
+<body>
+  <!-- Logo -->
+  <img src="image/pdflogo.png" alt="Company Logo" style="height:60px; display:block; margin-bottom:10px;" />
+
+  <h1>Appendix — Formulas & Notes</h1>
+
+  <div id="content">
+    <p>Loading formulas...</p>
+  </div>
+
+  <!-- Inputs for calculation -->
+  <div>
+    <h3>Internal Corrosion Probability Calculation</h3>
+    <label>Years (t): <input type="number" id="years" step="0.01" /></label><br />
+    <label>Corrosion Rate (mm/year): <input type="number" id="corrosionRate" step="0.01" /></label><br />
+    <label>Nominal Thickness (mm): <input type="number" id="nominalThickness" step="0.01" /></label><br />
+    <label>Required Thickness (mm): <input type="number" id="requiredThickness" step="0.01" /></label><br />
+    <label>Corrosion Rate (mpy): <input type="number" id="corrRateMPY" step="0.01" /></label><br />
+    <button onclick="calculateCategory()">Calculate Category</button>
+
+    <div id="result" style="margin-top: 20px; font-weight: bold;"></div>
+  </div>
+
+  <script>
+    const password = prompt("Enter password to access Appendix:");
+
+    fetch("/api/formulas", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password })
+    })
+    .then(res => {
+      if (!res.ok) throw new Error("Incorrect password!");
+      return res.json();
+    })
+    .then(data => {
+      let tableHTML = "<table border='1' cellpadding='5' cellspacing='0'><tr><th>Material / Standard</th><th>Type</th><th>Value</th></tr>";
+      data.mill_tolerance_table.forEach(row => {
+        tableHTML += `<tr><td>${row.material}</td><td>${row.type}</td><td>${row.value}</td></tr>`;
+      });
+      tableHTML += "</table>";
+
+      document.getElementById("content").innerHTML = `
+        <h4>Corrosion Rate</h4>
+        <pre>${data.corrosion_rate}</pre>
+
+        <h4>Remaining Life to Tmin</h4>
+        <pre>${data.remaining_life}</pre>
+
+        <h4>Internal Corrosion Category Formula</h4>
+        <pre>${data.internal_corrosion_category}</pre>
+
+        <h4>Design Thickness Calculation: B31.3</h4>
+        <pre>${data.b31_3}</pre>
+
+        <h4>Design Thickness Calculation: ASME Section VIII, Division 1</h4>
+        <pre>${data.asme_viii}</pre>
+
+        <h4>Volume Formulas</h4>
+        <pre>
+Cylinder: ${data.volume_formulas.cylinder}
+Sphere: ${data.volume_formulas.sphere}
+Frustum: ${data.volume_formulas.frustum}
+Heads (pressure vessels):
+  Hemispherical: ${data.volume_formulas.hemispherical_head}
+  Ellipsoidal: ${data.volume_formulas.ellipsoidal_head}
+  Torispherical: ${data.volume_formulas.torispherical_head}
+        </pre>
+
+        <h4>Mill Tolerance (API 5L, IS, Others)</h4>
+        <pre>${data.mill_tolerance_text}</pre>
+
+        <h5>Mill Tolerance Table</h5>
+        ${tableHTML}
+      `;
+    })
+    .catch(err => {
+      alert(err.message);
+      window.location.href = "help.html";
+    });
+
+    function calculateCategory() {
+      const years = parseFloat(document.getElementById("years").value);
+      const corrRate = parseFloat(document.getElementById("corrosionRate").value);
+      const nominalThickness = parseFloat(document.getElementById("nominalThickness").value);
+      const requiredThickness = parseFloat(document.getElementById("requiredThickness").value);
+      const corrRateMPY = parseFloat(document.getElementById("corrRateMPY").value);
+
+      const resultEl = document.getElementById("result");
+
+      if (
+        isNaN(years) || isNaN(corrRate) || isNaN(nominalThickness) ||
+        isNaN(requiredThickness) || isNaN(corrRateMPY)
+      ) {
+        resultEl.innerText = "Please enter all input values.";
+        return;
+      }
+
+      if (requiredThickness === 0) {
+        resultEl.innerText = "Required Thickness cannot be zero.";
+        return;
+      }
+
+      const wallRatio = nominalThickness / requiredThickness;
+      const cf = years * corrRate;
+
+      let category;
+
+      if (cf >= 1000) {
+        category = 1;
+      } else if (cf >= 100) {
+        category = 2;
+      } else if (cf >= 10) {
+        category = 3;
+      } else if (cf >= 1) {
+        category = 4;
+      } else {
+        resultEl.innerText = "CF must be ≥ 1";
+        return;
+      }
+
+      if (wallRatio > 1.5 && corrRateMPY < 5) {
+        category += 1;
+        if (category > 5) category = 5;
+      }
+
+      resultEl.innerHTML = `
+        <p>Calculated Internal Corrosion Factor (CF): <strong>${cf.toFixed(3)}</strong></p>
+        <p>Calculated Wall Ratio: <strong>${wallRatio.toFixed(3)}</strong></p>
+        <p>Probability Category: <strong>${category}</strong></p>
+      `;
+    }
+  </script>
+</body>
+</html>

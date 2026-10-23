@@ -1,0 +1,112 @@
+<div class="tab-content" id="fluidSelectorTab" style="display: none;">
+  <div class="pfr-main-container">
+
+    <!-- Header Banner -->
+    <div class="pfr-header-banner">
+      <div class="pfr-title-wrap">
+        <div class="pfr-icon-box">🧪</div>
+        <div>
+          <h3>API 581 Process Representative Fluids Library</h3>
+          <p>Thermophysical properties, molecular weights, and flammability parameters across chemical groups (Table 4.1)</p>
+        </div>
+      </div>
+      <div class="pfr-badges-wrap">
+        <span class="pfr-badge pfr-badge-blue">API 581 Table 4.1</span>
+        <span class="pfr-badge pfr-badge-emerald">● Chemical Database</span>
+      </div>
+    </div>
+
+    <!-- Filter Control Card -->
+    <div class="pfr-card">
+      <div class="pfr-card-header">
+        <div class="pfr-card-header-left">
+          <span class="pfr-card-icon">🔍</span>
+          <div>
+            <h4>Fluid Group Filtering & Search</h4>
+            <p>Select one or more chemical material groups to query physical properties and flammability limits</p>
+          </div>
+        </div>
+        <div class="pfr-toolbar">
+          <button type="button" class="pfr-btn-secondary" onclick="if (typeof selectAllFluidGroups === 'function') selectAllFluidGroups();">
+            ⚡ Select All Groups
+          </button>
+          <button type="button" class="pfr-btn-secondary" onclick="if (typeof clearAllFluidGroups === 'function') clearAllFluidGroups();">
+            🧹 Clear Selection
+          </button>
+        </div>
+      </div>
+
+      <!-- Select2 Multi-Select Input Container -->
+      <div class="pfr-filter-group">
+        <label for="materialFilter">Select Chemical / Material Groups:</label>
+        <select id="materialFilter" multiple style="width: 100%;"></select>
+      </div>
+
+      <!-- Scrollable Results Table Wrapper -->
+      <div class="pfr-table-wrapper">
+        <table id="fluidTable" style="display: none;">
+          <thead>
+            <tr>
+              <th>Representative Fluid</th>
+              <th>Applicable Materials / Streams</th>
+              <th>MW (kg/kmol)</th>
+              <th>NBP (°C)</th>
+              <th>NBP (°F)</th>
+              <th>AIT (°C)</th>
+              <th>AIT (°F)</th>
+            </tr>
+          </thead>
+          <tbody id="fluidBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Empty / Initial State Placeholder -->
+      <div class="no-data" id="noDataMessage">
+        <div style="font-size: 32px; margin-bottom: 8px;">🧪</div>
+        <strong>No Fluid Groups Selected</strong>
+        <p style="margin: 4px 0 0 0; font-size: 12.5px; color: #64748b;">
+          Please select one or more fluid groups from the dropdown above or click <em>Select All Groups</em>.
+        </p>
+      </div>
+
+      <!-- Engineering Legend / Property Guide Callout Strip -->
+      <div id="noteSection" style="display: none;">
+        <div class="pfr-note-header">
+          <div class="pfr-note-header-left">
+            <span class="pfr-note-icon">💡</span>
+            <div>
+              <h4 class="pfr-note-title">Engineering Nomenclature & Definitions (API 581 Table 4.1)</h4>
+              <p class="pfr-note-subtitle">Thermophysical parameter references used in Level 2 consequence of failure modeling</p>
+            </div>
+          </div>
+          <span class="pfr-note-badge">Standard Reference</span>
+        </div>
+
+        <div class="pfr-note-body">
+          <div class="pfr-note-row">
+            <span class="pfr-note-tag">MW</span>
+            <span class="pfr-note-desc"><strong>Molecular Weight (kg/kmol or g/mol)</strong> — Critical parameter for vapor density, dispersion rate, and flash fraction calculations.</span>
+          </div>
+          <div class="pfr-note-row">
+            <span class="pfr-note-tag">NBP</span>
+            <span class="pfr-note-desc"><strong>Normal Boiling Point (°C / °F)</strong> — Boiling temperature at 1.013 bar absolute pressure, determining phase flashing behavior upon atmospheric release.</span>
+          </div>
+          <div class="pfr-note-row">
+            <span class="pfr-note-tag">AIT</span>
+            <span class="pfr-note-desc"><strong>Auto-Ignition Temperature (°C / °F)</strong> — Lowest temperature at which the chemical vapor spontaneously ignites in normal atmosphere without an external flame.</span>
+          </div>
+          <div class="pfr-note-row">
+            <span class="pfr-note-tag">Streams</span>
+            <span class="pfr-note-desc"><strong>Representative Process Materials</strong> — Corresponding hydrocarbon blends, refinery cuts, petrochemical intermediates, and service metallurgy.</span>
+          </div>
+        </div>
+
+        <div class="pfr-note-footer">
+          <span>📌 Reference Standard: API Recommended Practice 581, Third Edition (Part 1, Table 4.1) • Level 2 Release & Consequence Modeling</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

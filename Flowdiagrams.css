@@ -1,0 +1,818 @@
+/* ==========================================================================
+   CORROSION PROCESS FLOW DIAGRAMS - EXECUTIVE SUITE STYLES
+   Unified Fullscreen, Pan/Zoom, Toolbar & API 571 Details System
+   ========================================================================== */
+
+/* ── 1. Fullscreen Modal Shell ── */
+#processFlowModal.modal,
+#cduVduModal.modal,
+#mspModal.modal,
+#h2uModal.modal {
+  position: fixed !important;
+  z-index: 2000000 !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  background-color: #090d16 !important;
+  display: none;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  box-sizing: border-box !important;
+}
+
+#processFlowModal .modal-content.fullscreen,
+#cduVduModal .modal-content.fullscreen,
+#mspModal .modal-content.fullscreen,
+#h2uModal .modal-content.fullscreen {
+  background-color: #ffffff !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  border-radius: 0 !important;
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+/* ── 2. Executive Top Toolbar ── */
+.diagram-top-toolbar {
+  height: 54px;
+  min-height: 54px;
+  max-height: 54px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  z-index: 20;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+  user-select: none;
+  gap: 12px;
+}
+
+.diagram-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.diagram-toolbar-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.diagram-active-dm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 20px;
+  padding: 3px 10px;
+  white-space: nowrap;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.diagram-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Buttons in Toolbar */
+.diagram-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #f1f5f9;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  line-height: 1.2;
+}
+
+.diagram-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.diagram-btn:active {
+  transform: scale(0.97);
+}
+
+.diagram-btn-details {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  border-color: #3b82f6;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
+}
+
+.diagram-btn-details:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  border-color: #60a5fa;
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.5);
+}
+
+.diagram-btn-fs {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.diagram-btn-fs:hover {
+  background: rgba(16, 185, 129, 0.3);
+  color: #ffffff;
+  border-color: #10b981;
+}
+
+.diagram-btn-close {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+  font-size: 14px;
+  padding: 6px 10px;
+}
+
+.diagram-btn-close:hover {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+}
+
+.diagram-zoom-group {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.diagram-zoom-group .diagram-btn {
+  border: none;
+  border-radius: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 6px 10px;
+  background: transparent;
+}
+
+.diagram-zoom-group .diagram-btn:last-child {
+  border-right: none;
+}
+
+.diagram-zoom-group .diagram-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ── 3. Main Workspace Container ── */
+#processFlowModal .container,
+#cduVduModal .container,
+#mspModal .container,
+#h2uModal .container {
+  display: flex !important;
+  flex-direction: row !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: calc(100vh - 54px) !important;
+  max-height: calc(100vh - 54px) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  flex: 1 !important;
+  background: #f8fafc !important;
+}
+
+/* ── 4. Sidebar: Damage Mechanisms Catalog ── */
+#processFlowModal .sidebar,
+#cduVduModal .sidebar,
+#mspModal .sidebar,
+#h2uModal .sidebar {
+  position: relative !important;
+  transform: none !important;
+  -webkit-transform: none !important;
+  top: auto !important;
+  left: auto !important;
+  z-index: 10 !important;
+  box-shadow: none !important;
+  width: 320px !important;
+  min-width: 320px !important;
+  max-width: 320px !important;
+  background-color: #f8fafc !important;
+  border-right: 1px solid #cbd5e1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  box-sizing: border-box !important;
+  padding: 12px !important;
+  overflow: hidden !important;
+  transition: width 0.2s ease, min-width 0.2s ease, padding 0.2s ease !important;
+  user-select: none;
+}
+
+/* Sidebar Header */
+.diagram-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #2563eb;
+}
+
+.diagram-sidebar-header h3 {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: 0.2px;
+}
+
+.diagram-dm-count-badge {
+  font-size: 11px;
+  font-weight: 700;
+  background: #e2e8f0;
+  color: #475569;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+
+/* Sidebar Search Box */
+.diagram-sidebar-search {
+  margin-bottom: 10px;
+}
+
+.diagram-sidebar-search input {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 12.5px;
+  background: #ffffff;
+  color: #0f172a;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.diagram-sidebar-search input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Scrollable DM List */
+.diagram-dm-list {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow-y: auto !important;
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+
+.diagram-dm-list::-webkit-scrollbar {
+  width: 6px;
+}
+.diagram-dm-list::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+.diagram-dm-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+.diagram-dm-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.diagram-dm-list li {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 7px 10px !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 6px !important;
+  background: #ffffff !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  gap: 8px !important;
+  color: #1e293b !important;
+}
+
+.diagram-dm-list li:hover {
+  background: #eff6ff !important;
+  border-color: #93c5fd !important;
+  color: #1d4ed8 !important;
+}
+
+.diagram-dm-list li.active {
+  background: #eff6ff !important;
+  border-color: #2563eb !important;
+  box-shadow: inset 3px 0 0 #2563eb, 0 1px 4px rgba(37, 99, 235, 0.15) !important;
+  color: #1d4ed8 !important;
+  font-weight: 700 !important;
+}
+
+.dm-item-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.dm-item-code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  background: #e2e8f0;
+  color: #334155;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.diagram-dm-list li.active .dm-item-code {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.dm-item-name {
+  font-size: 12.5px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dm-item-details-btn {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.dm-item-details-btn:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+/* Sidebar Collapsed State */
+#processFlowModal.sidebar-collapsed .sidebar,
+#cduVduModal.sidebar-collapsed .sidebar,
+#mspModal.sidebar-collapsed .sidebar,
+#h2uModal.sidebar-collapsed .sidebar {
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  overflow: hidden !important;
+  display: none !important;
+}
+
+/* ── 5. Drawing Area & SVG Container ── */
+#processFlowModal .drawing,
+#cduVduModal .drawing,
+#mspModal .drawing,
+#h2uModal .drawing {
+  flex: 1 !important;
+  height: 100% !important;
+  width: 100% !important;
+  position: relative !important;
+  overflow: hidden !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  background-color: #ffffff !important;
+  background-image: radial-gradient(#cbd5e1 1px, transparent 1px) !important;
+  background-size: 24px 24px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+#processFlowModal #svgContainer,
+#cduVduModal #cduvdu-svgContainer,
+#mspModal #msp-svgContainer,
+#h2uModal #h2u-svgContainer {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  overflow: hidden !important;
+  position: relative !important;
+  cursor: grab !important;
+}
+
+#processFlowModal #svgContainer:active,
+#cduVduModal #cduvdu-svgContainer:active,
+#mspModal #msp-svgContainer:active,
+#h2uModal #h2u-svgContainer:active {
+  cursor: grabbing !important;
+}
+
+#processFlowModal #svgContainer svg,
+#cduVduModal #cduvdu-svgContainer svg,
+#mspModal #msp-svgContainer svg,
+#h2uModal #h2u-svgContainer svg {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  display: block !important;
+  user-select: none !important;
+  transition: transform 0.05s linear;
+}
+
+/* Floating Show Details Bar on Drawing */
+.diagram-floating-details {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  z-index: 15;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid #3b82f6;
+  border-radius: 8px;
+  padding: 8px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e3a8a;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.diagram-floating-details:hover {
+  background: #ffffff;
+  border-color: #1d4ed8;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+  transform: translateY(-1px);
+}
+
+.pulsing-radar-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #2563eb;
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pulsing-radar-dot::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #2563eb;
+  animation: radarPulse 1.6s infinite ease-out;
+}
+
+@keyframes radarPulse {
+  0% { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* ── 6. Fullscreen API Mode ── */
+#processFlowModal.is-fullscreen,
+#cduVduModal.is-fullscreen,
+#mspModal.is-fullscreen,
+#h2uModal.is-fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+/* ── 7. Unified API 571 Damage Mechanism Details Modal ── */
+#detailsModal,
+#cduvdu-detailsModal,
+#msp-detailsModal,
+#h2u-detailsModal {
+  position: fixed !important;
+  z-index: 2000050 !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  background-color: rgba(15, 23, 42, 0.75) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  display: none;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+#detailsModal .modal-content,
+#cduvdu-detailsModal .modal-content,
+#msp-detailsModal .modal-content,
+#h2u-detailsModal .modal-content {
+  background: #ffffff !important;
+  border-radius: 12px !important;
+  width: 95vw !important;
+  max-width: 1100px !important;
+  height: 90vh !important;
+  max-height: 90vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  position: relative !important;
+  animation: detailsModalPop 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-sizing: border-box !important;
+}
+
+@keyframes detailsModalPop {
+  0% { opacity: 0; transform: scale(0.96) translateY(8px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Details Modal Header */
+.diagram-details-header {
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.diagram-details-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.diagram-details-standard-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #38bdf8;
+}
+
+.diagram-details-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.diagram-details-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.diagram-btn-explorer {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  border: 1px solid #3b82f6;
+  color: #ffffff;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.diagram-btn-explorer:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+}
+
+.diagram-details-close-btn {
+  font-size: 24px;
+  font-weight: 700;
+  color: #94a3b8;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+
+.diagram-details-close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+/* Horizontal Tabs Bar */
+.diagram-details-tabs-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  background: #f1f5f9;
+  border-bottom: 1px solid #e2e8f0;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.diagram-details-tabs-bar::-webkit-scrollbar {
+  height: 4px;
+}
+.diagram-details-tabs-bar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.diagram-details-tab-btn {
+  padding: 7px 13px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #475569;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+
+.diagram-details-tab-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.diagram-details-tab-btn.active {
+  background: #ffffff;
+  color: #2563eb;
+  border-color: #cbd5e1;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Tab Panes Container */
+.diagram-details-panes-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px 26px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.diagram-details-pane {
+  display: none;
+  animation: paneFade 0.15s ease;
+}
+
+.diagram-details-pane.active {
+  display: block;
+}
+
+@keyframes paneFade {
+  0% { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.diagram-details-pane-content {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: #334155;
+}
+
+.diagram-details-pane-content h3,
+.diagram-details-pane-content h4 {
+  color: #0f172a;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.diagram-details-pane-content ul,
+.diagram-details-pane-content ol {
+  padding-left: 24px;
+  margin: 10px 0;
+}
+
+.diagram-details-pane-content li {
+  margin-bottom: 6px;
+  line-height: 1.6;
+}
+
+.diagram-details-image-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px dashed #cbd5e1;
+}
+
+/* ── 8. Responsive Adjustments ── */
+@media (max-width: 900px) {
+  .diagram-top-toolbar {
+    height: auto;
+    max-height: none;
+    padding: 8px 12px;
+    flex-wrap: wrap;
+  }
+  .diagram-active-dm-badge {
+    max-width: 180px;
+  }
+  #processFlowModal .container,
+  #cduVduModal .container,
+  #mspModal .container,
+  #h2uModal .container {
+    flex-direction: column !important;
+  }
+  #processFlowModal .sidebar,
+  #cduVduModal .sidebar,
+  #mspModal .sidebar,
+  #h2uModal .sidebar {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    height: 190px !important;
+    max-height: 190px !important;
+    border-right: none !important;
+    border-bottom: 1px solid #cbd5e1 !important;
+  }
+}
