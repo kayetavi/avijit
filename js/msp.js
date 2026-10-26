@@ -1,37 +1,37 @@
 // ==========================================================================
-// MAIN-CDUVDU.JS - CRUDE & VACUUM DISTILLATION (CDU / VDU) ENGINE
+// MSP.JS - MEDIUM PRESSURE SEPARATOR (MSP) ENGINE
 // ==========================================================================
 
-let selectedCDUVDUDMCode = "1";
-let cduvduBlinkIntervals = [];
+let selectedMSPDMCode = "3";
+let mspBlinkIntervals = [];
 
-function initCDUVDU() {
-  const modal = document.getElementById("cduVduModal");
+function initMSP() {
+  const modal = document.getElementById("mspModal");
   if (!modal) return;
 
-  const svgContainer = document.getElementById("cduvdu-svgContainer");
+  const svgContainer = document.getElementById("msp-svgContainer");
   if (!svgContainer) return;
 
   if (!svgContainer.querySelector("svg")) {
-    fetch("CDU-VDU-Model.svg")
+    fetch("/assets/models/MSP-Model.svg")
       .then(res => res.text())
       .then(data => {
         svgContainer.innerHTML = data;
-        setupCDUVDUSVGLogic(modal, svgContainer);
+        setupMSPSVGLogic(modal, svgContainer);
       })
       .catch(err => {
-        console.error("Failed to load CDU/VDU SVG:", err);
+        console.error("Failed to load MSP SVG:", err);
       });
   } else {
-    setupCDUVDUSVGLogic(modal, svgContainer);
+    setupMSPSVGLogic(modal, svgContainer);
   }
 }
 
-function setupCDUVDUSVGLogic(modal, svgContainer) {
+function setupMSPSVGLogic(modal, svgContainer) {
   const svgRoot = svgContainer.querySelector("svg");
   if (!svgRoot) return;
 
-  const dmListItems = modal.querySelectorAll("#cduvdu-dm-list li");
+  const dmListItems = modal.querySelectorAll("#msp-dm-list li");
   const viewBox = svgRoot.viewBox.baseVal;
 
   if (!svgRoot.getAttribute("viewBox")) {
@@ -50,19 +50,19 @@ function setupCDUVDUSVGLogic(modal, svgContainer) {
 
   // Bind click logic
   dmListItems.forEach(item => {
-    if (item.__cduvduBound) return;
-    item.__cduvduBound = true;
+    if (item.__mspBound) return;
+    item.__mspBound = true;
 
     item.addEventListener("click", () => {
       const dmCode = item.getAttribute("data-dm").trim();
-      selectCDUVDUDamageMechanism(dmCode, item);
+      selectMSPDamageMechanism(dmCode, item);
     });
   });
 
   // Bind click logic to SVG diagram text & tspan nodes
   svgRoot.querySelectorAll("text, tspan").forEach(txt => {
-    if (txt.__cduvduTxtBound) return;
-    txt.__cduvduTxtBound = true;
+    if (txt.__mspTxtBound) return;
+    txt.__mspTxtBound = true;
     const txtContent = (txt.textContent || "").replace(/\s+/g, '').trim();
     if (!txtContent) return;
 
@@ -80,19 +80,19 @@ function setupCDUVDUSVGLogic(modal, svgContainer) {
       txt.style.cursor = "pointer";
       txt.addEventListener("click", (e) => {
         e.stopPropagation();
-        selectCDUVDUDamageMechanism(matchedDmCode, matchedItem);
+        selectMSPDamageMechanism(matchedDmCode, matchedItem);
         if (typeof window.openAPI571Details === "function") {
-          window.openAPI571Details(matchedDmCode, "cduvdu");
+          window.openAPI571Details(matchedDmCode, "msp");
         }
       });
     }
   });
 
   // Select default if none selected
-  if (!selectedCDUVDUDMCode) selectedCDUVDUDMCode = "1";
-  const defaultItem = modal.querySelector(`#cduvdu-dm-list li[data-dm="${selectedCDUVDUDMCode}"]`) || dmListItems[0];
+  if (!selectedMSPDMCode) selectedMSPDMCode = "3";
+  const defaultItem = modal.querySelector(`#msp-dm-list li[data-dm="${selectedMSPDMCode}"]`) || dmListItems[0];
   if (defaultItem) {
-    selectCDUVDUDamageMechanism(defaultItem.getAttribute("data-dm").trim(), defaultItem, false);
+    selectMSPDamageMechanism(defaultItem.getAttribute("data-dm").trim(), defaultItem, false);
   }
 
   // Setup Pan & Zoom handlers
@@ -137,26 +137,26 @@ function setupCDUVDUSVGLogic(modal, svgContainer) {
   }
 }
 
-function selectCDUVDUDamageMechanism(dmCode, itemEl, triggerBlink = true) {
-  selectedCDUVDUDMCode = dmCode;
-  const modal = document.getElementById("cduVduModal");
+function selectMSPDamageMechanism(dmCode, itemEl, triggerBlink = true) {
+  selectedMSPDMCode = dmCode;
+  const modal = document.getElementById("mspModal");
   if (!modal) return;
 
-  const dmListItems = modal.querySelectorAll("#cduvdu-dm-list li");
+  const dmListItems = modal.querySelectorAll("#msp-dm-list li");
   dmListItems.forEach(li => li.classList.remove("active"));
   if (itemEl) itemEl.classList.add("active");
 
   const itemName = itemEl ? (itemEl.querySelector(".dm-item-name")?.textContent || dmCode) : dmCode;
 
   // Update Top Toolbar Badge
-  const activeBadge = document.getElementById("cduvduActiveBadge");
+  const activeBadge = document.getElementById("mspActiveBadge");
   if (activeBadge) activeBadge.textContent = `🎯 Active DM: ${dmCode} - ${itemName}`;
 
   // Clear previous blinking
-  cduvduBlinkIntervals.forEach(interval => clearInterval(interval));
-  cduvduBlinkIntervals = [];
+  mspBlinkIntervals.forEach(interval => clearInterval(interval));
+  mspBlinkIntervals = [];
 
-  const svgRoot = modal.querySelector("#cduvdu-svgContainer svg");
+  const svgRoot = modal.querySelector("#msp-svgContainer svg");
   if (!svgRoot) return;
 
   svgRoot.querySelectorAll("text, tspan").forEach(txt => {
@@ -183,21 +183,21 @@ function selectCDUVDUDamageMechanism(dmCode, itemEl, triggerBlink = true) {
           txt.style.filter = "";
           return;
         }
-        txt.style.fill = visible ? "#2563eb" : "#00ffff";
-        txt.style.stroke = visible ? "#00ffff" : "#2563eb";
+        txt.style.fill = visible ? "#0d9488" : "#2dd4bf";
+        txt.style.stroke = visible ? "#2dd4bf" : "#0d9488";
         txt.style.strokeWidth = "3px";
-        txt.style.filter = `drop-shadow(0 0 6px ${visible ? "#00ffff" : "#2563eb"}) drop-shadow(0 0 12px ${visible ? "#2563eb" : "#00ffff"})`;
+        txt.style.filter = `drop-shadow(0 0 6px ${visible ? "#2dd4bf" : "#0d9488"}) drop-shadow(0 0 12px ${visible ? "#0d9488" : "#2dd4bf"})`;
         visible = !visible;
       }, 500);
-      cduvduBlinkIntervals.push(interval);
+      mspBlinkIntervals.push(interval);
     }
   });
 }
 
-window.clearCduvduBlinkIntervals = function() {
-  cduvduBlinkIntervals.forEach(i => clearInterval(i));
-  cduvduBlinkIntervals = [];
-  const svgRoot = document.querySelector("#cduvdu-svgContainer svg");
+window.clearMspBlinkIntervals = function() {
+  mspBlinkIntervals.forEach(i => clearInterval(i));
+  mspBlinkIntervals = [];
+  const svgRoot = document.querySelector("#msp-svgContainer svg");
   if (svgRoot) {
     svgRoot.querySelectorAll("text, tspan").forEach(txt => {
       txt.style.fill = "";
@@ -209,57 +209,57 @@ window.clearCduvduBlinkIntervals = function() {
 };
 
 // Open Modal
-function openCDUVDUProcessFlowModal() {
-  const modal = document.getElementById("cduVduModal");
+function openMSPProcessFlowModal() {
+  const modal = document.getElementById("mspModal");
   if (modal) modal.style.display = "block";
-  initCDUVDU();
+  initMSP();
 }
 
-function openCDUVDUModal() {
-  openCDUVDUProcessFlowModal();
+function openMSPModal() {
+  openMSPProcessFlowModal();
 }
 
 // Close Modal
-function closeCDUVDUModal() {
-  const modal = document.getElementById("cduVduModal");
+function closeMSPModal() {
+  const modal = document.getElementById("mspModal");
   if (modal) modal.style.display = "none";
-  window.clearCduvduBlinkIntervals();
+  window.clearMspBlinkIntervals();
   if (document.fullscreenElement === modal && document.exitFullscreen) {
     document.exitFullscreen().catch(() => {});
   }
 }
 
-// Open Details Modal for CDU/VDU
-function openCDUVDUDetailsModal(overrideCode) {
-  const targetCode = overrideCode || selectedCDUVDUDMCode || "1";
-  window.renderAPI571DetailsModal(targetCode, "cduvdu-detailsModal", "cduvdu-detailsContent", "cduvduDetailsModalTitle");
+// Open Details Modal for MSP
+function openMSPDetailsModal(overrideCode) {
+  const targetCode = overrideCode || selectedMSPDMCode || "3";
+  window.renderAPI571DetailsModal(targetCode, "msp-detailsModal", "msp-detailsContent", "mspDetailsModalTitle");
 }
 
-// Close Details Modal for CDU/VDU
-function closeCDUVDUDetailsModal() {
-  const modal = document.getElementById("cduvdu-detailsModal");
+// Close Details Modal for MSP
+function closeMSPDetailsModal() {
+  const modal = document.getElementById("msp-detailsModal");
   if (modal) modal.style.display = "none";
 }
 
 // Global exposure
 if (typeof window !== "undefined") {
-  window.initCDUVDU = initCDUVDU;
-  window.openCDUVDUProcessFlowModal = openCDUVDUProcessFlowModal;
-  window.openCDUVDUModal = openCDUVDUModal;
-  window.closeCDUVDUModal = closeCDUVDUModal;
-  window.openCDUVDUDetailsModal = openCDUVDUDetailsModal;
-  window.closeCDUVDUDetailsModal = closeCDUVDUDetailsModal;
+  window.initMSP = initMSP;
+  window.openMSPProcessFlowModal = openMSPProcessFlowModal;
+  window.openMSPModal = openMSPModal;
+  window.closeMSPModal = closeMSPModal;
+  window.openMSPDetailsModal = openMSPDetailsModal;
+  window.closeMSPDetailsModal = closeMSPDetailsModal;
 
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
-      const detailsModal = document.getElementById("cduvdu-detailsModal");
+      const detailsModal = document.getElementById("msp-detailsModal");
       if (detailsModal && detailsModal.style.display === "flex") {
-        closeCDUVDUDetailsModal();
+        closeMSPDetailsModal();
         return;
       }
-      const cduModal = document.getElementById("cduVduModal");
-      if (cduModal && cduModal.style.display === "block") {
-        closeCDUVDUModal();
+      const mspModal = document.getElementById("mspModal");
+      if (mspModal && mspModal.style.display === "block") {
+        closeMSPModal();
       }
     }
   });

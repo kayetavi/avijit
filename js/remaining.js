@@ -118,6 +118,30 @@ async function calculateRow(row) {
   return await calculateRowAsync(row);
 }
 
+// Direct Remaining Life Helper (t_actual, t_required, CR) -> Backend Engine
+async function calculateRemainingLifeDirect(params = {}) {
+  try {
+    const response = await fetch("/api/remaining?action=calculate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        row: {
+          tagNumber: params.tagNumber || "-",
+          t_actual: params.t_actual ?? params.lastThk,
+          t_required: params.t_required ?? params.tmin,
+          cr: params.cr ?? params.corrosionRate,
+          freq: params.freq || 24,
+          lastDate: params.lastDate
+        }
+      })
+    });
+    return await response.json();
+  } catch (err) {
+    return { error: err.message || "Backend calculation service unavailable." };
+  }
+}
+window.calculateRemainingLifeDirect = calculateRemainingLifeDirect;
+
 
 // ✅ Download Template fetched from Backend Configuration
 async function downloadTemplate() {

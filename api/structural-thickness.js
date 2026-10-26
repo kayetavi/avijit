@@ -2,6 +2,8 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { getAdminFirestore } from "./firebaseAdmin.js";
+import { loadPipeDimensionsFromFirestore } from "./pipe-dimensions.js";
+import { verifyRequestRbac } from "./rbac.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -387,11 +389,9 @@ export const STRUCTURAL_THICKNESS_DATABASE = {
   }
 };
 
-function loadPipeDimensions() {
+async function loadPipeDimensions() {
   try {
-    if (fs.existsSync(PIPE_DIMENSIONS_FILE)) {
-      return JSON.parse(fs.readFileSync(PIPE_DIMENSIONS_FILE, "utf8"));
-    }
+    return await loadPipeDimensionsFromFirestore();
   } catch (err) {
     console.error("Error reading pipe dimensions dataset:", err);
   }
@@ -443,9 +443,9 @@ export default async function handler(req, res) {
   try {
     if (method === "GET") {
       if (action === "tables" || action === "get_all_tables" || action === "get_tables") {
-        const pipeDim = loadPipeDimensions();
+        const pipeDim = await loadPipeDimensions();
         let tables = STRUCTURAL_THICKNESS_DATABASE;
-        let firestoreSource = false;
+        let firestoreSource = pipeDim.source === "firestore";
 
         try {
           const adminDb = getAdminFirestore();
@@ -499,7 +499,7 @@ export default async function handler(req, res) {
       const matSpec = req.query.matSpec || "A106";
       const ca = parseFloat(req.query.ca || "0") || 0;
 
-      const result = performAdvancedLookup(tableId, nps, sch, flangeClass, matSpec, ca);
+      const result = await performAdvancedLookup(tableId, nps, sch, flangeClass, matSpec, ca);
       return res.status(200).json({ success: true, result });
     }
 
@@ -515,18 +515,21 @@ export default async function handler(req, res) {
           customCorrosionAllowance = 0
         } = req.body || {};
 
-        const result = performAdvancedLookup(table, nps, sch, flangeClass, matSpec, parseFloat(customCorrosionAllowance));
+        const result = await performAdvancedLookup(table, nps, sch, flangeClass, matSpec, parseFloat(customCorrosionAllowance));
         return res.status(200).json({ success: true, result });
       }
 
       if (action === "save_assessment") {
-        const { assessment, userEmail } = req.body || {};
+        const authCheck = await verifyRequestRbac(req, res, { requiredPermission: "write" });
+        if (!authCheck.authorized) return;
+
+        const { assessment } = req.body || {};
         try {
           const adminDb = getAdminFirestore();
           if (adminDb) {
             await adminDb.collection("structural_thickness_assessments").add({
               ...assessment,
-              userEmail: userEmail || "engineer@loginapp-feb72.firebaseapp.com",
+              userEmail: authCheck.email,
               createdAt: new Date().toISOString()
             });
           }
@@ -551,7 +554,7 @@ export default async function handler(req, res) {
   }
 }
 
-function performAdvancedLookup(tableId, nps, sch, flangeClass, matSpec = "A106", corrosionAllowance = 0) {
+async function performAdvancedLookup(tableId, nps, sch, flangeClass, matSpec = "A106", corrosionAllowance = 0) {
   const table = STRUCTURAL_THICKNESS_DATABASE[tableId] || STRUCTURAL_THICKNESS_DATABASE["D.2b"];
   const cleanNps = nps.toString().replace(/\"/g, "").replace(/\s*\(.*\)/, "").trim();
 
@@ -568,7 +571,7 @@ function performAdvancedLookup(tableId, nps, sch, flangeClass, matSpec = "A106",
   const t_min_struct_in = Number((t_min_struct_mm / 25.4).toFixed(4));
 
   // Pipe Dimensions & Schedule lookup
-  const pipeDim = loadPipeDimensions();
+  const pipeDim = await loadPipeDimensions();
   const schedules = pipeDim.pipeDataMaster?.[row.nps] || {};
   const nominalWT_mm = schedules[sch] ? parseFloat(schedules[sch]) : null;
 

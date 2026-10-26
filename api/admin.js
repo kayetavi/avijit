@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { getAdminApp, getAdminFirestore, deleteSession, terminateAllUserSessions, verifyServerIdentity } from "./sessionStore.js";
-import { AVAILABLE_MODULES, buildRolePermissions, userRolesCache, loadUsersFromFile, saveUsersToFile, markUserDeleted, markUserRestored, isUserDeleted, USERS_FILE, getRoleMatrix, saveRoleMatrixFile, DEFAULT_ROLE_MATRIX, SUPER_ADMIN_EMAIL, isSuperAdminEmail } from "./rbac.js";
+import { AVAILABLE_MODULES, buildRolePermissions, userRolesCache, loadUsersFromFile, saveUsersToFile, markUserDeleted, markUserRestored, isUserDeleted, USERS_FILE, getRoleMatrix, saveRoleMatrixFile, DEFAULT_ROLE_MATRIX, SUPER_ADMIN_EMAIL, isSuperAdminEmail, syncRolesCollectionToFirestore, getRoleCrudPermissions } from "./rbac.js";
 import { getDamageMechanisms, invalidateDamageMechanismsCache, getStressData, saveStressData, deleteYearStressData, recordsToStressTree } from "./database.js";
 import {
   getFirestoreDb,
@@ -896,11 +896,13 @@ export default async function handler(req, res) {
         }
       }
 
-      const isSuper = targetEmail === SUPER_ADMIN_EMAIL;
+      const isSuper = targetEmail === SUPER_ADMIN_EMAIL || role === "admin";
+      const crudPerms = getRoleCrudPermissions(isSuper ? "admin" : role, payload.permissions);
       const userRecord = {
         id: targetEmail,
         email: targetEmail,
         role: role,
+        permissions: crudPerms,
         allowedModules: perms.modules,
         subsections: perms.subsections,
         isSuperAdmin: isSuper,
@@ -933,6 +935,7 @@ export default async function handler(req, res) {
             uid: authUid || targetEmail,
             email: targetEmail,
             role: role,
+            permissions: crudPerms,
             isSuperAdmin: isSuper,
             updatedAt: Date.now()
           }, { merge: true });
@@ -1151,9 +1154,11 @@ export default async function handler(req, res) {
     // -------------------------------------------------------------
     if (action === "get_role_matrix") {
       const matrix = getRoleMatrix();
+      const rolesCollection = await syncRolesCollectionToFirestore(db);
       return res.status(200).json({
         success: true,
         matrix,
+        rolesCollection,
         availableModules: AVAILABLE_MODULES,
         defaultMatrix: DEFAULT_ROLE_MATRIX
       });
@@ -1169,11 +1174,11 @@ export default async function handler(req, res) {
       incomingMatrix.admin = { ...DEFAULT_ROLE_MATRIX.admin };
 
       saveRoleMatrixFile(incomingMatrix);
+      await syncRolesCollectionToFirestore(db);
 
       // Synchronize all existing users having non-admin, non-custom roles
       const fileUsers = loadUsersFromFile();
       let updatedUsersCount = 0;
-      const clientDb = getFirestoreDb();
 
       for (let i = 0; i < fileUsers.length; i++) {
         const u = fileUsers[i];
@@ -1184,26 +1189,29 @@ export default async function handler(req, res) {
         if (incomingMatrix[userRole] || (userRole === "engineer" && incomingMatrix.lead_engineer)) {
           const effectiveRole = (userRole === "engineer") ? "lead_engineer" : userRole;
           const newPerms = buildRolePermissions(effectiveRole);
+          fileUsers[i].permissions = newPerms.permissions;
           fileUsers[i].allowedModules = newPerms.modules;
           fileUsers[i].subsections = newPerms.subsections;
           fileUsers[i].updatedAt = Date.now();
           userRolesCache.set(u.email.toLowerCase().trim(), fileUsers[i]);
           updatedUsersCount++;
 
-          let roleSynced = false;
           if (db) {
             try {
               await db.collection("userRoles").doc(u.email.toLowerCase().trim()).set({
+                permissions: newPerms.permissions,
                 allowedModules: newPerms.modules,
                 subsections: newPerms.subsections,
                 updatedAt: Date.now()
               }, { merge: true });
-              roleSynced = true;
+              await db.collection("users").doc(u.email.toLowerCase().trim()).set({
+                permissions: newPerms.permissions,
+                updatedAt: Date.now()
+              }, { merge: true });
             } catch (e) {
               console.warn("[Admin] Admin SDK sync role update note:", e?.message);
             }
           }
-
         }
       }
 
@@ -1213,8 +1221,8 @@ export default async function handler(req, res) {
         user: callerEmail || SUPER_ADMIN_EMAIL,
         action: "ROLE_MATRIX_SAVED",
         module: "Roles & Permissions Matrix",
-        recordAffected: "Standard Engineering Roles (Lead Engineer, Inspector, Viewer)",
-        details: `Saved updated role matrix. Synchronized permissions for ${updatedUsersCount} user(s).`
+        recordAffected: "Standard Engineering Roles (Admin, Lead Engineer, Inspector, Viewer)",
+        details: `Saved updated role matrix to Firestore roles collection and synchronized permissions for ${updatedUsersCount} user(s).`
       });
 
       return res.status(200).json({
@@ -1227,6 +1235,7 @@ export default async function handler(req, res) {
 
     if (action === "reset_role_matrix") {
       saveRoleMatrixFile(DEFAULT_ROLE_MATRIX);
+      await syncRolesCollectionToFirestore(db);
       return res.status(200).json({
         success: true,
         message: "Roles & permissions matrix reset to standard engineering defaults.",

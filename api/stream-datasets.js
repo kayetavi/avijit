@@ -1,7 +1,7 @@
 import { getFirestoreDb, getActiveProjectConfig } from "./firestoreClient.js";
 import { getAdminFirestore, verifyServerIdentity } from "./sessionStore.js";
 import { collection, getDocs, doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
-import { getUserRbacData } from "./rbac.js";
+import { getUserRbacData, verifyRequestRbac } from "./rbac.js";
 
 
 
@@ -157,16 +157,10 @@ export default async function handler(req, res) {
         return res.status(400).json({ success: false, error: "Invalid dataset. At least 1 process stream is required." });
       }
 
-      // Verify caller identity for write
-      const identity = await verifyServerIdentity(req);
-      if (!identity || !identity.verified || !identity.email) {
-        return res.status(401).json({
-          success: false,
-          error: "Authentication required. Please provide a valid Firebase ID token or active server session.",
-          reason: identity?.reason || "unauthenticated"
-        });
-      }
-      const callerEmail = identity.email;
+      // Verify caller identity and write permission
+      const authCheck = await verifyRequestRbac(req, res, { requiredPermission: "write" });
+      if (!authCheck.authorized) return;
+      const callerEmail = authCheck.email;
 
       const id = dataset.id || `ds_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
       const now = Date.now();
@@ -228,7 +222,7 @@ export default async function handler(req, res) {
     }
 
     // -------------------------------------------------------------
-    // DELETE: Remove a saved dataset (Admin only) from Live Firestore
+    // DELETE: Remove a saved dataset (Requires 'delete' permission) from Live Firestore
     // -------------------------------------------------------------
     if (method === "DELETE") {
       const id = (req.query && req.query.id) || (req.body && req.body.id);
@@ -236,30 +230,8 @@ export default async function handler(req, res) {
         return res.status(400).json({ success: false, error: "Missing dataset ID to delete" });
       }
 
-      const identity = await verifyServerIdentity(req);
-      if (!identity || !identity.verified || !identity.email) {
-        return res.status(401).json({
-          success: false,
-          error: "Authentication required. Please provide a valid Firebase ID token or active server session.",
-          reason: identity?.reason || "unauthenticated"
-        });
-      }
-      const callerEmail = identity.email.toLowerCase().trim();
-
-      let isCallerAdmin = false;
-      if (callerEmail) {
-        const callerRecord = await getUserRbacData(callerEmail);
-        if (callerRecord && (callerRecord.role === "admin" || callerRecord.isSuperAdmin)) {
-          isCallerAdmin = true;
-        }
-      }
-
-      if (!isCallerAdmin) {
-        return res.status(403).json({
-          success: false,
-          error: "Permission Denied: Only administrators can delete saved datasets."
-        });
-      }
+      const authCheck = await verifyRequestRbac(req, res, { requiredPermission: "delete" });
+      if (!authCheck.authorized) return;
 
       let firestoreDeleted = false;
 

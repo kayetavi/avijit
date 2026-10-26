@@ -763,6 +763,9 @@
 
       const moduleList = (this.availableModules && this.availableModules.length > 0) ? this.availableModules : getInitialAvailableModules();
 
+      const roleTemplates = (window.RBAC && window.RBAC.roleTemplates) || {};
+      const roleTemplateMods = (roleTemplates[role] && roleTemplates[role].modules) || {};
+
       moduleList.forEach(mod => {
         let isAllowed = false;
         if (typeof mods[mod.id] === "boolean") {
@@ -771,14 +774,12 @@
           isAllowed = mods.remainingLife;
         } else if (this.roleMatrixState && this.roleMatrixState[role] && typeof this.roleMatrixState[role][mod.id] === "boolean") {
           isAllowed = this.roleMatrixState[role][mod.id];
-        } else if (role === "admin" || role === "lead_engineer" || role === "engineer") {
+        } else if (typeof roleTemplateMods[mod.id] === "boolean") {
+          isAllowed = roleTemplateMods[mod.id];
+        } else if (role === "admin") {
+          isAllowed = true;
+        } else if (role === "lead_engineer" || role === "engineer") {
           isAllowed = mod.id !== "adminControlCenter";
-        } else if (role === "inspector") {
-          const inspMods = ["damageExplorer", "api581", "api570", "thicknessCalc", "crackingMechanism", "bkStress", "chemicalSuite", "unitConverter", "processFlow"];
-          isAllowed = inspMods.includes(mod.id);
-        } else if (role === "viewer") {
-          const viewMods = ["damageExplorer", "api581", "api570", "processFlow", "unitConverter"];
-          isAllowed = viewMods.includes(mod.id);
         }
 
         // Check if any subsection under this module is active

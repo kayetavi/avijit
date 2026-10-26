@@ -722,8 +722,30 @@ window.RBIApp = {
   activeModal: null, // 'riskMatrix' | 'internalSheet' | 'externalSheet' | 'consequenceSheet' | 'artTable' | 'report' | 'createAsset' | 'createComponent' | 'delete'
 
   init() {
+    this.hydrateMetadata();
     this.loadFromBackend();
     this.render();
+  },
+
+  async hydrateMetadata() {
+    try {
+      const res = await fetch("/api/risk-calculator?action=metadata");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          if (data.artTable) Object.assign(ART_TABLE, data.artTable);
+          if (data.structuralMinThickness) Object.assign(STRUCTURAL_MIN_THICKNESS, data.structuralMinThickness);
+          if (data.leakAreas) Object.assign(EQUIPMENT_LEAK_AREAS, data.leakAreas);
+          if (Array.isArray(data.fluidsDatabase) && data.fluidsDatabase.length > 0) {
+            FLUIDS_DATABASE.splice(0, FLUIDS_DATABASE.length, ...data.fluidsDatabase);
+          }
+          if (data.priorityMatrix) Object.assign(PRIORITY_NUMBER_MATRIX, data.priorityMatrix);
+          if (data.riskMatrix) Object.assign(RISK_LEVEL_MATRIX, data.riskMatrix);
+        }
+      }
+    } catch (err) {
+      console.warn("RBI metadata hydration notice:", err.message);
+    }
   },
 
   async loadFromBackend() {
@@ -741,6 +763,30 @@ window.RBIApp = {
             this.activeAnalysisId = comps[0].analyses?.[0]?.id || "";
           }
           this.render();
+          return;
+        }
+      }
+      // Ensure baseline benchmark analysis is evaluated via backend engine
+      const activeAn = this.getActiveAnalysis();
+      if (activeAn && !activeAn.results) {
+        const calcRes = await fetch("/api/risk-calculator", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "calculate_analysis",
+            inputs: {
+              internalInputs: activeAn.internalInputs || {},
+              externalInputs: activeAn.externalInputs || {},
+              consequenceInputs: activeAn.consequenceInputs || {}
+            }
+          })
+        });
+        if (calcRes.ok) {
+          const calcData = await calcRes.json();
+          if (calcData.success && calcData.results) {
+            activeAn.results = calcData.results;
+            this.render();
+          }
         }
       }
     } catch (err) {
@@ -817,6 +863,9 @@ window.RBIApp = {
   calculateCurrent() {
     const analysis = this.getActiveAnalysis();
     if (!analysis) return null;
+    if (analysis.results && analysis.results.internalPoF && analysis.results.consequence) {
+      return analysis.results;
+    }
     return calculateOverallRBI(analysis.internalInputs, analysis.externalInputs, analysis.consequenceInputs);
   },
 

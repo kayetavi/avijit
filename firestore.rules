@@ -154,6 +154,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /roles/{roleId} {
+      // Role definitions (admin, lead_engineer, inspector, viewer) are readable by authenticated users and writable only by Administrators
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
     match /deletedUsers/{targetUser} {
       // Soft-deleted user tombstone records - Administrator access only
       allow read, write: if isAdmin();
@@ -169,6 +175,30 @@ service cloud.firestore {
     }
 
     match /customDamageMechanisms/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isLeadEngineerOrAdmin();
+    }
+
+    // API 571 Damage Criteria, Erosion Velocity Tables & Screening Rules
+    match /damageCriteria/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isLeadEngineerOrAdmin();
+    }
+
+    // ASME B36.10M / B36.19M Pipe Dimensional Standards & Schedules
+    match /pipeDimensions/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isLeadEngineerOrAdmin();
+    }
+
+    // ASME B31.3 & ASME VIII Engineering Lookup Tables (Y-Factor, W-Factor, Joint Efficiencies, Mill Tolerances)
+    match /b313Catalog/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isLeadEngineerOrAdmin();
+    }
+
+    // API 581 Annex D / API 574 Minimum Structural Thickness Tables
+    match /structural_min_t_tables/{docId} {
       allow read: if isAuthenticated();
       allow write: if isLeadEngineerOrAdmin();
     }

@@ -304,6 +304,12 @@ function estimatePhFromClWppm(clppm) {
   return 5.0;
 }
 
+function sanitizeNumber(val, fallback = NaN) {
+  if (val === null || val === undefined || val === "") return fallback;
+  const n = Number(val);
+  return Number.isFinite(n) ? n : fallback;
+}
+
 export default function handler(req, res) {
   if (req.method !== "POST" && req.method !== "GET") {
     return res.status(405).json({ success: false, message: "Method Not Allowed" });
@@ -311,12 +317,135 @@ export default function handler(req, res) {
 
   try {
     const payload = req.method === "POST" ? (req.body || {}) : (req.query || {});
+    const action = payload.action || "";
     const mechanism = payload.mechanism || payload.type || "";
+
+    // ── 0. GET / POST Metadata Catalog for UI Dropdowns & Reference Curves ──
+    if (action === "metadata" || (req.method === "GET" && !mechanism)) {
+      return res.status(200).json({
+        success: true,
+        metadata: {
+          cui: {
+            materials: ["cs", "ss300", "duplex"],
+            severities: ["Severe", "Moderate", "Mild", "Dry"],
+            table: CUI_TABLE
+          },
+          sulfidation: {
+            csSulfurOptions: [0.2, 0.4, 0.6, 1.5, 2.5, 3.0],
+            csTanOptions: [0.3, 0.65, 1.5, 3.0, 4.0],
+            ssSulfurOptions: [0.2, 0.4, 0.8],
+            ssTanOptions: [1.0, 1.5, 3.0, 4.0],
+            tempRanges: SULFIDATION_TEMP_RANGES
+          },
+          oxidation: {
+            materials: Object.keys(OXIDATION_DATA),
+            tempPoints: OXIDATION_TEMP_POINTS
+          },
+          hcl: {
+            materials: ["Carbon Steel", "300 Series SS", ...Object.keys(HCL_ALLOY_TABLE), ...Object.keys(HCL_OXIDANT_TABLE)],
+            clConcentrations: [0.5, 0.75, 1.0],
+            tempPoints: HCL_TEMP_POINTS
+          },
+          h2so4: {
+            materials: ["304 SS"],
+            temperatures: [30, 40, 60],
+            concentrations: [2, 3.5, 8, 15, 30, 50, 65, 75, 82, 87, 92.5, 98],
+            velocities: ["0.61", "1.83", "2.13"]
+          },
+          alkalineSourWater: {
+            nh4hsOptions: [2, 5, 10, 15],
+            velocities: ALKALINE_VELOCITIES
+          },
+          acidSourWater: {
+            temperatures: [38, 52, 79, 93],
+            phOptions: ["4.75", "5.25", "5.75", "6.25", "6.75"]
+          }
+        }
+      });
+    }
+
+    // ── 0B. Short-Term, Long-Term, Weighted & Accelerated Degradation Rate Model ──
+    if (mechanism === "degradation_rates" || action === "stcr_ltcr") {
+      const baseThk = sanitizeNumber(payload.baseThk ?? payload.t_initial ?? payload.t_base);
+      const midThk = sanitizeNumber(payload.midThk ?? payload.t_previous ?? payload.t_mid);
+      const lastThk = sanitizeNumber(payload.lastThk ?? payload.t_actual ?? payload.t_last);
+
+      if (isNaN(baseThk) || isNaN(lastThk)) {
+        return res.status(400).json({
+          success: false,
+          message: "Valid numeric baseThk (initial thickness) and lastThk (actual thickness) are required."
+        });
+      }
+
+      const daysInYear = 365.25;
+      const msInYear = 1000 * 60 * 60 * 24 * daysInYear;
+
+      const parseDateSafe = (d) => {
+        if (!d) return null;
+        if (typeof d === "string" && /^\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4}$/.test(d.trim())) {
+          const [p1, p2, p3] = d.trim().split(/[-/.]/).map(Number);
+          const yyyy = p3 < 100 ? 2000 + p3 : p3;
+          const dd = p1 > 12 ? p1 : (p2 > 12 ? p2 : p1);
+          const mm = p1 > 12 ? p2 - 1 : (p2 > 12 ? p1 - 1 : p2 - 1);
+          return new Date(yyyy, mm, dd);
+        }
+        const dt = new Date(d);
+        return isNaN(dt.getTime()) ? null : dt;
+      };
+
+      let ltYears = sanitizeNumber(payload.ltYears ?? payload.totalYears);
+      let stYears = sanitizeNumber(payload.stYears ?? payload.recentYears);
+
+      const bDate = parseDateSafe(payload.baseDate);
+      const mDate = parseDateSafe(payload.midDate);
+      const lDate = parseDateSafe(payload.lastDate);
+
+      if (isNaN(ltYears) && bDate && lDate && lDate > bDate) {
+        ltYears = (lDate - bDate) / msInYear;
+      }
+      if (isNaN(stYears) && mDate && lDate && lDate > mDate) {
+        stYears = (lDate - mDate) / msInYear;
+      }
+
+      if (isNaN(ltYears) || ltYears <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Valid positive time span (baseDate to lastDate or ltYears > 0) is required to avoid zero-division."
+        });
+      }
+
+      const ltcr = Math.max(0, (baseThk - lastThk) / ltYears);
+      let stcr = ltcr;
+      if (!isNaN(midThk) && !isNaN(stYears) && stYears > 0) {
+        stcr = Math.max(0, (midThk - lastThk) / stYears);
+      }
+
+      const stWeight = sanitizeNumber(payload.stWeight, 0.6);
+      const ltWeight = sanitizeNumber(payload.ltWeight, 0.4);
+      const weightSum = (stWeight + ltWeight) > 0 ? (stWeight + ltWeight) : 1.0;
+      const weightedCr = ((stcr * stWeight) + (ltcr * ltWeight)) / weightSum;
+
+      const accelFactor = sanitizeNumber(payload.accelerationFactor, 1.25);
+      const acceleratedCr = Math.max(ltcr, stcr) * (accelFactor > 0 ? accelFactor : 1.0);
+      const controllingCr = Math.max(ltcr, stcr);
+
+      return res.status(200).json({
+        success: true,
+        ltcr: Number(ltcr.toFixed(4)),
+        stcr: Number(stcr.toFixed(4)),
+        weightedCr: Number(weightedCr.toFixed(4)),
+        acceleratedCr: Number(acceleratedCr.toFixed(4)),
+        controllingCr: Number(controllingCr.toFixed(4)),
+        rate: Number(controllingCr.toFixed(4)),
+        unit: "mm/year",
+        message: `Controlling CR: ${controllingCr.toFixed(4)} mm/yr (LTCR: ${ltcr.toFixed(4)}, STCR: ${stcr.toFixed(4)}, Weighted: ${weightedCr.toFixed(4)} mm/yr)`
+      });
+    }
 
     // ── 1. CUI Calculation ──
     if (mechanism === "cui") {
       const material = (payload.material || "cs").toLowerCase();
-      const temp = parseFloat(payload.temp);
+      const temp = sanitizeNumber(payload.temp);
       const insulated = payload.insulated === "Yes" || payload.insulated === true;
       const exposed = payload.exposed === "Yes" || payload.exposed === true;
       const severity = payload.severity || "Moderate";
@@ -376,10 +505,10 @@ export default function handler(req, res) {
 
     // ── 2. Alkaline Sour Water Corrosion (NH4HS) ──
     if (mechanism === "Alkaline Sour Water Corrosion") {
-      const nh4hs = parseFloat(payload.nh4hs);
-      const velocity = parseFloat(payload.velocity);
+      const nh4hs = sanitizeNumber(payload.nh4hs);
+      const velocity = sanitizeNumber(payload.velocity);
       const pressureKnown = payload.pressureKnown === "Yes" || payload.pressureKnown === true;
-      const h2sPressure = parseFloat(payload.h2sPressure);
+      const h2sPressure = sanitizeNumber(payload.h2sPressure);
 
       if (isNaN(nh4hs) || isNaN(velocity)) {
         return res.status(400).json({ success: false, message: "Valid NH4HS concentration and velocity are required." });
@@ -444,8 +573,8 @@ export default function handler(req, res) {
 
       const temp = payload.temp || payload.tempASW;
       const ph = payload.ph || payload.phFinalASW;
-      const oxygen = parseFloat(payload.oxygen || payload.oxygenASW) || 0;
-      const velocity = parseFloat(payload.velocity || payload.velocityASW) || 0;
+      const oxygen = sanitizeNumber(payload.oxygen || payload.oxygenASW, 0);
+      const velocity = sanitizeNumber(payload.velocity || payload.velocityASW, 0);
 
       const base = ACID_SOUR_WATER_TABLE[temp]?.[ph];
       if (!base) {
@@ -475,9 +604,9 @@ export default function handler(req, res) {
 
     // ── 4. Sulfidation & Naphthenic Acid Corrosion ──
     if (mechanism === "sulfidation") {
-      const temp = parseFloat(payload.temp || payload.tempSulf);
-      const sulfur = parseFloat(payload.sulfur || payload.sulfurSulf);
-      const tan = parseFloat(payload.tan || payload.tanSulf);
+      const temp = sanitizeNumber(payload.temp || payload.tempSulf);
+      const sulfur = sanitizeNumber(payload.sulfur || payload.sulfurSulf);
+      const tan = sanitizeNumber(payload.tan || payload.tanSulf);
       const material = (payload.material || payload.materialSulf || "CS").toUpperCase();
 
       if (isNaN(temp) || isNaN(sulfur) || isNaN(tan)) {
@@ -523,7 +652,7 @@ export default function handler(req, res) {
     // ── 5. High-Temperature Oxidation ──
     if (mechanism === "oxidation") {
       const material = payload.material || payload.materialOxidation || "CS";
-      const temp = parseFloat(payload.temp || payload.tempOxidation);
+      const temp = sanitizeNumber(payload.temp || payload.tempOxidation);
 
       if (!material || isNaN(temp)) {
         return res.status(400).json({ success: false, message: "Material and temperature are required for Oxidation calculation." });
@@ -561,18 +690,18 @@ export default function handler(req, res) {
     // ── 6. HCl Corrosion ──
     if (mechanism === "HCl Corrosion") {
       const material = payload.material || payload.materialHCl;
-      const temp = parseFloat(payload.temp || payload.tempHCl);
+      const temp = sanitizeNumber(payload.temp || payload.tempHCl);
 
       if (!material || isNaN(temp)) {
         return res.status(400).json({ success: false, message: "Material and temperature are required." });
       }
 
-      let ph = parseFloat(payload.ph || payload.phHCl);
-      if (isNaN(ph) && payload.clwppmHCl) {
-        ph = estimatePhFromClWppm(parseFloat(payload.clwppmHCl));
+      let ph = sanitizeNumber(payload.ph || payload.phHCl);
+      if (isNaN(ph) && payload.clwppmHCl !== undefined) {
+        ph = estimatePhFromClWppm(sanitizeNumber(payload.clwppmHCl));
       }
 
-      let cl = parseFloat(payload.cl || payload.clHCl);
+      let cl = sanitizeNumber(payload.cl || payload.clHCl);
       let oxid = payload.oxid || payload.oxidHCl || "No";
 
       let rate = null;
@@ -613,7 +742,7 @@ export default function handler(req, res) {
     if (mechanism === "H2SO4 Corrosion") {
       const material = payload.material || payload.materialH2SO4 || "304 SS";
       const temp = parseInt(payload.temp || payload.tempH2SO4, 10);
-      const conc = parseFloat(payload.conc || payload.concH2SO4);
+      const conc = sanitizeNumber(payload.conc || payload.concH2SO4);
       const velocityRange = String(payload.velocityRange || payload.velH2SO4 || "<1");
 
       if (material !== "304 SS") {
@@ -645,10 +774,10 @@ export default function handler(req, res) {
 
     // ── 8. CO2 Sweet Corrosion ──
     if (mechanism === "co2" || mechanism === "co2_dew_point" || mechanism === "co2_corrosion") {
-      const action = payload.action || "corrosion";
+      const co2Action = payload.action || "corrosion";
 
-      if (action === "dew_point") {
-        const totalPressure = parseFloat(payload.totalPressure || payload.P);
+      if (co2Action === "dew_point") {
+        const totalPressure = sanitizeNumber(payload.totalPressure || payload.P);
         if (isNaN(totalPressure) || totalPressure <= 0) {
           return res.status(400).json({ success: false, message: "Valid total pressure (bar) is required." });
         }
@@ -661,11 +790,28 @@ export default function handler(req, res) {
         });
       }
 
-      const temp = parseFloat(payload.temp || payload.tempCO2);
-      const ph = parseFloat(payload.ph || payload.phCO2);
-      const pco2 = parseFloat(payload.pco2 || payload.pco2CO2);
-      const shear = parseFloat(payload.shear || payload.shearCO2);
-      const dewPoint = parseFloat(payload.dewPoint || payload.dew);
+      if (co2Action === "mitigation") {
+        const baseRate = sanitizeNumber(payload.baseRate);
+        const eff = Math.min(100, Math.max(0, sanitizeNumber(payload.inhibitorEff ?? payload.efficiency, 0)));
+        if (isNaN(baseRate) || baseRate < 0) {
+          return res.status(400).json({ success: false, message: "Valid baseRate is required for CO2 mitigation calculation." });
+        }
+        const finalRate = baseRate * (1 - eff / 100);
+        return res.status(200).json({
+          success: true,
+          baseRate: Number(baseRate.toFixed(3)),
+          inhibitorEff: eff,
+          finalRate: Number(finalRate.toFixed(3)),
+          rate: Number(finalRate.toFixed(3)),
+          message: `Final Corrosion Rate (with ${eff}% inhibition) = ${finalRate.toFixed(3)} mm/year`
+        });
+      }
+
+      const temp = sanitizeNumber(payload.temp || payload.tempCO2);
+      const ph = sanitizeNumber(payload.ph || payload.phCO2);
+      const pco2 = sanitizeNumber(payload.pco2 || payload.pco2CO2);
+      const shear = sanitizeNumber(payload.shear || payload.shearCO2);
+      const dewPoint = sanitizeNumber(payload.dewPoint || payload.dew);
 
       if ([temp, ph, pco2, shear].some(v => isNaN(v))) {
         return res.status(400).json({ success: false, message: "Please provide temperature, pH, pCO2, and shear stress." });
@@ -682,21 +828,26 @@ export default function handler(req, res) {
       }
 
       // Base Corrosion Rate (Eq 2.B.26)
-      const f_TpH = Math.pow((0.6 + (temp - 20) * 0.01 - (ph - 5) * 0.05), 0.52);
+      const f_TpH = Math.pow(Math.max(0, 0.6 + (temp - 20) * 0.01 - (ph - 5) * 0.05), 0.52);
       const exponent = 0.146 + 0.0324 * (shear / 19);
-      const f_CO2 = Math.pow(pco2, exponent);
+      const f_CO2 = Math.pow(Math.max(0, pco2), exponent);
       const baseRate = f_TpH * f_CO2;
 
       // Check mitigation
-      const hasMitigation = payload.hasGlycolOrInhibitor === "Yes" || payload.glycol !== undefined || payload.inhibitor !== undefined;
+      const hasMitigation = payload.hasGlycolOrInhibitor === "Yes" || payload.glycol !== undefined || payload.inhibitor !== undefined || payload.inhibitorEff !== undefined;
       let finalRate = baseRate;
       let fGlycol = 1.0;
 
       if (hasMitigation) {
-        const glycol = parseFloat(payload.glycol ?? 0);
-        const inhibitor = parseFloat(payload.inhibitor ?? 1.0);
-        fGlycol = Math.pow(10, 1.6 * (Math.log10(100 - Math.max(glycol, 0.01)) - 2));
-        finalRate = baseRate * Math.min(fGlycol, inhibitor);
+        if (payload.inhibitorEff !== undefined) {
+          const eff = Math.min(100, Math.max(0, sanitizeNumber(payload.inhibitorEff, 0)));
+          finalRate = baseRate * (1 - eff / 100);
+        } else {
+          const glycol = sanitizeNumber(payload.glycol, 0);
+          const inhibitor = sanitizeNumber(payload.inhibitor, 1.0);
+          fGlycol = Math.pow(10, 1.6 * (Math.log10(100 - Math.max(glycol, 0.01)) - 2));
+          finalRate = baseRate * Math.min(fGlycol, inhibitor);
+        }
       }
 
       return res.status(200).json({

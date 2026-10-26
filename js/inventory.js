@@ -98,12 +98,29 @@ function toggleCustomPercent() {
 }
 
 // =========================
-// ✅ Auto-fill Density
+// ✅ Auto-fill Density (Hydrated from Backend /api/calculateInventory)
 // =========================
+window.INVENTORY_FLUID_DENSITIES = { water: 1000, diesel: 832, crude: 850, ammonia: 682 };
+async function hydrateInventoryMetadata() {
+  try {
+    const res = await fetch("/api/calculateInventory");
+    if (res.ok) {
+      const data = await res.json();
+      if (data.fluidDensities) {
+        window.INVENTORY_FLUID_DENSITIES = data.fluidDensities;
+      }
+    }
+  } catch (e) {
+    console.warn("Inventory metadata hydration notice:", e);
+  }
+}
+hydrateInventoryMetadata();
+
 function autoFillDensity() {
-  const fluid = document.getElementById("fluidType").value;
-  const densities = { water: 1000, diesel: 832, crude: 850, ammonia: 682 };
-  document.getElementById("density").value = densities[fluid] || "";
+  const fluid = document.getElementById("fluidType")?.value;
+  const densities = window.INVENTORY_FLUID_DENSITIES || { water: 1000, diesel: 832, crude: 850, ammonia: 682 };
+  const densityEl = document.getElementById("density");
+  if (densityEl) densityEl.value = densities[fluid] || "";
 }
 
 // =========================

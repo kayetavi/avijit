@@ -38,7 +38,7 @@
   const interceptorFetch = async function (input, init = {}) {
     try {
       const url = typeof input === "string" ? input : (input && input.url ? input.url : "");
-      if (url && (url.includes("/api/admin") || url.includes("/api/rbac") || url.includes("/api/session") || url.includes("/api/stream-datasets") || url.includes("/api/documents"))) {
+      if (url && (url.startsWith("/api/") || url.includes("/api/"))) {
         const opts = { ...init };
         opts.credentials = opts.credentials || "include";
 

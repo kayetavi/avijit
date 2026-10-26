@@ -62,12 +62,15 @@ import { validateApiRequest, rateLimiter } from "./api/utils/validation.js";
 const app = express();
 const PORT = 3000;
 
-// Security Headers Middleware
+// Security Headers Middleware (Production Hardened)
 app.use((req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("X-Frame-Options", "SAMEORIGIN");
   res.setHeader("X-XSS-Protection", "0");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  res.setHeader("X-Permitted-Cross-Domain-Policies", "none");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   res.setHeader("Content-Security-Policy", "default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'");
   next();
 });
@@ -154,65 +157,48 @@ app.all(["/api/risk-calculator", "/api/risk-calculator/pof", "/api/risk-calculat
 app.all(["/api/chemical-suite", "/api/chemical-suite/chemicals"], safeAsync((req, res) => chemicalSuiteHandler(req, res)));
 app.all(["/api/stress-data", "/api/stress-data/interpolate", "/api/stress-data/template", "/api/stress-data/metadata"], safeAsync((req, res) => stressDataHandler(req, res)));
 
-// Signup endpoint (referenced by signup.html)
-const users = new Map();
-app.post("/signup", (req, res) => {
-  const { username, password } = req.body || {};
-  if (!username || !password) {
-    return res.status(400).json({ message: "Username and password are required." });
-  }
-  users.set(username, { username, password });
-  return res.status(200).json({ message: "Account created successfully!" });
+// Signup endpoint (Locked down: RBAC Admin provisioning required)
+app.post("/signup", authRateLimiter, (req, res) => {
+  return res.status(403).json({
+    success: false,
+    message: "Public self-registration is disabled. User accounts and roles are provisioned by Administrators via the RBAC Control Center."
+  });
 });
 
-// 🛡️ Security Guard: Block direct browser/F12 inspection and download of raw database, secret files, and unbundled calculation files
-const blockedFiles = [
-  "/js/admin-panel.js",
-  "/templates/view-admin-1000.html",
-  "/data.js",
-  "/bk_stressData.js",
-  "/firebase/firebaseConfig.js",
-  "/firebase-blueprint.json",
-  "/Damage_mechanisms_criteria.js",
-  "/Damagemechanism.js",
-  "/Toxic.js",
-  "/api581.js",
-  "/b313.js",
-  "/bk_stressscript.js",
-  "/bk_stress_dataloader.js",
-  "/bulkupload.js",
-  "/categoryLoader.js",
-  "/chart.js",
-  "/chatbot.js",
-  "/cylinderviz.js",
-  "/dashboard.js",
-  "/fluid-selector.js",
-  "/global-script.js",
-  "/h2u.js",
-  "/inspectioncofidence.js",
-  "/inventory.js",
-  "/inventoryChart.js",
-  "/main-cduvdu.js",
-  "/main.js",
-  "/mechanism.js",
-  "/msp.js",
-  "/pipeDataScript_883.js",
-  "/probability.js",
-  "/remaining.js",
-  "/savedata.js",
-  "/search.js",
-  "/simple.js",
-  "/viiidiv1.js"
-];
-
+// 🛡️ Security Guard: Block direct browser/F12 inspection and download of raw source scripts, database files, and maps
 app.use((req, res, next) => {
-  const reqPath = req.path || "";
+  const reqPath = (req.path || "").toLowerCase();
+
+  // 1. Block all source maps (.map files) to prevent reverse-engineering
+  if (reqPath.endsWith(".map") || reqPath.includes(".map")) {
+    return res.status(403).json({
+      error: "Access Denied: Source maps are disabled in production."
+    });
+  }
+
+  // 2. Block direct HTTP access to all individual client scripts in /js/
+  if (reqPath.startsWith("/js/") || reqPath.includes("/js/")) {
+    return res.status(403).json({
+      error: "Access Denied: Protected Resource. Direct access to individual client modules is prohibited. Use compiled production bundle."
+    });
+  }
+
+  // 3. Block raw unbundled JavaScript files anywhere outside of /assets/
+  if (reqPath.endsWith(".js") && !reqPath.startsWith("/assets/")) {
+    return res.status(403).json({
+      error: "Access Denied: Protected Resource. Unbundled source code access is prohibited."
+    });
+  }
+
+  // 4. Block administrative template direct static file download (must load via authenticated /api/admin)
+  if (reqPath.includes("view-admin-1000.html") || reqPath.includes("admin-panel")) {
+    return res.status(403).json({
+      error: "Access Denied: Administrative interface requires authenticated session."
+    });
+  }
+
+  // 5. Block backend data, secrets, environment files and build configs
   if (
-    blockedFiles.includes(reqPath) ||
-    reqPath.endsWith("/admin-panel.js") ||
-    reqPath.endsWith("/view-admin-1000.html") ||
-    reqPath.includes("admin-panel.js") ||
-    reqPath.includes("view-admin-1000.html") ||
     reqPath.startsWith("/secrets/") ||
     reqPath.startsWith("/data/secure/") ||
     reqPath.startsWith("/.git") ||
@@ -223,16 +209,27 @@ app.use((req, res, next) => {
     reqPath.startsWith("/node_modules")
   ) {
     return res.status(403).json({
-      error: "Access Denied: Protected Resource. All proprietary calculation modules and internal configurations are securely protected."
+      error: "Access Denied: Protected Resource. Configuration and internal files are strictly confidential."
     });
   }
+
   next();
 });
 
 // Serve image directory with cache headers
 app.use('/image', express.static(path.join(__dirname, 'image'), { maxAge: '7d', immutable: true }));
 
-// Serve static files from project root
+// Serve organized static directories (public, /assets, /templates, /views) + root fallbacks
+// Note: '/js' static directory is intentionally NOT served to prevent source exposure in DevTools
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/views', express.static(path.join(__dirname, 'public', 'views')));
+app.use(express.static(path.join(__dirname, 'public', 'views')));
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use(express.static(path.join(__dirname, 'assets', 'models')));
+app.use(express.static(path.join(__dirname, 'assets', 'css')));
+app.use('/templates', express.static(path.join(__dirname, 'templates')));
+
+// Serve static files from project root (HTML views only)
 app.use(express.static(__dirname));
 
 // Fallback to index.html for root

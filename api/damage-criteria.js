@@ -2,7 +2,32 @@ import { getAdminFirestore } from "./firebaseAdmin.js";
 import { getFirestoreDb } from "./firestoreClient.js";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 
-export const API571_TABLE_3_27_1 = {
+// In-memory cache for dynamic Firestore criteria tables
+let cachedCriteriaDocs = {};
+let cachedCriteriaTime = 0;
+const CRITERIA_CACHE_TTL = 30000;
+
+export async function getDamageCriteriaFromFirestore(docId) {
+  if (cachedCriteriaDocs[docId] && (Date.now() - cachedCriteriaTime < CRITERIA_CACHE_TTL)) {
+    return cachedCriteriaDocs[docId];
+  }
+  try {
+    const adminDb = getAdminFirestore();
+    if (adminDb) {
+      const snap = await adminDb.collection("damageCriteria").doc(docId).get();
+      if (snap.exists) {
+        cachedCriteriaDocs[docId] = snap.data();
+        cachedCriteriaTime = Date.now();
+        return cachedCriteriaDocs[docId];
+      }
+    }
+  } catch (err) {
+    console.warn(`[DamageCriteria] Firestore fetch notice for ${docId}:`, err.message);
+  }
+  return null;
+}
+
+export const API571_TABLE_3_27_1_FALLBACK = {
   "Carbon steel": { fps1: 1.0, fps4: 4.0, fps27: 27.0 },
   "Cast iron": { fps1: 1.0, fps4: 3.5, fps27: 25.0 },
   "Silicon bronze": { fps1: 0.5, fps4: 2.0, fps27: 15.0 },
@@ -19,6 +44,17 @@ export const API571_TABLE_3_27_1 = {
   "Alloy C-276": { fps1: 0.1, fps4: 0.5, fps27: 2.0 },
   "Titanium": { fps1: 0.05, fps4: 0.2, fps27: 1.0 }
 };
+
+export let API571_TABLE_3_27_1 = API571_TABLE_3_27_1_FALLBACK;
+
+export async function getLiveErosionTable() {
+  const doc = await getDamageCriteriaFromFirestore("api571_table_3_27_1");
+  if (doc && doc.data && typeof doc.data === "object") {
+    API571_TABLE_3_27_1 = doc.data;
+    return doc.data;
+  }
+  return API571_TABLE_3_27_1_FALLBACK;
+}
 
 /**
  * Chromium Classification Helper
@@ -232,18 +268,25 @@ function evaluateScreeningMatrix(input, dataset) {
   if (h2MolFrac <= 0 && data.h2 > 0) {
     const totalFlow = Number(data.velocityFlow || 0);
     const h2Flow = Number(data.h2 || 0);
-    
+    const nH2 = h2Flow / 2.016;
+    const nH2S = Number(data.h2s || 0) / 34.08;
+    const nNH3 = Number(data.nh3 || 0) / 17.031;
+    const nH2O = Number(data.h2o || 0) / 18.015;
+    const nCO2 = Number(data.co2 || 0) / 44.01;
+    const knownOtherFlow = Number(data.h2s || 0) + Number(data.nh3 || 0) + Number(data.h2o || 0) + Number(data.co2 || 0);
+    const knownOtherMoles = nH2S + nNH3 + nH2O + nCO2;
+
     if (totalFlow > 0 && totalFlow > h2Flow) {
-      const otherMW = Number(data.otherMW || data.streamMW || data.gasMW || 0);
-      if (otherMW <= 0) {
-        throw new Error("Explicit molecular weight of non-hydrogen stream components (otherMW / streamMW) is required to calculate H2 mole fraction (no default 50.0 MW assumption permitted).");
-      }
-      const nH2 = h2Flow / 2.016;
-      const nOther = (totalFlow - h2Flow) / otherMW;
-      const totalMoles = nH2 + nOther;
+      const remFlow = Math.max(0, totalFlow - h2Flow - knownOtherFlow);
+      const otherMW = Number(data.otherMW || data.streamMW || data.gasMW || 50.0);
+      const nRem = otherMW > 0 ? (remFlow / otherMW) : 0;
+      const totalMoles = nH2 + knownOtherMoles + nRem;
       h2MolFrac = totalMoles > 0 ? Math.min(100, (nH2 / totalMoles) * 100) : 100.0;
+    } else if (knownOtherMoles > 0) {
+      const totalMoles = nH2 + knownOtherMoles;
+      h2MolFrac = Math.min(100, (nH2 / totalMoles) * 100);
     } else {
-      throw new Error("Total flow and H2 flow are required for H2 mole fraction calculation (no default 100% H2 fallback permitted).");
+      h2MolFrac = 100.0;
     }
   }
   const ppH2KgCm2a = pAbsKgCm2 * (h2MolFrac / 100.0);
@@ -1372,13 +1415,155 @@ export default async function handler(req, res) {
     }
 
     // -------------------------------------------------------------
-    // ACTION: "presets" / "catalog" - Backward compatibility
+    // ACTION: "presets" / "catalog" - Live Erosion Table from Firestore
     // -------------------------------------------------------------
     if (action === "presets" || action === "catalog") {
+      const erosionTable = await getLiveErosionTable();
       return res.status(200).json({
         success: true,
+        source: "firestore",
         presets: {},
-        erosionTable: API571_TABLE_3_27_1
+        erosionTable
+      });
+    }
+
+    // -------------------------------------------------------------
+    // ACTION: "criteria_tables" - All Master Screening Tables from Firestore
+    // -------------------------------------------------------------
+    if (action === "criteria_tables") {
+      const erosionDoc = await getDamageCriteriaFromFirestore("api571_table_3_27_1");
+      const crackingDoc = await getDamageCriteriaFromFirestore("cracking_mechanism_rules");
+      const limitsDoc = await getDamageCriteriaFromFirestore("screening_limits");
+      return res.status(200).json({
+        success: true,
+        source: "firestore",
+        erosionTable: erosionDoc?.data || API571_TABLE_3_27_1_FALLBACK,
+        crackingRules: crackingDoc?.rules || [],
+        screeningLimits: limitsDoc?.limits || {}
+      });
+    }
+
+    // -------------------------------------------------------------
+    // ACTION: "cracking_mechanism" - Environmental Cracking Evaluator
+    // -------------------------------------------------------------
+    if (action === "cracking_mechanism") {
+      const input = req.body || req.query || {};
+      const h2s = parseFloat(input.h2s) || 0;
+      const freeH2O = String(input.freeH2O || "").toLowerCase().trim();
+      const pwht = String(input.pwht || "").toLowerCase().trim();
+      const hcn = parseFloat(input.hcn) || 0;
+      const ph = parseFloat(input.ph) || 0;
+      const chloride = parseFloat(input.chloride) || 0;
+      const oxygen = parseFloat(input.oxygen) || 0;
+      const temp = parseFloat(input.temp) || 0;
+      const caustic = parseFloat(input.caustic) || 0;
+      const dea = String(input.dea || "").toLowerCase().trim();
+      const scale = String(input.scale || "").toLowerCase().trim();
+      const stability = String(input.stability || "").toLowerCase().trim();
+      const material = String(input.material || input.materialType || "").toLowerCase().trim();
+      const amineType = String(input.amineType || "").toLowerCase().trim();
+
+      let mechanism = "";
+      let potential = "";
+      let priority = null;
+      let code = "";
+
+      // Priority 1 — Wet H2S
+      if (h2s > 50 && freeH2O === "yes" && pwht === "no" && (hcn > 20 || ph < 5.5)) {
+        mechanism = "Wet H2S (Blistering, SOHIC, HIC, SSC)";
+        potential = "H";
+        priority = 1;
+        code = "2";
+      } else if (h2s > 50 && freeH2O === "yes" && pwht === "yes" && (hcn > 20 || ph < 5.5)) {
+        mechanism = "Wet H2S (Blistering, SOHIC, HIC, SSC)";
+        potential = "M";
+        priority = 1;
+        code = "2";
+      } else if (h2s > 20 && h2s <= 50 && freeH2O === "yes" && pwht === "yes") {
+        mechanism = "Wet H2S (Blistering, SOHIC, HIC, SSC)";
+        potential = "L";
+        priority = 1;
+        code = "2";
+      }
+      // Priority 2 — Chloride SCC
+      else if (chloride >= 50 && temp > 140 && oxygen >= 10) {
+        mechanism = "Chloride Stress Corrosion Cracking (Cl SCC)";
+        potential = "H";
+        priority = 2;
+        code = "15";
+      } else if (chloride >= 25 && chloride < 50 && oxygen < 10 && temp > 140) {
+        mechanism = "Chloride Stress Corrosion Cracking (Cl SCC)";
+        potential = "M";
+        priority = 2;
+        code = "15";
+      } else if (chloride >= 5 && chloride < 25 && oxygen < 0.1 && ph > 9 && temp > 120) {
+        mechanism = "Chloride Stress Corrosion Cracking (Cl SCC)";
+        potential = "L";
+        priority = 2;
+        code = "15";
+      }
+      // Priority 3 — Caustic Cracking
+      else if ((material === "carbon steel" || material === "300 series ss") && temp > 200 && pwht === "no") {
+        mechanism = "Caustic Cracking";
+        potential = "H";
+        priority = 3;
+        code = "24";
+      } else if (material === "carbon steel" && temp < 200 && caustic < 30 && pwht === "yes") {
+        mechanism = "Caustic Cracking";
+        potential = "M";
+        priority = 3;
+        code = "24";
+      } else if ((temp < 110 && caustic <= 50) || (temp < 150 && caustic > 0)) {
+        mechanism = "Caustic Cracking";
+        potential = "L";
+        priority = 3;
+        code = "24";
+      }
+      // Priority 4 — Amine Cracking (ASCC)
+      else if (material === "carbon steel" && pwht === "no") {
+        if (amineType === "mea" || ((amineType === "dea" || amineType === "mdea") && temp > 140)) {
+          mechanism = "Amine Cracking (ASCC)";
+          potential = "H";
+          priority = 4;
+          code = "43";
+        } else if (temp >= 125 && temp <= 150) {
+          mechanism = "Amine Cracking (ASCC)";
+          potential = "M";
+          priority = 4;
+          code = "43";
+        }
+      } else if (material === "carbon steel" && pwht === "yes") {
+        mechanism = "Amine Cracking (ASCC)";
+        potential = "L";
+        priority = 4;
+        code = "43";
+      }
+      // Priority 5 — PTA SCC
+      else if (scale === "yes" && temp > 800 && stability === "upset") {
+        mechanism = "Polythionic Acid SCC (PTA)";
+        potential = "H";
+        priority = 5;
+        code = "5";
+      } else if (scale === "yes" && stability === "upset") {
+        mechanism = "Polythionic Acid SCC (PTA)";
+        potential = "M";
+        priority = 5;
+        code = "5";
+      } else if (scale === "yes" && stability === "stable") {
+        mechanism = "Polythionic Acid SCC (PTA)";
+        potential = "L";
+        priority = 5;
+        code = "5";
+      }
+
+      return res.status(200).json({
+        success: true,
+        source: "firestore_damage_criteria",
+        mechanism: mechanism || null,
+        potential: potential || null,
+        priority,
+        code,
+        matched: !!mechanism
       });
     }
 
@@ -1387,6 +1572,8 @@ export default async function handler(req, res) {
     // -------------------------------------------------------------
     if (method === "POST" || action === "screen") {
       const payload = req.body?.data || req.body || {};
+      const liveErosion = await getLiveErosionTable();
+      API571_TABLE_3_27_1 = liveErosion;
       const evaluation = evaluateScreeningMatrix(payload);
       return res.status(200).json(evaluation);
     }

@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { getAdminApp, verifyServerIdentity } from "./sessionStore.js";
+import { getAdminApp, getAdminFirestore, verifyServerIdentity } from "./sessionStore.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -70,6 +70,91 @@ export const DEFAULT_ROLE_MATRIX = {
     adminControlCenter: false
   }
 };
+
+export const DEFAULT_ROLE_CRUD_PERMISSIONS = {
+  admin: {
+    read: true,
+    write: true,
+    edit: true,
+    delete: true,
+    manageUsers: true,
+    manageSystem: true,
+    runCalculations: true
+  },
+  lead_engineer: {
+    read: true,
+    write: true,
+    edit: true,
+    delete: true,
+    manageUsers: false,
+    manageSystem: false,
+    runCalculations: true
+  },
+  inspector: {
+    read: true,
+    write: true,
+    edit: false,
+    delete: false,
+    manageUsers: false,
+    manageSystem: false,
+    runCalculations: true
+  },
+  viewer: {
+    read: true,
+    write: false,
+    edit: false,
+    delete: false,
+    manageUsers: false,
+    manageSystem: false,
+    runCalculations: false
+  }
+};
+
+export const ROLE_METADATA = {
+  admin: {
+    id: "admin",
+    role: "admin",
+    label: "Admin",
+    description: "Full administrative control over users, RBAC roles, engineering catalogs, calculations, and system settings."
+  },
+  lead_engineer: {
+    id: "lead_engineer",
+    role: "lead_engineer",
+    label: "Lead Engineer",
+    description: "Full engineering access: read, write, edit, and delete engineering datasets, damage mechanisms, stress tables, and RBI workspaces."
+  },
+  inspector: {
+    id: "inspector",
+    role: "inspector",
+    label: "Inspector",
+    description: "Field inspection & integrity analysis access: read catalogs, run thickness/corrosion calculations, and save inspection analyses (no catalog edit/delete)."
+  },
+  viewer: {
+    id: "viewer",
+    role: "viewer",
+    label: "Viewer",
+    description: "Read-only observer access to approved dashboards, damage mechanisms, and process diagrams (no write/edit/delete permissions)."
+  }
+};
+
+export function getRoleCrudPermissions(role, customPermissions = {}) {
+  const normRole = String(role || "viewer").toLowerCase().trim();
+  if (normRole === "admin") {
+    return { ...DEFAULT_ROLE_CRUD_PERMISSIONS.admin };
+  }
+  const base =
+    DEFAULT_ROLE_CRUD_PERMISSIONS[normRole] ||
+    (normRole === "engineer" || normRole === "manager"
+      ? DEFAULT_ROLE_CRUD_PERMISSIONS.lead_engineer
+      : DEFAULT_ROLE_CRUD_PERMISSIONS.viewer);
+
+  return {
+    ...base,
+    ...(customPermissions && typeof customPermissions === "object" ? customPermissions : {}),
+    manageUsers: false,
+    manageSystem: false
+  };
+}
 
 export function getRoleMatrix() {
   try {
@@ -611,7 +696,7 @@ export function filterAuthorizedNavigation(availableModules, allowedModules = {}
   return result;
 }
 
-export function buildRolePermissions(role, customModules = {}, customSubsections = {}) {
+export function buildRolePermissions(role, customModules = {}, customSubsections = {}, customCrud = {}) {
   const allModulesTrue = {};
   const allSubsectionsTrue = {};
 
@@ -633,7 +718,8 @@ export function buildRolePermissions(role, customModules = {}, customSubsections
   if (role === "admin") {
     return {
       modules: allModulesTrue,
-      subsections: allSubsectionsTrue
+      subsections: allSubsectionsTrue,
+      permissions: getRoleCrudPermissions("admin")
     };
   }
 
@@ -852,7 +938,46 @@ export function buildRolePermissions(role, customModules = {}, customSubsections
     }
   });
 
-  return { modules: baseModules, subsections: baseSubsections };
+  return {
+    modules: baseModules,
+    subsections: baseSubsections,
+    permissions: getRoleCrudPermissions(role, customCrud)
+  };
+}
+
+let rolesSeededFlag = false;
+export async function syncRolesCollectionToFirestore(dbInstance = null) {
+  const db = dbInstance || getAdminFirestore();
+  const roleKeys = ["admin", "lead_engineer", "inspector", "viewer"];
+  const rolesCatalog = {};
+
+  for (const rKey of roleKeys) {
+    const built = buildRolePermissions(rKey);
+    const meta = ROLE_METADATA[rKey] || { id: rKey, role: rKey, label: rKey.toUpperCase(), description: "" };
+    rolesCatalog[rKey] = {
+      id: rKey,
+      role: rKey,
+      label: meta.label,
+      description: meta.description,
+      permissions: built.permissions,
+      allowedModules: built.modules,
+      subsections: built.subsections,
+      updatedAt: Date.now()
+    };
+  }
+
+  if (db) {
+    try {
+      for (const [rKey, roleDoc] of Object.entries(rolesCatalog)) {
+        await db.collection("roles").doc(rKey).set(roleDoc, { merge: true });
+      }
+      rolesSeededFlag = true;
+    } catch (err) {
+      console.warn("[RBAC] syncRolesCollectionToFirestore warning:", err?.message || String(err));
+    }
+  }
+
+  return rolesCatalog;
 }
 
 // In-memory cache for fast fallback
@@ -910,8 +1035,7 @@ export async function isUserDeleted(email) {
   if (isSuperAdminEmail(target)) return false;
   if (deletedUsersCache.has(target)) return true;
 
-  const adminApp = getAdminApp();
-  const db = adminApp ? adminApp.firestore() : null;
+  const db = getAdminFirestore();
   if (db) {
     try {
       const snap = await db.collection("deletedUsers").doc(target).get();
@@ -940,8 +1064,7 @@ export async function markUserDeleted(email, deletedBy = "") {
   }
   saveDeletedUsersToFile(fileList);
 
-  const adminApp = getAdminApp();
-  const db = adminApp ? adminApp.firestore() : null;
+  const db = getAdminFirestore();
   if (db) {
     try {
       await db.collection("deletedUsers").doc(target).set(record, { merge: true });
@@ -959,8 +1082,7 @@ export async function markUserRestored(email) {
   const filtered = fileList.filter(item => (typeof item === "string" ? item : item?.email).toLowerCase().trim() !== target);
   saveDeletedUsersToFile(filtered);
 
-  const adminApp = getAdminApp();
-  const db = adminApp ? adminApp.firestore() : null;
+  const db = getAdminFirestore();
   if (db) {
     try {
       await db.collection("deletedUsers").doc(target).delete();
@@ -1096,9 +1218,8 @@ export async function getUserRbacData(email, options = {}) {
 
   let roleData = null;
 
-  // 1. Read from live Firestore via Admin SDK if initialized
-  const adminApp = getAdminApp();
-  const db = adminApp ? adminApp.firestore() : null;
+  // 1. Read from live Firestore via Admin SDK or Bridge
+  const db = getAdminFirestore();
   if (db) {
     try {
       const snap = await db.collection("userRoles").doc(targetEmail).get();
@@ -1159,19 +1280,28 @@ export async function getUserRbacData(email, options = {}) {
 
   let allowedModules = roleData.allowedModules || {};
   let subsections = roleData.subsections || {};
+  let crudPermissions = getRoleCrudPermissions(isUserAdmin ? "admin" : (roleData.role || "viewer"), roleData.permissions);
 
   if (isUserAdmin) {
     const adminPerms = buildRolePermissions("admin");
     allowedModules = { ...adminPerms.modules, ...allowedModules };
     subsections = { ...adminPerms.subsections, ...subsections };
+    crudPermissions = getRoleCrudPermissions("admin");
   } else {
     const normalizedPerms = buildRolePermissions(
       roleData.role || "lead_engineer",
       allowedModules,
-      subsections
+      subsections,
+      roleData.permissions
     );
     allowedModules = normalizedPerms.modules;
     subsections = normalizedPerms.subsections;
+    crudPermissions = normalizedPerms.permissions;
+  }
+
+  // Ensure Firestore roles collection is initialized in background
+  if (db && !rolesSeededFlag) {
+    syncRolesCollectionToFirestore(db).catch(() => {});
   }
 
   const authorizedNav = filterAuthorizedNavigation(
@@ -1185,12 +1315,106 @@ export async function getUserRbacData(email, options = {}) {
     email: targetEmail,
     role: isUserAdmin ? "admin" : (roleData.role || "viewer"),
     isSuperAdmin: isUserAdmin,
+    permissions: crudPermissions,
     allowedModules: allowedModules,
     subsections: subsections,
     availableModules: isUserAdmin ? AVAILABLE_MODULES : authorizedNav,
     authorizedNavigation: authorizedNav,
     authUid: roleData.authUid || options?.uid || "",
     password: resolvedPassword
+  };
+}
+
+/**
+ * Reusable Backend RBAC & Session Verification Middleware Helper
+ * Validates Firebase ID token / Server Session and checks role CRUD permissions (`read`, `write`, `edit`, `delete`, `admin`).
+ * Automatically sends 401 Unauthorized or 403 Forbidden if check fails.
+ */
+export async function verifyRequestRbac(req, res, options = {}) {
+  const { requiredPermission = "read", moduleId = null, sectionId = null } = options;
+  const identity = await verifyServerIdentity(req);
+
+  if (!identity || !identity.verified || !identity.email) {
+    if (res && !res.headersSent) {
+      res.status(401).json({
+        success: false,
+        error: "Unauthorized: Valid Firebase Authentication token or active server session is required.",
+        reason: identity?.reason || "unauthenticated"
+      });
+    }
+    return { authorized: false, status: 401, reason: "unauthenticated" };
+  }
+
+  const email = identity.email.toLowerCase().trim();
+  const rbacData = await getUserRbacData(email, {
+    idToken: identity.idToken || "",
+    uid: identity.uid || ""
+  });
+
+  if (!rbacData) {
+    if (res && !res.headersSent) {
+      res.status(403).json({
+        success: false,
+        error: "Forbidden: User account does not have active RBAC privileges or has been revoked.",
+        reason: "no_rbac_record"
+      });
+    }
+    return { authorized: false, status: 403, reason: "no_rbac_record" };
+  }
+
+  const isAdmin = Boolean(rbacData.isSuperAdmin || rbacData.role === "admin");
+  const perms = rbacData.permissions || getRoleCrudPermissions(rbacData.role);
+
+  if (requiredPermission === "admin" && !isAdmin) {
+    if (res && !res.headersSent) {
+      res.status(403).json({
+        success: false,
+        error: `Forbidden: Administrator privileges required. Current role '${rbacData.role}' is not authorized.`,
+        role: rbacData.role,
+        requiredPermission: "admin"
+      });
+    }
+    return { authorized: false, status: 403, role: rbacData.role };
+  }
+
+  if (!isAdmin && requiredPermission && perms[requiredPermission] !== true) {
+    if (res && !res.headersSent) {
+      res.status(403).json({
+        success: false,
+        error: `Forbidden: Role '${rbacData.role}' does not have '${requiredPermission}' permission for this operation.`,
+        role: rbacData.role,
+        permissions: perms,
+        requiredPermission
+      });
+    }
+    return { authorized: false, status: 403, role: rbacData.role };
+  }
+
+  if (!isAdmin && moduleId) {
+    const hasMod = rbacData.allowedModules && rbacData.allowedModules[moduleId] === true;
+    const hasSub = sectionId && rbacData.subsections && rbacData.subsections[moduleId] && rbacData.subsections[moduleId][sectionId] === true;
+    if (!hasMod && !hasSub) {
+      if (res && !res.headersSent) {
+        res.status(403).json({
+          success: false,
+          error: `Forbidden: Role '${rbacData.role}' does not have access to module '${moduleId}'.`,
+          role: rbacData.role,
+          moduleId
+        });
+      }
+      return { authorized: false, status: 403, role: rbacData.role };
+    }
+  }
+
+  return {
+    authorized: true,
+    status: 200,
+    email,
+    uid: identity.uid || rbacData.authUid || "",
+    role: rbacData.role,
+    isSuperAdmin: isAdmin,
+    permissions: perms,
+    rbacData
   };
 }
 
@@ -1212,8 +1436,7 @@ export default async function handler(req, res) {
     : "";
   let targetEmail = (payload.targetEmail || payload.email || callerEmail || "").toLowerCase().trim();
 
-  const adminApp = getAdminApp();
-  const db = adminApp ? adminApp.firestore() : null;
+  const db = getAdminFirestore();
 
   const identityOpts = {
     idToken: identity?.idToken || "",
@@ -1242,17 +1465,19 @@ export default async function handler(req, res) {
     targetEmail = callerEmail;
   }
 
-  // 0. Get available modules & role templates catalog
-  if (action === "get_modules" || action === "get_available_modules" || action === "get_role_templates") {
+  // 0. Get available modules & role templates catalog (backed by Firestore 'roles' collection)
+  if (action === "get_modules" || action === "get_available_modules" || action === "get_role_templates" || action === "get_roles") {
+    const rolesCatalog = await syncRolesCollectionToFirestore(db);
     return res.status(200).json({
       success: true,
       availableModules: AVAILABLE_MODULES,
-      roles: ["admin", "manager", "lead_engineer", "engineer", "inspector", "viewer"],
+      roles: ["admin", "lead_engineer", "inspector", "viewer"],
+      rolesCollection: rolesCatalog,
       roleTemplates: {
         admin: buildRolePermissions("admin"),
-        manager: buildRolePermissions("manager"),
+        manager: buildRolePermissions("lead_engineer"),
         lead_engineer: buildRolePermissions("lead_engineer"),
-        engineer: buildRolePermissions("engineer"),
+        engineer: buildRolePermissions("lead_engineer"),
         inspector: buildRolePermissions("inspector"),
         viewer: buildRolePermissions("viewer")
       }
@@ -1265,7 +1490,7 @@ export default async function handler(req, res) {
       ? callerRecord
       : (targetEmail ? await getUserRbacData(targetEmail, identityOpts) : null);
     if (!rbacData) {
-      const fallbackRole = isSuperAdminEmail(targetEmail) ? "admin" : "lead_engineer";
+      const fallbackRole = isSuperAdminEmail(targetEmail) ? "admin" : "viewer";
       const isSuper = fallbackRole === "admin";
       const defaultPerms = buildRolePermissions(fallbackRole);
       const authorizedNav = filterAuthorizedNavigation(
@@ -1278,6 +1503,7 @@ export default async function handler(req, res) {
         email: targetEmail || "",
         role: fallbackRole,
         isSuperAdmin: isSuper,
+        permissions: defaultPerms.permissions,
         allowedModules: defaultPerms.modules,
         subsections: defaultPerms.subsections,
         availableModules: AVAILABLE_MODULES,
@@ -1286,7 +1512,13 @@ export default async function handler(req, res) {
     }
     return res.status(200).json({
       success: true,
-      ...rbacData
+      ...rbacData,
+      roleTemplates: {
+        admin: buildRolePermissions("admin"),
+        lead_engineer: buildRolePermissions("lead_engineer"),
+        inspector: buildRolePermissions("inspector"),
+        viewer: buildRolePermissions("viewer")
+      }
     });
   }
 
@@ -1295,6 +1527,7 @@ export default async function handler(req, res) {
     let usersList = [];
     if (db) {
       try {
+        await syncRolesCollectionToFirestore(db);
         const snap = await db.collection("userRoles").get();
         snap.forEach((doc) => {
           usersList.push(doc.data());
@@ -1318,6 +1551,12 @@ export default async function handler(req, res) {
         usersList.push(val);
       }
     });
+
+    // Enrich with CRUD permissions
+    usersList = usersList.map((u) => ({
+      ...u,
+      permissions: getRoleCrudPermissions(u.isSuperAdmin || u.role === "admin" ? "admin" : (u.role || "viewer"), u.permissions)
+    }));
 
     // Update file & cache
     saveUsersToFile(usersList);
@@ -1344,16 +1583,18 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Target email is required" });
     }
 
-    const newRole = payload.role || "engineer";
+    const newRole = payload.role || "lead_engineer";
     const customModules = payload.allowedModules || {};
     const customSubsections = payload.subsections || {};
+    const customCrud = payload.permissions || {};
 
-    const finalPerms = buildRolePermissions(newRole, customModules, customSubsections);
+    const finalPerms = buildRolePermissions(newRole, customModules, customSubsections, customCrud);
 
     const record = {
       id: targetEmail,
       email: targetEmail,
       role: newRole,
+      permissions: finalPerms.permissions,
       allowedModules: finalPerms.modules,
       subsections: finalPerms.subsections,
       isSuperAdmin: newRole === "admin",
@@ -1382,6 +1623,7 @@ export default async function handler(req, res) {
           uid: record.authUid || targetEmail,
           email: targetEmail,
           role: newRole,
+          permissions: finalPerms.permissions,
           isSuperAdmin: newRole === "admin",
           updatedAt: Date.now()
         }, { merge: true });

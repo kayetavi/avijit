@@ -9,6 +9,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { getAdminFirestore } from "./firebaseAdmin.js";
 import { getActiveProjectConfig } from "./firestoreClient.js";
+import { verifyRequestRbac } from "./rbac.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -344,8 +345,8 @@ export async function resolveDamageMechanism(query) {
 // Handler
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Session-Id, X-Session-Token, X-User-Uid");
 
   if (req.method === "OPTIONS") {
     return res.status(200).end();
@@ -353,6 +354,78 @@ export default async function handler(req, res) {
 
   try {
     const activeProj = getActiveProjectConfig();
+    const action = String(req.query.action || req.body?.action || "").toLowerCase().trim();
+
+    // POST / PUT: Save or Update Damage Mechanism in Firestore (Requires Authentication + 'edit' permission)
+    if ((req.method === "POST" || req.method === "PUT") && (action === "save" || req.body?.mechanism)) {
+      const authCheck = await verifyRequestRbac(req, res, { requiredPermission: "edit" });
+      if (!authCheck.authorized) return;
+
+      const payload = req.body?.mechanism || req.body || {};
+      const mechName = String(payload.name || "").trim();
+      if (!mechName) {
+        return res.status(400).json({ success: false, error: "Mechanism 'name' is required." });
+      }
+      const docId = String(payload.id || payload.code || mechName.replace(/[^a-zA-Z0-9_-]/g, "_")).trim();
+      const record = {
+        id: docId,
+        code: String(payload.code || docId).trim(),
+        name: mechName,
+        category: String(payload.category || "API 571 Damage Mechanism").trim(),
+        description: String(payload.description || ""),
+        affectedMaterials: String(payload.affectedMaterials || ""),
+        criticalFactors: String(payload.criticalFactors || ""),
+        affectedUnits: String(payload.affectedUnits || ""),
+        appearance: String(payload.appearance || ""),
+        mitigation: String(payload.mitigation || ""),
+        inspection: String(payload.inspection || ""),
+        temperatureComparison: String(payload.temperatureComparison || ""),
+        imagePath: payload.imagePath || getMechanismMicrograph(mechName, payload.code || docId),
+        isCustom: payload.isCustom !== undefined ? Boolean(payload.isCustom) : true,
+        projectId: activeProj.projectId,
+        updatedBy: authCheck.email,
+        updatedAt: Date.now()
+      };
+
+      const adminDb = getAdminFirestore(activeProj.firestoreDatabaseId);
+      if (adminDb) {
+        await adminDb.collection("damageMechanisms").doc(docId).set(record, { merge: true });
+      }
+      invalidateDamageMechanismsCache();
+      return res.status(200).json({
+        success: true,
+        activeProject: activeProj.projectId,
+        message: `Damage mechanism '${mechName}' saved to Firestore.`,
+        mechanism: record
+      });
+    }
+
+    // DELETE: Remove Damage Mechanism from Firestore (Requires Authentication + 'delete' permission)
+    if (req.method === "DELETE" || action === "delete") {
+      const authCheck = await verifyRequestRbac(req, res, { requiredPermission: "delete" });
+      if (!authCheck.authorized) return;
+
+      const targetId = String(req.query.id || req.body?.id || req.query.code || req.body?.code || req.query.name || req.body?.name || "").trim();
+      if (!targetId) {
+        return res.status(400).json({ success: false, error: "Mechanism 'id', 'code', or 'name' is required for deletion." });
+      }
+      const docId = targetId.replace(/[^a-zA-Z0-9_-]/g, "_");
+      const adminDb = getAdminFirestore(activeProj.firestoreDatabaseId);
+      if (adminDb) {
+        await adminDb.collection("damageMechanisms").doc(targetId).delete().catch(() => {});
+        if (docId !== targetId) {
+          await adminDb.collection("damageMechanisms").doc(docId).delete().catch(() => {});
+        }
+      }
+      invalidateDamageMechanismsCache();
+      return res.status(200).json({
+        success: true,
+        activeProject: activeProj.projectId,
+        deletedId: targetId,
+        deletedBy: authCheck.email
+      });
+    }
+
     const name = req.query.name || req.body?.name;
     const code = req.query.code || req.body?.code;
     const search = req.query.q || req.query.search || req.body?.q;
@@ -396,14 +469,24 @@ export default async function handler(req, res) {
       });
     }
 
-    // Default: return full structure { "Damage Mechanism": mechs } and array for convenience
+    // Build grouped categories map for convenient lookup
+    const categories = {};
+    for (const [mName, mVal] of Object.entries(allMechs)) {
+      const cat = mVal.category || "API 571 Damage Mechanism";
+      if (!categories[cat]) categories[cat] = {};
+      categories[cat][mName] = mVal;
+    }
+
+    // Default: return full structure { "Damage Mechanism": mechs } and grouped categories
     return res.status(200).json({
       success: true,
+      source: "firestore",
       activeProject: activeProj.projectId,
       activeProjectName: activeProj.name,
       count: Object.keys(allMechs).length,
       "Damage Mechanism": allMechs,
-      mechanisms: allMechs
+      mechanisms: allMechs,
+      categories
     });
   } catch (error) {
     console.error("Damage Mechanisms API Error:", error);

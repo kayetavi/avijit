@@ -1,15 +1,15 @@
 /**
  * API 571 Damage Mechanism Frontend Data Adapter
- * Communicates with backend API (/api/damage-mechanisms) to dynamically load the damage mechanism catalog.
+ * Communicates with backend API (/api/damage-mechanisms) to dynamically load the damage mechanism catalog from Firestore.
  * Frontend retains only UI state and render controls.
  */
-
 const data = {
   "Damage Mechanism": {}
 };
 
 if (typeof window !== "undefined") {
   window.data = data;
+  window.damageCategories = window.damageCategories || {};
 
   // Asynchronously loads all damage mechanisms from backend (live Firestore)
   window.loadDamageMechanismsData = async function(callback, forceLive = false) {
@@ -18,6 +18,7 @@ if (typeof window !== "undefined") {
       if (typeof callback === "function") callback(window.data);
       return window.data;
     }
+
     try {
       const url = forceLive ? "/api/damage-mechanisms?refresh=1" : "/api/damage-mechanisms";
       const response = await fetch(url, {
@@ -25,9 +26,12 @@ if (typeof window !== "undefined") {
       });
       if (!response.ok) throw new Error(`HTTP error ${response.status}`);
       const result = await response.json();
-      
+
       const mechs = result["Damage Mechanism"] || result.mechanisms || {};
       window.data["Damage Mechanism"] = mechs;
+      if (result.categories && typeof result.categories === "object") {
+        window.damageCategories = result.categories;
+      }
 
       // Populate window.damageMechanisms for backward compatibility
       if (typeof window.damageMechanisms === "undefined" || !window.damageMechanisms) {
@@ -35,11 +39,14 @@ if (typeof window !== "undefined") {
       }
       Object.assign(window.damageMechanisms, mechs);
 
-      // Also map numeric codes
+      // Also map numeric codes and IDs
       for (const [name, val] of Object.entries(mechs)) {
         if (val && typeof val === "object") {
           if (val.code) {
             window.damageMechanisms[String(val.code)] = val;
+          }
+          if (val.id) {
+            window.damageMechanisms[String(val.id)] = val;
           }
         }
       }

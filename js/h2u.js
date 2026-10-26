@@ -13,7 +13,7 @@ function initH2U() {
   if (!svgContainer) return;
 
   if (!svgContainer.querySelector("svg")) {
-    fetch("H2U-Model.svg")
+    fetch("/assets/models/H2U-Model.svg")
       .then(res => res.text())
       .then(data => {
         svgContainer.innerHTML = data;

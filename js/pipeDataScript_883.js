@@ -122,7 +122,8 @@
   }
 
   /**
-   * Asynchronous Loader: Fetches standard pipe dimensions exclusively from backend API
+   * Asynchronous Loader: Fetches standard pipe dimensions from backend API (/api/pipe-dimensions)
+   * with resilient retry and sessionStorage fallback for network reliability.
    */
   async function loadPipeDimensionsMaster() {
     if (isLoaded && Object.keys(window.pipeDataMaster883 || {}).length > 0) {
@@ -137,14 +138,71 @@
     isFetching = true;
     showLoadingState();
 
+    const applyPipeDataset = (data) => {
+      const master = data.master || data.pipeDataMaster || {};
+      const odMap = data.odMap || data.pipeOD || {};
+
+      // Merge into global objects with strict numeric coercion
+      window.pipeOD883 = Object.assign(window.pipeOD883 || {}, odMap);
+      window.pipeDataMaster883 = Object.assign(window.pipeDataMaster883 || {}, master);
+
+      // Ensure decimal aliases are mapped
+      for (const [frac, dec] of Object.entries(DECIMAL_MAP)) {
+        if (window.pipeDataMaster883[frac]) {
+          window.pipeDataMaster883[dec] = window.pipeDataMaster883[frac];
+          const clean = dec.replace(/\.0$/, "");
+          if (clean && !window.pipeDataMaster883[clean]) {
+            window.pipeDataMaster883[clean] = window.pipeDataMaster883[frac];
+          }
+        }
+        if (window.pipeOD883[frac]) {
+          window.pipeOD883[dec] = window.pipeOD883[frac];
+          const clean = dec.replace(/\.0$/, "");
+          if (clean && !window.pipeOD883[clean]) {
+            window.pipeOD883[clean] = window.pipeOD883[frac];
+          }
+        }
+      }
+
+      if (Array.isArray(data.npsList) && data.npsList.length > 0) {
+        activeNpsList = data.npsList;
+      }
+
+      isLoaded = true;
+      isFetching = false;
+
+      // Populate dropdowns & trigger auto-selection
+      populateNPSDropdown();
+
+      // Dispatch custom window event for other dependent modules (b313, simple, structural, chatbot)
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("pipe-data-ready", {
+          detail: {
+            master: window.pipeDataMaster883,
+            odMap: window.pipeOD883,
+            standard: data.standard || "ASME B36.10M / ASME B36.19M"
+          }
+        }));
+      }
+
+      return { master: window.pipeDataMaster883, odMap: window.pipeOD883 };
+    };
+
     fetchPromise = (async () => {
       try {
-        const res = await fetch("/api/pipe-dimensions", {
+        let res = await fetch("/api/pipe-dimensions", {
           method: "GET",
-          headers: {
-            "Accept": "application/json"
-          }
+          headers: { "Accept": "application/json" }
         });
+
+        if (!res.ok) {
+          // Automatic single retry on transient failure
+          await new Promise(r => setTimeout(r, 400));
+          res = await fetch("/api/pipe-dimensions", {
+            method: "GET",
+            headers: { "Accept": "application/json" }
+          });
+        }
 
         if (!res.ok) {
           throw new Error(`HTTP Error ${res.status}`);
@@ -155,54 +213,28 @@
           throw new Error(data?.error || "Invalid response format from /api/pipe-dimensions");
         }
 
-        const master = data.master || data.pipeDataMaster || {};
-        const odMap = data.odMap || data.pipeOD || {};
-
-        // Merge into global objects
-        window.pipeOD883 = Object.assign(window.pipeOD883 || {}, odMap);
-        window.pipeDataMaster883 = Object.assign(window.pipeDataMaster883 || {}, master);
-
-        // Ensure decimal aliases are mapped
-        for (const [frac, dec] of Object.entries(DECIMAL_MAP)) {
-          if (window.pipeDataMaster883[frac]) {
-            window.pipeDataMaster883[dec] = window.pipeDataMaster883[frac];
-            const clean = dec.replace(/\.0$/, "");
-            if (clean && !window.pipeDataMaster883[clean]) {
-              window.pipeDataMaster883[clean] = window.pipeDataMaster883[frac];
-            }
+        try {
+          if (typeof sessionStorage !== "undefined") {
+            sessionStorage.setItem("kayet_pipe_dimensions_cache_v2", JSON.stringify(data));
           }
-          if (window.pipeOD883[frac]) {
-            window.pipeOD883[dec] = window.pipeOD883[frac];
-            const clean = dec.replace(/\.0$/, "");
-            if (clean && !window.pipeOD883[clean]) {
-              window.pipeOD883[clean] = window.pipeOD883[frac];
-            }
-          }
-        }
+        } catch (e) {}
 
-        if (Array.isArray(data.npsList) && data.npsList.length > 0) {
-          activeNpsList = data.npsList;
-        }
-
-        isLoaded = true;
-        isFetching = false;
-
-        // Populate dropdowns & trigger auto-selection
-        populateNPSDropdown();
-
-        // Dispatch custom window event for other dependent modules (b313, simple, structural, chatbot)
-        if (typeof window !== "undefined") {
-          window.dispatchEvent(new CustomEvent("pipe-data-ready", {
-            detail: {
-              master: window.pipeDataMaster883,
-              odMap: window.pipeOD883,
-              standard: data.standard || "ASME B36.10M / ASME B36.19M"
-            }
-          }));
-        }
-
-        return { master: window.pipeDataMaster883, odMap: window.pipeOD883 };
+        return applyPipeDataset(data);
       } catch (err) {
+        // Attempt recovery from sessionStorage cache if network is temporarily down
+        try {
+          if (typeof sessionStorage !== "undefined") {
+            const cachedRaw = sessionStorage.getItem("kayet_pipe_dimensions_cache_v2");
+            if (cachedRaw) {
+              const cachedData = JSON.parse(cachedRaw);
+              if (cachedData && (cachedData.master || cachedData.pipeDataMaster)) {
+                console.warn("[PipeData883] Using cached pipe dimensions after network error:", err?.message);
+                return applyPipeDataset(cachedData);
+              }
+            }
+          }
+        } catch (cacheErr) {}
+
         isFetching = false;
         console.error("Error loading pipe dimensions from /api/pipe-dimensions:", err);
         showErrorState(err?.message || "Failed to fetch");

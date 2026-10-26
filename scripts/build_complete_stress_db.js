@@ -1,8 +1,8 @@
 import fs from "fs";
 import path from "path";
 
-// 1. Read existing bk_stressData.js
-const originalCode = fs.readFileSync("bk_stressData.js", "utf8");
+// 1. Read existing js/bk_stressData.js
+const originalCode = fs.readFileSync("js/bk_stressData.js", "utf8");
 const fn = new Function(originalCode + "; return bkStressData;");
 const baseDb = fn();
 
@@ -193,5 +193,5 @@ if (typeof module !== "undefined" && module.exports) {
 }
 `;
 
-fs.writeFileSync("bk_stressData.js", jsContent, "utf8");
-console.log(`Successfully updated bk_stressData.js with all ${allYears.length} code editions!`);
+fs.writeFileSync("js/bk_stressData.js", jsContent, "utf8");
+console.log(`Successfully updated js/bk_stressData.js with all ${allYears.length} code editions!`);

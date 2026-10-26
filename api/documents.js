@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { getAdminFirestore } from "./firebaseAdmin.js";
 import { getFirestoreDb } from "./firestoreClient.js";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
+import { verifyRequestRbac } from "./rbac.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,7 +29,14 @@ function saveLocalDocs(docs) {
 }
 
 export default async function handler(req, res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Session-Id, X-Session-Token, X-User-Uid");
   res.setHeader("Content-Type", "application/json");
+
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
 
   try {
     const adminDb = getAdminFirestore();
@@ -62,11 +70,15 @@ export default async function handler(req, res) {
       return res.status(200).json(loadLocalDocs());
     }
 
-    // POST /api/documents or /api/documents/upload
-    if (method === "POST") {
+    // POST /api/documents or /api/documents/upload (Requires Authentication + 'write' permission)
+    if (method === "POST" || method === "PUT") {
+      const authCheck = await verifyRequestRbac(req, res, { requiredPermission: "write" });
+      if (!authCheck.authorized) return;
+
       const data = req.body || {};
       const docId = data.id || `doc_${Date.now()}`;
       data.id = docId;
+      data.savedBy = authCheck.email;
       data.lastSavedDate = new Date().toISOString().split("T")[0];
       data.lastModifiedDateTime = new Date().toISOString();
 
@@ -94,9 +106,12 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, id: docId, document: data });
     }
 
-    // DELETE /api/documents/:id
+    // DELETE /api/documents/:id (Requires Authentication + 'delete' permission)
     if (method === "DELETE") {
-      const id = req.path.split("/").pop();
+      const authCheck = await verifyRequestRbac(req, res, { requiredPermission: "delete" });
+      if (!authCheck.authorized) return;
+
+      const id = (req.query && req.query.id) || (req.body && req.body.id) || req.path.split("/").pop();
       if (id && id !== "documents") {
         const localDocs = loadLocalDocs().filter(d => d && d.id !== id);
         saveLocalDocs(localDocs);
@@ -115,7 +130,7 @@ export default async function handler(req, res) {
           }
         }
       }
-      return res.status(200).json({ success: true, deletedId: id });
+      return res.status(200).json({ success: true, deletedId: id, deletedBy: authCheck.email });
     }
 
     return res.status(405).json({ error: "Method Not Allowed" });

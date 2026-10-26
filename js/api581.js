@@ -52,11 +52,60 @@ if (document.readyState === "loading") {
 }
 
 
-/* --- Main COF Run Function --- */
-function runCOF() {
+async function hydrateCOFLevel2Metadata() {
+  try {
+    const res = await fetch("/api/risk-calculator?action=cof_level2_metadata");
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success) {
+        if (data.fluidProperties) Object.assign(fluidProperties, data.fluidProperties);
+        if (data.fluidLabels) Object.assign(fluidLabels, data.fluidLabels);
+        if (Array.isArray(data.liquidFluids) && data.liquidFluids.length > 0) {
+          liquidFluids.splice(0, liquidFluids.length, ...data.liquidFluids);
+        }
+        if (Array.isArray(data.gasFluids) && data.gasFluids.length > 0) {
+          gasFluids.splice(0, gasFluids.length, ...data.gasFluids);
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("Level 2 COF metadata hydration notice:", err);
+  }
+}
+hydrateCOFLevel2Metadata();
+
+/* --- Main COF Run Function (Backend Calculation Engine) --- */
+async function runCOF() {
   const inps = readInputsCOF();
+  const outEl = document.getElementById("cof_output");
+  if (outEl) outEl.textContent = "⏳ Calculating API 581 Level 2 COF on backend engine...";
+
+  try {
+    const res = await fetch("/api/risk-calculator", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "calculate_cof_level2",
+        inputs: inps
+      })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && data.results) {
+        const releaseEl = document.getElementById("cof_release_type");
+        if (releaseEl) releaseEl.value = data.results.isInstant ? "instantaneous" : "continuous";
+        if (outEl) {
+          outEl.textContent = data.results.formattedText || formatOutputCOF(data.results);
+        }
+        return;
+      }
+    }
+  } catch (err) {
+    console.warn("Backend Level 2 COF fallback:", err);
+  }
+
   const out = computeCOF(inps);
-  document.getElementById("cof_output").textContent = formatOutputCOF(out);
+  if (outEl) outEl.textContent = formatOutputCOF(out);
 }
 
 /* --- Read Inputs --- */
@@ -128,7 +177,10 @@ function readInputsCOF() {
     late_max: get("late_max"),
 
     tox_a: get("tox_a"), tox_b: get("tox_b"), tox_c: get("tox_c"), tox_d: get("tox_d"),
-    non_a: get("non_a"), non_b: get("non_b"), non_c: get("non_c"), non_d: get("non_d"),
+    non_a: Number.isFinite(get("non_a")) ? get("non_a") : get("ntox_a"),
+    non_b: Number.isFinite(get("non_b")) ? get("non_b") : get("ntox_b"),
+    non_c: Number.isFinite(get("non_c")) ? get("non_c") : get("ntox_c"),
+    non_d: Number.isFinite(get("non_d")) ? get("non_d") : get("ntox_d"),
 
     cost_equipment: get("cost_equipment"),
     cost_injury: get("cost_injury"),

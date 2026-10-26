@@ -231,7 +231,7 @@
   </script>
 
   <!-- 🎨 Bundled Production Stylesheet -->
-  <link rel="stylesheet" href="assets/app-bundle.min.css"/>
+  <link rel="stylesheet" href="/assets/app-bundle.min.css"/>
   
   <!-- ✅ Select2 Dropdown CSS (for Representative Fluid multi-select) -->
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -938,7 +938,7 @@
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
       </div>
-      <div class="dash-card-thumb" style="background-image: url('CDU-VDU-Model.svg'); background-color: #1e1b4b; background-size: contain; background-repeat: no-repeat;">
+      <div class="dash-card-thumb" style="background-image: url('/assets/models/CDU-VDU-Model.svg'); background-color: #1e1b4b; background-size: contain; background-repeat: no-repeat;">
         <div class="dash-thumb-corner-flap" style="background: #6b21a8;">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
@@ -1161,24 +1161,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" crossorigin="anonymous"></script>
 
-  <!-- 🔐 Single Protected & Minified Application Engine (Bundles calculation tools & logic) -->
-  <script src="assets/app-engine.min.js?v=20261023_sidebar_fix_v3"></script>
-  <!-- Direct load for Modular Dashboard Architecture -->
-  <script src="js/dashboard-shell.js?v=20261023_sidebar_fix_v3"></script>
-  <script src="js/damage-explorer.js?v=20261023_sidebar_fix_v3"></script>
-  <script src="js/corrosion-rate.js?v=20261023_sidebar_fix_v3"></script>
-  <script src="js/rbac.js?v=20261023_sidebar_fix_v3"></script>
-  <script src="js/recent-tabs.js?v=20261023_sidebar_fix_v3"></script>
-  <script src="periodic-table.js?v=20261002_stream_ingest_v5"></script>
-  <script src="unit-converter.js?v=20261002_stream_ingest_v5"></script>
-  <script src="stream-comparator.js?v=20261002_stream_ingest_v5"></script>
-  <script src="nace-classifier.js?v=20261002_stream_ingest_v5"></script>
-  <script src="injection-mixing-viz.js?v=20261002_stream_ingest_v5"></script>
-  <script src="ccd-ai-platform.js?v=20261005_ccd_v1"></script>
-  <script src="structural-thickness.js?v=20261005_dark_v5"></script>
-
-  <!-- Session Manager -->
-  <script type="module" src="js/firebase-auth.js"></script>
+  <!-- 🔐 Single Protected & Minified Application Engine (Bundles all calculation tools, RBAC, session security & UI logic) -->
+  <script src="/assets/app-engine.min.js?v=prod"></script>
 
   <!-- 🧭 Isolated GE APM Deep Router (Non-Intrusive Two-Way Hash Routing Engine with Dynamic Template Manager & Numeric Entity Keys) -->
   <script>

@@ -1,4 +1,5 @@
 import { getAdminFirestore } from "./firebaseAdmin.js";
+import { verifyRequestRbac } from "./rbac.js";
 
 /**
  * Format Date as dd-mm-yyyy
@@ -116,24 +117,106 @@ function dateDiff(startDate, endDate) {
   return { years, months, days };
 }
 
+function sanitizePositiveNum(val) {
+  if (val === null || val === undefined || val === "") return NaN;
+  const n = Number(val);
+  return Number.isFinite(n) ? n : NaN;
+}
+
 /**
  * Core API 570 Corrosion & Remaining Life Calculation Engine
+ * Supports:
+ * 1) Direct Remaining Life Mode: { t_actual, t_required, cr, freq }
+ * 2) Historical Thickness-Date Series Mode: { baseDate, baseThk, midDate, midThk, lastDate, lastThk, tmin, freq }
  */
-function calculateCorrosionRow(row) {
+function calculateCorrosionRow(row = {}) {
   const tagNumber = row.tagnumber || row["tag number"] || row.tag || row.tagNumber || "-";
+  const daysInYear = 365.25;
+  const msInYear = 1000 * 60 * 60 * 24 * daysInYear;
+
+  const freqRaw = parseInt(row.freq, 10);
+  const freq = Number.isFinite(freqRaw) && freqRaw > 0 ? freqRaw : 60;
+
+  // Check if Direct Remaining Life Mode (t_actual, t_required, CR) is requested
+  const directTActual = sanitizePositiveNum(row.t_actual);
+  const directTReq = sanitizePositiveNum(row.t_required ?? row.tmin);
+  const directCR = sanitizePositiveNum(row.cr ?? row.corrosionRate);
+
+  if (!isNaN(directTActual) && !isNaN(directTReq) && !isNaN(directCR) && !row.basedate && !row.baseDate) {
+    if (directTActual <= 0 || directTReq <= 0) {
+      return { error: "Thickness values (t_actual, t_required) must be positive numbers.", tagNumber };
+    }
+    const ccr = Math.max(0, directCR);
+    let remLifeYears = ccr > 0 ? (directTActual - directTReq) / ccr : 999;
+    if (remLifeYears < 0 || !Number.isFinite(remLifeYears)) remLifeYears = 0;
+
+    const refDate = parseDDMMYYYY(row.lastdate || row.lastDate) || new Date();
+    const projDate = new Date(refDate);
+    projDate.setDate(projDate.getDate() + Math.round(remLifeYears * daysInYear));
+
+    const factorDate = new Date(refDate);
+    factorDate.setDate(factorDate.getDate() + Math.round(remLifeYears * 0.5 * daysInYear));
+
+    const intervalDate = new Date(refDate);
+    intervalDate.setMonth(intervalDate.getMonth() + freq);
+
+    let schedDate = intervalDate;
+    if (projDate < schedDate) schedDate = projDate;
+    if (factorDate < schedDate) schedDate = factorDate;
+
+    const today = new Date();
+    const estDiff = dateDiff(today, projDate);
+    const factorDiff = dateDiff(today, factorDate);
+
+    return {
+      tagNumber,
+      baseDate: "-",
+      midDate: "-",
+      lastDate: formatDate(refDate),
+      baseThk: directTActual.toFixed(2),
+      midThk: "-",
+      lastThk: directTActual.toFixed(2),
+      tmin: directTReq.toFixed(2),
+      freq,
+      controllingCorrosionRate: ccr.toFixed(4) + " mm/year",
+      longTermCorrosionRate: ccr.toFixed(4) + " mm/year",
+      shortTermCorrosionRate: ccr.toFixed(4) + " mm/year",
+      weightedCorrosionRate: ccr.toFixed(4) + " mm/year",
+      scheduledNextInspection: formatDate(schedDate),
+      intervalNextInspection: formatDate(intervalDate),
+      factorLifeDate: formatDate(factorDate),
+      projectedTminDate: formatDate(projDate),
+      estimatedLife: `${estDiff.years} Years, ${estDiff.months} Months, ${estDiff.days} Days`,
+      factorLifeDuration: `${factorDiff.years} Years, ${factorDiff.months} Months, ${factorDiff.days} Days`,
+      rawCalculations: {
+        ltcr: ccr,
+        stcr: ccr,
+        weightedCr: ccr,
+        ccr,
+        remLifeYears: Number(remLifeYears.toFixed(4)),
+        schedDateISO: schedDate.toISOString(),
+        projDateISO: projDate.toISOString(),
+        factorDateISO: factorDate.toISOString(),
+        intervalDateISO: intervalDate.toISOString()
+      },
+      trendData: [
+        { date: formatDate(refDate), thk: directTActual }
+      ]
+    };
+  }
 
   const baseDate = parseDDMMYYYY(row.basedate || row.baseDate);
   const midDate = (row.middate || row.midDate) ? parseDDMMYYYY(row.middate || row.midDate) : null;
   const lastDate = parseDDMMYYYY(row.lastdate || row.lastDate);
 
-  const baseThk = parseFloat(row.basethk != null ? row.basethk : row.baseThk);
-  const midThk = parseFloat(row.midthk != null ? row.midthk : row.midThk);
-  const lastThk = parseFloat(row.lastthk != null ? row.lastthk : row.lastThk);
-  const tmin = parseFloat(row.tmin);
-  const freq = parseInt(row.freq, 10) || 60;
+  const baseThk = sanitizePositiveNum(row.basethk != null ? row.basethk : row.baseThk);
+  const midThk = sanitizePositiveNum(row.midthk != null ? row.midthk : row.midThk);
+  const lastThk = sanitizePositiveNum(row.lastthk != null ? row.lastthk : row.lastThk);
+  const tmin = sanitizePositiveNum(row.tmin);
 
   if (
     isNaN(baseThk) || isNaN(lastThk) || isNaN(tmin) ||
+    baseThk <= 0 || lastThk <= 0 || tmin <= 0 ||
     !baseDate || isNaN(baseDate.getTime()) ||
     !lastDate || isNaN(lastDate.getTime()) ||
     baseDate >= lastDate
@@ -144,22 +227,26 @@ function calculateCorrosionRow(row) {
     };
   }
 
-  // Corrosion Rate Calculations
-  const daysInYear = 365.25;
-  const msInYear = 1000 * 60 * 60 * 24 * daysInYear;
-
-  let ltcr = (baseThk - lastThk) / ((lastDate - baseDate) / msInYear);
-  ltcr = ltcr < 0 ? 0 : ltcr;
+  // Corrosion Rate Calculations (with zero-division guard)
+  const totalTimeYears = (lastDate - baseDate) / msInYear;
+  let ltcr = totalTimeYears > 0 ? (baseThk - lastThk) / totalTimeYears : 0;
+  ltcr = ltcr < 0 || !Number.isFinite(ltcr) ? 0 : ltcr;
 
   let stcr = ltcr;
-  if (midDate && !isNaN(midThk) && baseDate < midDate && midDate < lastDate) {
-    stcr = (midThk - lastThk) / ((lastDate - midDate) / msInYear);
-    stcr = stcr < 0 ? 0 : stcr;
+  if (midDate && !isNaN(midThk) && midThk > 0 && baseDate < midDate && midDate < lastDate) {
+    const shortTimeYears = (lastDate - midDate) / msInYear;
+    if (shortTimeYears > 0) {
+      stcr = (midThk - lastThk) / shortTimeYears;
+      stcr = stcr < 0 || !Number.isFinite(stcr) ? 0 : stcr;
+    }
   }
 
-  const ccr = Math.max(ltcr, stcr);
+  const weightedCr = (0.6 * stcr) + (0.4 * ltcr);
+  const modelType = String(row.degradationModel || "controlling").toLowerCase();
+  const ccr = modelType === "weighted" ? weightedCr : Math.max(ltcr, stcr);
+
   let remLifeYears = ccr > 0 ? (lastThk - tmin) / ccr : 999;
-  if (remLifeYears < 0 || !isFinite(remLifeYears)) remLifeYears = 0;
+  if (remLifeYears < 0 || !Number.isFinite(remLifeYears)) remLifeYears = 0;
 
   const projDate = new Date(lastDate);
   const projDaysToAdd = Math.round(remLifeYears * daysInYear);
@@ -193,6 +280,7 @@ function calculateCorrosionRow(row) {
     controllingCorrosionRate: ccr.toFixed(4) + " mm/year",
     longTermCorrosionRate: ltcr.toFixed(4) + " mm/year",
     shortTermCorrosionRate: stcr.toFixed(4) + " mm/year",
+    weightedCorrosionRate: weightedCr.toFixed(4) + " mm/year",
     scheduledNextInspection: formatDate(schedDate),
     intervalNextInspection: formatDate(intervalDate),
     factorLifeDate: formatDate(factorDate),
@@ -202,6 +290,7 @@ function calculateCorrosionRow(row) {
     rawCalculations: {
       ltcr,
       stcr,
+      weightedCr,
       ccr,
       remLifeYears,
       schedDateISO: schedDate.toISOString(),
@@ -354,8 +443,11 @@ export default async function handler(req, res) {
       return res.status(200).json(data);
     }
 
-    // 5. Save Analysis Records (Single or Bulk)
+    // 5. Save Analysis Records (Single or Bulk - Requires Authentication + 'write' permission)
     if (action === "save" && method === "POST") {
+      const authCheck = await verifyRequestRbac(req, res, { requiredPermission: "write" });
+      if (!authCheck.authorized) return;
+
       const entriesToSave = Array.isArray(req.body?.data) ? req.body.data : [req.body?.data || req.body];
       const overwrite = req.body?.overwrite === true;
       const existing = await getSavedAnalyses();
@@ -369,6 +461,7 @@ export default async function handler(req, res) {
         remLife: e.remLife || e.estimatedLife || "-",
         schedDate: e.schedDate || e.scheduledNextInspection || "-",
         projDate: e.projDate || e.projectedTminDate || "-",
+        savedBy: authCheck.email,
         savedAt: e.savedAt || new Date().toLocaleString()
       }));
 
@@ -403,8 +496,11 @@ export default async function handler(req, res) {
       });
     }
 
-    // 6. Delete Analysis Record
+    // 6. Delete Analysis Record (Requires Authentication + 'delete' permission)
     if (action === "delete" && (method === "DELETE" || method === "POST")) {
+      const authCheck = await verifyRequestRbac(req, res, { requiredPermission: "delete" });
+      if (!authCheck.authorized) return;
+
       const index = parseInt(req.body?.index ?? req.query.index, 10);
       const tag = req.body?.tag || req.query.tag;
 
@@ -419,8 +515,11 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Invalid index or tag provided for deletion" });
     }
 
-    // 7. Clear All Analyses
+    // 7. Clear All Analyses (Requires Authentication + 'delete' permission)
     if (action === "clear-all" && (method === "DELETE" || method === "POST")) {
+      const authCheck = await verifyRequestRbac(req, res, { requiredPermission: "delete" });
+      if (!authCheck.authorized) return;
+
       await clearAllSavedAnalyses();
       return res.status(200).json({ success: true, message: "All analyses cleared from Firestore", total: 0 });
     }

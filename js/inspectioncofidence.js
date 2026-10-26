@@ -222,13 +222,58 @@ function recalculateTableEquivalents() {
 
 
 
-// ✅ Calculate Equivalent Inspections & AIC
-function calculateInspection_AIC() {
+async function hydrateAICMetadata() {
+  try {
+    const res = await fetch("/api/risk-calculator?action=aic_metadata");
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success) {
+        if (data.equivalenceFactors) Object.assign(equivalenceFactors_AIC, data.equivalenceFactors);
+        if (data.methods) Object.assign(methods_AIC, data.methods);
+      }
+    }
+  } catch (err) {
+    console.warn("AIC metadata hydration notice:", err);
+  }
+}
+hydrateAICMetadata();
+
+// ✅ Calculate Equivalent Inspections & AIC (Delegated to Backend Engine)
+async function calculateInspection_AIC() {
   let baseAIC = "-";
-  if (counts_AIC.vh > 0) baseAIC = "vh";
-  else if (counts_AIC.h > 0) baseAIC = "h";
-  else if (counts_AIC.m > 0) baseAIC = "m";
-  else if (counts_AIC.l > 0) baseAIC = "l";
+  let totalEquivalent = 0;
+  let ANI = 0;
+
+  try {
+    const res = await fetch("/api/risk-calculator", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "calculate_aic",
+        counts: counts_AIC
+      })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success) {
+        baseAIC = data.baseAIC;
+        totalEquivalent = data.totalEquivalent;
+        ANI = data.ANI;
+      }
+    }
+  } catch (err) {
+    console.warn("Backend AIC calculation fallback:", err);
+  }
+
+  if (baseAIC === "-" && (counts_AIC.vh > 0 || counts_AIC.h > 0 || counts_AIC.m > 0 || counts_AIC.l > 0)) {
+    if (counts_AIC.vh > 0) baseAIC = "vh";
+    else if (counts_AIC.h > 0) baseAIC = "h";
+    else if (counts_AIC.m > 0) baseAIC = "m";
+    else if (counts_AIC.l > 0) baseAIC = "l";
+    const ef = equivalenceFactors_AIC[baseAIC];
+    totalEquivalent = (ef.vh * counts_AIC.vh) + (ef.h * counts_AIC.h) + (ef.m * counts_AIC.m) + (ef.l * counts_AIC.l);
+    ANI = Math.floor(totalEquivalent);
+  }
 
   if (baseAIC === "-") {
     document.getElementById("totalEquivalent_AIC").innerText = "-";
@@ -238,19 +283,10 @@ function calculateInspection_AIC() {
     return;
   }
 
-  const ef = equivalenceFactors_AIC[baseAIC];
-  const totalEquivalent =
-    (ef.vh * counts_AIC.vh) +
-    (ef.h * counts_AIC.h) +
-    (ef.m * counts_AIC.m) +
-    (ef.l * counts_AIC.l);
-
-  const ANI = Math.floor(totalEquivalent);
-
   document.querySelectorAll(".triangle .section").forEach(el => el.classList.remove("active"));
-  document.getElementById("tri-" + baseAIC + "_AIC").classList.add("active");
+  document.getElementById("tri-" + baseAIC + "_AIC")?.classList.add("active");
 
-  document.getElementById("totalEquivalent_AIC").innerText = totalEquivalent.toFixed(3) + " (" + baseAIC.toUpperCase() + " Base)";
+  document.getElementById("totalEquivalent_AIC").innerText = Number(totalEquivalent).toFixed(3) + " (" + baseAIC.toUpperCase() + " Base)";
   document.getElementById("aggregateInspections_AIC").innerText = ANI;
   document.getElementById("aicValue_AIC").innerText = baseAIC.toUpperCase();
 }

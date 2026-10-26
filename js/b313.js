@@ -345,25 +345,42 @@ async function loadMillTolerance() {
 window.loadMillTolerance = loadMillTolerance;
 
 // ✅ Dedicated Tolerance & Net Thickness Check Renderer
-function renderToleranceCheck(nominalVal, materialStd, includeCA, CA, includeMillTol, D) {
+function renderToleranceCheck(nominalVal, materialStd, includeCA, CA, includeMillTol, D, serverCalc = null) {
   const resultBox = document.getElementById("b313_resultBox");
   if (!resultBox) return;
 
   let millTolVal = 0;
   let t_afterMill = nominalVal;
   let t_includingCA_Mill = nominalVal;
+  let displayTol = "12.5%";
 
-  if (includeMillTol && materialStd) {
-    millTolVal = getMillTolerance(materialStd, nominalVal);
-    t_afterMill = nominalVal - millTolVal;
-    t_includingCA_Mill = includeCA ? Math.max(t_afterMill - CA, 0) : t_afterMill;
-  } else if (includeCA) {
-    t_includingCA_Mill = Math.max(nominalVal - CA, 0);
+  if (serverCalc && typeof serverCalc.millTolVal === "number") {
+    millTolVal = serverCalc.millTolVal;
+    t_afterMill = typeof serverCalc.t_afterMill === "number" ? serverCalc.t_afterMill : (nominalVal - millTolVal);
+    t_includingCA_Mill = typeof serverCalc.t_includingCA_Mill === "number"
+      ? serverCalc.t_includingCA_Mill
+      : (includeCA ? Math.max(t_afterMill - CA, 0) : t_afterMill);
+    displayTol = serverCalc.displayTol || ((nominalVal > 0 ? (millTolVal / nominalVal * 100).toFixed(1) : "12.5") + "%");
+  } else {
+    const tolMap = (window.b313Catalog && window.b313Catalog.millToleranceMap) || {};
+    const entry = tolMap[materialStd];
+    if (includeMillTol && materialStd) {
+      if (entry) {
+        millTolVal = entry.type === "percent" ? nominalVal * (entry.value / 100) : entry.value;
+      } else if (materialStd.indexOf("API 5L") !== -1) {
+        millTolVal = 0.4;
+      } else {
+        millTolVal = nominalVal * 0.125;
+      }
+      t_afterMill = nominalVal - millTolVal;
+      t_includingCA_Mill = includeCA ? Math.max(t_afterMill - CA, 0) : t_afterMill;
+    } else if (includeCA) {
+      t_includingCA_Mill = Math.max(nominalVal - CA, 0);
+    }
+    displayTol = (materialStd && (materialStd.indexOf("API 5L") !== -1 || entry?.type === "mm"))
+      ? millTolVal.toFixed(2) + " mm"
+      : ((nominalVal > 0 ? (millTolVal / nominalVal * 100).toFixed(1) : "12.5") + "%");
   }
-
-  const displayTol = (materialStd && (materialStd.indexOf("API 5L") !== -1 || millToleranceMap[materialStd]?.type === "mm"))
-    ? millTolVal.toFixed(2) + " mm"
-    : ((nominalVal > 0 ? (millTolVal / nominalVal * 100).toFixed(1) : "12.5") + "%");
 
   let html = `
     <div class="b313-calc-result-card" style="padding:16px;border-radius:8px;border-left:4px solid #27ae60;margin-bottom:15px;background:rgba(39, 174, 96, 0.06);">
@@ -512,7 +529,7 @@ async function checkToleranceOnly() {
       nominalInput.value = data.nominalVal.toFixed(2);
     }
 
-    renderToleranceCheck(data.nominalVal, data.materialStd, data.includeCA, data.CA, data.includeMillTol, D);
+    renderToleranceCheck(data.nominalVal, data.materialStd, data.includeCA, data.CA, data.includeMillTol, D, data);
   } catch (err) {
     if (resultBox) {
       resultBox.innerHTML = `<strong style='color:#e74c3c;'>⚠️ Error: ${err.message}</strong>`;
@@ -825,42 +842,27 @@ async function calculateThickness() {
 }
 window.calculateThickness = calculateThickness;
 
-// Standard Pipe Schedule 40 (STD) Nominal Wall Thickness (mm) by OD
-const standardWallThicknessByOD = {
-  "21.3": 2.77,  // 1/2"
-  "26.7": 2.87,  // 3/4"
-  "33.4": 3.38,  // 1"
-  "42.2": 3.56,  // 1 1/4"
-  "48.3": 3.68,  // 1 1/2"
-  "60.3": 3.91,  // 2"
-  "73.0": 5.16,  // 2 1/2"
-  "88.9": 5.49,  // 3"
-  "101.6": 5.74, // 3 1/2"
-  "114.3": 6.02, // 4"
-  "141.3": 6.55, // 5"
-  "168.3": 7.11, // 6"
-  "219.1": 8.18, // 8"
-  "273.0": 9.27, // 10"
-  "323.9": 9.53, // 12"
-  "355.6": 9.53, // 14"
-  "406.4": 9.53, // 16"
-  "457.0": 9.53, // 18"
-  "508.0": 9.53, // 20"
-  "559.0": 9.53, // 22"
-  "610.0": 9.53, // 24"
-  "660.4": 9.53, // 26"
-  "711.2": 9.53, // 28"
-  "762.0": 9.53, // 30"
-  "812.8": 9.53, // 32"
-  "863.6": 9.53, // 34"
-  "914.4": 9.53, // 36"
-  "965.2": 9.53, // 38"
-  "1016.0": 9.53, // 40"
-  "1066.8": 9.53, // 42"
-  "1117.6": 9.53, // 44"
-  "1168.4": 9.53, // 46"
-  "1219.2": 9.53  // 48"
-};
+// Dynamic ASME B31.3 Catalog Hydration from Backend (/api/b313)
+window.b313Catalog = window.b313Catalog || {};
+let standardWallThicknessByOD = {};
+
+(async function hydrateB313CatalogFromBackend() {
+  if (typeof window === "undefined") return;
+  try {
+    const res = await fetch("/api/b313", { headers: { Accept: "application/json" } });
+    if (res.ok) {
+      const json = await res.json();
+      if (json && json.success && json.catalog) {
+        window.b313Catalog = json.catalog;
+        if (json.catalog.standardWallThicknessByOD) {
+          standardWallThicknessByOD = json.catalog.standardWallThicknessByOD;
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("[B31.3] Could not pre-fetch B31.3 catalog metadata:", err?.message || err);
+  }
+})();
 
 // ==========================================
 // DYNAMIC SCHEDULE & PIPE THICKNESS LOOKUP
@@ -1719,6 +1721,13 @@ function onNominalInput() {
 }
 
 window.initB313 = initB313;
+
+// Re-sync schedule dropdowns whenever /api/pipe-dimensions finishes loading
+if (typeof window !== "undefined") {
+  window.addEventListener("pipe-data-ready", function () {
+    updateB313ScheduleList();
+  });
+}
 
 // Initialize on DOM ready or immediately if already loaded
 if (document.readyState === "loading") {

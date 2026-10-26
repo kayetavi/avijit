@@ -39,6 +39,10 @@
         "email": { "type": "string", "description": "User email address" },
         "uid": { "type": "string", "description": "Firebase user UID" },
         "role": { "type": "string", "description": "Role identifier: admin, lead_engineer, inspector, viewer, custom" },
+        "permissions": {
+          "type": "object",
+          "description": "CRUD and system capabilities (read, write, edit, delete, manageUsers, manageSystem, runCalculations)"
+        },
         "allowedModules": {
           "type": "object",
           "description": "Module access flags"
@@ -51,6 +55,22 @@
         "updatedAt": { "type": "number", "description": "Timestamp in milliseconds" }
       },
       "required": ["email", "role"]
+    },
+    "RoleDefinition": {
+      "title": "RoleDefinition",
+      "description": "Master RBAC role definition document in Firestore roles collection",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Role ID (admin, lead_engineer, inspector, viewer)" },
+        "role": { "type": "string", "description": "Role key" },
+        "label": { "type": "string", "description": "Display label" },
+        "description": { "type": "string", "description": "Role description" },
+        "permissions": { "type": "object", "description": "CRUD permissions object (read, write, edit, delete, manageUsers, manageSystem, runCalculations)" },
+        "allowedModules": { "type": "object", "description": "Default module access map" },
+        "subsections": { "type": "object", "description": "Default subsection access map" },
+        "updatedAt": { "type": "number", "description": "Timestamp in milliseconds" }
+      },
+      "required": ["id", "role", "permissions"]
     },
     "UserSession": {
       "title": "UserSession",
@@ -154,6 +174,71 @@
         "results": { "type": "object", "description": "Calculated POF, COF, risk level, and priority" }
       },
       "required": ["id"]
+    },
+    "DamageMechanism": {
+      "title": "DamageMechanism",
+      "description": "API 571 Damage Mechanism catalog record with morphology, critical factors, and mitigation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "code": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "affectedMaterials": { "type": "string" },
+        "criticalFactors": { "type": "string" },
+        "affectedUnits": { "type": "string" },
+        "appearance": { "type": "string" },
+        "mitigation": { "type": "string" },
+        "inspection": { "type": "string" },
+        "imagePath": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "DamageCriteria": {
+      "title": "DamageCriteria",
+      "description": "API 571 screening rules, Table 3-27-1 erosion rates, and cracking potential criteria",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "data": { "type": "object" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["id"]
+    },
+    "PipeDimension": {
+      "title": "PipeDimension",
+      "description": "ASME B36.10M / B36.19M Pipe Dimensional Data, Outside Diameters (OD), and Schedule Wall Thicknesses",
+      "type": "object",
+      "properties": {
+        "nps": { "type": "string" },
+        "npsDecimal": { "type": "number" },
+        "od_mm": { "type": "number" },
+        "od_in": { "type": "number" },
+        "schedules": { "type": "object" },
+        "pipeOD": { "type": "object" },
+        "pipeDataMaster": { "type": "object" },
+        "npsList": { "type": "array" },
+        "standard": { "type": "string" },
+        "updatedAt": { "type": "number" }
+      }
+    },
+    "B313Catalog": {
+      "title": "B313Catalog",
+      "description": "ASME B31.3 & ASME VIII Engineering Lookup Tables (Y-Factor, W-Factor, Joint Efficiencies E, Mill Tolerances)",
+      "type": "object",
+      "properties": {
+        "standard": { "type": "string" },
+        "yTable": { "type": "object" },
+        "wTable": { "type": "array" },
+        "jointEfficiencyTable": { "type": "array" },
+        "millToleranceMap": { "type": "object" },
+        "standardWallThicknessByOD": { "type": "object" },
+        "simpleStructuralThresholds": { "type": "object" },
+        "updatedAt": { "type": "number" }
+      }
     }
   },
   "firestore": {
@@ -168,6 +253,10 @@
     "/userRoles/{email}": {
       "schema": "UserRole",
       "description": "User role definitions and module permissions indexed by normalized email"
+    },
+    "/roles/{roleId}": {
+      "schema": "RoleDefinition",
+      "description": "Master RBAC role templates and CRUD permissions (admin, lead_engineer, inspector, viewer)"
     },
     "/userSessions/{uid}": {
       "schema": "UserSession",
@@ -198,8 +287,24 @@
       "description": "Analyses under a component"
     },
     "/damageMechanisms/{mechId}": {
-      "schema": { "$ref": "#/entities/UserProfile" },
+      "schema": "DamageMechanism",
       "description": "API 571 Damage Mechanism catalog and screening parameters"
+    },
+    "/damageCriteria/{criteriaId}": {
+      "schema": "DamageCriteria",
+      "description": "API 571 screening rules, Table 3-27-1 erosion rates, and cracking potential matrices"
+    },
+    "/pipeDimensions/{dimId}": {
+      "schema": "PipeDimension",
+      "description": "ASME B36.10M / B36.19M Pipe Dimensional Standards, Outside Diameters, and Schedule Wall Thicknesses"
+    },
+    "/b313Catalog/{catalogId}": {
+      "schema": "B313Catalog",
+      "description": "ASME B31.3 & ASME VIII Engineering Lookup Tables (Y-Factor, W-Factor, Joint Efficiencies, Mill Tolerances)"
+    },
+    "/structural_min_t_tables/{tableId}": {
+      "schema": "B313Catalog",
+      "description": "API 581 Annex D / API 574 Minimum Structural Thickness Tables"
     },
     "/stressData/{gradeId}": {
       "schema": { "$ref": "#/entities/UserProfile" },

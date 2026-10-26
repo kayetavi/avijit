@@ -14,88 +14,91 @@ const simpleStressToMPa = {
 let simpleLastStressUnit = "MPa";
 let simpleHasInitialized = false;
 
-// 🔹 OD → NPS Mapping (Extended for full standard range 1/8" to 48")
+// 🔹 Dynamic Hydration of Simple Piping Metadata from Backend (/api/simple)
+window.simplePipingCatalog = window.simplePipingCatalog || {
+  odToNpsMap: {},
+  structuralThresholds: {
+    low: [
+      { maxNps: 1, t_struct: 1.8, t_alert: 2.0 },
+      { maxNps: 2, t_struct: 1.8, t_alert: 2.5 },
+      { maxNps: 3, t_struct: 2.0, t_alert: 2.8 },
+      { maxNps: 4, t_struct: 2.3, t_alert: 3.1 },
+      { maxNps: 18, t_struct: 2.8, t_alert: 3.3 },
+      { maxNps: 24, t_struct: 3.1, t_alert: 3.6 },
+      { maxNps: 999, t_struct: 3.5, t_alert: 4.0 }
+    ],
+    high: [
+      { maxNps: 1, t_struct: 2.0, t_alert: 2.3 },
+      { maxNps: 2, t_struct: 2.0, t_alert: 2.8 },
+      { maxNps: 3, t_struct: 2.3, t_alert: 3.1 },
+      { maxNps: 4, t_struct: 2.8, t_alert: 3.5 },
+      { maxNps: 18, t_struct: 3.1, t_alert: 3.8 },
+      { maxNps: 24, t_struct: 3.5, t_alert: 4.2 },
+      { maxNps: 999, t_struct: 4.0, t_alert: 4.5 }
+    ]
+  }
+};
+
+(async function hydrateSimpleCatalogFromBackend() {
+  if (typeof window === "undefined") return;
+  try {
+    const res = await fetch("/api/simple", { headers: { Accept: "application/json" } });
+    if (res.ok) {
+      const json = await res.json();
+      if (json && json.success) {
+        if (json.odToNpsMap) window.simplePipingCatalog.odToNpsMap = json.odToNpsMap;
+        if (json.structuralThresholds) window.simplePipingCatalog.structuralThresholds = json.structuralThresholds;
+      }
+    }
+  } catch (err) {
+    console.warn("[Simple Piping] Could not pre-fetch simple catalog metadata:", err?.message || err);
+  }
+})();
+
+// 🔹 OD → NPS Mapping (Powered by Backend /api/simple & /api/pipe-dimensions)
 function getNPSFromOD(od) {
-  const map = {
-    10.3: 0.125,
-    13.7: 0.25,
-    17.1: 0.375,
-    21.3: 0.5,
-    26.7: 0.75,
-    33.4: 1,
-    42.2: 1.25,
-    48.3: 1.5,
-    60.3: 2,
-    73.0: 2.5,
-    88.9: 3,
-    101.6: 3.5,
-    114.3: 4,
-    141.3: 5,
-    168.3: 6,
-    219.1: 8,
-    273.0: 10,
-    323.9: 12,
-    355.6: 14,
-    406.4: 16,
-    457.0: 18,
-    508.0: 20,
-    559.0: 22,
-    610.0: 24,
-    660.4: 26,
-    711.2: 28,
-    762.0: 30,
-    812.8: 32,
-    863.6: 34,
-    914.4: 36,
-    965.2: 38,
-    1016.0: 40,
-    1066.8: 42,
-    1117.6: 44,
-    1168.4: 46,
-    1219.2: 48
-  };
   const numOD = parseFloat(od);
   if (isNaN(numOD)) return 0;
-  if (map[numOD] !== undefined) return map[numOD];
 
-  // Fuzzy match for minor float rounding
+  const map = (window.simplePipingCatalog && window.simplePipingCatalog.odToNpsMap) || {};
+  if (map[numOD] !== undefined) return Number(map[numOD]);
+  if (map[String(numOD)] !== undefined) return Number(map[String(numOD)]);
+
+  // Check window.pipeOD883 if available
+  const odMap = window.pipeOD883 || {};
+  for (const [npsKey, odVal] of Object.entries(odMap)) {
+    if (Math.abs(parseFloat(odVal) - numOD) <= 0.8) {
+      const fracMap = { "1/8": 0.125, "1/4": 0.25, "3/8": 0.375, "1/2": 0.5, "3/4": 0.75, "1 1/4": 1.25, "1 1/2": 1.5, "2 1/2": 2.5, "3 1/2": 3.5 };
+      if (fracMap[npsKey] !== undefined) return fracMap[npsKey];
+      const parsedNps = parseFloat(npsKey);
+      if (!isNaN(parsedNps)) return parsedNps;
+    }
+  }
+
+  // Fuzzy match against map
   let closestVal = 0;
   let minDiff = Infinity;
   for (const [key, val] of Object.entries(map)) {
     const diff = Math.abs(parseFloat(key) - numOD);
     if (diff < minDiff && diff <= 0.8) {
       minDiff = diff;
-      closestVal = val;
+      closestVal = Number(val);
     }
   }
   return closestVal;
 }
 window.getNPSFromOD = getNPSFromOD;
 
-// 🔹 Structural Thickness Logic (API based)
+// 🔹 Structural Thickness Logic (Powered by Backend /api/simple thresholds)
 function getStructuralFromNPS(nps, temp) {
-  let t_struct = 0;
-  let t_alert = 0;
-
-  if (temp === "low") {
-    if (nps <= 1) { t_struct = 1.8; t_alert = 2.0; }
-    else if (nps <= 2) { t_struct = 1.8; t_alert = 2.5; }
-    else if (nps <= 3) { t_struct = 2.0; t_alert = 2.8; }
-    else if (nps <= 4) { t_struct = 2.3; t_alert = 3.1; }
-    else if (nps <= 18) { t_struct = 2.8; t_alert = 3.3; }
-    else if (nps <= 24) { t_struct = 3.1; t_alert = 3.6; }
-    else { t_struct = 3.5; t_alert = 4.0; }
-  } else {
-    if (nps <= 1) { t_struct = 2.0; t_alert = 2.3; }
-    else if (nps <= 2) { t_struct = 2.0; t_alert = 2.8; }
-    else if (nps <= 3) { t_struct = 2.3; t_alert = 3.1; }
-    else if (nps <= 4) { t_struct = 2.8; t_alert = 3.5; }
-    else if (nps <= 18) { t_struct = 3.1; t_alert = 3.8; }
-    else if (nps <= 24) { t_struct = 3.5; t_alert = 4.2; }
-    else { t_struct = 4.0; t_alert = 4.5; }
+  const thresholds = window.simplePipingCatalog?.structuralThresholds || {};
+  const list = temp === "low" ? (thresholds.low || []) : (thresholds.high || []);
+  for (const row of list) {
+    if (nps <= row.maxNps) {
+      return { t_struct: Number(row.t_struct), t_alert: Number(row.t_alert) };
+    }
   }
-
-  return { t_struct, t_alert };
+  return temp === "low" ? { t_struct: 3.5, t_alert: 4.0 } : { t_struct: 4.0, t_alert: 4.5 };
 }
 window.getStructuralFromNPS = getStructuralFromNPS;
 
@@ -1053,6 +1056,24 @@ function initSimplePiping() {
   simpleHasInitialized = true;
 }
 window.initSimplePiping = initSimplePiping;
+
+// Re-sync schedule dropdowns whenever /api/pipe-dimensions finishes loading
+if (typeof window !== "undefined") {
+  window.addEventListener("pipe-data-ready", function () {
+    const dSelect = document.getElementById("simple_diameter");
+    const schSelect = document.getElementById("simple_schedule");
+    updateSimpleScheduleList();
+    if (dSelect && dSelect.value && schSelect && (!schSelect.value || schSelect.value === "")) {
+      for (let i = 0; i < schSelect.options.length; i++) {
+        if (schSelect.options[i].value === "SCH 40") {
+          schSelect.selectedIndex = i;
+          onSimpleScheduleChange();
+          break;
+        }
+      }
+    }
+  });
+}
 
 // Run on load
 if (document.readyState === "loading") {

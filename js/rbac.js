@@ -49,6 +49,8 @@
     userEmail: "",
     role: "engineer",
     isSuperAdmin: false,
+    permissions: { read: true, write: true, edit: true, delete: true, manageUsers: false, manageSystem: false, runCalculations: true },
+    roleTemplates: {},
     allowedModules: {},
     subsections: {},
     availableModules: [],
@@ -57,6 +59,28 @@
     lastSyncTime: 0,
     syncChannel: null,
     _syncListenersInstalled: false,
+
+    canRead() {
+      return Boolean(this.isSuperAdmin || this.role === "admin" || !this.permissions || this.permissions.read !== false);
+    },
+
+    canWrite() {
+      if (this.isSuperAdmin || this.role === "admin") return true;
+      if (this.permissions && typeof this.permissions.write === "boolean") return this.permissions.write;
+      return this.role !== "viewer";
+    },
+
+    canEdit() {
+      if (this.isSuperAdmin || this.role === "admin") return true;
+      if (this.permissions && typeof this.permissions.edit === "boolean") return this.permissions.edit;
+      return this.role === "lead_engineer" || this.role === "engineer";
+    },
+
+    canDelete() {
+      if (this.isSuperAdmin || this.role === "admin") return true;
+      if (this.permissions && typeof this.permissions.delete === "boolean") return this.permissions.delete;
+      return this.role === "lead_engineer";
+    },
 
     getAuthHeaders() {
       const headers = {};
@@ -265,18 +289,22 @@
 
         const newRole = data.role || "engineer";
         const newIsSuper = !!data.isSuperAdmin || newRole === "admin" || (Array.isArray(data.roles) && data.roles.includes("admin"));
+        const newPerms = data.permissions || this.permissions || { read: true, write: newRole !== "viewer", edit: newIsSuper || newRole === "lead_engineer", delete: newIsSuper || newRole === "lead_engineer" };
+        const newTemplates = data.roleTemplates || this.roleTemplates || {};
         const newAllowed = data.allowedModules || {};
         const newSubs = data.subsections || {};
         const newAvailable = data.availableModules || [];
         const newAuthNav = Array.isArray(data.authorizedNavigation) ? data.authorizedNavigation : (this.authorizedNavigation || []);
 
-        const roleChanged = this.role !== newRole || this.isSuperAdmin !== newIsSuper;
+        const roleChanged = this.role !== newRole || this.isSuperAdmin !== newIsSuper || JSON.stringify(this.permissions) !== JSON.stringify(newPerms);
         const allowedChanged = JSON.stringify(this.allowedModules) !== JSON.stringify(newAllowed);
         const subsChanged = JSON.stringify(this.subsections) !== JSON.stringify(newSubs);
         const navChanged = JSON.stringify(this.authorizedNavigation) !== JSON.stringify(newAuthNav);
 
         this.role = newRole;
         this.isSuperAdmin = newIsSuper;
+        this.permissions = newPerms;
+        this.roleTemplates = newTemplates;
         this.allowedModules = newAllowed;
         this.subsections = newSubs;
         this.availableModules = newAvailable;
@@ -288,6 +316,8 @@
             email,
             role: this.role,
             isSuperAdmin: this.isSuperAdmin,
+            permissions: this.permissions,
+            roleTemplates: this.roleTemplates,
             allowedModules: this.allowedModules,
             subsections: this.subsections,
             availableModules: this.availableModules,
@@ -306,6 +336,7 @@
           this.renderRoleBadge();
           this.updatePrefilterCss();
           this.applyPermissionGuards();
+          this.applyActionGuards();
           this.updateAdminMenuVisibility();
           this.applySidebarVisibility();
         }
@@ -336,6 +367,13 @@
 
         this.role = data.role || "engineer";
         this.isSuperAdmin = !!data.isSuperAdmin || this.role === "admin" || (Array.isArray(data.roles) && data.roles.includes("admin"));
+        this.permissions = data.permissions || {
+          read: true,
+          write: this.role !== "viewer",
+          edit: this.isSuperAdmin || this.role === "lead_engineer",
+          delete: this.isSuperAdmin || this.role === "lead_engineer"
+        };
+        this.roleTemplates = data.roleTemplates || {};
         this.allowedModules = data.allowedModules || {};
         this.subsections = data.subsections || {};
         this.availableModules = data.availableModules || [];
@@ -348,6 +386,8 @@
               email: email || data.email || "",
               role: this.role,
               isSuperAdmin: this.isSuperAdmin,
+              permissions: this.permissions,
+              roleTemplates: this.roleTemplates,
               allowedModules: this.allowedModules,
               subsections: this.subsections,
               availableModules: this.availableModules,
@@ -383,6 +423,7 @@
         this.renderRoleBadge();
         this.updatePrefilterCss();
         this.applyPermissionGuards();
+        this.applyActionGuards();
         this.updateAdminMenuVisibility();
         this.applySidebarVisibility();
         if (document.body) document.body.classList.add("rbac-ready");
@@ -398,6 +439,7 @@
         this.renderRoleBadge();
         this.updatePrefilterCss();
         this.applyPermissionGuards();
+        this.applyActionGuards();
         this.updateAdminMenuVisibility();
         this.applySidebarVisibility();
         if (document.body) document.body.classList.add("rbac-ready");
@@ -828,10 +870,71 @@
         }
       });
 
-      // Enforce granular actions in Allowable Stress Manager
+      // Enforce granular actions in Allowable Stress Manager & across the app
       if (typeof window.enforceAllowableStressPermissions === "function") {
         window.enforceAllowableStressPermissions();
       }
+      this.applyActionGuards();
+    },
+
+    applyActionGuards() {
+      const canW = this.canWrite();
+      const canE = this.canEdit();
+      const canD = this.canDelete();
+      const isAdmin = this.isSuperAdmin || this.role === "admin";
+
+      if (document.body) {
+        document.body.dataset.rbacRole = this.role || "viewer";
+        document.body.classList.toggle("rbac-can-write", canW);
+        document.body.classList.toggle("rbac-can-edit", canE);
+        document.body.classList.toggle("rbac-can-delete", canD);
+        document.body.classList.toggle("rbac-readonly", !canW);
+      }
+
+      // Dynamically show/hide/disable action buttons tagged with data-rbac-action or CRUD classes
+      const writeControls = document.querySelectorAll('[data-rbac-action="write"], .rbac-write-only, #saveToDbBtn, #saveBulkBtn, #streamSaveDatasetBtn');
+      writeControls.forEach((el) => {
+        if (canW) {
+          el.style.removeProperty("display");
+          el.disabled = false;
+        } else {
+          el.style.setProperty("display", "none", "important");
+          el.disabled = true;
+        }
+      });
+
+      const editControls = document.querySelectorAll('[data-rbac-action="edit"], .rbac-edit-only');
+      editControls.forEach((el) => {
+        if (canE) {
+          el.style.removeProperty("display");
+          el.disabled = false;
+        } else {
+          el.style.setProperty("display", "none", "important");
+          el.disabled = true;
+        }
+      });
+
+      const deleteControls = document.querySelectorAll('[data-rbac-action="delete"], .rbac-delete-only, #clearAllHistoryBtn, .delete-analysis-btn, .delete-dataset-btn');
+      deleteControls.forEach((el) => {
+        if (canD) {
+          el.style.removeProperty("display");
+          el.disabled = false;
+        } else {
+          el.style.setProperty("display", "none", "important");
+          el.disabled = true;
+        }
+      });
+
+      const adminControls = document.querySelectorAll('[data-rbac-action="admin"], .rbac-admin-only');
+      adminControls.forEach((el) => {
+        if (isAdmin) {
+          el.style.removeProperty("display");
+          el.disabled = false;
+        } else {
+          el.style.setProperty("display", "none", "important");
+          el.disabled = true;
+        }
+      });
     },
 
     isSidebarTabVisible(modId) {
@@ -1381,16 +1484,28 @@ window.renderRbacModulesTree = function (role, currentMods = {}, currentSubs = {
   const isPresetAdmin = role === "admin";
   const isPresetEngineer = role === "lead_engineer";
 
+  // Dynamically resolve role template from server-supplied roleTemplates (Firestore 'roles' collection)
+  const roleTemplates = (window.RBAC && window.RBAC.roleTemplates) || {};
+  const templateForRole = roleTemplates[role] || {};
+  const templateMods = templateForRole.modules || {};
+  const templateSubs = templateForRole.subsections || {};
+
   let html = `<div class="rbac-modules-grid">`;
 
   modules.forEach(mod => {
     let modChecked = true;
     if (role === "custom") {
       modChecked = !!currentMods[mod.id];
-    } else if (role === "inspector") {
-      modChecked = ["damageExplorer", "api571Criteria", "crackingMechanism", "remainingLife", "inspectionConfidence", "fluidSelector", "processFlow", "corrosionRate", "pipeThickness"].includes(mod.id);
-    } else if (role === "viewer") {
-      modChecked = ["damageExplorer", "fluidSelector", "inspectionConfidence", "processFlow"].includes(mod.id);
+    } else if (typeof currentMods[mod.id] === "boolean") {
+      modChecked = currentMods[mod.id];
+    } else if (typeof templateMods[mod.id] === "boolean") {
+      modChecked = templateMods[mod.id];
+    } else if (role === "admin") {
+      modChecked = true;
+    } else if (role === "lead_engineer") {
+      modChecked = mod.id !== "adminControlCenter";
+    } else {
+      modChecked = false;
     }
 
     const disabledAttr = (isPresetAdmin || isPresetEngineer) ? "disabled" : "";
@@ -1409,13 +1524,13 @@ window.renderRbacModulesTree = function (role, currentMods = {}, currentSubs = {
     if (mod.subsections && mod.subsections.length > 0) {
       html += `<div class="rbac-subsections-list" id="sub_container_${mod.id}" style="${modChecked ? '' : 'opacity: 0.5; pointer-events: none;'}">`;
       mod.subsections.forEach(sub => {
-        let subChecked = true;
-        if (role === "custom") {
-          subChecked = currentSubs[mod.id] && typeof currentSubs[mod.id][sub.id] === "boolean" ? currentSubs[mod.id][sub.id] : modChecked;
-        } else if (role === "inspector" && mod.id === "remainingLife" && sub.id === "bulkUpload") {
-          subChecked = false;
-        } else if (role === "viewer") {
-          subChecked = false;
+        let subChecked = modChecked;
+        if (role === "custom" && currentSubs[mod.id] && typeof currentSubs[mod.id][sub.id] === "boolean") {
+          subChecked = currentSubs[mod.id][sub.id];
+        } else if (currentSubs[mod.id] && typeof currentSubs[mod.id][sub.id] === "boolean") {
+          subChecked = currentSubs[mod.id][sub.id];
+        } else if (templateSubs[mod.id] && typeof templateSubs[mod.id][sub.id] === "boolean") {
+          subChecked = templateSubs[mod.id][sub.id];
         }
 
         html += `

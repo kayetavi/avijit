@@ -181,12 +181,18 @@ async function calculateToxic_Toxic() {
 
     let toxicMass = 0;
     let toxicityPct = 0;
+    let backendSeverityTag = null;
+    let backendSeverityColor = null;
+    let backendRbiImpact = null;
 
     if (res.ok) {
       const data = await res.json();
       if (data.success) {
         toxicMass = Number(data.toxicMassFlow || 0);
         toxicityPct = Number(data.toxicityPercent || 0);
+        backendSeverityTag = data.severityTag || null;
+        backendSeverityColor = data.severityColor || null;
+        backendRbiImpact = data.rbiImpact || null;
       }
     }
 
@@ -203,22 +209,24 @@ async function calculateToxic_Toxic() {
       }
     }
 
-    let severityTag = "🟢 Trace / Low Hazard (API 581 Category A)";
-    let severityColor = "#16a34a";
-    let rbiImpact = "Minimal personal protective equipment adjustment required.";
+    let severityTag = backendSeverityTag || "🟢 Trace / Low Hazard (API 581 Category A)";
+    let severityColor = backendSeverityColor || "#16a34a";
+    let rbiImpact = backendRbiImpact || "Minimal personal protective equipment adjustment required.";
 
-    if (toxicityPct > 10) {
-      severityTag = "🔴 Lethal / Extreme Hazard (API 581 Class IV / Cat E)";
-      severityColor = "#dc2626";
-      rbiImpact = "Immediate shelter-in-place / emergency toxic isolation required. Highly volatile lethal cloud dispersion risk.";
-    } else if (toxicityPct > 1) {
-      severityTag = "🟠 High Hazard (API 581 Class III / Cat D)";
-      severityColor = "#ea580c";
-      rbiImpact = "Strict toxic consequence area evaluation required under API 581 / EPA RMP regulations.";
-    } else if (toxicityPct > 0.05) {
-      severityTag = "🟡 Moderate Hazard (API 581 Class II / Cat C)";
-      severityColor = "#d97706";
-      rbiImpact = "Continuous area toxic gas monitoring (fixed detectors) and PPE compliance required.";
+    if (!backendSeverityTag) {
+      if (toxicityPct > 10) {
+        severityTag = "🔴 Lethal / Extreme Hazard (API 581 Class IV / Cat E)";
+        severityColor = "#dc2626";
+        rbiImpact = "Immediate shelter-in-place / emergency toxic isolation required. Highly volatile lethal cloud dispersion risk.";
+      } else if (toxicityPct > 1) {
+        severityTag = "🟠 High Hazard (API 581 Class III / Cat D)";
+        severityColor = "#ea580c";
+        rbiImpact = "Strict toxic consequence area evaluation required under API 581 / EPA RMP regulations.";
+      } else if (toxicityPct > 0.05) {
+        severityTag = "🟡 Moderate Hazard (API 581 Class II / Cat C)";
+        severityColor = "#d97706";
+        rbiImpact = "Continuous area toxic gas monitoring (fixed detectors) and PPE compliance required.";
+      }
     }
 
     if (resultEl) {
@@ -270,7 +278,7 @@ window.calculateToxic_Toxic = calculateToxic_Toxic;
 
 // --- Gas Composition Calculator JS ---
 
-// Initial gases with molar masses
+// Initial gases with molar masses (Hydrated from Backend /api/toxic)
 const molarMasses = {
   c1: 16.04,
   c2: 30.07,
@@ -293,6 +301,25 @@ const gasNames = {
   co2: "CO2"
 };
 
+async function hydrateToxicMetadata() {
+  try {
+    const res = await fetch("/api/toxic");
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success) {
+        if (data.molarMasses) Object.assign(molarMasses, data.molarMasses);
+        if (data.gasNames) Object.assign(gasNames, data.gasNames);
+        if (Array.isArray(data.toxicGasMap) && data.toxicGasMap.length > 0 && typeof TOXIC_GAS_MAP !== "undefined") {
+          TOXIC_GAS_MAP.splice(0, TOXIC_GAS_MAP.length, ...data.toxicGasMap);
+        }
+        populateGasDropdown();
+      }
+    }
+  } catch (err) {
+    console.warn("Toxic metadata hydration notice:", err);
+  }
+}
+
 let gasData = [];
 
 function populateGasDropdown() {
@@ -305,31 +332,57 @@ function populateGasDropdown() {
   }
 }
 
-function updateTable() {
+async function updateTable() {
   const gasTableBody = document.querySelector('#gasTable tbody');
   const totalMassSpan = document.getElementById('totalMass');
+  if (!gasTableBody || !totalMassSpan) return;
+
+  let totalMass = 0;
+
+  if (gasData.length > 0) {
+    try {
+      const res = await fetch("/api/toxic", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "gas_composition",
+          components: gasData
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.components)) {
+          gasData = data.components;
+          totalMass = Number(data.totalMass || 0);
+        }
+      }
+    } catch (err) {
+      console.warn("Backend gas composition fallback:", err);
+    }
+  }
+
+  if (totalMass === 0 && gasData.length > 0) {
+    gasData.forEach(g => {
+      g.moleFraction = g.molePercent / 100;
+      g.massContribution = g.moleFraction * g.molarMass;
+    });
+    totalMass = gasData.reduce((sum, g) => sum + g.massContribution, 0);
+  }
 
   gasTableBody.innerHTML = '';
 
-  gasData.forEach(g => {
-    g.moleFraction = g.molePercent / 100;
-    g.massContribution = g.moleFraction * g.molarMass;
-  });
-
-  let totalMass = gasData.reduce((sum, g) => sum + g.massContribution, 0);
-
   gasData.forEach((g, idx) => {
-    const wtPercent = totalMass ? (g.massContribution / totalMass) * 100 : 0;
+    const wtPercent = g.wtPercent !== undefined ? g.wtPercent : (totalMass ? (g.massContribution / totalMass) * 100 : 0);
 
     const tr = document.createElement('tr');
 
     tr.innerHTML = `
       <td>${g.customName || gasNames[g.gasKey] || g.gasKey.toUpperCase()}</td>
-      <td><input type="number" min="0" max="100" step="any" value="${g.molePercent.toFixed(3)}" data-idx="${idx}" class="editableMolePercent" /></td>
-      <td>${g.moleFraction.toFixed(5)}</td>
-      <td>${g.molarMass.toFixed(2)}</td>
-      <td>${g.massContribution.toFixed(5)}</td>
-      <td>${wtPercent.toFixed(5)}</td>
+      <td><input type="number" min="0" max="100" step="any" value="${Number(g.molePercent).toFixed(3)}" data-idx="${idx}" class="editableMolePercent" /></td>
+      <td>${Number(g.moleFraction).toFixed(5)}</td>
+      <td>${Number(g.molarMass).toFixed(2)}</td>
+      <td>${Number(g.massContribution).toFixed(5)}</td>
+      <td>${Number(wtPercent).toFixed(5)}</td>
       <td><button class="removeBtn" data-idx="${idx}">Remove</button></td>
     `;
 
@@ -340,7 +393,7 @@ function updateTable() {
 
   // Add event listeners for inputs and remove buttons
   document.querySelectorAll('.editableMolePercent').forEach(input => {
-    input.addEventListener('input', (e) => {
+    input.addEventListener('change', (e) => {
       const i = parseInt(e.target.getAttribute('data-idx'));
       let val = parseFloat(e.target.value);
       if (isNaN(val) || val < 0) val = 0;
@@ -478,6 +531,7 @@ window.initToxicButtons = initToxicButtons;
 function initToxicCalculator() {
   initToxicButtons();
   populateGasDropdown();
+  hydrateToxicMetadata();
   toggleInputs_Toxic(); // set initial visibility based on selected calc type
   toxic_fetchUnits(); // dynamically load stream datasets from database
 }

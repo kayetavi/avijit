@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 import { getAdminFirestore } from "./firebaseAdmin.js";
 import { getActiveProjectConfig } from "./firestoreClient.js";
 import { getAdminApp } from "./sessionStore.js";
-import { loadUsersFromFile, userRolesCache } from "./rbac.js";
+import { loadUsersFromFile, userRolesCache, verifyRequestRbac } from "./rbac.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -652,7 +652,7 @@ export async function deleteTemperaturePoint(payload, callerEmail) {
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Session-Id, X-Session-Token, X-User-Uid");
 
   if (req.method === "OPTIONS") {
     return res.status(200).end();
@@ -664,18 +664,12 @@ export default async function handler(req, res) {
 
   try {
     // -------------------------------------------------------------
-    // DELETE: Delete entire Year or specific Temperature Point (Admin Only)
+    // DELETE: Delete entire Year or specific Temperature Point (Requires 'delete' permission)
     // -------------------------------------------------------------
     if (req.method === "DELETE" && isStressRoute) {
-      const callerEmail = req.body?.callerEmail || req.headers["x-user-email"] || req.query.callerEmail;
-      const db = getAdminFirestore();
-      const isAdmin = await isAuthorizedAdmin(callerEmail, db);
-
-      if (!isAdmin) {
-        return res.status(403).json({
-          error: "Permission Denied: Only administrators can delete stress datasets or years."
-        });
-      }
+      const authCheck = await verifyRequestRbac(req, res, { requiredPermission: "delete" });
+      if (!authCheck.authorized) return;
+      const callerEmail = authCheck.email;
 
       const yearToDelete = req.body?.year || req.query.year;
       if (!yearToDelete) {
@@ -698,17 +692,11 @@ export default async function handler(req, res) {
         const body = req.body || {};
         const action = (body.action || "").toLowerCase();
 
-        // Action 1: Delete Year (Admin Only via POST)
+        // Action 1: Delete Year (Requires 'delete' permission)
         if (action === "delete-year") {
-          const callerEmail = body.callerEmail || req.headers["x-user-email"] || req.query.callerEmail;
-          const db = getAdminFirestore();
-          const isAdmin = await isAuthorizedAdmin(callerEmail, db);
-
-          if (!isAdmin) {
-            return res.status(403).json({
-              error: "Permission Denied: Only administrators can delete entire year stress datasets."
-            });
-          }
+          const authCheck = await verifyRequestRbac(req, res, { requiredPermission: "delete" });
+          if (!authCheck.authorized) return;
+          const callerEmail = authCheck.email;
 
           const yearToDelete = body.year;
           if (!yearToDelete) {
@@ -723,10 +711,12 @@ export default async function handler(req, res) {
           });
         }
 
-        // Action 2: Update Temperature Point (Update/Add temperature value)
+        // Action 2: Update Temperature Point (Requires 'edit' permission)
         if (action === "update-temperature-point" || action === "update-temperature") {
-          const userEmail = body.userEmail || body.callerEmail || req.headers["x-user-email"];
-          const updateResult = await updateTemperaturePoint(body, userEmail);
+          const authCheck = await verifyRequestRbac(req, res, { requiredPermission: "edit" });
+          if (!authCheck.authorized) return;
+
+          const updateResult = await updateTemperaturePoint(body, authCheck.email);
           return res.status(200).json({
             success: true,
             message: `Successfully updated allowable stress for ${body.material} ${body.grade} at ${body.temperature}°C.`,
@@ -734,19 +724,12 @@ export default async function handler(req, res) {
           });
         }
 
-        // Action 3: Delete Temperature Point (Admin Only)
+        // Action 3: Delete Temperature Point (Requires 'delete' permission)
         if (action === "delete-temperature-point") {
-          const callerEmail = body.callerEmail || req.headers["x-user-email"] || req.query.callerEmail;
-          const db = getAdminFirestore();
-          const isAdmin = await isAuthorizedAdmin(callerEmail, db);
+          const authCheck = await verifyRequestRbac(req, res, { requiredPermission: "delete" });
+          if (!authCheck.authorized) return;
 
-          if (!isAdmin) {
-            return res.status(403).json({
-              error: "Permission Denied: Only administrators can delete temperature stress points."
-            });
-          }
-
-          const delResult = await deleteTemperaturePoint(body, callerEmail);
+          const delResult = await deleteTemperaturePoint(body, authCheck.email);
           return res.status(200).json({
             success: true,
             message: `Successfully deleted temperature point ${body.temperature}°C for ${body.material} ${body.grade}.`,
@@ -754,7 +737,10 @@ export default async function handler(req, res) {
           });
         }
 
-        // Action 4: Bulk upload / Standard tree save
+        // Action 4: Bulk upload / Standard tree save (Requires 'edit' permission)
+        const authCheck = await verifyRequestRbac(req, res, { requiredPermission: "edit" });
+        if (!authCheck.authorized) return;
+
         let inputTree = body.stressData;
 
         if (!inputTree && Array.isArray(body.records)) {
@@ -769,7 +755,7 @@ export default async function handler(req, res) {
 
         const saveResult = await saveStressData(inputTree, {
           mode: body.mode || "merge",
-          userEmail: body.userEmail || body.callerEmail,
+          userEmail: authCheck.email,
           batchCount: Array.isArray(body.records) ? body.records.length : undefined,
           source: body.source || "dataloader"
         });

@@ -1191,6 +1191,9 @@
 
   function canUserDeleteStress() {
     if (window.RBAC && (window.RBAC.isSuperAdmin || window.RBAC.role === "admin")) return true;
+    if (window.RBAC && typeof window.RBAC.canDelete === "function" && !window.RBAC.canDelete()) {
+      return false;
+    }
     if (window.RBAC && typeof window.RBAC.hasSectionAccess === "function") {
       const res = window.RBAC.hasSectionAccess("adminControlCenter", "stress_action_delete");
       if (typeof res === "boolean") return res;
@@ -1198,6 +1201,7 @@
     try {
       const cached = window.RBAC || (typeof sessionStorage !== "undefined" ? JSON.parse(sessionStorage.getItem("cached_rbac_permissions") || "{}") : {});
       if (cached && (cached.isSuperAdmin || cached.role === "admin")) return true;
+      if (cached && cached.permissions && cached.permissions.delete === false) return false;
       if (cached && cached.subsections && cached.subsections.adminControlCenter) {
         if (typeof cached.subsections.adminControlCenter.stress_action_delete === "boolean") {
           return cached.subsections.adminControlCenter.stress_action_delete;
@@ -1210,13 +1214,20 @@
 
   function canUserAddStress() {
     if (window.RBAC && (window.RBAC.isSuperAdmin || window.RBAC.role === "admin")) return true;
+    if (window.RBAC && typeof window.RBAC.canEdit === "function" && !window.RBAC.canEdit()) {
+      return false;
+    }
     if (window.RBAC && typeof window.RBAC.hasSectionAccess === "function") {
       const res = window.RBAC.hasSectionAccess("adminControlCenter", "stress_action_add");
       if (typeof res === "boolean") return res;
     }
+    if (window.RBAC && typeof window.RBAC.canEdit === "function" && window.RBAC.canEdit()) {
+      return true;
+    }
     try {
       const cached = window.RBAC || (typeof sessionStorage !== "undefined" ? JSON.parse(sessionStorage.getItem("cached_rbac_permissions") || "{}") : {});
       if (cached && (cached.isSuperAdmin || cached.role === "admin")) return true;
+      if (cached && cached.permissions && cached.permissions.edit === true) return true;
       if (cached && cached.subsections && cached.subsections.adminControlCenter) {
         if (typeof cached.subsections.adminControlCenter.stress_action_add === "boolean") {
           return cached.subsections.adminControlCenter.stress_action_add;
@@ -1232,22 +1243,23 @@
     if (!el) return;
     const admin = isUserAdmin();
     const canDel = canUserDeleteStress();
+    const canEdit = canUserAddStress();
     const email = getCallerEmail();
     if (admin) {
       el.style.background = "#dcfce7";
       el.style.color = "#15803d";
       el.style.borderColor = "#86efac";
       el.innerHTML = `🛡️ Manager / Admin Access: <strong>${email}</strong> (Full Delete & Edit Permissions)`;
-    } else if (canDel) {
+    } else if (canDel || canEdit) {
       el.style.background = "#eff6ff";
       el.style.color = "#1d4ed8";
       el.style.borderColor = "#93c5fd";
-      el.innerHTML = `⚙️ Active User: <strong>${email}</strong> (Delete & Edit Permissions Active)`;
+      el.innerHTML = `⚙️ Active User: <strong>${email}</strong> (${canDel ? "Delete & Edit" : "Edit Only"} Permissions Active)`;
     } else {
       el.style.background = "#f1f5f9";
       el.style.color = "#475569";
       el.style.borderColor = "#cbd5e1";
-      el.innerHTML = `🔒 Restricted User View (Delete & Export restricted by Admin)`;
+      el.innerHTML = `🔒 Restricted User View (Edit & Delete restricted by Role Permissions)`;
     }
   }
 
@@ -1679,7 +1691,8 @@
       title.innerHTML = `📊 Configured Temperature Points: <strong>${material} ${grade}</strong> (${year}${thickness ? ` • ${thickness}` : ""})`;
     }
 
-    const admin = isUserAdmin();
+    const canEdit = canUserAddStress();
+    const canDel = canUserDeleteStress();
     let rowsHtml = "";
 
     tempKeys.forEach(t => {
@@ -1705,15 +1718,21 @@
           <td>${tens !== "--" ? `${tens} MPa` : "--"}</td>
           <td style="text-align: center;">
             <div style="display: flex; gap: 6px; justify-content: center; align-items: center;">
-              <button type="button" class="stress-btn-edit" onclick="openEditTemperaturePointModal('${escYear}', '${escMat}', '${escGrade}', '${escTh}', '${escTemp}', '${escStress}', '${escYield}', '${escTensile}')" title="Update Allowable Stress or Strength values">
-                ✏️ Edit
-              </button>
               ${
-                admin
+                canEdit
+                  ? `<button type="button" class="stress-btn-edit" onclick="openEditTemperaturePointModal('${escYear}', '${escMat}', '${escGrade}', '${escTh}', '${escTemp}', '${escStress}', '${escYield}', '${escTensile}')" title="Update Allowable Stress or Strength values">
+                       ✏️ Edit
+                     </button>`
+                  : `<button type="button" class="stress-btn-edit" style="opacity: 0.4; cursor: not-allowed;" disabled title="Edit restricted by role permissions">
+                       🔒 Edit
+                     </button>`
+              }
+              ${
+                canDel
                   ? `<button type="button" class="stress-btn-danger" style="padding: 4px 8px; font-size: 11.5px;" onclick="promptDeleteTemperaturePoint('${escYear}', '${escMat}', '${escGrade}', '${escTh}', '${escTemp}')" title="Delete this temperature point">
                        🗑️
                      </button>`
-                  : `<button type="button" class="stress-btn-danger" style="padding: 4px 8px; font-size: 11.5px; opacity: 0.4;" disabled title="Only admin can delete points">
+                  : `<button type="button" class="stress-btn-danger" style="padding: 4px 8px; font-size: 11.5px; opacity: 0.4;" disabled title="Delete restricted by role permissions">
                        🔒
                      </button>`
               }
@@ -1951,8 +1970,8 @@
   window.submitTemperaturePointUpdate = submitTemperaturePointUpdate;
 
   async function promptDeleteTemperaturePoint(year, material, grade, thickness, temp) {
-    if (!isUserAdmin()) {
-      alert("⚠️ Permission Denied: Only administrators can delete temperature points.");
+    if (!canUserDeleteStress()) {
+      alert("⚠️ Permission Denied: You do not have permission to delete temperature points.");
       return;
     }
 

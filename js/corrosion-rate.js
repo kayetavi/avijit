@@ -524,6 +524,24 @@ if (dmSelectFull) {
   dmSelectFull.addEventListener("change", handleDMSelectChange);
 }
 
+window.CORROSION_METADATA = null;
+async function loadCorrosionMetadata() {
+  if (window.CORROSION_METADATA) return window.CORROSION_METADATA;
+  try {
+    const res = await fetch("/api/corrosion-rate?action=metadata");
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && data.metadata) {
+        window.CORROSION_METADATA = data.metadata;
+      }
+    }
+  } catch (e) {
+    console.warn("Corrosion metadata fetch notice:", e);
+  }
+  return window.CORROSION_METADATA;
+}
+loadCorrosionMetadata();
+
 function setupH2SO4Dropdowns(material = "304 SS") {
   const tempSelect = document.getElementById("tempH2SO4");
   const concSelect = document.getElementById("concH2SO4");
@@ -536,9 +554,10 @@ function setupH2SO4Dropdowns(material = "304 SS") {
   velSelect.innerHTML = "";
 
   if (material === "304 SS") {
-    const temperatures = [30, 40, 60];
-    const concentrations = [2, 3.5, 8, 15, 30, 50, 65, 75, 82, 87, 92.5, 98];
-    const velocities = ["0.61", "1.83", "2.13"];
+    const meta = window.CORROSION_METADATA?.h2so4;
+    const temperatures = meta?.temperatures || [30, 40, 60];
+    const concentrations = meta?.concentrations || [2, 3.5, 8, 15, 30, 50, 65, 75, 82, 87, 92.5, 98];
+    const velocities = meta?.velocities || ["0.61", "1.83", "2.13"];
 
     temperatures.forEach(t => {
       tempSelect.innerHTML += `<option value="${t}">${t} °C</option>`;
@@ -569,11 +588,12 @@ function updateSulfidationDropdowns() {
     return;
   }
 
-  const csSulfurOptions = [0.2, 0.4, 0.6, 1.5, 2.5, 3.0];
-  const csTanOptions = [0.3, 0.65, 1.5, 3.0, 4.0];
+  const metaSulf = window.CORROSION_METADATA?.sulfidation;
+  const csSulfurOptions = metaSulf?.csSulfurOptions || [0.2, 0.4, 0.6, 1.5, 2.5, 3.0];
+  const csTanOptions = metaSulf?.csTanOptions || [0.3, 0.65, 1.5, 3.0, 4.0];
 
-  const ssSulfurOptions = [0.2, 0.4, 0.8];
-  const ssTanOptions = [1.0, 1.5, 3.0, 4.0];
+  const ssSulfurOptions = metaSulf?.ssSulfurOptions || [0.2, 0.4, 0.8];
+  const ssTanOptions = metaSulf?.ssTanOptions || [1.0, 1.5, 3.0, 4.0];
 
   let sulfurOptions = [];
   let tanOptions = [];
@@ -944,11 +964,37 @@ async function calculateBaseCO2Rate(dew) {
 }
 window.calculateBaseCO2Rate = calculateBaseCO2Rate;
 
-function calculateFinalCO2RateFromMitigation(baseRate) {
+async function calculateFinalCO2RateFromMitigation(baseRate) {
   const eff = parseFloat(document.getElementById("inhibitorEff")?.value) || 0;
+  const resEl = document.getElementById("finalCO2Result");
+  try {
+    const res = await fetch("/api/corrosion-rate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        mechanism: "co2",
+        action: "mitigation",
+        baseRate,
+        inhibitorEff: eff
+      })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && data.finalRate !== undefined) {
+        if (resEl) {
+          resEl.innerHTML = `<p>✅ Final Corrosion Rate (with ${data.inhibitorEff}% inhibition) = <b>${Number(data.finalRate).toFixed(3)} mm/year</b></p>`;
+        }
+        return;
+      }
+    }
+  } catch (err) {
+    console.warn("Backend CO2 mitigation fallback:", err);
+  }
   const finalRate = baseRate * (1 - eff / 100);
-  document.getElementById("finalCO2Result").innerHTML = `
-    <p>✅ Final Corrosion Rate (with ${eff}% inhibition) = <b>${finalRate.toFixed(3)} mm/year</b></p>
-  `;
+  if (resEl) {
+    resEl.innerHTML = `
+      <p>✅ Final Corrosion Rate (with ${eff}% inhibition) = <b>${finalRate.toFixed(3)} mm/year</b></p>
+    `;
+  }
 }
 window.calculateFinalCO2RateFromMitigation = calculateFinalCO2RateFromMitigation;

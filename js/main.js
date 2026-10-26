@@ -496,7 +496,7 @@ function initProcessFlow() {
 
   // Load SVG if not loaded
   if (!svgContainer.querySelector("svg")) {
-    fetch("HCU-Model-Final.svg")
+    fetch("/assets/models/HCU-Model-Final.svg")
       .then(res => res.text())
       .then(data => {
         svgContainer.innerHTML = data;
