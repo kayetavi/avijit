@@ -634,12 +634,39 @@ window.showbkStressTab = showbkStressTab;
   }
   window.initSidebarNavigationClicks = initSidebarNavigationClicks;
 
+  function normalizeCanonicalSidebarLabel(canonId, rawLabel, fallbackLabel) {
+    let label = String(rawLabel || fallbackLabel || canonId).trim();
+    if (canonId === "api570" && (label === "Remaining Life Calculator" || label === "⏱️ Remaining Life Calculator")) {
+      return "API 570 Remaining Life";
+    }
+    if (canonId === "crackingMechanism" && (label === "Cracking Mechanism Analysis" || label === "⚡ Cracking Mechanism Analysis")) {
+      return "Cracking Mechanism Finder";
+    }
+    if (canonId === "adminControlCenter" && (label === "Tools" || label === "🛠️ Tools")) {
+      return "Admin & Engineering Tools";
+    }
+    return label;
+  }
+
   const DEFAULT_SIDEBAR_MODULES = [
+    {
+      id: "damageExplorer",
+      name: "API 571 Damage Mechanisms",
+      icon: "🛡️",
+      category: "API 571 Damage Mechanisms",
+      tabId: "damageExplorerTab",
+      launcherFunc: "showDamageMechanismTab",
+      subsections: [
+        { id: "damageCatalog", name: "Damage Mechanism Catalog", category: "API 571 Damage Mechanisms", icon: "📖", tabId: "damageExplorerTab", launcherFunc: "showDamageMechanismTab" }
+      ]
+    },
     {
       id: "api581",
       name: "API 581 Risk-Based Inspection",
       icon: "📊",
-      category: "Risk & Inspection",
+      category: "Risk-Based Inspection",
+      tabId: "a571-criteriaTab",
+      launcherFunc: "showCriteriaTab",
       subsections: [
         { id: "api571Criteria", name: "API 571 Damage Mechanism Screening", icon: "🔎", launcherFunc: "showCriteriaTab", tabId: "a571-criteriaTab" },
         { id: "corrosionRate", name: "Corrosion Rate Estimator", icon: "📉", launcherFunc: "showCorrosionFullTab", tabId: "corrosionFullTab" },
@@ -673,13 +700,19 @@ window.showbkStressTab = showbkStressTab;
       name: "API 570 Remaining Life",
       icon: "⏱️",
       category: "Integrity & Piping",
-      subsections: []
+      tabId: "remainingLifeTab",
+      launcherFunc: "showRemainingLifeTab",
+      subsections: [
+        { id: "remainingLifeCalc", name: "API 570 Remaining Life", category: "Integrity & Piping", icon: "⏱️", tabId: "remainingLifeTab", launcherFunc: "showRemainingLifeTab" }
+      ]
     },
     {
       id: "thicknessCalc",
       name: "Design Thickness (ASME)",
       icon: "📐",
       category: "Mechanical Design",
+      tabId: "ASMEB31_3Tab",
+      launcherFunc: "showASMEB31_3Tab",
       subsections: [
         {
           id: "processPipingGroup",
@@ -701,41 +734,63 @@ window.showbkStressTab = showbkStressTab;
       name: "Cracking Mechanism Finder",
       icon: "⚡",
       category: "Damage Screening",
-      subsections: []
+      tabId: "crackingMechanismTab",
+      launcherFunc: "showCrackingMechanismTab",
+      subsections: [
+        { id: "crackingFinder", name: "Cracking Mechanism Finder", category: "Damage Screening", icon: "⚡", tabId: "crackingMechanismTab", launcherFunc: "showCrackingMechanismTab" }
+      ]
     },
     {
       id: "bkStress",
       name: "Allowable Stress & Material Data",
-      icon: "🔩",
+      icon: "🧮",
       category: "Materials",
-      subsections: []
+      tabId: "bkStressTab",
+      launcherFunc: "showbkStressTab",
+      subsections: [
+        { id: "stressLookup", name: "Allowable Stress & Material Data", category: "Materials", icon: "🧮", tabId: "bkStressTab", launcherFunc: "showbkStressTab" }
+      ]
     },
     {
       id: "streamComparator",
       name: "Stream Comparator (HMB)",
-      icon: "⚖️",
+      icon: "🔄",
       category: "Process Engineering",
-      subsections: []
+      tabId: "streamComparatorTab",
+      launcherFunc: "showStreamComparatorTab",
+      subsections: [
+        { id: "streamComparatorMain", name: "Stream Comparator (HMB)", category: "Process Engineering", icon: "🔄", tabId: "streamComparatorTab", launcherFunc: "showStreamComparatorTab" }
+      ]
     },
     {
       id: "chemicalSuite",
       name: "Chemistry & Chemical Suite",
-      icon: "🧪",
+      icon: "⚗️",
       category: "Process Engineering",
-      subsections: []
+      tabId: "chemicalSuiteTab",
+      launcherFunc: "showChemicalSuiteTab",
+      subsections: [
+        { id: "chemicalSafetySuite", name: "Chemistry & Chemical Suite", category: "Process Engineering", icon: "⚗️", tabId: "chemicalSuiteTab", launcherFunc: "showChemicalSuiteTab" }
+      ]
     },
     {
       id: "unitConverter",
       name: "Plant & Integrity Unit Converters",
-      icon: "🔄",
+      icon: "📐",
       category: "Utilities",
-      subsections: []
+      tabId: "unitConverterTab",
+      launcherFunc: "showUnitConverterTab",
+      subsections: [
+        { id: "unitConverterMain", name: "Plant & Integrity Unit Converters", category: "Utilities", icon: "📐", tabId: "unitConverterTab", launcherFunc: "showUnitConverterTab" }
+      ]
     },
     {
       id: "processFlow",
       name: "Process Flow Diagrams (PFD)",
-      icon: "🏭",
+      icon: "🗺️",
       category: "Diagrams",
+      tabId: "processFlowModal",
+      launcherFunc: "showPROCESSFLOWDIAGRAMSTab",
       subsections: [
         { id: "cduVdu", name: "CDU / VDU Distillation Unit", icon: "🛢️", launcherFunc: "showCDUVDUTab" },
         { id: "atmospheric", name: "Hydroprocessing Unit (HCU)", icon: "🔥", launcherFunc: "showPROCESSFLOWDIAGRAMSTab" },
@@ -748,7 +803,42 @@ window.showbkStressTab = showbkStressTab;
       name: "CCD AI Platform",
       icon: "🤖",
       category: "Integrity Management",
-      subsections: []
+      tabId: "ccdAiTab",
+      launcherFunc: "showCCDAITab",
+      subsections: [
+        { id: "ccdAiPlatform", name: "CCD AI Platform", category: "Integrity Management", icon: "🤖", tabId: "ccdAiTab", launcherFunc: "showCCDAITab" }
+      ]
+    },
+    {
+      id: "adminControlCenter",
+      name: "Admin & Engineering Tools",
+      icon: "🛠️",
+      category: "Governance & Tools",
+      tabId: "adminPanelTab",
+      launcherFunc: "openTool",
+      subsections: [
+        { id: "userManagement", name: "User Management", category: "Tools", icon: "👤", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "users-list", group: "USERS & PERMISSIONS" },
+        { id: "rbacPermissions", name: "Roles & Permissions", category: "Tools", icon: "🛡️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "roles-config", group: "USERS & PERMISSIONS" },
+        { id: "accessControl", name: "Access Control", category: "Tools", icon: "🔒", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "access-control", group: "USERS & PERMISSIONS" },
+        { id: "appOverview", name: "Applications Overview", category: "Tools", icon: "🎛️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "app-hub", group: "APPLICATION MANAGER" },
+        { id: "appStream", name: "Stream Data Manager", category: "Tools", icon: "📊", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "app-stream", group: "APPLICATION MANAGER" },
+        { id: "appStress", name: "Allowable Stress Manager", category: "Tools", icon: "🧮", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "app-stress", group: "APPLICATION MANAGER" },
+        { id: "firestoreExplorer", name: "Firestore Collections Explorer", category: "Tools", icon: "🗄️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "sys-firestore", group: "SYSTEMS" },
+        { id: "sysDiagnostics", name: "Backup & Cloud Diagnostics", category: "Tools", icon: "⚙️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "sys-diagnostics", group: "SYSTEMS" },
+        { id: "projectSwitcher", name: "Project Switcher", category: "Tools", icon: "🔄", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "sys-projects", group: "SYSTEMS" },
+        { id: "activeSessions", name: "Active Sessions", category: "Tools", icon: "👤", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "sys-sessions", group: "SYSTEMS" },
+        { id: "systemLogs", name: "System Logs", category: "Tools", icon: "📋", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "sys-logs", group: "SYSTEMS" },
+        { id: "layoutBuilder", name: "Sidebar Configuration", category: "Tools", icon: "📑", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "layout-sidebar", group: "LAYOUT & NAVIGATION BUILDER" },
+        { id: "sidebarOrder", name: "Sidebar Order", category: "Tools", icon: "↕️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "sidebar-order", group: "LAYOUT & NAVIGATION BUILDER" },
+        { id: "tickerText", name: "Ticker Text", category: "Tools", icon: "📢", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "ticker-text", group: "LAYOUT & NAVIGATION BUILDER" },
+        { id: "welcomeCards", name: "Welcome Cards", category: "Tools", icon: "🎴", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "welcome-cards", group: "LAYOUT & NAVIGATION BUILDER" },
+        { id: "navVisibility", name: "Navigation Visibility", category: "Tools", icon: "👁️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "nav-visibility", group: "LAYOUT & NAVIGATION BUILDER" },
+        { id: "masterData", name: "Master Data Management", category: "Tools", icon: "🗃️", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "master-overview", group: "MASTER DATA, BACKUP & LOGS" },
+        { id: "jsonBackup", name: "1-Click JSON Backup", category: "Tools", icon: "⚡", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "master-backup", group: "MASTER DATA, BACKUP & LOGS" },
+        { id: "jsonRestore", name: "JSON Restore", category: "Tools", icon: "🔄", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "master-restore", group: "MASTER DATA, BACKUP & LOGS" },
+        { id: "backupHistory", name: "Backup History", category: "Tools", icon: "📜", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "master-history", group: "MASTER DATA, BACKUP & LOGS" },
+        { id: "auditTrail", name: "Audit Trail", category: "Tools", icon: "🔍", tabId: "adminPanelTab", launcherFunc: "openTool", tool: "master-audit", group: "MASTER DATA, BACKUP & LOGS" }
+      ]
     }
   ];
 
@@ -847,13 +937,14 @@ window.showbkStressTab = showbkStressTab;
 
         const defMod = DEFAULT_SIDEBAR_MODULES.find(d => normalizeSidebarModuleId(d.id) === canonId) || {};
         const lMod = layoutMap.get(canonId) || {};
+        const resolvedName = normalizeCanonicalSidebarLabel(canonId, lMod.label || m.name || m.label || defMod.name, defMod.name || canonId);
 
         mergedModules.push({
           ...defMod,
           ...m,
           id: canonId,
-          name: lMod.label || m.name || m.label || defMod.name || canonId,
-          label: lMod.label || m.label || m.name || defMod.name || canonId,
+          name: resolvedName,
+          label: resolvedName,
           icon: lMod.icon || m.icon || defMod.icon || "",
           visible: lMod.visible !== undefined ? lMod.visible !== false : (m.visible !== false),
           subsections: Array.isArray(m.subsections) && m.subsections.length > 0
@@ -872,7 +963,9 @@ window.showbkStressTab = showbkStressTab;
           label: lDmg?.label || "API 571 Damage Mechanisms",
           icon: lDmg?.icon || "🛡️",
           visible: lDmg ? lDmg.visible !== false : true,
-          subsections: [],
+          subsections: [
+            { id: "damageCatalog", name: "Damage Mechanism Catalog", category: "API 571 Damage Mechanisms", icon: "📖", tabId: "damageExplorerTab", launcherFunc: "showDamageMechanismTab" }
+          ],
           _sortOrder: lDmg?.orderIndex !== undefined ? lDmg.orderIndex : -1
         });
         seenNavIds.add("damageExplorer");
@@ -902,22 +995,29 @@ window.showbkStressTab = showbkStressTab;
 
         if (mod.id === "damageExplorer") {
           if (existingDamageCat) {
-            const titleSpan = existingDamageCat.querySelector(".category > .category-title");
-            if (titleSpan && mod.label) {
-              let cleanLabel = String(mod.label).trim();
-              if (mod.icon && cleanLabel.startsWith(mod.icon)) {
-                cleanLabel = cleanLabel.substring(mod.icon.length).trim();
+            const catHeader = existingDamageCat.querySelector(".category");
+            if (catHeader) {
+              let titleSpan = catHeader.querySelector(".category-title");
+              if (!titleSpan) {
+                const arrow = catHeader.querySelector(".arrow, .toggle-arrow");
+                const arrowText = arrow ? arrow.textContent : "▸";
+                catHeader.innerHTML = `<span class="arrow toggle-arrow">${arrowText}</span><span class="category-title">🛡️ API 571 Damage Mechanisms</span>`;
+              } else {
+                titleSpan.textContent = "🛡️ API 571 Damage Mechanisms";
               }
-              titleSpan.textContent = `${mod.icon ? mod.icon + " " : ""}${cleanLabel}`.trim();
             }
             if (mod.visible === false) {
               existingDamageCat.style.setProperty("display", "none", "important");
               existingDamageCat.setAttribute("data-rbac-hidden", "true");
+            } else {
+              existingDamageCat.style.removeProperty("display");
+              existingDamageCat.removeAttribute("data-rbac-hidden");
             }
             categoryList.appendChild(existingDamageCat);
             damageCatAppended = true;
+            return;
           }
-          return;
+          // If existingDamageCat is not yet in DOM, proceed to build it cleanly below
         }
 
         const li = document.createElement("li");
@@ -935,22 +1035,17 @@ window.showbkStressTab = showbkStressTab;
         const displayStyle = isModOpen ? "block" : "none";
 
         let subs = Array.isArray(mod.subsections) ? mod.subsections : [];
-        if (subs.length === 0 && (!window.RBAC || !window.RBAC.initialized)) {
+        if (subs.length === 0) {
           const defMod = DEFAULT_SIDEBAR_MODULES.find(d => normalizeSidebarModuleId(d.id) === mod.id);
-          if (defMod && Array.isArray(defMod.subsections)) {
+          if (defMod && Array.isArray(defMod.subsections) && defMod.subsections.length > 0) {
             subs = defMod.subsections;
+          } else {
+            subs = [{ id: mod.id, name: modTitle, icon: mod.icon || "", tabId: mod.tabId || "", launcherFunc: mod.launcherFunc || "" }];
           }
         }
 
-        if (subs.length === 0) {
-          // Level 1 single action item without sub-accordions
-          li.innerHTML = `
-            <span class="category" data-mod-id="${mod.id}" data-sub-id="${mod.id}" role="button" tabindex="0">
-              <a href="javascript:void(0)" data-mod-id="${mod.id}" data-sub-id="${mod.id}" class="sidebar-nav-link" style="color: inherit; text-decoration: none; display: flex; align-items: center; width: 100%; pointer-events: auto;">
-                <span class="category-title">${iconStr}${modTitle}</span>
-              </a>
-            </span>
-          `;
+        if (false) {
+          // Every sidebar category renders as an expandable ▸ / ▾ accordion
         } else {
           // Level 1 Accordion Header
           let innerHTML = `
@@ -1164,17 +1259,22 @@ window.showbkStressTab = showbkStressTab;
           }
         }
 
-        if (matchedLi && rawMod.label) {
+        if (matchedLi) {
           const catHeader = matchedLi.querySelector(".category");
           if (catHeader) {
-            const titleSpan = catHeader.querySelector(".category-title");
+            let titleSpan = catHeader.querySelector(".category-title");
+            const rawLabelText = rawMod.label || rawMod.name || canonId;
+            let labelText = normalizeCanonicalSidebarLabel(canonId, rawLabelText, rawLabelText);
             const iconPrefix = rawMod.icon ? (rawMod.icon + " ") : "";
-            let labelText = String(rawMod.label || "").trim();
             if (rawMod.icon && labelText.startsWith(rawMod.icon)) {
               labelText = labelText.substring(rawMod.icon.length).trim();
             }
             const displayTitle = (iconPrefix + labelText).trim();
-            if (titleSpan && titleSpan.textContent !== displayTitle) {
+            if (!titleSpan) {
+              const arrow = catHeader.querySelector(".arrow, .toggle-arrow");
+              const arrowText = arrow ? arrow.textContent : "▸";
+              catHeader.innerHTML = `<span class="arrow toggle-arrow">${arrowText}</span><span class="category-title">${displayTitle}</span>`;
+            } else if (titleSpan.textContent !== displayTitle) {
               titleSpan.textContent = displayTitle;
             }
           }
@@ -1620,26 +1720,69 @@ window.injectToolsCategory = function() { renderServerDrivenSidebar(); };
 
 // Central helper ensuring every expandable sidebar category and subcategory displays the ▸ / ▾ arrow indicator
 function ensureAllSidebarArrows() {
-  const sidebarItems = document.querySelectorAll("#categoryList .category, #categoryList .subcategory");
-  sidebarItems.forEach(el => {
+  const categoryList = document.getElementById("categoryList");
+  if (!categoryList) return;
+  const topLis = Array.from(categoryList.children).filter(el => el.tagName === "LI");
+  topLis.forEach(li => {
+    let catHeader = li.querySelector(".category");
+    if (!catHeader) {
+      catHeader = document.createElement("span");
+      catHeader.className = "category";
+      catHeader.setAttribute("data-accordion-trigger", "true");
+      catHeader.setAttribute("role", "button");
+      catHeader.setAttribute("tabindex", "0");
+      const modId = li.getAttribute("data-rbac-module") || (li.id ? li.id.replace(/^rbac_cat_/, "") : "");
+      if (modId) catHeader.setAttribute("data-mod-id", modId);
+      const nonUl = Array.from(li.childNodes).filter(n => n.nodeName !== "UL");
+      nonUl.forEach(n => catHeader.appendChild(n));
+      li.insertBefore(catHeader, li.firstChild);
+    }
+    let arrow = catHeader.querySelector(".arrow, .tool-arrow, .toggle-arrow");
+    if (!arrow) {
+      arrow = document.createElement("span");
+      arrow.className = "arrow toggle-arrow";
+      arrow.textContent = "▸";
+      catHeader.insertBefore(arrow, catHeader.firstChild);
+    }
+    let subUl = li.querySelector(":scope > ul.mechanisms, :scope > ul");
+    if (!subUl) {
+      subUl = document.createElement("ul");
+      subUl.className = "mechanisms";
+      subUl.style.display = "none";
+      const modId = li.getAttribute("data-rbac-module") || (li.id ? li.id.replace(/^rbac_cat_/, "") : "");
+      const titleSpan = catHeader.querySelector(".category-title");
+      const titleText = titleSpan ? titleSpan.textContent.trim() : "Open Module";
+      const subLi = document.createElement("li");
+      subLi.setAttribute("data-rbac-module", modId);
+      subLi.setAttribute("data-rbac-sub", modId);
+      const subA = document.createElement("a");
+      subA.href = "javascript:void(0)";
+      subA.className = "sidebar-nav-link";
+      subA.setAttribute("data-mod-id", modId);
+      subA.setAttribute("data-sub-id", modId);
+      subA.style.pointerEvents = "auto";
+      subA.textContent = titleText;
+      subLi.appendChild(subA);
+      subUl.appendChild(subLi);
+      li.appendChild(subUl);
+    }
+    const isExpanded = Boolean(subUl && subUl.style.display === "block");
+    arrow.textContent = isExpanded ? "▾" : "▸";
+  });
+  const subCats = categoryList.querySelectorAll(".subcategory");
+  subCats.forEach(el => {
+    let arrow = el.querySelector(".arrow, .tool-arrow, .toggle-arrow");
     let ul = el.nextElementSibling;
     while (ul && ul.tagName !== "UL") {
       ul = ul.nextElementSibling;
     }
-    if (!ul) {
-      const parentLi = el.closest("li");
-      if (parentLi) ul = parentLi.querySelector("ul.mechanisms, ul");
+    const isExpanded = Boolean(ul && ul.style.display === "block");
+    if (!arrow) {
+      arrow = document.createElement("span");
+      arrow.className = "arrow toggle-arrow";
+      el.insertBefore(arrow, el.firstChild);
     }
-    if (ul) {
-      let arrow = el.querySelector(".arrow, .tool-arrow");
-      const isExpanded = (ul.style.display === "block");
-      if (!arrow) {
-        arrow = document.createElement("span");
-        arrow.className = "arrow";
-        el.insertBefore(arrow, el.firstChild);
-      }
-      arrow.textContent = isExpanded ? "▾" : "▸";
-    }
+    arrow.textContent = isExpanded ? "▾" : "▸";
   });
 }
 window.ensureAllSidebarArrows = ensureAllSidebarArrows;
@@ -1658,6 +1801,7 @@ function activateSidebarModule(modId, subId, autoCloseDrawer = true) {
     const launchMap = {
       api581: "showCriteriaTab",
       api570: "showRemainingLifeTab",
+      remainingLifeCalc: "showRemainingLifeTab",
       thicknessCalc: "showASMEB31_3Tab",
       damageExplorer: "showDamageMechanismTab",
       damageCatalog: "showDamageMechanismTab",
@@ -1706,7 +1850,7 @@ function activateSidebarModule(modId, subId, autoCloseDrawer = true) {
     };
 
     // Deep search schema for launcher function or tool ID
-    const navMods = window.RBAC?.authorizedNavigation || window.layoutConfig?.sidebarModules || [];
+    const navMods = window.RBAC?.authorizedNavigation || window.layoutConfig?.sidebarModules || DEFAULT_SIDEBAR_MODULES || [];
     let schemaLauncher = null;
     let schemaTool = null;
 
@@ -1723,6 +1867,9 @@ function activateSidebarModule(modId, subId, autoCloseDrawer = true) {
     }
 
     deepSearchNav(navMods);
+    if (!schemaLauncher && !schemaTool) {
+      deepSearchNav(DEFAULT_SIDEBAR_MODULES);
+    }
 
     const fnName = schemaLauncher || launchMap[subId] || launchMap[modId];
 

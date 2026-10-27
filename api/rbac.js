@@ -308,7 +308,7 @@ export const AVAILABLE_MODULES = [
     tabId: "remainingLifeTab",
     launcherFunc: "showRemainingLifeTab",
     subsections: [
-      { id: "remainingLifeCalc", name: "Remaining Life Calculator", category: "Integrity & Piping", icon: "⏱️", tabId: "remainingLifeTab", launcherFunc: "showRemainingLifeTab" }
+      { id: "remainingLifeCalc", name: "API 570 Remaining Life", category: "Integrity & Piping", icon: "⏱️", tabId: "remainingLifeTab", launcherFunc: "showRemainingLifeTab" }
     ]
   },
   {
@@ -372,7 +372,7 @@ export const AVAILABLE_MODULES = [
   },
   {
     id: "crackingMechanism",
-    name: "Cracking Mechanism Analysis",
+    name: "Cracking Mechanism Finder",
     category: "Damage Screening",
     icon: "⚡",
     tabId: "crackingMechanismTab",
@@ -400,7 +400,7 @@ export const AVAILABLE_MODULES = [
     tabId: "streamComparatorTab",
     launcherFunc: "showStreamComparatorTab",
     subsections: [
-      { id: "streamComparatorMain", name: "Stream Data Comparator (HMB)", category: "Process Engineering", icon: "🔄", tabId: "streamComparatorTab", launcherFunc: "showStreamComparatorTab" }
+      { id: "streamComparatorMain", name: "Stream Comparator (HMB)", category: "Process Engineering", icon: "🔄", tabId: "streamComparatorTab", launcherFunc: "showStreamComparatorTab" }
     ]
   },
   {
@@ -447,7 +447,7 @@ export const AVAILABLE_MODULES = [
     tabId: "ccdAiTab",
     launcherFunc: "showCCDAITab",
     subsections: [
-      { id: "ccdAiPlatform", name: "CCD AI Platform", icon: "🤖", tabId: "ccdAiTab", launcherFunc: "showCCDAITab" }
+      { id: "ccdAiPlatform", name: "CCD AI Platform", category: "Integrity Management", icon: "🤖", tabId: "ccdAiTab", launcherFunc: "showCCDAITab" }
     ]
   },
   {
@@ -543,7 +543,7 @@ export function filterAuthorizedNavigation(availableModules, allowedModules = {}
     const modSubs = normSubsections[mod.id] || {};
 
     let hasAnySubTrue = false;
-    if (mod.subsections && Array.isArray(mod.subsections)) {
+    if (mod.subsections && Array.isArray(mod.subsections) && mod.subsections.length > 0) {
       for (const sub of mod.subsections) {
         if (modSubs[sub.id] === true) {
           hasAnySubTrue = true;
@@ -558,6 +558,8 @@ export function filterAuthorizedNavigation(availableModules, allowedModules = {}
           }
         }
       }
+    } else if (Object.values(modSubs).some(v => v === true)) {
+      hasAnySubTrue = true;
     }
 
     if (!isModAllowed && !hasAnySubTrue) {
@@ -565,13 +567,14 @@ export function filterAuthorizedNavigation(availableModules, allowedModules = {}
     }
 
     let filteredSubs = [];
-    if (mod.subsections && Array.isArray(mod.subsections)) {
+    if (mod.subsections && Array.isArray(mod.subsections) && mod.subsections.length > 0) {
       for (const sub of mod.subsections) {
         if (sub.isGroup && Array.isArray(sub.children)) {
+          const isGroupAllowed = modSubs[sub.id] === true || (isModAllowed && modSubs[sub.id] !== false);
           const filteredChildren = sub.children.filter(child => {
             if (modSubs[child.id] === true) return true;
-            if (isModAllowed && modSubs[child.id] !== false) return true;
-            return false;
+            if (modSubs[child.id] === false) return false;
+            return isGroupAllowed;
           });
           if (filteredChildren.length > 0) {
             filteredSubs.push({
@@ -603,8 +606,8 @@ export function buildRolePermissions(role, customModules = {}, customSubsections
 
   AVAILABLE_MODULES.forEach((mod) => {
     allModulesTrue[mod.id] = true;
-    if (mod.subsections) {
-      allSubsectionsTrue[mod.id] = {};
+    allSubsectionsTrue[mod.id] = {};
+    if (mod.subsections && mod.subsections.length > 0) {
       mod.subsections.forEach((sub) => {
         allSubsectionsTrue[mod.id][sub.id] = true;
         if (sub.isGroup && Array.isArray(sub.children)) {
@@ -754,25 +757,37 @@ export function buildRolePermissions(role, customModules = {}, customSubsections
     // Custom role: starts with empty/false defaults
     AVAILABLE_MODULES.forEach((mod) => {
       baseModules[mod.id] = false;
+      baseSubsections[mod.id] = {};
       if (mod.subsections) {
-        baseSubsections[mod.id] = {};
         mod.subsections.forEach((sub) => {
           baseSubsections[mod.id][sub.id] = false;
+          if (sub.isGroup && Array.isArray(sub.children)) {
+            sub.children.forEach(child => {
+              baseSubsections[mod.id][child.id] = false;
+            });
+          }
         });
       }
     });
   }
 
-  // Ensure every available module exists in baseModules
+  // Ensure every available module and child exists in baseModules / baseSubsections
   AVAILABLE_MODULES.forEach((mod) => {
     if (baseModules[mod.id] === undefined) {
       baseModules[mod.id] = false;
     }
+    if (!baseSubsections[mod.id]) baseSubsections[mod.id] = {};
     if (mod.subsections) {
-      if (!baseSubsections[mod.id]) baseSubsections[mod.id] = {};
       mod.subsections.forEach((sub) => {
         if (baseSubsections[mod.id][sub.id] === undefined) {
           baseSubsections[mod.id][sub.id] = false;
+        }
+        if (sub.isGroup && Array.isArray(sub.children)) {
+          sub.children.forEach(child => {
+            if (baseSubsections[mod.id][child.id] === undefined) {
+              baseSubsections[mod.id][child.id] = false;
+            }
+          });
         }
       });
     }
@@ -783,28 +798,23 @@ export function buildRolePermissions(role, customModules = {}, customSubsections
     AVAILABLE_MODULES.forEach((mod) => {
       if (typeof normCustomModules[mod.id] === "boolean") {
         baseModules[mod.id] = normCustomModules[mod.id];
-        // If module was explicitly set to false, all its subsections must also be false
         if (normCustomModules[mod.id] === false && baseSubsections[mod.id]) {
           Object.keys(baseSubsections[mod.id]).forEach(k => {
             baseSubsections[mod.id][k] = false;
           });
+        } else if (normCustomModules[mod.id] === true && baseSubsections[mod.id] && mod.id !== "adminControlCenter") {
+          // When a non-admin module is enabled, default its subsections & group children to true unless explicitly false in normCustomSubsections
+          Object.keys(baseSubsections[mod.id]).forEach(k => {
+            if (!normCustomSubsections[mod.id] || normCustomSubsections[mod.id][k] !== false) {
+              baseSubsections[mod.id][k] = true;
+            }
+          });
         }
-      }
-      if (mod.subsections && normCustomModules[mod.id] !== false) {
-        mod.subsections.forEach((sub) => {
-          if (
-            normCustomSubsections &&
-            normCustomSubsections[mod.id] &&
-            typeof normCustomSubsections[mod.id][sub.id] === "boolean"
-          ) {
-            baseSubsections[mod.id][sub.id] = normCustomSubsections[mod.id][sub.id];
-          }
-        });
       }
     });
   }
 
-  // Apply custom subsection overrides for any subsection keys (including granular action/tab permissions)
+  // Apply custom subsection overrides for any subsection keys (including granular action/tab permissions and group children)
   if (normCustomSubsections && typeof normCustomSubsections === "object") {
     Object.keys(normCustomSubsections).forEach(modId => {
       if (!baseSubsections[modId]) baseSubsections[modId] = {};
@@ -818,7 +828,29 @@ export function buildRolePermissions(role, customModules = {}, customSubsections
       }
     });
   }
+
+  // Propagate group-level permissions to children if child wasn't explicitly overridden
   AVAILABLE_MODULES.forEach((mod) => {
+    if (mod.subsections && baseSubsections[mod.id]) {
+      mod.subsections.forEach((sub) => {
+        if (sub.isGroup && Array.isArray(sub.children)) {
+          const explicitSubObj = (normCustomSubsections && normCustomSubsections[mod.id]) || {};
+          const groupAllowed = baseSubsections[mod.id][sub.id] === true || (baseModules[mod.id] === true && explicitSubObj[sub.id] !== false);
+          sub.children.forEach((child) => {
+            if (typeof explicitSubObj[child.id] === "boolean") {
+              baseSubsections[mod.id][child.id] = explicitSubObj[child.id];
+            } else {
+              baseSubsections[mod.id][child.id] = groupAllowed;
+            }
+          });
+          // Sync group flag if any child is true
+          if (sub.children.some(c => baseSubsections[mod.id][c.id] === true)) {
+            baseSubsections[mod.id][sub.id] = true;
+          }
+        }
+      });
+    }
+
     if (normCustomModules && normCustomModules[mod.id] === false) {
       baseModules[mod.id] = false;
       if (baseSubsections[mod.id]) {
@@ -826,7 +858,7 @@ export function buildRolePermissions(role, customModules = {}, customSubsections
           baseSubsections[mod.id][k] = false;
         });
       }
-    } else if (mod.subsections && baseSubsections[mod.id]) {
+    } else if (baseSubsections[mod.id]) {
       const hasAnySubTrue = Object.values(baseSubsections[mod.id]).some(Boolean);
       if (hasAnySubTrue) {
         baseModules[mod.id] = true;

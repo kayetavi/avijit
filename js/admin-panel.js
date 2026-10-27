@@ -1140,10 +1140,20 @@
             html += `</div>`;
           } else {
             html += `<div class="rbac-subsections-list" style="display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border-radius: 6px; width: 100%; box-sizing: border-box; overflow: hidden;">`;
+            const flatSubs = [];
             mod.subsections.forEach(sub => {
+              if (sub.isGroup && Array.isArray(sub.children)) {
+                sub.children.forEach(child => flatSubs.push({ ...child, groupId: sub.id, groupName: sub.name }));
+              } else {
+                flatSubs.push(sub);
+              }
+            });
+            flatSubs.forEach(sub => {
               let subChecked = true;
               if (currentSubs && currentSubs[mod.id] && typeof currentSubs[mod.id][sub.id] === "boolean") {
                 subChecked = currentSubs[mod.id][sub.id];
+              } else if (sub.groupId && currentSubs && currentSubs[mod.id] && typeof currentSubs[mod.id][sub.groupId] === "boolean") {
+                subChecked = currentSubs[mod.id][sub.groupId];
               } else if (role === "inspector" && mod.id === "remainingLife" && sub.id === "bulkUpload") {
                 subChecked = false;
               } else if (role === "viewer") {
@@ -1156,10 +1166,11 @@
                 subChecked = modChecked;
               }
 
+              const displaySubName = sub.groupName ? `${sub.groupName} → ${sub.name}` : sub.name;
               html += `
                 <label class="rbac-sub-label" style="cursor: pointer; display: flex; align-items: flex-start; gap: 7px; font-size: 12px; margin: 0; padding: 6px 8px; border-radius: 5px; width: 100%; box-sizing: border-box; word-break: break-word; overflow: hidden;">
                   <input type="checkbox" id="admSub_${safeId}_${mod.id}_${sub.id}" data-parent="${mod.id}" data-sub="${sub.id}" ${subChecked ? "checked" : ""} ${disabledAttr} onchange="window.adminPanel.onSubCheckChanged('${email}', '${mod.id}', this.checked)" style="width: 15px; height: 15px; flex-shrink: 0; margin-top: 2px; cursor: pointer;">
-                  <span style="font-weight: 500; word-break: break-word; overflow-wrap: anywhere; line-height: 1.35; flex: 1; min-width: 0;">${sub.name}</span>
+                  <span style="font-weight: 500; word-break: break-word; overflow-wrap: anywhere; line-height: 1.35; flex: 1; min-width: 0;">${displaySubName}</span>
                 </label>
               `;
             });
@@ -1182,42 +1193,44 @@
         let activeMods = {};
         let activeSubs = {};
 
+        const assignSubDefaults = (m, valFn) => {
+          if (!m.subsections) return;
+          activeSubs[m.id] = {};
+          m.subsections.forEach(s => {
+            activeSubs[m.id][s.id] = valFn(s.id);
+            if (s.isGroup && Array.isArray(s.children)) {
+              s.children.forEach(c => {
+                activeSubs[m.id][c.id] = valFn(c.id);
+              });
+            }
+          });
+        };
+
         if (newRole === "admin" || newRole === "lead_engineer" || newRole === "engineer") {
           this.availableModules.forEach(m => {
             const isAdm = newRole === "admin";
-            activeMods[m.id] = isAdm ? true : (m.id !== "adminControlCenter");
-            if (m.subsections) {
-              activeSubs[m.id] = {};
-              m.subsections.forEach(s => activeSubs[m.id][s.id] = isAdm ? true : (m.id !== "adminControlCenter"));
-            }
+            const allow = isAdm ? true : (m.id !== "adminControlCenter");
+            activeMods[m.id] = allow;
+            assignSubDefaults(m, () => allow);
           });
         } else if (newRole === "inspector") {
           const inspMods = ["damageExplorer", "api581", "api570", "thicknessCalc", "crackingMechanism", "bkStress", "chemicalSuite", "unitConverter", "processFlow"];
           this.availableModules.forEach(m => {
             const isInsp = inspMods.includes(m.id);
             activeMods[m.id] = isInsp;
-            if (m.subsections) {
-              activeSubs[m.id] = {};
-              m.subsections.forEach(s => {
-                activeSubs[m.id][s.id] = isInsp;
-              });
-            }
+            assignSubDefaults(m, () => isInsp);
           });
         } else if (newRole === "viewer") {
           const viewMods = ["damageExplorer", "api581", "api570", "processFlow", "unitConverter"];
           this.availableModules.forEach(m => {
             const isView = viewMods.includes(m.id);
             activeMods[m.id] = isView;
-            if (m.subsections) {
-              activeSubs[m.id] = {};
-              m.subsections.forEach(s => {
-                if (m.id === "api581") {
-                  activeSubs[m.id][s.id] = ["api571Criteria", "fluidSelector", "inspectionConfidence"].includes(s.id);
-                } else {
-                  activeSubs[m.id][s.id] = isView;
-                }
-              });
-            }
+            assignSubDefaults(m, (subId) => {
+              if (m.id === "api581") {
+                return ["api571Criteria", "fluidSelector", "inspectionConfidence"].includes(subId);
+              }
+              return isView;
+            });
           });
         } else {
           // Custom: preserve existing user allowedModules or default to current
@@ -5760,35 +5773,47 @@
               if (catHeader) {
                 const titleSpan = catHeader.querySelector(".category-title");
                 const iconPrefix = m.icon ? (m.icon + " ") : "";
-                let labelText = (m.label || "").trim();
+                let labelText = typeof window.normalizeCanonicalSidebarLabel === "function"
+                  ? window.normalizeCanonicalSidebarLabel(modId, m.label, m.label)
+                  : (m.label || "").trim();
                 if (m.icon && labelText.startsWith(m.icon)) {
                   labelText = labelText.substring(m.icon.length).trim();
                 }
                 const displayTitle = (iconPrefix + labelText).trim();
-                const hasSubList = !!matchedLi.querySelector("ul.mechanisms, ul.subcategory-list, ul");
+                const subUl = matchedLi.querySelector(":scope > ul.mechanisms, :scope > ul.subcategory-list, :scope > ul");
+                const hasSubList = Boolean(subUl && subUl.children.length > 0);
 
-                let arrowSpan = catHeader.querySelector(".arrow");
+                let arrowSpan = catHeader.querySelector(".arrow, .toggle-arrow");
                 let currentArrow = (arrowSpan && arrowSpan.textContent.trim()) ? arrowSpan.textContent.trim() : "▸";
+
+                if (!arrowSpan) {
+                  arrowSpan = document.createElement("span");
+                  arrowSpan.className = "arrow toggle-arrow";
+                  arrowSpan.textContent = currentArrow;
+                  catHeader.insertBefore(arrowSpan, catHeader.firstChild);
+                }
 
                 if (titleSpan) {
                   if (titleSpan.textContent !== displayTitle) {
                     titleSpan.textContent = displayTitle;
                   }
-                  if (hasSubList && !arrowSpan) {
-                    const newArrow = document.createElement("span");
-                    newArrow.className = "arrow";
-                    newArrow.textContent = currentArrow;
-                    catHeader.insertBefore(newArrow, catHeader.firstChild);
-                  }
                 } else {
-                  const innerAnchor = catHeader.querySelector("a");
-                  if (innerAnchor) {
-                    innerAnchor.innerHTML = `<span class="category-title">${displayTitle}</span>`;
-                  } else if (hasSubList) {
-                    catHeader.innerHTML = `<span class="arrow">${currentArrow}</span><span class="category-title">${displayTitle}</span>`;
-                  } else {
-                    catHeader.innerHTML = `<a href="javascript:void(0)" data-mod-id="${modId}" data-sub-id="${modId}" class="sidebar-nav-link" style="color: inherit; text-decoration: none; display: flex; align-items: center; width: 100%; pointer-events: auto;"><span class="category-title">${displayTitle}</span></a>`;
-                  }
+                  const newTitleSpan = document.createElement("span");
+                  newTitleSpan.className = "category-title";
+                  newTitleSpan.textContent = displayTitle;
+                  catHeader.appendChild(newTitleSpan);
+                }
+
+                if (!hasSubList) {
+                  const newUl = document.createElement("ul");
+                  newUl.className = "mechanisms";
+                  newUl.style.display = "none";
+                  const newChildLi = document.createElement("li");
+                  newChildLi.setAttribute("data-rbac-module", modId);
+                  newChildLi.setAttribute("data-rbac-sub", modId);
+                  newChildLi.innerHTML = `<a href="javascript:void(0)" data-mod-id="${modId}" data-sub-id="${modId}" class="sidebar-nav-link" style="pointer-events: auto;">${displayTitle}</a>`;
+                  newUl.appendChild(newChildLi);
+                  matchedLi.appendChild(newUl);
                 }
               }
             }

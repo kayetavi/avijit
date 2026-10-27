@@ -106,7 +106,7 @@ function getDefaultLayoutConfig() {
       { id: "api581", label: "API 581 Risk-Based Inspection", icon: "📊", visible: true, order: 2, group: "RBI & Assessment", roles: ["admin", "lead_engineer"], tabId: "a571-criteriaTab", launcherFunc: "showCriteriaTab" },
       { id: "api570", label: "API 570 Remaining Life", icon: "⏱️", visible: true, order: 3, group: "RBI & Assessment", roles: ["admin", "lead_engineer"], tabId: "remainingLifeTab", launcherFunc: "showRemainingLifeTab" },
       { id: "thicknessCalc", label: "Design Thickness (ASME)", icon: "📐", visible: true, order: 4, group: "Engineering Calculations", roles: ["admin", "lead_engineer", "inspector"], tabId: "ASMEB31_3Tab", launcherFunc: "showASMEB31_3Tab" },
-      { id: "crackingMechanism", label: "Cracking Mechanism Analysis", icon: "⚡", visible: true, order: 5, group: "Damage & Integrity", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "crackingMechanismTab", launcherFunc: "showCrackingMechanismTab" },
+      { id: "crackingMechanism", label: "Cracking Mechanism Finder", icon: "⚡", visible: true, order: 5, group: "Damage & Integrity", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "crackingMechanismTab", launcherFunc: "showCrackingMechanismTab" },
       { id: "bkStress", label: "Allowable Stress & Material Data", icon: "🧮", visible: true, order: 6, group: "Engineering Calculations", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "bkStressTab", launcherFunc: "showbkStressTab" },
       { id: "streamComparator", label: "Stream Comparator (HMB)", icon: "🔄", visible: true, order: 7, group: "Process & Fluids", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "streamComparatorTab", launcherFunc: "showStreamComparatorTab" },
       { id: "chemicalSuite", label: "Chemistry & Chemical Suite", icon: "⚗️", visible: true, order: 8, group: "Process & Fluids", roles: ["admin", "lead_engineer", "inspector"], tabId: "chemicalSuiteTab", launcherFunc: "showChemicalSuiteTab" },
@@ -120,7 +120,7 @@ function getDefaultLayoutConfig() {
       { id: "card_corrosionRate", title: "API 581 Corrosion Rate Calculator", subtitle: "Calculate corrosion rates and assess remaining life.", icon: "📉", targetTab: "corrosionRate", enabled: true },
       { id: "card_api570", title: "API 570 Remaining Life", subtitle: "Short/Long term corrosion rates, remaining life, half-life inspection intervals & Excel bulk upload.", icon: "⏱️", targetTab: "api570", enabled: true },
       { id: "card_thicknessCalc", title: "Design Thickness (ASME)", subtitle: "ASME B31.3 Process Piping (Eq 3a/3b), Barlow's equation, Section VIII Div 1 vessels & schedule charts.", icon: "📏", targetTab: "thicknessCalc", enabled: true },
-      { id: "card_cracking", title: "Cracking Mechanism Analysis", subtitle: "SCC Environmental Finder, Wet H₂S (HIC/SOHIC/SSC) risk screening & thermal fatigue rules.", icon: "⚡", targetTab: "crackingMechanism", enabled: true },
+      { id: "card_cracking", title: "Cracking Mechanism Finder", subtitle: "SCC Environmental Finder, Wet H₂S (HIC/SOHIC/SSC) risk screening & thermal fatigue rules.", icon: "⚡", targetTab: "crackingMechanism", enabled: true },
       { id: "card_bkStress", title: "Allowable Stress DB", subtitle: "ASME B31.3 Table A-1 Data & Allowable Stress Database", icon: "🧮", targetTab: "bkStress", enabled: true },
       { id: "card_streamComparator", title: "Stream Data Comparator", subtitle: "Heat & Material Balance Comparison (HMB) between Stream A & B.", icon: "🔄", targetTab: "streamComparator", enabled: true },
       { id: "card_chemicalSuite", title: "Chemical Suite", subtitle: "Corrosion & Chemistry Prediction, SDS & HAZMAT PPE Matrix.", icon: "⚗️", targetTab: "chemicalSuite", enabled: true },
@@ -147,11 +147,40 @@ function sanitizeSidebarModules(modules) {
     if (!modId || seenIds.has(modId)) return;
     seenIds.add(modId);
     const def = defaultMap.get(modId) || {};
+    let rawLabel = String(m.label || m.name || def.label || modId).trim();
+    // Normalize stale legacy titles so sidebar tab names never randomly jump
+    if (def.label) {
+      if (modId === "damageExplorer" && (!rawLabel || /damage/i.test(rawLabel) || /571/i.test(rawLabel))) {
+        rawLabel = def.label;
+      } else if (modId === "api581" && (!rawLabel || /risk|rbi|methodology|581/i.test(rawLabel))) {
+        rawLabel = def.label;
+      } else if (modId === "api570" && (!rawLabel || /remaining|570/i.test(rawLabel))) {
+        rawLabel = def.label;
+      } else if (modId === "thicknessCalc" && (!rawLabel || /thickness|asme|calculator|b31|piping/i.test(rawLabel))) {
+        rawLabel = def.label;
+      } else if (modId === "crackingMechanism" && (!rawLabel || /cracking|analysis|finder/i.test(rawLabel))) {
+        rawLabel = def.label;
+      } else if (modId === "bkStress" && (!rawLabel || /stress|hub|allowable|material/i.test(rawLabel))) {
+        rawLabel = def.label;
+      } else if (modId === "streamComparator" && (!rawLabel || /stream|comparator|hmb/i.test(rawLabel))) {
+        rawLabel = def.label;
+      } else if (modId === "chemicalSuite" && (!rawLabel || /chemical|chemistry/i.test(rawLabel))) {
+        rawLabel = def.label;
+      } else if (modId === "unitConverter" && (!rawLabel || /unit|converter/i.test(rawLabel))) {
+        rawLabel = def.label;
+      } else if (modId === "processFlow" && (!rawLabel || /corrosion diagrams|process flow|pfd|diagrams/i.test(rawLabel))) {
+        rawLabel = def.label;
+      } else if (modId === "ccdAI" && (!rawLabel || /ccd/i.test(rawLabel))) {
+        rawLabel = def.label;
+      } else if (modId === "adminControlCenter" && (!rawLabel || /admin|tools|engineering tools/i.test(rawLabel))) {
+        rawLabel = def.label;
+      }
+    }
     result.push({
       ...def,
       ...m,
       id: modId,
-      label: String(m.label || m.name || def.label || modId).trim(),
+      label: rawLabel,
       icon: String(m.icon || def.icon || "📌").trim(),
       visible: m.visible !== false,
       group: m.group || def.group || "Engineering Suite",
@@ -694,30 +723,17 @@ export default async function handler(req, res) {
 
       const superPerms = buildRolePermissions("admin");
 
-      // Normalize allowedModules for every user based on their Firestore role
+      // Normalize allowedModules and subsections for every user based on their role and overrides
       users.forEach((u) => {
         if (u.isSuperAdmin || u.role === "admin") {
           u.allowedModules = { ...superPerms.modules, ...(u.allowedModules || {}) };
           u.subsections = { ...superPerms.subsections, ...(u.subsections || {}) };
           u.role = "admin";
           u.isSuperAdmin = true;
-        } else if (u.allowedModules) {
-          const cleanMods = {};
-          AVAILABLE_MODULES.forEach((m) => {
-            if (typeof u.allowedModules[m.id] === "boolean") {
-              cleanMods[m.id] = u.allowedModules[m.id];
-            } else if (m.id === "damageExplorer" && (typeof u.allowedModules.damageMechanisms === "boolean" || typeof u.allowedModules.damage === "boolean" || typeof u.allowedModules.api571 === "boolean")) {
-              cleanMods[m.id] = (u.allowedModules.damageMechanisms !== undefined ? u.allowedModules.damageMechanisms : (u.allowedModules.damage !== undefined ? u.allowedModules.damage : u.allowedModules.api571));
-            } else if (m.id === "api570" && typeof u.allowedModules.remainingLife === "boolean") {
-              cleanMods[m.id] = u.allowedModules.remainingLife;
-            } else {
-              const defaultPerms = buildRolePermissions(u.role || "lead_engineer");
-              cleanMods[m.id] = defaultPerms.modules[m.id] ?? false;
-            }
-          });
-          u.allowedModules = cleanMods;
         } else {
-          u.allowedModules = { ...buildRolePermissions(u.role || "lead_engineer").modules };
+          const built = buildRolePermissions(u.role || "lead_engineer", u.allowedModules || {}, u.subsections || {});
+          u.allowedModules = built.modules;
+          u.subsections = built.subsections;
         }
       });
 

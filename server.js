@@ -165,51 +165,19 @@ app.post("/signup", authRateLimiter, (req, res) => {
   });
 });
 
-// 🛡️ Security Guard: Block direct browser/F12 inspection and download of raw source scripts, database files, and maps
+// Sensitive internal file protection
 app.use((req, res, next) => {
   const reqPath = (req.path || "").toLowerCase();
 
-  // 1. Block all source maps (.map files) to prevent reverse-engineering
-  if (reqPath.endsWith(".map") || reqPath.includes(".map")) {
-    return res.status(403).json({
-      error: "Access Denied: Source maps are disabled in production."
-    });
-  }
-
-  // 2. Block direct HTTP access to all individual client scripts in /js/
-  if (reqPath.startsWith("/js/") || reqPath.includes("/js/")) {
-    return res.status(403).json({
-      error: "Access Denied: Protected Resource. Direct access to individual client modules is prohibited. Use compiled production bundle."
-    });
-  }
-
-  // 3. Block raw unbundled JavaScript files anywhere outside of /assets/ and /ccd-platform/
-  if (reqPath.endsWith(".js") && !reqPath.startsWith("/assets/") && !reqPath.startsWith("/ccd-platform/")) {
-    return res.status(403).json({
-      error: "Access Denied: Protected Resource. Unbundled source code access is prohibited."
-    });
-  }
-
-  // 4. Block administrative template direct static file download (must load via authenticated /api/admin)
-  if (reqPath.includes("view-admin-1000.html") || reqPath.includes("admin-panel")) {
-    return res.status(403).json({
-      error: "Access Denied: Administrative interface requires authenticated session."
-    });
-  }
-
-  // 5. Block backend data, secrets, environment files and build configs
   if (
-    reqPath.startsWith("/secrets/") ||
-    reqPath.startsWith("/data/secure/") ||
     reqPath.startsWith("/.git") ||
     reqPath.startsWith("/.env") ||
     reqPath === "/package.json" ||
     reqPath === "/package-lock.json" ||
-    reqPath === "/bun.lock" ||
     reqPath.startsWith("/node_modules")
   ) {
     return res.status(403).json({
-      error: "Access Denied: Protected Resource. Configuration and internal files are strictly confidential."
+      error: "Access Denied."
     });
   }
 
@@ -219,18 +187,18 @@ app.use((req, res, next) => {
 // Serve image directory with cache headers
 app.use('/image', express.static(path.join(__dirname, 'image'), { maxAge: '7d', immutable: true }));
 
-// Serve organized static directories (public, /assets, /ccd-platform, /templates, /views) + root fallbacks
-// Note: '/js' static directory is intentionally NOT served to prevent source exposure in DevTools
+// Serve static directories
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/views', express.static(path.join(__dirname, 'public', 'views')));
 app.use(express.static(path.join(__dirname, 'public', 'views')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use('/ccd-platform', express.static(path.join(__dirname, 'ccd-platform')));
+app.use('/js', express.static(path.join(__dirname, 'js')));
 app.use(express.static(path.join(__dirname, 'assets', 'models')));
 app.use(express.static(path.join(__dirname, 'assets', 'css')));
 app.use('/templates', express.static(path.join(__dirname, 'templates')));
 
-// Serve static files from project root (HTML views only)
+// Serve static files from project root
 app.use(express.static(__dirname));
 
 // Fallback to index.html for root

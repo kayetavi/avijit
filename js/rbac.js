@@ -585,6 +585,16 @@
       const modSubs = subs[moduleId] || (moduleId === "api570" ? subs.remainingLife : (moduleId === "remainingLife" ? subs.api570 : null));
       if (modSubs && sectionId) {
         if (typeof modSubs[sectionId] === "boolean") return modSubs[sectionId];
+        // Check group parent permission for nested leaf items
+        if (moduleId === "thicknessCalc" && (sectionId === "asmeB31_3" || sectionId === "simplePiping")) {
+          if (typeof modSubs.processPipingGroup === "boolean") return modSubs.processPipingGroup;
+        }
+        if (moduleId === "api581" && (sectionId === "cofCalculator" || sectionId === "qpofCalculator")) {
+          if (typeof modSubs.quantitativeGroup === "boolean") return modSubs.quantitativeGroup;
+        }
+        if (moduleId === "api581" && sectionId === "corrosionCalc") {
+          if (typeof modSubs.semiQuantitativeGroup === "boolean") return modSubs.semiQuantitativeGroup;
+        }
         // Handle alias sub keys (e.g. app-stream <-> appStream)
         if (sectionId === "app-stream" && typeof modSubs.appStream === "boolean") return modSubs.appStream;
         if (sectionId === "appStream" && typeof modSubs["app-stream"] === "boolean") return modSubs["app-stream"];
@@ -763,30 +773,30 @@
         { func: "showcof_calculatorTab", modId: "api581", subId: "cofCalculator", name: "Quantitative: Risk Calculator_COF" },
         { func: "showQPOF_calculatorTab", modId: "api581", subId: "qpofCalculator", name: "Quantitative: Risk Calculator_POF" },
         { func: "showCORROSION_CALCULATIONTab", modId: "api581", subId: "corrosionCalc", name: "Semi Quantitative: Risk Calculator" },
-        { func: "showRemainingLifeTab", modId: "api570", subId: "statisticalAnalysis", name: "Thickness Data Evaluation - Statistical Analysis" },
+        { func: "showRemainingLifeTab", modId: "api570", subId: null, name: "API 570 Remaining Life" },
         { func: "showASMEB31_3Tab", modId: "thicknessCalc", subId: "asmeB31_3", name: "ASME B31.3 Process Piping" },
         { func: "showSimplePipingTab", modId: "thicknessCalc", subId: "simplePiping", name: "Simple Piping Formula (PD / 2SE)" },
         { func: "showASMESECTIONVIIIDIV1Tab", modId: "thicknessCalc", subId: "asmeSectionVIII", name: "Pressure Vessel (ASME Sec VIII)" },
         { func: "showpipeThicknessTab", modId: "thicknessCalc", subId: "pipeThickness", name: "Piping Thickness Chart" },
         { func: "showStructuralThicknessTab", modId: "thicknessCalc", subId: "structuralThickness", name: "Structural Thickness Lookup (API 574 / 581)" },
-        { func: "showCrackingMechanismTab", modId: "crackingMechanism", subId: "crackingFinder", name: "Cracking Mechanism Finder" },
-        { func: "showbkStressTab", modId: "bkStress", subId: "stressLookup", name: "Allowable Stress & Material Data" },
-        { func: "showPROCESSFLOWDIAGRAMSTab", modId: "processFlow", subId: "atmospheric", name: "Corrosion Diagrams - HYDROPROCESSING" },
-        { func: "showCDUVDUTab", modId: "processFlow", subId: "cduVdu", name: "Corrosion Diagrams - CDU / VDU" },
-        { func: "showMSPTab", modId: "processFlow", subId: "msp", name: "Corrosion Diagrams - MSP" },
-        { func: "showH2UTab", modId: "processFlow", subId: "h2u", name: "Corrosion Diagrams - H2U" },
-        { func: "openCCDAIPlatform", modId: "ccdAI", subId: "ccdAiPlatform", name: "CCD AI Platform" },
-        { func: "showCCDAITab", modId: "ccdAI", subId: "ccdAiPlatform", name: "CCD AI Platform" },
-        { func: "showChemicalSuiteTab", modId: "chemicalSuite", subId: "chemicalSafetySuite", name: "Chemistry & Chemical Suite" },
-        { func: "showStreamComparatorTab", modId: "streamComparator", subId: "streamComparatorMain", name: "Stream Comparator (HMB)" },
-        { func: "showUnitConverterTab", modId: "unitConverter", subId: "unitConverterMain", name: "Plant & Integrity Unit Converters" }
+        { func: "showCrackingMechanismTab", modId: "crackingMechanism", subId: null, name: "Cracking Mechanism Finder" },
+        { func: "showbkStressTab", modId: "bkStress", subId: null, name: "Allowable Stress & Material Data" },
+        { func: "showPROCESSFLOWDIAGRAMSTab", modId: "processFlow", subId: "atmospheric", name: "Process Flow Diagrams - HYDROPROCESSING" },
+        { func: "showCDUVDUTab", modId: "processFlow", subId: "cduVdu", name: "Process Flow Diagrams - CDU / VDU" },
+        { func: "showMSPTab", modId: "processFlow", subId: "msp", name: "Process Flow Diagrams - MSP" },
+        { func: "showH2UTab", modId: "processFlow", subId: "h2u", name: "Process Flow Diagrams - H2U" },
+        { func: "openCCDAIPlatform", modId: "ccdAI", subId: null, name: "CCD AI Platform" },
+        { func: "showCCDAITab", modId: "ccdAI", subId: null, name: "CCD AI Platform" },
+        { func: "showChemicalSuiteTab", modId: "chemicalSuite", subId: null, name: "Chemistry & Chemical Suite" },
+        { func: "showStreamComparatorTab", modId: "streamComparator", subId: null, name: "Stream Comparator (HMB)" },
+        { func: "showUnitConverterTab", modId: "unitConverter", subId: null, name: "Plant & Integrity Unit Converters" }
       ];
 
       moduleFunctionMap.forEach(({ func, modId, subId, name }) => {
         if (typeof window[func] === "function" && !window[func].__rbacWrapped) {
           const original = window[func];
           const wrapped = function (...args) {
-            let allowed = self.hasSectionAccess(modId, subId);
+            let allowed = subId ? self.hasSectionAccess(modId, subId) : self.hasModuleAccess(modId);
 
             // Server-Driven Navigation (SDUI) guard check
             if (Array.isArray(self.authorizedNavigation) && self.authorizedNavigation.length > 0 && !self.isSuperAdmin && self.role !== "admin") {
@@ -825,7 +835,9 @@
             return original.apply(this, args);
           };
           wrapped.__rbacWrapped = true;
-          wrapped.__apmUrlSyncHooked = true;
+          if (original.__apmUrlSyncHooked) {
+            wrapped.__apmUrlSyncHooked = true;
+          }
           window[func] = wrapped;
         }
       });
@@ -1522,7 +1534,15 @@ window.renderRbacModulesTree = function (role, currentMods = {}, currentSubs = {
 
     if (mod.subsections && mod.subsections.length > 0) {
       html += `<div class="rbac-subsections-list" id="sub_container_${mod.id}" style="${modChecked ? '' : 'opacity: 0.5; pointer-events: none;'}">`;
+      const flatSubs = [];
       mod.subsections.forEach(sub => {
+        if (sub.isGroup && Array.isArray(sub.children)) {
+          sub.children.forEach(child => flatSubs.push({ ...child, groupName: sub.name }));
+        } else {
+          flatSubs.push(sub);
+        }
+      });
+      flatSubs.forEach(sub => {
         let subChecked = modChecked;
         if (role === "custom" && currentSubs[mod.id] && typeof currentSubs[mod.id][sub.id] === "boolean") {
           subChecked = currentSubs[mod.id][sub.id];
@@ -1532,10 +1552,11 @@ window.renderRbacModulesTree = function (role, currentMods = {}, currentSubs = {
           subChecked = templateSubs[mod.id][sub.id];
         }
 
+        const labelText = sub.groupName ? `${sub.groupName}: ${sub.name}` : sub.name;
         html += `
           <label class="rbac-sub-label">
             <input type="checkbox" id="sub_${mod.id}_${sub.id}" data-parent="${mod.id}" data-sub="${sub.id}" ${subChecked ? "checked" : ""} ${disabledAttr}>
-            <span>${sub.name}</span>
+            <span>${labelText}</span>
           </label>
         `;
       });

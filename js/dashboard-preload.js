@@ -5,7 +5,7 @@
  * 1. Clean URL Guard
  * 2. Safe JSON Serialization Guard
  * 3. Safe Alert & Error Interceptor Guard
- * 4. DevTools & Inspection Protection Guard
+ * 4. Runtime Environment Initialization
  * 5. Admin Panel Stubs & Navigation Delegators
  * 6. Zero-Flash Early RBAC Pre-Filter
  * 7. Session Auth Redirection Guard
@@ -127,32 +127,9 @@
   };
 })();
 
-// ── 4. DevTools & Asset Protection Guard ──
+// ── 4. Runtime Environment Initialization ──
 (function () {
-  if (typeof window === "undefined") return;
-  document.addEventListener("contextmenu", function (e) {
-    e.preventDefault();
-  }, false);
-
-  document.addEventListener("keydown", function (e) {
-    if (
-      e.keyCode === 123 ||
-      (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) ||
-      (e.ctrlKey && e.keyCode === 85)
-    ) {
-      e.preventDefault();
-      return false;
-    }
-  }, false);
-
-  if (window.location && !window.location.hostname.includes("localhost") && !window.location.hostname.includes("127.0.0.1")) {
-    var noop = function () {};
-    ['log', 'debug', 'info'].forEach(function (method) {
-      try {
-        console[method] = noop;
-      } catch (e) {}
-    });
-  }
+  // Standard non-blocking console & error environment initialization
 })();
 
 // ── 5. Admin Panel Mobile Nav & Fullscreen Pre-load Stubs ──
@@ -281,45 +258,60 @@
       return found ? found.visible === false : false;
     };
 
+    var subs = rbac.subsections || {};
+    var isModAllowed = function(modId) {
+      if (isAdminUser) return true;
+      if (allowed[modId] === true) return true;
+      if (modId === "api570" && allowed.remainingLife === true) return true;
+      if (modId === "remainingLife" && allowed.api570 === true) return true;
+      if (modId === "damageExplorer" && (allowed.damageMechanisms === true || allowed.damage === true || allowed.api571 === true)) return true;
+      if (modId === "thicknessCalc" && (allowed.designThickness === true || allowed.b313 === true)) return true;
+      if (modId === "crackingMechanism" && allowed.cracking === true) return true;
+      // Check subsection-level keys (e.g. corrosionRate under api581, asmeB31_3 under thicknessCalc)
+      if (subs.api581 && typeof subs.api581[modId] === "boolean") return subs.api581[modId];
+      if (subs.thicknessCalc && typeof subs.thicknessCalc[modId] === "boolean") return subs.thicknessCalc[modId];
+      if (subs.api581 && subs.api581[modId] === undefined && ["api571Criteria", "corrosionRate", "fluidSelector", "inventoryCalc", "inspectionConfidence", "toxicCalc", "cofCalculator", "qpofCalculator", "corrosionCalc"].indexOf(modId) !== -1) {
+        return allowed.api581 === true;
+      }
+      if (subs.thicknessCalc && subs.thicknessCalc[modId] === undefined && ["asmeB31_3", "simplePiping", "asmeSectionVIII", "pipeThickness", "structuralThickness"].indexOf(modId) !== -1) {
+        return allowed.thicknessCalc === true;
+      }
+      return false;
+    };
+
     var allKnown = [
-      "damageExplorer", "api571Criteria", "crackingMechanism", "corrosionRate",
-      "corrosionCalc", "remainingLife", "cofCalculator", "toxicCalc",
-      "inventoryCalc", "fluidSelector", "chemicalSuite", "streamComparator",
-      "unitConverter", "asmeB31_3", "simplePiping", "asmeSectionVIII",
-      "pipeThickness", "bkStress", "inspectionConfidence", "processFlow"
+      "damageExplorer", "api581", "api570", "thicknessCalc", "crackingMechanism",
+      "bkStress", "streamComparator", "chemicalSuite", "unitConverter", "processFlow", "ccdAI",
+      "api571Criteria", "corrosionRate", "corrosionCalc", "remainingLife", "cofCalculator",
+      "qpofCalculator", "toxicCalc", "inventoryCalc", "fluidSelector",
+      "asmeB31_3", "simplePiping", "asmeSectionVIII", "pipeThickness", "structuralThickness",
+      "inspectionConfidence"
     ];
     allKnown.forEach(function (modId) {
-      if ((!isAdminUser && allowed[modId] !== true) || isLayoutHidden(modId)) {
+      if (!isModAllowed(modId) || isLayoutHidden(modId)) {
         css += '[data-rbac-module="' + modId + '"] { display: none !important; }\n';
       }
     });
 
     var catMap = {
-      remainingLife: "#rbac_cat_api570",
-      crackingMechanism: "#rbac_cat_cracking",
+      api581: "#rbac_cat_api581",
+      api570: "#rbac_cat_api570",
+      thicknessCalc: "#rbac_cat_thicknessCalc, #rbac_cat_designThickness",
+      crackingMechanism: "#rbac_cat_crackingMechanism, #rbac_cat_cracking",
       bkStress: "#rbac_cat_bkStress",
       processFlow: "#rbac_cat_processFlow",
       chemicalSuite: "#rbac_cat_chemicalSuite",
       streamComparator: "#rbac_cat_streamComparator",
-      unitConverter: "#rbac_cat_unitConverter"
+      unitConverter: "#rbac_cat_unitConverter",
+      ccdAI: "#rbac_cat_ccdAI"
     };
     for (var m in catMap) {
-      if ((!isAdminUser && allowed[m] !== true) || isLayoutHidden(m)) {
+      if (!isModAllowed(m) || isLayoutHidden(m)) {
         css += catMap[m] + ' { display: none !important; }\n';
       }
     }
 
-    if ((!isAdminUser && allowed.ccdAI !== true) || isLayoutHidden("ccdAI")) css += '#rbac_cat_ccdAI { display: none !important; }\n';
-
-    if ((!isAdminUser && !allowed.asmeB31_3 && !allowed.simplePiping && !allowed.asmeSectionVIII && !allowed.pipeThickness) || isLayoutHidden("thicknessCalc")) {
-      css += '#rbac_cat_designThickness, #rbac_cat_thicknessCalc { display: none !important; }\n';
-    }
-
-    if ((!isAdminUser && !allowed.api571Criteria && !allowed.corrosionRate && !allowed.fluidSelector && !allowed.inventoryCalc && !allowed.inspectionConfidence && !allowed.toxicCalc && !allowed.cofCalculator && !allowed.corrosionCalc) || isLayoutHidden("api581")) {
-      css += '#rbac_cat_api581 { display: none !important; }\n';
-    }
-
-    if ((!isAdminUser && allowed.damageExplorer !== true && allowed.damageMechanisms !== true) || isLayoutHidden("damageExplorer")) {
+    if (!isModAllowed("damageExplorer") || isLayoutHidden("damageExplorer")) {
       css += '#categoryList li.category-toggle:not([id^="rbac_cat_"]), #categoryList li[data-rbac-module="damageExplorer"], [data-rbac-module="damageExplorer"] { display: none !important; }\n';
     }
 

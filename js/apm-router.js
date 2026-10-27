@@ -1132,7 +1132,7 @@
         // A. Wrap global tab functions with automatic on-demand template loading
         Object.keys(FUNCTION_TO_HASH).forEach(function (fnName) {
           var targetHash = FUNCTION_TO_HASH[fnName];
-          if (typeof window[fnName] === "function" && !window[fnName].__apmUrlSyncHooked && !window[fnName].__rbacWrapped) {
+          if (typeof window[fnName] === "function" && !window[fnName].__apmUrlSyncHooked) {
             var origFn = window[fnName];
             var mappedEnt = null;
             Object.keys(MODULE_TEMPLATES).forEach(function (k) {
