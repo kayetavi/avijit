@@ -7,177 +7,35 @@
  */
 
 (function () {
-  // 1. Comprehensive Industrial Chemical Database (Dynamic API)
+  // 1. Comprehensive Industrial Chemical Database, Reactivity Matrix & Neutralization Stoichiometry (Hydrated from Cloud Firestore via /api/chemical-suite/chemicals)
   let CHEMICAL_DATABASE = [];
+  let REACTIVITY_MATRIX = [];
+  let NEUTRALIZATION_DATA = {};
 
   async function fetchChemicalCatalog() {
     try {
       const res = await fetch("/api/chemical-suite/chemicals");
       if (res.ok) {
         const data = await res.json();
-        if (data && data.chemicals && Array.isArray(data.chemicals)) {
+        if (data && Array.isArray(data.chemicals)) {
           CHEMICAL_DATABASE = data.chemicals;
-          if (window.ChemicalSuite) {
-            window.ChemicalSuite.database = CHEMICAL_DATABASE;
-          }
+        }
+        if (data && Array.isArray(data.reactivity)) {
+          REACTIVITY_MATRIX = data.reactivity;
+        }
+        if (data && data.neutralization && typeof data.neutralization === "object") {
+          NEUTRALIZATION_DATA = data.neutralization;
+        }
+        if (window.ChemicalSuite) {
+          window.ChemicalSuite.database = CHEMICAL_DATABASE;
+          window.ChemicalSuite.reactivity = REACTIVITY_MATRIX;
+          window.ChemicalSuite.neutralization = NEUTRALIZATION_DATA;
         }
       }
     } catch (e) {
       console.warn("Could not fetch chemical catalog from API:", e);
     }
   }
-
-  // 2. Pairwise Chemical Reactivity Database (NOAA & NFPA 491M)
-  const REACTIVITY_MATRIX = [
-    {
-      pair: ["hf", "naoh"],
-      severity: "danger",
-      title: "Extremely Exothermic Acid-Base Neutralization",
-      equation: "HF + NaOH ➔ NaF + H₂O  (ΔH = -68 kJ/mol)",
-      mechanism: "Rapid, violent heat release. Concentrated solutions will boil instantaneously, creating toxic aerosol spatter of hydrofluoric acid and sodium fluoride.",
-      precaution: "Never mix directly. Dilute both streams with large excess of cold water and add alkali slowly with mechanical agitation and chilled cooling coils."
-    },
-    {
-      pair: ["hf", "cl2"],
-      severity: "warning",
-      title: "Toxic Halogen Mixture / Oxidizing Acid Atmosphere",
-      equation: "HF (aq) + Cl₂ (g) ➔ Highly Corrosive Mixed Halogen Gas",
-      mechanism: "Increases vapor toxicity drastically. Destroys respiratory tract immediately. Aggressively dissolves standard elastomer gaskets.",
-      precaution: "Ensure dedicated relief and flare headers. Level A encapsulated suit required if breach occurs."
-    },
-    {
-      pair: ["h2so4", "naoh"],
-      severity: "danger",
-      title: "Violent Boiling & Acid-Base Splattering",
-      equation: "H₂SO₄ + 2 NaOH ➔ Na₂SO₄ + 2 H₂O  (ΔH = -112 kJ/mol)",
-      mechanism: "Extreme exothermic heat release (>112 kJ/mol). Can exceed boiling point (>140°C) within seconds, triggering steam explosion and boiling caustic/acid eruption.",
-      precaution: "Requires slow, controlled metering into cold water reservoir with continuous heat exchangers."
-    },
-    {
-      pair: ["h2so4", "benzene"],
-      severity: "danger",
-      title: "Violent Sulfonation & Charring Oxidation",
-      equation: "C₆H₆ + H₂SO₄ (conc) ➔ C₆H₅SO₃H + H₂O",
-      mechanism: "Exothermic aromatic sulfonation. In the presence of hot or fuming acid (oleum), violent boiling, polymerization, and foaming fire risk occurs.",
-      precaution: "Keep separate in storage and piping. Do not mix hydrocarbon drains with concentrated sulfuric acid drains."
-    },
-    {
-      pair: ["cl2", "nh3"],
-      severity: "danger",
-      title: "Formation of Shock-Sensitive Explosive Nitrogen Trichloride (NCl3)",
-      equation: "3 Cl₂ + NH₃ ➔ NCl₃ (Explosive Oil) + 3 HCl",
-      mechanism: "Forms Nitrogen Trichloride (NCl3), an extremely unstable oily liquid that detonates violently upon light mechanical shock, light exposure, or mild heating (>60°C).",
-      precaution: "STRICT PROHIBITION: Never connect chlorine and ammonia headers or use ammonia torches for chlorine leak testing in high concentrations."
-    },
-    {
-      pair: ["h2s", "cl2"],
-      severity: "danger",
-      title: "Spontaneous Ignition & Toxic Gas Formation",
-      equation: "H₂S + 4 Cl₂ + 4 H₂O ➔ H₂SO₄ + 8 HCl  (Violent Pyrophoric / Flame)",
-      mechanism: "Spontaneous hypergolic reaction. May ignite on contact without an external spark, producing clouds of choking hydrogen chloride and sulfur oxides.",
-      precaution: "Absolute isolation. Flare systems for acid gas must never cross-connect with chlorination vents."
-    },
-    {
-      pair: ["naocl", "hcl"],
-      severity: "danger",
-      title: "Lethal Chlorine Gas (Cl2) Liberation",
-      equation: "NaOCl + 2 HCl ➔ NaCl + H₂O + Cl₂ ↑ (Deadly Green Gas)",
-      mechanism: "Rapid, quantitative acidification of hypochlorite releases 100% of available chlorine as gas. Multiple industrial fatalities occur annually from accidental truck offloading cross-connections.",
-      precaution: "Enforce distinct keyed couplings (PVR connectors) for acid and bleach offloading manifolds to prevent cross-contamination."
-    },
-    {
-      pair: ["naocl", "nh3"],
-      severity: "danger",
-      title: "Release of Toxic & Explosive Chloramines",
-      equation: "NaOCl + NH₃ ➔ NH₂Cl (Monochloramine) + NHCl₂ + NCl₃",
-      mechanism: "Forms toxic chloramine vapor that severely irritates eyes and lungs, causing severe pulmonary edema. Can form explosive NCl3 in excess chlorine.",
-      precaution: "Never use ammonia solutions to clean bleach spills or vice-versa."
-    },
-    {
-      pair: ["hno3", "benzene"],
-      severity: "danger",
-      title: "Violent Nitration & Explosive Runaway",
-      equation: "C₆H₆ + HNO₃ (conc) ➔ C₆H₅NO₂ (Nitrobenzene) + H₂O",
-      mechanism: "Violent exothermic reaction. Uncontrolled mixing can lead to thermal runaway, vessel rupture, and detonation of polynitrated aromatic byproducts.",
-      precaution: "Strict temperature-controlled jacketed reactors with emergency quench systems."
-    },
-    {
-      pair: ["hno3", "naoh"],
-      severity: "danger",
-      title: "Violent Acid-Base Exotherm",
-      equation: "HNO₃ + NaOH ➔ NaNO₃ + H₂O  (ΔH = -57 kJ/mol)",
-      mechanism: "Rapid temperature spike with potential boiling and release of toxic brown NO2 gas fumes if localized hot spots exceed 90°C.",
-      precaution: "Neutralize only in dilute state with abundant water and continuous monitoring."
-    }
-  ];
-
-  // 3. Chemical Spill Neutralization Stoichiometry Engine
-  const NEUTRALIZATION_DATA = {
-    h2so4: {
-      name: "Sulfuric Acid (H2SO4 - 98%)",
-      pureDensity: 1.84, // g/mL
-      molMass: 98.08,
-      defaultConc: 98,
-      type: "acid",
-      equivalents: 2, // diprotic
-      agents: [
-        { id: "caoh2", name: "Hydrated Lime [Ca(OH)2]", molMass: 74.09, eqPerMol: 2, deltaH: -112, formula: "H₂SO₄ + Ca(OH)₂ ➔ CaSO₄↓ + 2 H₂O" },
-        { id: "na2co3", name: "Soda Ash [Na2CO3]", molMass: 105.99, eqPerMol: 2, deltaH: -84, formula: "H₂SO₄ + Na₂CO₃ ➔ Na₂SO₄ + CO₂↑ + H₂O" },
-        { id: "nahco3", name: "Sodium Bicarbonate [NaHCO3]", molMass: 84.01, eqPerMol: 1, deltaH: -65, formula: "H₂SO₄ + 2 NaHCO₃ ➔ Na₂SO₄ + 2 CO₂↑ + 2 H₂O" },
-        { id: "naoh", name: "Caustic Soda [NaOH - pure]", molMass: 40.00, eqPerMol: 1, deltaH: -114, formula: "H₂SO₄ + 2 NaOH ➔ Na₂SO₄ + 2 H₂O" }
-      ]
-    },
-    hcl: {
-      name: "Hydrochloric Acid (HCl - 37%)",
-      pureDensity: 1.19,
-      molMass: 36.46,
-      defaultConc: 37,
-      type: "acid",
-      equivalents: 1,
-      agents: [
-        { id: "caoh2", name: "Hydrated Lime [Ca(OH)2]", molMass: 74.09, eqPerMol: 2, deltaH: -56, formula: "2 HCl + Ca(OH)₂ ➔ CaCl₂ + 2 H₂O" },
-        { id: "na2co3", name: "Soda Ash [Na2CO3]", molMass: 105.99, eqPerMol: 2, deltaH: -42, formula: "2 HCl + Na₂CO₃ ➔ 2 NaCl + CO₂↑ + H₂O" },
-        { id: "nahco3", name: "Sodium Bicarbonate [NaHCO3]", molMass: 84.01, eqPerMol: 1, deltaH: -32, formula: "HCl + NaHCO₃ ➔ NaCl + CO₂↑ + H₂O" }
-      ]
-    },
-    hno3: {
-      name: "Nitric Acid (HNO3 - 68%)",
-      pureDensity: 1.41,
-      molMass: 63.01,
-      defaultConc: 68,
-      type: "acid",
-      equivalents: 1,
-      agents: [
-        { id: "caoh2", name: "Hydrated Lime [Ca(OH)2]", molMass: 74.09, eqPerMol: 2, deltaH: -57, formula: "2 HNO₃ + Ca(OH)₂ ➔ Ca(NO₃)₂ + 2 H₂O" },
-        { id: "na2co3", name: "Soda Ash [Na2CO3]", molMass: 105.99, eqPerMol: 2, deltaH: -43, formula: "2 HNO₃ + Na₂CO₃ ➔ 2 NaNO₃ + CO₂↑ + H₂O" },
-        { id: "nahco3", name: "Sodium Bicarbonate [NaHCO3]", molMass: 84.01, eqPerMol: 1, deltaH: -33, formula: "HNO₃ + NaHCO₃ ➔ NaNO₃ + CO₂↑ + H₂O" }
-      ]
-    },
-    hf: {
-      name: "Hydrofluoric Acid (HF - 48%)",
-      pureDensity: 1.15,
-      molMass: 20.01,
-      defaultConc: 48,
-      type: "acid",
-      equivalents: 1,
-      agents: [
-        { id: "caoh2", name: "Hydrated Lime [Ca(OH)2] - Recommended for HF", molMass: 74.09, eqPerMol: 2, deltaH: -68, formula: "2 HF + Ca(OH)₂ ➔ CaF₂↓ (Insoluble Fluorite) + 2 H₂O" }
-      ]
-    },
-    naoh: {
-      name: "Sodium Hydroxide (NaOH - 50% Caustic)",
-      pureDensity: 1.52,
-      molMass: 40.00,
-      defaultConc: 50,
-      type: "base",
-      equivalents: 1,
-      agents: [
-        { id: "citric", name: "Citric Acid [C6H8O7]", molMass: 192.12, eqPerMol: 3, deltaH: -54, formula: "3 NaOH + C₆H₈O₇ ➔ Na₃C₆H₅O₇ + 3 H₂O" },
-        { id: "acetic", name: "Acetic Acid (Vinegar/Glacial) [CH3COOH]", molMass: 60.05, eqPerMol: 1, deltaH: -55, formula: "NaOH + CH₃COOH ➔ CH₃COONa + H₂O" },
-        { id: "hcl_dil", name: "Dilute Hydrochloric Acid (10%)", molMass: 36.46, eqPerMol: 1, deltaH: -57, formula: "NaOH + HCl ➔ NaCl + H₂O" }
-      ]
-    }
-  };
 
   // Expose Global Controller
   window.ChemicalSuite = {
@@ -188,6 +46,8 @@
     async init() {
       await fetchChemicalCatalog();
       this.database = CHEMICAL_DATABASE;
+      this.reactivity = REACTIVITY_MATRIX;
+      this.neutralization = NEUTRALIZATION_DATA;
       this.populateChemicalSelects();
       this.renderSuitRecommendations();
       if (CHEMICAL_DATABASE.length > 0) {
@@ -226,6 +86,7 @@
       const chemId = document.getElementById("chemSuitSelect")?.value || "hf";
       const scenario = document.getElementById("chemScenarioSelect")?.value || "tankEntry";
       const chem = CHEMICAL_DATABASE.find(c => c.id === chemId) || CHEMICAL_DATABASE[0];
+      if (!chem) return;
 
       const heroEl = document.getElementById("chemSuitHeroBox");
       const tableEl = document.getElementById("chemPermeationTableBody");
@@ -308,7 +169,7 @@
     renderChemicalDetails(chemId) {
       const chem = CHEMICAL_DATABASE.find(c => c.id === chemId) || CHEMICAL_DATABASE[0];
       const target = document.getElementById("chemDetailsContainer");
-      if (!target) return;
+      if (!target || !chem) return;
 
       const ghsBadges = chem.ghs.map(g => `<span class="ghs-badge-item">⚠️ ${g}</span>`).join("");
 
@@ -390,6 +251,7 @@
 
       const chemA = CHEMICAL_DATABASE.find(c => c.id === chemAId) || CHEMICAL_DATABASE[0];
       const chemB = CHEMICAL_DATABASE.find(c => c.id === chemBId) || CHEMICAL_DATABASE[1];
+      if (!chemA || !chemB) return;
 
       if (chemAId === chemBId) {
         container.innerHTML = `

@@ -1,6 +1,7 @@
 // ============================================================================
 // API 581 TOXIC RELEASE, DISPERSION & GAS COMPOSITION ENGINE (/api/toxic)
 // ============================================================================
+import { getOrSeedEngineeringCatalog } from "./database.js";
 
 export const TOXIC_GAS_MAP = [
   { key: "h2s", name: "H₂S (Hydrogen Sulfide)", mw: 34.08, aliases: ["h2s", "h₂s", "hydrogensulfide", "hydrogen sulfide", "sour"] },
@@ -35,6 +36,14 @@ export const GAS_NAMES = {
   co: "CO",
   co2: "CO2"
 };
+
+async function getToxicCatalog() {
+  return await getOrSeedEngineeringCatalog("toxic_gas_catalog", {
+    toxicGasMap: TOXIC_GAS_MAP,
+    molarMasses: GAS_MOLAR_MASSES,
+    gasNames: GAS_NAMES
+  });
+}
 
 function sanitizeNum(val) {
   if (val === null || val === undefined || val === "") return NaN;
@@ -76,14 +85,15 @@ export function classifyToxicHazard(toxicityPercent) {
   };
 }
 
-export default function handler(req, res) {
-  // 1. GET: Return Toxic Gas Catalog & Molar Mass Metadata
+export default async function handler(req, res) {
+  // 1. GET: Return Toxic Gas Catalog & Molar Mass Metadata from Firestore
   if (req.method === "GET") {
+    const cat = await getToxicCatalog();
     return res.status(200).json({
       success: true,
-      toxicGasMap: TOXIC_GAS_MAP,
-      molarMasses: GAS_MOLAR_MASSES,
-      gasNames: GAS_NAMES
+      toxicGasMap: cat?.toxicGasMap || TOXIC_GAS_MAP,
+      molarMasses: cat?.molarMasses || GAS_MOLAR_MASSES,
+      gasNames: cat?.gasNames || GAS_NAMES
     });
   }
 
@@ -96,6 +106,9 @@ export default function handler(req, res) {
 
   // 2. POST action === "gas_composition": Multi-component Gas Composition Calculator
   if (action === "gas_composition") {
+    const cat = await getToxicCatalog();
+    const molarMassCatalog = cat?.molarMasses || GAS_MOLAR_MASSES;
+    const gasNamesCatalog = cat?.gasNames || GAS_NAMES;
     const rawComponents = Array.isArray(body.components) ? body.components : [];
     const components = rawComponents.map((g) => {
       const gasKey = String(g.gasKey || "gas").toLowerCase();
@@ -104,13 +117,13 @@ export default function handler(req, res) {
       if (molePercent > 100) molePercent = 100;
       let molarMass = sanitizeNum(g.molarMass);
       if (isNaN(molarMass) || molarMass <= 0) {
-        molarMass = GAS_MOLAR_MASSES[gasKey] || 44.0;
+        molarMass = molarMassCatalog[gasKey] || 44.0;
       }
       const moleFraction = molePercent / 100;
       const massContribution = moleFraction * molarMass;
       return {
         gasKey: g.gasKey || gasKey,
-        customName: g.customName || GAS_NAMES[gasKey] || gasKey.toUpperCase(),
+        customName: g.customName || gasNamesCatalog[gasKey] || gasKey.toUpperCase(),
         molePercent,
         moleFraction,
         molarMass,

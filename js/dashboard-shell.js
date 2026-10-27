@@ -25,14 +25,35 @@ function toggleSettingsMenu(e) {
 }
 window.toggleSettingsMenu = toggleSettingsMenu;
 
+// Close settings dropdown on outside click or Escape key
+window.addEventListener("click", (e) => {
+  const dropdown = document.getElementById("dropdownContent");
+  const btn = document.getElementById("settingsBtn");
+  if (!dropdown || !dropdown.classList.contains("show")) return;
+  if (e.target && !dropdown.contains(e.target) && (!btn || !btn.contains(e.target))) {
+    dropdown.classList.remove("show");
+  }
+});
+
+window.addEventListener("keydown", (e) => {
+  if (e && e.key === "Escape") {
+    const dropdown = document.getElementById("dropdownContent");
+    if (dropdown) dropdown.classList.remove("show");
+  }
+});
+
 // ✅ USERNAME & WELCOME
 const rawUsername = (window.APP_SESSION && window.APP_SESSION.email) ? window.APP_SESSION.email.split("@")[0].toUpperCase() : ((typeof sessionStorage !== "undefined" ? (sessionStorage.getItem("usernameUpper") || sessionStorage.getItem("loggedInUser")) : "") || "");
 const username = rawUsername ? (rawUsername.includes("@") ? rawUsername.split("@")[0].toUpperCase() : rawUsername.toUpperCase()) : "";
 const welcomeDiv = document.getElementById("welcome");
 const scrollText = document.getElementById("scrollText");
 
-if (username) {
-  if (welcomeDiv) welcomeDiv.innerHTML = `Welcome <span class="username-style">${username}</span>`;
+if (welcomeDiv) {
+  if (username) {
+    welcomeDiv.innerHTML = `Welcome <span class="username-style">${username}</span>`;
+  } else {
+    welcomeDiv.innerHTML = "";
+  }
 }
 
 
@@ -452,35 +473,60 @@ function filterDashboardCategory(cat, btn) {
 window.filterDashboardCategory = filterDashboardCategory;
 
 function exportToPDF() {
-  let element;
+  let element = null;
   let filename = "export.pdf";
 
-  if (document.getElementById("mechanismDetailsContainer").style.display !== "none") {
-    element = document.getElementById("mechanismDetailsContainer");
+  // Check mechanism detail viewer first
+  const mechDetails = document.getElementById("mechanismDetailsContainer");
+  if (mechDetails && mechDetails.style.display !== "none" && mechDetails.children.length > 0) {
+    element = mechDetails;
     filename = "damage-mechanism.pdf";
-  } else if (document.getElementById("inspectionconfidenceTab").style.display !== "none") {
-    element = document.getElementById("inspectionconfidenceTab");
-    filename = "inspection-confidence.pdf";
-  } else if (document.getElementById("crackingMechanismTab").style.display !== "none") {
-    element = document.getElementById("crackingMechanismTab");
-    filename = "cracking-mechanism.pdf";
-  } else if (document.getElementById("bkStressTab").style.display !== "none") {
-    element = document.getElementById("bkStressTab");
-    filename = "bk-stress.pdf";
-  } else if (document.getElementById("inventoryTab").style.display !== "none") {
-    element = document.getElementById("inventoryTab");
-    filename = "inventory.pdf";
-  } else if (document.getElementById("ASMESECTIONVIIIDIV1Tab").style.display !== "none") {
-    element = document.getElementById("ASMESECTIONVIIIDIV1Tab");
-    filename = "ASME-VIII-DIV1.pdf";
-  } else if (document.getElementById("TOXIC_CALCULATIONTab").style.display !== "none") {
-    element = document.getElementById("TOXIC_CALCULATIONTab");
-    filename = "toxic-calculation.pdf";
-  } else if (document.getElementById("ASMEB31_3Tab").style.display !== "none") {
-    element = document.getElementById("ASMEB31_3Tab");
-    filename = "ASME-B31.3.pdf";
   } else {
-    alert("No active tab to export!");
+    // Map of known active module tabs to filenames
+    const tabMap = {
+      "inspectionconfidenceTab": "inspection-confidence.pdf",
+      "crackingMechanismTab": "cracking-mechanism.pdf",
+      "bkStressTab": "bk-stress.pdf",
+      "inventoryTab": "inventory.pdf",
+      "ASMESECTIONVIIIDIV1Tab": "ASME-VIII-DIV1.pdf",
+      "TOXIC_CALCULATIONTab": "toxic-calculation.pdf",
+      "ASMEB31_3Tab": "ASME-B31.3.pdf",
+      "corrosionFullTab": "corrosion-rate.pdf",
+      "chemicalSuiteTab": "chemical-suite.pdf",
+      "streamComparatorTab": "stream-comparator.pdf",
+      "unitConverterTab": "unit-converter.pdf",
+      "fluidSelectorTab": "representative-fluids.pdf",
+      "a571-criteriaTab": "api571-screening.pdf",
+      "cof_calculatorTab": "cof-calculator.pdf",
+      "QPOF_calculatorTab": "qpof-calculator.pdf",
+      "CORROSION_CALCULATIONTab": "rbi-calculation.pdf",
+      "simplePipingTab": "piping-thickness.pdf",
+      "pipeThicknessTab": "pipe-schedule.pdf",
+      "structuralThicknessTab": "structural-thickness.pdf",
+      "remainingLifeTab": "remaining-life.pdf"
+    };
+
+    for (const [id, fName] of Object.entries(tabMap)) {
+      const el = document.getElementById(id);
+      if (el && el.style.display !== "none" && el.offsetWidth > 0) {
+        element = el;
+        filename = fName;
+        break;
+      }
+    }
+
+    if (!element) {
+      // General fallback to any visible module tab
+      const visibleTab = Array.from(document.querySelectorAll(".tab-content")).find(t => t.style.display !== "none" && t.offsetWidth > 0);
+      if (visibleTab) {
+        element = visibleTab;
+        filename = `${visibleTab.id || "export"}.pdf`;
+      }
+    }
+  }
+
+  if (!element) {
+    alert("No active module open to export!");
     return;
   }
 
@@ -526,13 +572,16 @@ function exportToPDF() {
 window.exportToPDF = exportToPDF;
 
 function exportToExcel() {
-  let element;
-  if (document.getElementById("mechanismDetailsContainer").style.display !== "none") {
-    element = document.getElementById("mechanismDetailsContainer");
-  } else if (document.getElementById("ASMEB31_3Tab").style.display !== "none") {
-    element = document.getElementById("ASMEB31_3Tab");
+  let element = null;
+  const mechDetails = document.getElementById("mechanismDetailsContainer");
+  if (mechDetails && mechDetails.style.display !== "none" && mechDetails.children.length > 0) {
+    element = mechDetails;
   } else {
-    alert("No active tab to export!");
+    element = Array.from(document.querySelectorAll(".tab-content")).find(t => t.style.display !== "none" && t.offsetWidth > 0);
+  }
+
+  if (!element) {
+    alert("No active module open to export!");
     return;
   }
 
@@ -540,7 +589,7 @@ function exportToExcel() {
   const blob = new Blob([data], { type: "application/vnd.ms-excel" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = element.id === "mechanismDetailsContainer" ? "damage-mechanism.xls" : "ASME-B31.3.xls";
+  link.download = element.id ? `${element.id}.xls` : "export.xls";
   link.click();
 }
 window.exportToExcel = exportToExcel;

@@ -4,121 +4,52 @@
  */
 
 // ============================================================================
-// 1. DATA & REFERENCE CONSTANTS (API 581, Meridium POF & GE Digital COF)
+// 1. DATA & REFERENCE CONSTANTS (Hydrated from Cloud Firestore via /api/risk-calculator?action=metadata)
 // ============================================================================
 
-const FLUIDS_DATABASE = [
-  { id: "H2", name: "Hydrogen (H2)", category: "Flammable", group: "Hydrocarbons & Fuels", aliases: ["h2", "hydrogen"], mw: 2, density_lb_ft3: 10.0, density_kg_m3: 160.18, k: 1.41, boilingPointF: -423, boilingPointC: -252.8, buoyancy: "B", pff: 0.8, hcf: 119950, p_igf: 1.0, isDense: false },
-  { id: "C1", name: "Methane (C1)", category: "Flammable", group: "Hydrocarbons & Fuels", aliases: ["c1", "methane", "fuel gas"], mw: 16, density_lb_ft3: 18.7, density_kg_m3: 299.55, k: 1.3, boilingPointF: -259, boilingPointC: -161.7, buoyancy: "B", pff: 5.6, hcf: 50029, p_igf: 0.5, isDense: false },
-  { id: "C2", name: "Ethane (C2)", category: "Flammable", group: "Hydrocarbons & Fuels", aliases: ["c2", "ethane"], mw: 29, density_lb_ft3: 22.5, density_kg_m3: 360.42, k: 1.22, boilingPointF: -141, boilingPointC: -96.1, buoyancy: "B", pff: 5.4, hcf: 47300, p_igf: 0.5, isDense: false },
-  { id: "C3", name: "Propane (C3)", category: "Flammable", group: "Hydrocarbons & Fuels", aliases: ["c3", "propane"], mw: 43, density_lb_ft3: 32.1, density_kg_m3: 514.19, k: 1.14, boilingPointF: -49, boilingPointC: -45.0, buoyancy: "D", pff: 5.6, hcf: 46000, p_igf: 0.5, isDense: true },
-  { id: "C4", name: "Butane (C4)", category: "Flammable", group: "Hydrocarbons & Fuels", aliases: ["c4", "butane", "isobutane"], mw: 57, density_lb_ft3: 37.0, density_kg_m3: 592.68, k: 1.1, boilingPointF: 26, boilingPointC: -3.3, buoyancy: "D", pff: 5.8, hcf: 45500, flashPointC: -60.0, autoignitionC: 287.8, p_igf: 0.25, isDense: true },
-  { id: "C3-C4", name: "C3-C4 (LPG Blend)", category: "Flammable", group: "Hydrocarbons & Fuels", aliases: ["lpg", "c3-c4"], mw: 50, density_lb_ft3: 34.5, density_kg_m3: 553.4, k: 1.12, boilingPointF: -11.2, boilingPointC: -24.0, buoyancy: "D", pff: 5.7, hcf: 45750, flashPointC: -75.0, autoignitionC: 300.0, p_igf: 0.35, isDense: true },
-  { id: "C5", name: "Pentane (C5)", category: "Flammable", group: "Hydrocarbons & Fuels", aliases: ["c5", "pentane"], mw: 71, density_lb_ft3: 40.0, density_kg_m3: 640.74, k: 1.1, boilingPointF: 92, boilingPointC: 33.3, buoyancy: "D", pff: 6.0, hcf: 44600, flashPointC: -40.0, autoignitionC: 260.0, p_igf: 0.25, isDense: true },
-  { id: "C6", name: "Hexane (C6)", category: "Flammable", group: "Hydrocarbons & Fuels", aliases: ["c6", "hexane"], mw: 85, density_lb_ft3: 41.8, density_kg_m3: 669.57, k: 1.1, boilingPointF: 151, boilingPointC: 66.1, buoyancy: "D", pff: 6.0, hcf: 44400, flashPointC: -21.7, autoignitionC: 225.0, p_igf: 0.25, isDense: true },
-  { id: "C7", name: "Heptane (C7)", category: "Flammable", group: "Hydrocarbons & Fuels", aliases: ["c7", "heptane"], mw: 100, density_lb_ft3: 42.9, density_kg_m3: 687.19, k: 1.1, boilingPointF: 209, boilingPointC: 98.3, buoyancy: "D", pff: 6.0, hcf: 44200, flashPointC: -3.9, autoignitionC: 203.9, p_igf: 0.25, isDense: true },
-  { id: "C8", name: "Octane (C8)", category: "Flammable", group: "Hydrocarbons & Fuels", aliases: ["c8", "octane"], mw: 114, density_lb_ft3: 44.1, density_kg_m3: 706.42, k: 1.1, boilingPointF: 258, boilingPointC: 125.6, buoyancy: "D", pff: 6.0, hcf: 44200, flashPointC: 13.3, autoignitionC: 220.0, p_igf: 0.25, isDense: true },
-  { id: "C5-C8", name: "C5-C8 (Gasoline / Light Naphtha)", category: "Flammable", group: "Hydrocarbons & Fuels", aliases: ["gasoline", "naphtha", "c5-c8"], mw: 100, density_lb_ft3: 42.9, density_kg_m3: 687.19, k: 1.1, boilingPointF: 209, boilingPointC: 98.3, buoyancy: "D", pff: 6.0, hcf: 44200, flashPointC: -4.0, autoignitionC: 220.0, p_igf: 0.25, isDense: true },
-  { id: "C9-C12", name: "C9-C12 (Kerosene / Jet Fuel)", category: "Flammable", group: "Hydrocarbons & Fuels", aliases: ["c9-c12", "kerosene", "jet fuel"], mw: 156, density_lb_ft3: 46.3, density_kg_m3: 741.66, k: 1.1, boilingPointF: 384, boilingPointC: 195.6, buoyancy: "D", pff: 6.0, hcf: 44800, flashPointC: 65.0, autoignitionC: 204.4, p_igf: 0.1, isDense: true },
-  { id: "C13-16", name: "C13-C16 (Diesel / Light Gasoil)", category: "Flammable", group: "Hydrocarbons & Fuels", aliases: ["c13-c16", "c13-16", "diesel", "gasoil"], mw: 200, density_lb_ft3: 47.0, density_kg_m3: 752.87, k: 1.1, boilingPointF: 500, boilingPointC: 260.0, buoyancy: "D", pff: 6.0, hcf: 45900, flashPointC: 93.3, autoignitionC: 204.4, p_igf: 0.1, isDense: true },
-  { id: "C17-25", name: "C17-C25 (Heavy Gasoil / AGO / VGO)", category: "Flammable", group: "Hydrocarbons & Fuels", aliases: ["c17-c25", "c17-25", "heavy gasoil", "vgo"], mw: 300, density_lb_ft3: 48.0, density_kg_m3: 768.89, k: 1.1, boilingPointF: 700, boilingPointC: 371.1, buoyancy: "D", pff: 6.0, hcf: 41800, flashPointC: 93.3, autoignitionC: 204.4, p_igf: 0.1, isDense: true },
-  { id: "C25+", name: "C25+ (Resid / Heavy Fuel Oil / Bitumen)", category: "Flammable", group: "Hydrocarbons & Fuels", aliases: ["c25+", "resid", "residue", "bitumen", "fuel oil"], mw: 400, density_lb_ft3: 56.2288, density_kg_m3: 900.7, k: 1.1, boilingPointF: 800, boilingPointC: 426.7, buoyancy: "D", pff: 6.0, hcf: 40600, flashPointC: 93.3, autoignitionC: 204.4, p_igf: 0.1, isDense: true },
-  { id: "MEOH", name: "Methanol (MEOH)", category: "Flammable", group: "Petrochemicals & Aromatics", aliases: ["meoh", "methanol"], mw: 32, density_lb_ft3: 49.6, density_kg_m3: 794.52, k: 1.2, boilingPointF: 148, boilingPointC: 64.4, buoyancy: "D", pff: 5.0, hcf: 19900, flashPointC: 11.1, autoignitionC: 240.0, toxicEndpoint_mg_L: 0.3, p_igf: 0.1, isDense: false },
-  { id: "ETOH", name: "Ethanol (ETOH)", category: "Flammable", group: "Petrochemicals & Aromatics", aliases: ["etoh", "ethanol"], mw: 46, density_lb_ft3: 49.2, density_kg_m3: 788.11, k: 1.13, boilingPointF: 173, boilingPointC: 78.3, buoyancy: "D", pff: 5.0, hcf: 26800, flashPointC: 13.0, autoignitionC: 362.8, toxicEndpoint_mg_L: 0.38, p_igf: 0.1, isDense: false },
-  { id: "Amine", name: "Amine (MEA / DEA / MDEA)", category: "Flammable", group: "Petrochemicals & Aromatics", aliases: ["amine", "mea", "mdea"], mw: 200, density_lb_ft3: 66.35, density_kg_m3: 1062.83, k: 1.1, boilingPointF: 353, boilingPointC: 178.3, buoyancy: "D", pff: 5.0, hcf: 5000, toxicEndpoint_mg_L: 0.5, p_igf: 0.1, isDense: true },
-  { id: "Glycol", name: "Ethylene Glycol (MEG / TEG)", category: "Flammable", group: "Petrochemicals & Aromatics", aliases: ["glycol", "meg"], mw: 62, density_lb_ft3: 69.5, density_kg_m3: 1113.2, k: 1.1, boilingPointF: 387, boilingPointC: 197.3, buoyancy: "D", pff: 5.0, hcf: 16700, p_igf: 0.1, isDense: true },
-  { id: "H2S", name: "Hydrogen Sulfide (H2S)", category: "Toxic", group: "Toxic Chemicals", aliases: ["h2s", "sour gas"], mw: 34, density_lb_ft3: 6.64, density_kg_m3: 106.36, k: 1.32, boilingPointF: -76, boilingPointC: -60.0, buoyancy: "D", pff: 1.5, hcf: 15200, autoignitionC: 270.0, toxicEndpoint_mg_L: 0.042, p_igf: 0.05, isDense: true },
-  { id: "Chlorine", name: "Chlorine (Cl2)", category: "Toxic", group: "Toxic Chemicals", aliases: ["chlorine", "cl2"], mw: 71, density_lb_ft3: 88.0, density_kg_m3: 1409.63, k: 1.32, boilingPointF: -30, boilingPointC: -34.4, buoyancy: "D", pff: 0.0, hcf: 0, toxicEndpoint_mg_L: 0.0087, p_igf: 0.0, isDense: true },
-  { id: "NH3", name: "Ammonia (NH3)", category: "Toxic", group: "Toxic Chemicals", aliases: ["nh3", "ammonia"], mw: 17, density_lb_ft3: 5.15, density_kg_m3: 82.49, k: 1.31, boilingPointF: -28, boilingPointC: -33.3, buoyancy: "B", pff: 1.2, hcf: 18600, autoignitionC: 648.9, toxicEndpoint_mg_L: 0.14, p_igf: 0.05, isDense: false },
-  { id: "CO", name: "Carbon Monoxide (CO)", category: "Toxic", group: "Toxic Chemicals", aliases: ["co", "carbon monoxide"], mw: 28, density_lb_ft3: 50.79, density_kg_m3: 813.58, k: 1.4, boilingPointF: -312, boilingPointC: -191.1, buoyancy: "B", pff: 0.8, hcf: 10100, autoignitionC: 608.9, toxicEndpoint_mg_L: 0.033, p_igf: 0.05, isDense: false },
-  { id: "H2O", name: "Water (H2O)", category: "Inert", group: "Inerts & Utilities", aliases: ["water", "h2o"], mw: 18, density_lb_ft3: 62.4, density_kg_m3: 999.55, k: 1.1, boilingPointF: 212, boilingPointC: 100.0, buoyancy: "B", pff: 0.0, hcf: 0, p_igf: 0.0, isDense: false },
-  { id: "Steam", name: "Steam", category: "Reactive", group: "Inerts & Utilities", aliases: ["steam"], mw: 18, density_lb_ft3: 62.4, density_kg_m3: 999.55, k: 1.1, boilingPointF: 212, boilingPointC: 100.0, buoyancy: "B", pff: 1.0, hcf: 0, p_igf: 0.0, isDense: false },
-  { id: "AIR", name: "Air / Nitrogen (N2)", category: "Inert", group: "Inerts & Utilities", aliases: ["air", "nitrogen", "n2"], mw: 29, density_lb_ft3: 15.0, density_kg_m3: 240.28, k: 1.4, boilingPointF: -200, boilingPointC: -128.9, buoyancy: "B", pff: 0.0, hcf: 0, p_igf: 0.0, isDense: false }
-];
+const FLUIDS_DATABASE = [];
+const PRIORITY_NUMBER_MATRIX = {};
+const RISK_LEVEL_MATRIX = {};
+const STRUCTURAL_MIN_THICKNESS = {};
+const ART_TABLE = {};
+const EQUIPMENT_LEAK_AREAS = {};
+
+const DEFAULT_FALLBACK_FLUID = {
+  id: "C25+",
+  name: "C25+ (Resid / Heavy Fuel Oil / Bitumen)",
+  category: "Flammable",
+  group: "Hydrocarbons & Fuels",
+  mw: 400,
+  density_lb_ft3: 56.23,
+  density_kg_m3: 900.7,
+  k: 1.1,
+  boilingPointF: 800,
+  boilingPointC: 426.7,
+  buoyancy: "D",
+  pff: 6.0,
+  hcf: 40600,
+  flashPointC: 93.3,
+  autoignitionC: 204.4,
+  p_igf: 0.1,
+  isDense: true
+};
 
 function getFluidById(query) {
   if (!query || typeof query !== "string" || !query.trim()) {
-    return FLUIDS_DATABASE.find((f) => f.id === "C25+") || FLUIDS_DATABASE[0];
+    return FLUIDS_DATABASE.find((f) => f.id === "C25+") || FLUIDS_DATABASE[0] || DEFAULT_FALLBACK_FLUID;
   }
   const clean = query.trim().toLowerCase();
   const exact = FLUIDS_DATABASE.find((f) => f.id.toLowerCase() === clean || f.name.toLowerCase() === clean);
   if (exact) return exact;
   const alias = FLUIDS_DATABASE.find((f) => f.aliases?.some((a) => a.toLowerCase() === clean));
   if (alias) return alias;
-  if (clean.includes("c25") || clean.includes("resid")) return FLUIDS_DATABASE.find((f) => f.id === "C25+") || FLUIDS_DATABASE[0];
-  if (clean.includes("c4") || clean.includes("butane")) return FLUIDS_DATABASE.find((f) => f.id === "C4") || FLUIDS_DATABASE[0];
-  if (clean.includes("c3") || clean.includes("propane")) return FLUIDS_DATABASE.find((f) => f.id === "C3") || FLUIDS_DATABASE[0];
-  if (clean.includes("diesel")) return FLUIDS_DATABASE.find((f) => f.id === "C13-16") || FLUIDS_DATABASE[0];
-  if (clean.includes("gasoline") || clean.includes("naphtha")) return FLUIDS_DATABASE.find((f) => f.id === "C5-C8") || FLUIDS_DATABASE[0];
-  return FLUIDS_DATABASE[0];
+  if (clean.includes("c25") || clean.includes("resid")) return FLUIDS_DATABASE.find((f) => f.id === "C25+") || FLUIDS_DATABASE[0] || DEFAULT_FALLBACK_FLUID;
+  if (clean.includes("c4") || clean.includes("butane")) return FLUIDS_DATABASE.find((f) => f.id === "C4") || FLUIDS_DATABASE[0] || DEFAULT_FALLBACK_FLUID;
+  if (clean.includes("c3") || clean.includes("propane")) return FLUIDS_DATABASE.find((f) => f.id === "C3") || FLUIDS_DATABASE[0] || DEFAULT_FALLBACK_FLUID;
+  if (clean.includes("diesel")) return FLUIDS_DATABASE.find((f) => f.id === "C13-16") || FLUIDS_DATABASE[0] || DEFAULT_FALLBACK_FLUID;
+  if (clean.includes("gasoline") || clean.includes("naphtha")) return FLUIDS_DATABASE.find((f) => f.id === "C5-C8") || FLUIDS_DATABASE[0] || DEFAULT_FALLBACK_FLUID;
+  return FLUIDS_DATABASE[0] || DEFAULT_FALLBACK_FLUID;
 }
-
-const PRIORITY_NUMBER_MATRIX = {
-  1: { A: 1, B: 2, C: 4, D: 7, E: 11 },
-  2: { A: 3, B: 6, C: 8, D: 13, E: 16 },
-  3: { A: 5, B: 9, C: 14, D: 17, E: 20 },
-  4: { A: 10, B: 15, C: 18, D: 21, E: 23 },
-  5: { A: 12, B: 19, C: 22, D: 24, E: 25 }
-};
-
-const RISK_LEVEL_MATRIX = {
-  1: { A: "High", B: "High", C: "High", D: "Medium-High", E: "Medium-High" },
-  2: { A: "High", B: "Medium-High", C: "Medium-High", D: "Medium", E: "Medium" },
-  3: { A: "High", B: "Medium-High", C: "Medium", D: "Medium", E: "Low" },
-  4: { A: "Medium-High", B: "Medium", C: "Medium", D: "Medium", E: "Low" },
-  5: { A: "Medium-High", B: "Medium", C: "Low", D: "Low", E: "Low" }
-};
-
-const STRUCTURAL_MIN_THICKNESS = {
-  "Piping (NPS 1/2)": 1.5,
-  "Piping (NPS 3/4)": 1.7,
-  "Piping (NPS 1)": 1.8,
-  "Piping (NPS 1.5)": 1.8,
-  "Piping (NPS 2)": 1.8,
-  "Piping (NPS 3)": 2.0,
-  "Piping (NPS 4)": 2.3,
-  "Piping (NPS 6)": 2.8,
-  "Piping (NPS 8)": 3.2,
-  "Piping (NPS 10)": 3.6,
-  "Piping (NPS 12)": 4.0,
-  "Piping": 3.175,
-  "Piping Circuit": 3.175,
-  "Process Piping": 3.175,
-  "Pressure Vessel": 3.175,
-  "Storage Tank": 2.5,
-  "Tank Bottom": 2.5,
-  "Tank Shell": 2.5,
-  "Heat Exchanger Shell": 3.175,
-  "Heat Exchanger Tube": 1.2,
-  "Exchanger": 3.175,
-  "Boiler": 3.175
-};
-
-const ART_TABLE = {
-  0.02: { 0: 1, 1: { l: 1, m: 1, h: 1, vh: 1 }, 2: { l: 1, m: 1, h: 1, vh: 1 }, 3: { l: 1, m: 1, h: 1, vh: 1 }, 4: { l: 1, m: 1, h: 1, vh: 1 }, 5: { l: 1, m: 1, h: 1, vh: 1 }, 6: { l: 1, m: 1, h: 1, vh: 1 } },
-  0.04: { 0: 2, 1: { l: 2, m: 1, h: 1, vh: 1 }, 2: { l: 1, m: 1, h: 1, vh: 1 }, 3: { l: 1, m: 1, h: 1, vh: 1 }, 4: { l: 1, m: 1, h: 1, vh: 1 }, 5: { l: 1, m: 1, h: 1, vh: 1 }, 6: { l: 1, m: 1, h: 1, vh: 1 } },
-  0.08: { 0: 8, 1: { l: 5, m: 3, h: 2, vh: 1 }, 2: { l: 3, m: 2, h: 1, vh: 1 }, 3: { l: 2, m: 1, h: 1, vh: 1 }, 4: { l: 1, m: 1, h: 1, vh: 1 }, 5: { l: 1, m: 1, h: 1, vh: 1 }, 6: { l: 1, m: 1, h: 1, vh: 1 } },
-  0.15: { 0: 25, 1: { l: 15, m: 9, h: 5, vh: 2 }, 2: { l: 9, m: 5, h: 3, vh: 1 }, 3: { l: 5, m: 3, h: 2, vh: 1 }, 4: { l: 3, m: 2, h: 1, vh: 1 }, 5: { l: 2, m: 1, h: 1, vh: 1 }, 6: { l: 1, m: 1, h: 1, vh: 1 } },
-  0.25: { 0: 80, 1: { l: 45, m: 25, h: 12, vh: 5 }, 2: { l: 25, m: 12, h: 6, vh: 2 }, 3: { l: 12, m: 6, h: 3, vh: 1 }, 4: { l: 6, m: 3, h: 2, vh: 1 }, 5: { l: 3, m: 2, h: 1, vh: 1 }, 6: { l: 2, m: 1, h: 1, vh: 1 } },
-  0.35: { 0: 200, 1: { l: 110, m: 60, h: 30, vh: 10 }, 2: { l: 60, m: 30, h: 15, vh: 5 }, 3: { l: 30, m: 15, h: 7, vh: 2 }, 4: { l: 15, m: 7, h: 4, vh: 1 }, 5: { l: 7, m: 4, h: 2, vh: 1 }, 6: { l: 4, m: 2, h: 1, vh: 1 } },
-  0.50: { 0: 500, 1: { l: 280, m: 150, h: 70, vh: 25 }, 2: { l: 150, m: 70, h: 35, vh: 10 }, 3: { l: 70, m: 35, h: 18, vh: 5 }, 4: { l: 35, m: 18, h: 9, vh: 2 }, 5: { l: 18, m: 9, h: 4, vh: 1 }, 6: { l: 9, m: 4, h: 2, vh: 1 } },
-  0.70: { 0: 1000, 1: { l: 600, m: 350, h: 180, vh: 60 }, 2: { l: 350, m: 180, h: 90, vh: 25 }, 3: { l: 180, m: 90, h: 45, vh: 12 }, 4: { l: 90, m: 45, h: 22, vh: 6 }, 5: { l: 45, m: 22, h: 11, vh: 3 }, 6: { l: 22, m: 11, h: 5, vh: 1 } },
-  0.75: { 0: 1200, 1: { l: 750, m: 450, h: 220, vh: 80 }, 2: { l: 450, m: 220, h: 110, vh: 35 }, 3: { l: 220, m: 110, h: 55, vh: 15 }, 4: { l: 110, m: 55, h: 28, vh: 8 }, 5: { l: 55, m: 28, h: 14, vh: 4 }, 6: { l: 28, m: 14, h: 7, vh: 2 } }
-};
-
-const EQUIPMENT_LEAK_AREAS = {
-  "Pressure Vessel": { hole_in: 1.0, area_cm2: 53.5483 },
-  "Process Piping": { hole_in: 1.0, area_cm2: 53.5483 },
-  "Piping": { hole_in: 1.0, area_cm2: 53.5483 },
-  "Piping Circuit": { hole_in: 1.0, area_cm2: 53.5483 },
-  "Storage Tank": { hole_in: 1.0, area_cm2: 53.5483 },
-  "Tank Shell": { hole_in: 1.0, area_cm2: 53.5483 },
-  "Tank Bottom": { hole_in: 1.0, area_cm2: 53.5483 },
-  "Heat Exchanger Shell": { hole_in: 1.0, area_cm2: 53.5483 },
-  "Heat Exchanger Tube": { hole_in: 0.25, area_cm2: 3.167 },
-  "Exchanger": { hole_in: 1.0, area_cm2: 53.5483 },
-  "Boiler": { hole_in: 1.0, area_cm2: 53.5483 }
-};
 
 // ============================================================================
 // 2. MATHEMATICAL CALCULATION FUNCTIONS (API 580 / 581, Meridium POF & COF)
@@ -548,170 +479,16 @@ function calculateOverallRBI(internalInputs = {}, externalInputs, consequenceInp
 }
 
 // ============================================================================
-// 3. SEED BENCHMARK ASSET & WORKSPACE STORE
-// ============================================================================
-
-const BENCHMARK_ASSET = {
-  id: "04-VV-00-001 ~ RAW FEED SURGE DRUM",
-  tag: "04-VV-00-001",
-  name: "RAW FEED SURGE DRUM",
-  equipmentCategory: "Pressure Vessel",
-  unitService: "Hydrocracker Unit Raw Feed Surge",
-  functionalLocation: "NRL-FMT-HCU-MEC",
-  facilityName: "Refinery Complex Plant 1",
-  designCode: "ASME Sec VIII Div 1",
-  designPressure_kgcm2: 25.0,
-  designTemp_C: 85.0,
-  operatingPressure_kgcm2: 19.8,
-  operatingTemp_C: 40.0,
-  materialOfConstruction: "SA516-PLATE-Legacy Gr. 70",
-  corrosionAllowance_mm: 3.0,
-  insulationType: "None",
-  processFluid: "C4 (Butane)",
-  commissionDate: "2015-06-16",
-  scenarioId: "Evergreening 2026",
-  scenarioReferenceDate: "2026-06-16",
-  isDatasheetLocked: true,
-  datasheetSavedAt: "Protected (Sample Benchmark)"
-};
-
-const BENCHMARK_COMPONENT = {
-  id: "04-VV-00-001-SHELL",
-  fullName: "RAW FEED SURGE DRUM SHELL",
-  equipmentType: "Pressure Vessel",
-  materialSpec: "SA516-PLATE-Legacy Gr. 70",
-  isSaved: true,
-  hasUnsavedChanges: false,
-  technicalData: {
-    scenarioId: "Evergreening 2026",
-    scenarioReferenceDate: "2026-06-16",
-    dateInService: "2000-06-19",
-    processFluid: "C4 (Butane)",
-    operatingPressure_kgcm2: 17,
-    operatingTemp_C: 40,
-    initialFluidPhase: "Liquid",
-    fluidValidFor581: true,
-    toxicMixture: false,
-    toxicFluid: "",
-    percentToxic: 0,
-    toxicFluidValidFor581: false,
-    inventory_kg: 11166.09,
-    inventoryGroup: "",
-    calculatedInventory_kg: 11166.09,
-    isolationTime_min: 10,
-    detectionTime_min: 10,
-    areaHumidity: "Low",
-    designPressure_kgcm2: 27.6,
-    designTemp_C: 200,
-    insideDiameter_mm: 457,
-    length_mm: 4200,
-    nominalThickness_mm: 14.0,
-    insulated: false,
-    insulationType: "None",
-    pwht: false,
-    stressLookupTable: "Pressure Vessels",
-    constructionCode: "ASME VIII DIV 1",
-    codeYear: "1995",
-    materialSpec: "SA516-PLATE-Legacy",
-    materialGrade: "70",
-    weldJointEfficiency: 0.85,
-    isEntryPossible: "Yes (Y)",
-    specifiedTmin_mm: 10.8,
-    sourceOfCalculatedCorrosionRates: "Asset",
-    estimatedInternalCorrosionRate_mm_yr: 0.025,
-    estimatedExternalCorrosionRate_mm_yr: 0.076,
-    measuredExternalCorrosionRate_mm_yr: 0,
-    internalCorrosionType: "General",
-    predictableIntCorrLocation: false,
-    corrosiveProduct: "",
-    susceptibleToCUI: "No (N)",
-    lostProductionCategory: "B"
-  },
-  analyses: [
-    {
-      id: "Evergreening 2026",
-      name: "04-VV-00-001-SHELL ~ Evergreening 2026",
-      type: "581",
-      isCalculated: true,
-      dateCriticalityCalculated: "2026-06-16 10:30:00",
-      internalInputs: {
-        equipmentType: "Pressure Vessel",
-        tInit_mm: 14.0,
-        diameter_mm: 457,
-        designPressure_bar: 27.06,
-        designTemp_C: 200,
-        allowableStress_MPa: 137.9,
-        yearsInService: 26,
-        corrosionRate_mm_yr: 0.025,
-        numberOfInspections: 6,
-        inspectionConfidence: "High",
-        dateInService: "2000-06-19",
-        specifiedTmin_mm: 10.8
-      },
-      externalInputs: {
-        operatingTemp_C: 40,
-        isInsulated: false,
-        materialIsCarbonSteel: true,
-        coatingType: "Average - Two Part Industrial (5 yr)",
-        insulationType: "N/A (Default)",
-        insulationCondition: "Good",
-        humidityLevel: "Low",
-        nearCoolingTower: false,
-        isPiping: false,
-        pipingPenetrations: 0,
-        pipingTerminations: 0,
-        pipingVerticalRuns: 0,
-        pipingLength_m: 0,
-        numberOfInspections: 2,
-        inspectionConfidence: "Medium",
-        dateInService: "2000-06-19",
-        nominalThickness_mm: 14.0,
-        specifiedTmin_mm: 10.8
-      },
-      consequenceInputs: {
-        fluidId: "C4",
-        operatingPressure_bar: 16.67,
-        operatingTemp_C: 40,
-        ambientTemp_C: 25,
-        inventory_kg: 11166.09,
-        equipmentType: "Pressure Vessel",
-        detectionTime_min: 10,
-        isolationTime_min: 10,
-        lostProductionCategory: "B",
-        initialFluidPhase: "Liquid"
-      },
-      headerData: {
-        assetId: "04-VV-00-001",
-        analysisId: "Evergreening 2026",
-        functionalLocation: "NRL-FMT-HCU-MEC",
-        genericFailureFrequency: "3.06E-05 (Failures/Year)",
-        criticalityItemType: "Pressure Vessel",
-        scenarioId: "Evergreening 2026",
-        scenarioReferenceDate: "2026-06-16",
-        dateCriticalityCalculated: "2026-06-16 10:30:00",
-        effectiveDateForRiskAnalysis: "2026-06-16",
-        analysisStartDate: "2026-06-16 10:00:00"
-      },
-      mechanisms: [
-        { id: "internal", name: "Criticality Calculator Internal Corrosion", damageFactor: 1, probabilityOfFailure: 4, consequenceOfFailure: "B", inspectionPriority: 15 },
-        { id: "external", name: "Criticality Calculator External Corrosion", damageFactor: 1, probabilityOfFailure: 4, consequenceOfFailure: "B", inspectionPriority: 15 }
-      ]
-    }
-  ]
-};
-
-// ============================================================================
-// 4. ENTERPRISE APPLICATION CONTROLLER (window.RBIApp)
+// 3. ENTERPRISE APPLICATION CONTROLLER (window.RBIApp)
+//    Workspace & Benchmark Data Hydrated from /api/risk-calculator?action=get_workspace
 // ============================================================================
 
 window.RBIApp = {
-  assets: [BENCHMARK_ASSET],
-  componentsByAsset: {
-    [BENCHMARK_ASSET.id]: [BENCHMARK_COMPONENT]
-  },
-  activeAssetId: BENCHMARK_ASSET.id,
-  activeComponentId: BENCHMARK_COMPONENT.id,
-  activeAnalysisId: BENCHMARK_COMPONENT.analyses[0].id,
+  assets: [],
+  componentsByAsset: {},
+  activeAssetId: "",
+  activeComponentId: "",
+  activeAnalysisId: "",
 
   selectedNode: "dashboard", // 'dashboard' | 'asset' | 'component' | 'analysis'
   assetViewTab: "datasheet", // 'datasheet' | 'components'
@@ -722,8 +499,9 @@ window.RBIApp = {
   activeModal: null, // 'riskMatrix' | 'internalSheet' | 'externalSheet' | 'consequenceSheet' | 'artTable' | 'report' | 'createAsset' | 'createComponent' | 'delete'
 
   init() {
-    this.hydrateMetadata();
-    this.loadFromBackend();
+    Promise.all([this.hydrateMetadata(), this.loadFromBackend()]).then(() => {
+      this.render();
+    });
     this.render();
   },
 

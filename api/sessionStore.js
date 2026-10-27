@@ -2,7 +2,7 @@ import admin from "firebase-admin";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { getFirestoreDb, getActiveProjectConfig } from "./firestoreClient.js";
+import { getFirestoreDb, getActiveProjectConfig, isClientAuthSignedIn } from "./firestoreClient.js";
 import { doc, getDoc, setDoc, deleteDoc, query, where, collection, getDocs } from "firebase/firestore";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -135,7 +135,7 @@ export async function saveSession(sessionId, uid, email, deviceId = "Web Browser
     } catch (err) {
       console.warn("SessionStore: Admin Firestore save warning:", err?.message || String(err));
     }
-  } else {
+  } else if (isClientAuthSignedIn()) {
     try {
       const clientDb = getFirestoreDb();
       if (clientDb) {
@@ -320,7 +320,7 @@ export async function validateSession(sessionId, uid, email = "") {
 
   // 4. Check Firestore via unified client when Admin SDK is unavailable
   try {
-    const clientDb = getFirestoreDb ? getFirestoreDb() : null;
+    const clientDb = (isClientAuthSignedIn() && getFirestoreDb) ? getFirestoreDb() : null;
     if (clientDb) {
       let snap = null;
       if (uid) {
@@ -537,7 +537,7 @@ export async function deleteSession(sessionId, uid) {
     } catch (err) {
       // Non-blocking
     }
-  } else {
+  } else if (isClientAuthSignedIn()) {
     try {
       const clientDb = getFirestoreDb ? getFirestoreDb() : null;
       if (clientDb) {
@@ -604,7 +604,7 @@ export async function terminateAllUserSessions(email, uid) {
     } catch (err) {
       console.warn("SessionStore: batch delete sessions note:", err?.message);
     }
-  } else {
+  } else if (isClientAuthSignedIn()) {
     try {
       const clientDb = getFirestoreDb ? getFirestoreDb() : null;
       if (clientDb) {

@@ -1,3 +1,32 @@
+// 🛡️ Lightweight Sandbox Guard & Global Error Shield
+(function () {
+  if (typeof window === "undefined" || window.__loginGuardInstalled) return;
+  window.__loginGuardInstalled = true;
+
+  window.addEventListener("error", function (e) {
+    if (!e) return;
+    if (e.message === "Script error." || (e.error && e.error.name === "AbortError")) {
+      if (typeof e.preventDefault === "function") e.preventDefault();
+      return true;
+    }
+  }, true);
+
+  window.addEventListener("unhandledrejection", function (e) {
+    if (e && e.reason && (e.reason.name === "AbortError" || String(e.reason).includes("Script error"))) {
+      if (typeof e.preventDefault === "function") e.preventDefault();
+    }
+  });
+
+  var origAlert = window.alert;
+  window.alert = function (msg) {
+    try {
+      if (typeof origAlert === "function") origAlert.call(window, msg);
+    } catch (_) {
+      console.warn("[SafeAlert] Alert suppressed in sandbox iframe:", msg);
+    }
+  };
+})();
+
 // 🔹 Global circular-safe JSON guard
 (function () {
   if (typeof window === "undefined" || window.__safeJsonStringifyInstalled) return;
@@ -32,64 +61,6 @@
 
 // 🔐 Architecture: All authentication and Firebase API keys are securely encapsulated
 // inside the backend server (/api/login & /api/forgot-password). No keys or SDK credentials exposed in the browser!
-
-// 🔹 Inject spinner CSS dynamically
-const style = document.createElement("style");
-style.textContent = `
-#loginBtn {
-  width: 100%;
-  padding: 10px;
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  transition: opacity 0.3s ease;
-}
-#loginBtn .spinner {
-  display: none;
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(255,255,255,0.3);
-  border-top: 3px solid white;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  position: absolute;
-  right: 15px;
-}
-#loginBtn.loading {
-  cursor: not-allowed;
-  opacity: 0.8;
-}
-#loginBtn.loading .btn-text {
-  opacity: 0.5;
-}
-#loginBtn.loading .spinner {
-  display: block;
-}
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-.recovery-spinner {
-  display: none;
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top: 2px solid #ffffff;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin-left: 8px;
-}
-.loading .recovery-spinner {
-  display: inline-block;
-}`;
-document.head.appendChild(style);
 
 // 🔹 SVGs for Show / Hide Password
 const EYE_OPEN_SVG = `<svg class="eye-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;

@@ -1,107 +1,8 @@
 let counts_AIC = { vh: 0, h: 0, m: 0, l: 0 };
 
-// ✅ Equivalence Factor Table
-const equivalenceFactors_AIC = {
-  vh: { vh: 1, h: 0.333, m: 0.111, l: 0.037 },
-  h: { vh: 3, h: 1, m: 0.333, l: 0.111 },
-  m: { vh: 9, h: 3, m: 1, l: 0.333 },
-  l: { vh: 27, h: 9, m: 3, l: 1 }
-};
-
-// ✅ Inspection Method Options based on Equipment + Type + Category
-const methods_AIC = {
-  piping: {
-    internal: {
-      intrusive: [
-        { name: "100% CML UT Scanning (Internal)", level: "vh" },
-        { name: "50% CML UT (Tees, Elbows)", level: "h" }
-      ],
-      "non-intrusive": [
-        { name: "Spot UT (25% Circuits)", level: "m" },
-        { name: "External Visual Only", level: "l" }
-      ]
-    },
-    external: {
-      cui: [
-        { name: "H_Profile RT ≤10″; else strip & visual ≥50%", level: "h" },
-        { name: "M_Profile RT ≤10″; else strip & visual ≥25%", level: "m" },
-        { name: "L_Profile RT ≤10″; else strip & visual ≥10%", level: "l" }
-      ],
-      "non-cui": [
-        { name: "VH_100% External Visual", level: "vh" }
-      ]
-    }
-  },
-  vessel: {
-    internal: {
-      intrusive: [
-        { name: "VH_100% Internal Visual", level: "vh" },
-        { name: "H_50% Internal Visual", level: "h" },
-        { name: "M_25% to 70% Internal Visual", level: "m" }
-      ],
-      "non-intrusive": [
-        { name: "H_4 UT/head, 8 UT/course, 1 UT on 50% nozzles", level: "h" },
-        { name: "M_2 UT/head, 4 UT/course, 1 UT on 50% nozzles", level: "m" }
-      ]
-    },
-    external: {
-      cui: [
-        { name: "H_Profile RT ≤10″; else strip & visual ≥50%", level: "h" },
-        { name: "M_Profile RT ≤10″; else strip & visual ≥25%", level: "m" },
-        { name: "L_Profile RT ≤10″; else strip & visual ≥10%", level: "l" }
-      ],
-      "non-cui": [
-        { name: "VH_100% External Visual", level: "vh" }
-      ]
-    }
-  },
-  exchanger: {
-    internal: {
-      intrusive: [
-        { name: "VH_100% Internal Visual", level: "vh" },
-        { name: "H_50% Internal Visual", level: "h" },
-        { name: "M_25% to 70% Internal Visual", level: "m" }
-      ],
-      "non-intrusive": [
-        { name: "H_4 UT/head, 8 UT/course, 1 UT on 50% nozzles", level: "h" },
-        { name: "M_2 UT/head, 4 UT/course, 1 UT on 50% nozzles", level: "m" }
-      ]
-    },
-    external: {
-      cui: [
-        { name: "H_Profile RT ≤10″; else strip & visual ≥50%", level: "h" },
-        { name: "M_Profile RT ≤10″; else strip & visual ≥25%", level: "m" },
-        { name: "L_Profile RT ≤10″; else strip & visual ≥10%", level: "l" }
-      ],
-      "non-cui": [
-        { name: "VH_100% External Visual", level: "vh" }
-      ]
-    }
-  },
-  airfin: {
-    internal: {
-      intrusive: [
-        { name: "VH_100% header plug removal + EC/RFEC/IRIS", level: "vh" },
-        { name: "H_70% header plug removal + EC/RFEC/IRIS", level: "h" },
-        { name: "M_50% header plug removal + EC/RFEC/IRIS", level: "m" }
-      ],
-      "non-intrusive": [
-        { name: "H_8 UT/header box", level: "h" },
-        { name: "M_4 UT/header box", level: "m" }
-      ]
-    },
-    external: {
-      cui: [
-        { name: "VH_Full CUI UT Mapping", level: "vh" },
-        { name: "H_CUI Spot UT", level: "h" }
-      ],
-      "non-cui": [
-        { name: "M_Visual + Spot UT", level: "m" },
-        { name: "L_Visual Only", level: "l" }
-      ]
-    }
-  }
-};
+// ✅ Equivalence Factor Table & Inspection Method Options (Hydrated from Cloud Firestore via /api/risk-calculator?action=aic_metadata)
+const equivalenceFactors_AIC = {};
+const methods_AIC = {};
 
 // ✅ Update Category Dropdown
 function toggleCategoryDropdown_AIC() {
@@ -230,6 +131,9 @@ async function hydrateAICMetadata() {
       if (data.success) {
         if (data.equivalenceFactors) Object.assign(equivalenceFactors_AIC, data.equivalenceFactors);
         if (data.methods) Object.assign(methods_AIC, data.methods);
+        if (document.getElementById("inspectionMethod_AIC")) {
+          toggleMethodDropdown_AIC();
+        }
       }
     }
   } catch (err) {

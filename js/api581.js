@@ -60,11 +60,17 @@ async function hydrateCOFLevel2Metadata() {
       if (data.success) {
         if (data.fluidProperties) Object.assign(fluidProperties, data.fluidProperties);
         if (data.fluidLabels) Object.assign(fluidLabels, data.fluidLabels);
+        if (data.releaseAdjustment) Object.assign(releaseAdjustmentTable, data.releaseAdjustment);
         if (Array.isArray(data.liquidFluids) && data.liquidFluids.length > 0) {
           liquidFluids.splice(0, liquidFluids.length, ...data.liquidFluids);
         }
         if (Array.isArray(data.gasFluids) && data.gasFluids.length > 0) {
           gasFluids.splice(0, gasFluids.length, ...data.gasFluids);
+        }
+        const storedPhaseEl = document.getElementById("cof_stored_phase");
+        const initialPhase = storedPhaseEl && storedPhaseEl.value ? storedPhaseEl.value.toLowerCase() : "";
+        if (typeof updateFluidDropdown === "function") {
+          updateFluidDropdown(initialPhase);
         }
       }
     }
@@ -189,7 +195,6 @@ function readInputsCOF() {
 }
 
 /* --- Compute COF --- */
-/* --- Compute COF --- */
 function computeCOF(i) {
   const dn_m = (i.D_mm && i.dn_mm > i.D_mm) ? i.D_mm/1000 : (i.dn_mm || 0)/1000;
   const An = 0.785 * Math.pow(dn_m, 2);
@@ -220,11 +225,10 @@ function computeCOF(i) {
     model = gas.choked ? "Gas (sonic)" : "Gas (subsonic)";
   }
 
-  // --- Table 4.6 adjustment ---
-  const releaseAdjustment = {"A_A":0.25,"A_B":0.20,"A_C":0.10,"B_B":0.15,"C_C":0.00};
+  // --- Table 4.6 adjustment (hydrated from backend) ---
   const det = i.detect_label || "C";
   const iso = i.iso_label || "C";
-  const fact_di = releaseAdjustment[`${det}_${iso}`] ?? 0;
+  const fact_di = releaseAdjustmentTable[`${det}_${iso}`] ?? 0;
   const Wn_adj = Wn * (1 - fact_di);
 
   // --- Leak duration ---
@@ -374,70 +378,12 @@ function getLeakDurationLimit(det, iso, dn_mm){
   return 3600;
 }
 
-const fluidProperties = {
-  "User Fill": { mw: null, density: null, nbp: null, ait: null }, // 👈 add this
-  "C1–C2": { mw: 23, density: 250.512, nbp: -125, ait: 558 },
-  "C3–C4": { mw: 51, density: 538.379, nbp: -21, ait: 368 },
-  "C5": { mw: 72, density: 625.199, nbp: 36, ait: 284 },
-  "C6–C8": { mw: 100, density: 684.018, nbp: 99, ait: 223 },
-  "C9–C12": { mw: 149, density: 734.012, nbp: 184, ait: 206 },
-  "C13–C16": { mw: 205, density: 764.527, nbp: 261, ait: 202 },
-  "C17–C25": { mw: 280, density: 775.019, nbp: 344, ait: 193 },
-  "C25+": { mw: 422, density: 900.626, nbp: 500, ait: 184 },
-  "Pyrophoric": { mw: 149, density: 734.012, nbp: 184, ait: 202 },
-  "Aromatic": { mw: 104, density: 683.986, nbp: 145, ait: 490 },
-  "Styrene": { mw: 104, density: 683.988, nbp: 145, ait: 490 },
-  "Water": { mw: 18, density: 997.947, nbp: 100, ait: null },
-  "Steam": { mw: 18, density: 997.947, nbp: 100, ait: null },
-  "AcidLP": { mw: 18, density: 997.947, nbp: 100, ait: null },
-  "AcidMP": { mw: 18, density: 997.947, nbp: 100, ait: null },
-  "AcidHP": { mw: 18, density: 997.947, nbp: 100, ait: null },
-  "Methanol": { mw: 32, density: 800.920, nbp: 65, ait: 484 },
-  "Ammonia": { mw: 17.03, density: 0.769, nbp: -33.34, ait: 651 },
-  "H2": { mw: 2, density: 71.010, nbp: -253, ait: 500 },
-  "H2S": { mw: 34, density: 963.029, nbp: -60, ait: 260 },
-  "HF": { mw: 20, density: 967.031, nbp: 20, ait: 770 },
-  "HCl": { mw: 36, density: 1185.362, nbp: -85, ait: null },
-  "CO": { mw: 28, density: 800.920, nbp: -191, ait: 609 },
-  "DEE": { mw: 74, density: 720.828, nbp: 35, ait: 160 },
-  "HNO3": { mw: 63, density: 1521.749, nbp: 121, ait: null },
-  "AlCl3": { mw: 133.5, density: 2434.788, nbp: 180, ait: 558 },
-  "NO2": { mw: 90, density: 929.088, nbp: 135, ait: null },
-  "Phosgene": { mw: 98, density: 1377.583, nbp: 83, ait: null },
-  "TDI": { mw: 174, density: 1217.399, nbp: 251, ait: 620 }
-};
-
-
-// --- Labels with subscripts ---
-const fluidLabels = {
-  "C1–C2": "C₁–C₂",
-  "C3–C4": "C₃–C₄",
-  "C5": "C₅",
-  "C6–C8": "C₆–C₈",
-  "C9–C12": "C₉–C₁₂",
-  "C13–C16": "C₁₃–C₁₆",
-  "C17–C25": "C₁₇–C₂₅",
-  "C25+": "C₂₅+",
-  "H2": "H₂",
-  "H2S": "H₂S",
-  "HF": "HF",
-  "HCl": "HCl",
-  "CO": "CO",
-  "NO2": "NO₂",
-  "AlCl3": "AlCl₃"
-};
-
-// --- Fluid categories ---
-const liquidFluids = [
-  "User Fill", "C5", "C6–C8", "C9–C12", "C13–C16", "C17–C25", "C25+",
-  "Pyrophoric", "Aromatic", "Styrene", "Water", "AcidLP", "AcidMP", "AcidHP", 
-  "Methanol", "HNO3", "AlCl3", "TDI"
-];
-
-const gasFluids = [
-  "User Fill", "C1–C2", "C3–C4", "Steam", "Ammonia", "H2", "H2S", "HF", 
-  "HCl", "CO", "DEE", "NO2", "Phosgene"
-];
+// Hydrated from Cloud Firestore via /api/risk-calculator?action=cof_level2_metadata
+const fluidProperties = {};
+const fluidLabels = {};
+const liquidFluids = [];
+const gasFluids = [];
+const releaseAdjustmentTable = {};
 
 // --- Repopulate fluid dropdown ---
 function updateFluidDropdown(phase) {

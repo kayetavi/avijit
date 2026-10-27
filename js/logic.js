@@ -1,104 +1,50 @@
 
-  // ⚙️ Top-Right Settings Menu Toggle Handler (Global & Resilient)
+  // ⚙️ Settings Menu & Welcome Panel Delegators (Canonical implementation in dashboard-shell.js)
   function toggleSettingsMenu(e) {
-    if (e) {
-      if (typeof e.stopPropagation === "function") e.stopPropagation();
-      if (typeof e.preventDefault === "function") e.preventDefault();
-    }
-    if (e && e.target && e.target.closest) {
-      const remContainer = e.target.closest("#remainingLifeTab") || e.target.closest(".remaining-settings-container") || e.target.closest("#settingsMenu");
-      if (remContainer) {
-        if (typeof window.toggleRemainingSettingsMenu === "function") {
-          window.toggleRemainingSettingsMenu(e);
-          return;
-        }
-        const remMenu = document.getElementById("settingsMenu");
-        if (remMenu) {
-          const isVis = remMenu.style.display === "block";
-          remMenu.style.display = isVis ? "none" : "block";
-          return;
-        }
-      }
+    if (typeof window.toggleSettingsMenu === "function" && window.toggleSettingsMenu !== toggleSettingsMenu) {
+      return window.toggleSettingsMenu(e);
     }
     const dropdown = document.getElementById("dropdownContent");
-    if (!dropdown) return;
-    dropdown.classList.toggle("show");
+    if (dropdown) dropdown.classList.toggle("show");
   }
-  window.toggleSettingsMenu = toggleSettingsMenu;
+  window.toggleSettingsMenu = window.toggleSettingsMenu || toggleSettingsMenu;
 
-  function initSettingsBtn() {
-    const settingsBtn = document.getElementById("settingsBtn");
-    const dropdown = document.getElementById("dropdownContent");
-    if (settingsBtn && dropdown) {
-      settingsBtn.onclick = function(e) {
-        toggleSettingsMenu(e);
-      };
+  function hideWelcomePanel() {
+    if (typeof window.hideWelcomePanel === "function" && window.hideWelcomePanel !== hideWelcomePanel) {
+      return window.hideWelcomePanel();
     }
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initSettingsBtn);
-  } else {
-    initSettingsBtn();
-  }
-
-  // Close dropdown on outside click or Escape key
-  window.addEventListener("click", (e) => {
-    const dropdown = document.getElementById("dropdownContent");
-    const btn = document.getElementById("settingsBtn");
-    if (!dropdown || !dropdown.classList.contains("show")) return;
-    if (e.target && !dropdown.contains(e.target) && (!btn || !btn.contains(e.target))) {
-      dropdown.classList.remove("show");
-    }
-  });
-
-  window.addEventListener("keydown", (e) => {
-    if (e && e.key === "Escape") {
-      const dropdown = document.getElementById("dropdownContent");
-      if (dropdown) dropdown.classList.remove("show");
-    }
-  });  
-  
-  // ✅ Hide welcome panel  
-  function hideWelcomePanel() {  
-    const panel = document.getElementById("welcomePanel");  
-    if (panel) {  
+    const panel = document.getElementById("welcomePanel");
+    if (panel) {
       panel.classList.add("is-hidden");
-      panel.style.removeProperty("display");
-      panel.style.setProperty("display", "none", "important");  
-      if (panel.classList.contains("is-fullscreen")) {
-        panel.classList.remove("is-fullscreen");
-        document.body.style.overflow = "";
-      }
-    }  
-    document.querySelectorAll(".welcome-panel, #welcomePanel").forEach(p => {
-      p.classList.add("is-hidden");
-      p.style.setProperty("display", "none", "important");
-    });
-  }  
-  window.hideWelcomePanel = hideWelcomePanel;
+      panel.style.setProperty("display", "none", "important");
+    }
+  }
+  window.hideWelcomePanel = window.hideWelcomePanel || hideWelcomePanel;
 
   function showWelcomePanel() {
+    if (typeof window.showWelcomePanel === "function" && window.showWelcomePanel !== showWelcomePanel) {
+      return window.showWelcomePanel();
+    }
     const panel = document.getElementById("welcomePanel");
     if (panel) {
       panel.classList.remove("is-hidden");
-      panel.style.removeProperty("display");
       panel.style.setProperty("display", "flex", "important");
     }
-    const title = document.getElementById("selectedMechanismTitle");
-    if (title) title.style.display = "none";
-    const mechDetails = document.getElementById("mechanismDetailsContainer");
-    if (mechDetails) {
-      mechDetails.innerHTML = "";
-      mechDetails.style.display = "none";
-    }
   }
-  window.showWelcomePanel = showWelcomePanel;  
+  window.showWelcomePanel = window.showWelcomePanel || showWelcomePanel;  
 
 
 function openHelp() {
-  window.open("help.html", "_blank"); // ye help.html nayi tab me kholega
+  try {
+    const helpWin = window.open("help.html", "_blank");
+    if (!helpWin || helpWin.closed || typeof helpWin.closed === "undefined") {
+      window.location.href = "help.html";
+    }
+  } catch (e) {
+    window.location.href = "help.html";
+  }
 }
+window.openHelp = openHelp;
     
     
   function toggleCategory(element) {  
@@ -495,9 +441,6 @@ function showbkStressTab() {
   }
 }
 
-function showRPTUDashboard() {
-  window.open("RPTU_Dashboard.html", "_blank");
-}
 
 function showDamageMechanismTab() {
   if (typeof hideAllMainPanels === "function") hideAllMainPanels();
@@ -553,7 +496,6 @@ window.showcof_calculatorTab = showcof_calculatorTab;
 window.showQPOF_calculatorTab = showQPOF_calculatorTab;
 window.showCrackingMechanismTab = showCrackingMechanismTab;
 window.showbkStressTab = showbkStressTab;
-window.showRPTUDashboard = showRPTUDashboard;
   
   function clearMechanismDetails() {  
     document.getElementById("mechanismDetailsContainer").innerHTML = "";  
@@ -802,13 +744,6 @@ window.showRPTUDashboard = showRPTUDashboard;
       ]
     },
     {
-      id: "rptu",
-      name: "RPTU Telemetry Dashboard",
-      icon: "📡",
-      category: "Telemetry",
-      subsections: []
-    },
-    {
       id: "ccdAI",
       name: "CCD AI Platform",
       icon: "🤖",
@@ -862,265 +797,278 @@ window.showRPTUDashboard = showRPTUDashboard;
 
   function renderServerDrivenSidebar(authorizedNavigation) {
     const categoryList = document.getElementById("categoryList");
-    if (!categoryList) return;
+    if (!categoryList || window.__sidebarRenderInProgress) return;
 
-    initSidebarNavigationClicks();
+    window.__sidebarRenderInProgress = true;
+    window.__isApplyingSidebarLayout = true;
 
-    const rbacNav = window.RBAC?.authorizedNavigation;
-    const rbacAvail = window.RBAC?.availableModules;
-    const layoutCfg = getActiveLayoutConfig();
-    const layoutNav = layoutCfg?.sidebarModules;
+    try {
+      initSidebarNavigationClicks();
 
-    const rawNavModules = (authorizedNavigation && Array.isArray(authorizedNavigation) && authorizedNavigation.length > 0)
-      ? authorizedNavigation
-      : (Array.isArray(rbacNav) && rbacNav.length > 0
-          ? rbacNav
-          : (Array.isArray(rbacAvail) && rbacAvail.length > 0
-              ? rbacAvail
-              : (Array.isArray(layoutNav) && layoutNav.length > 0 ? layoutNav : DEFAULT_SIDEBAR_MODULES)));
+      const rbacNav = window.RBAC?.authorizedNavigation;
+      const rbacAvail = window.RBAC?.availableModules;
+      const layoutCfg = getActiveLayoutConfig();
+      const layoutNav = layoutCfg?.sidebarModules;
 
-    if (!Array.isArray(rawNavModules) || rawNavModules.length === 0) return;
+      const rawNavModules = (authorizedNavigation && Array.isArray(authorizedNavigation) && authorizedNavigation.length > 0)
+        ? authorizedNavigation
+        : (Array.isArray(rbacNav) && rbacNav.length > 0
+            ? rbacNav
+            : (Array.isArray(rbacAvail) && rbacAvail.length > 0
+                ? rbacAvail
+                : (Array.isArray(layoutNav) && layoutNav.length > 0 ? layoutNav : DEFAULT_SIDEBAR_MODULES)));
 
-    // Build canonical layout lookup map (preserving first occurrence order)
-    const layoutMap = new Map();
-    if (Array.isArray(layoutNav)) {
-      layoutNav.forEach((lm, idx) => {
-        if (!lm || !lm.id) return;
-        const canonId = normalizeSidebarModuleId(lm.id);
-        if (canonId && !layoutMap.has(canonId)) {
-          layoutMap.set(canonId, {
-            ...lm,
-            id: canonId,
-            orderIndex: idx
-          });
+      if (!Array.isArray(rawNavModules) || rawNavModules.length === 0) return;
+
+      // Build canonical layout lookup map (preserving first occurrence order)
+      const layoutMap = new Map();
+      if (Array.isArray(layoutNav)) {
+        layoutNav.forEach((lm, idx) => {
+          if (!lm || !lm.id) return;
+          const canonId = normalizeSidebarModuleId(lm.id);
+          if (canonId && !layoutMap.has(canonId)) {
+            layoutMap.set(canonId, {
+              ...lm,
+              id: canonId,
+              orderIndex: idx
+            });
+          }
+        });
+      }
+
+      // Deduplicate and merge navModules with DEFAULT_SIDEBAR_MODULES subsections and layoutMap overrides
+      const seenNavIds = new Set();
+      const mergedModules = [];
+      rawNavModules.forEach((m, origIdx) => {
+        if (!m || !m.id) return;
+        const canonId = normalizeSidebarModuleId(m.id);
+        if (!canonId || seenNavIds.has(canonId)) return;
+        seenNavIds.add(canonId);
+
+        const defMod = DEFAULT_SIDEBAR_MODULES.find(d => normalizeSidebarModuleId(d.id) === canonId) || {};
+        const lMod = layoutMap.get(canonId) || {};
+
+        mergedModules.push({
+          ...defMod,
+          ...m,
+          id: canonId,
+          name: lMod.label || m.name || m.label || defMod.name || canonId,
+          label: lMod.label || m.label || m.name || defMod.name || canonId,
+          icon: lMod.icon || m.icon || defMod.icon || "",
+          visible: lMod.visible !== undefined ? lMod.visible !== false : (m.visible !== false),
+          subsections: Array.isArray(m.subsections) && m.subsections.length > 0
+            ? m.subsections
+            : (Array.isArray(defMod.subsections) ? defMod.subsections : []),
+          _sortOrder: lMod.orderIndex !== undefined ? lMod.orderIndex : (1000 + origIdx)
+        });
+      });
+
+      // Ensure damageExplorer has a slot in mergedModules so its configured position is respected
+      if (!seenNavIds.has("damageExplorer")) {
+        const lDmg = layoutMap.get("damageExplorer");
+        mergedModules.push({
+          id: "damageExplorer",
+          name: lDmg?.label || "API 571 Damage Mechanisms",
+          label: lDmg?.label || "API 571 Damage Mechanisms",
+          icon: lDmg?.icon || "🛡️",
+          visible: lDmg ? lDmg.visible !== false : true,
+          subsections: [],
+          _sortOrder: lDmg?.orderIndex !== undefined ? lDmg.orderIndex : -1
+        });
+        seenNavIds.add("damageExplorer");
+      }
+
+      mergedModules.sort((a, b) => a._sortOrder - b._sortOrder);
+
+      // Preserve open states of Level 1 and Level 2 accordions before re-rendering
+      const openStates = new Set();
+      categoryList.querySelectorAll("li[id^='rbac_cat_'], li.subcategory-item").forEach(li => {
+        const mainUl = li.querySelector("ul.mechanisms, ul");
+        if (mainUl && mainUl.style.display === "block") {
+          const stateKey = li.id || li.getAttribute("data-rbac-subcategory") || li.getAttribute("data-group-id");
+          if (stateKey) openStates.add(stateKey);
         }
       });
-    }
 
-    // Deduplicate and merge navModules withDEFAULT_SIDEBAR_MODULES subsections and layoutMap overrides
-    const seenNavIds = new Set();
-    const mergedModules = [];
-    rawNavModules.forEach((m, origIdx) => {
-      if (!m || !m.id) return;
-      const canonId = normalizeSidebarModuleId(m.id);
-      if (!canonId || seenNavIds.has(canonId)) return;
-      seenNavIds.add(canonId);
+      // Preserve existing API 571 Damage Mechanism item if present so it isn't lost on re-render
+      const existingDamageCat = categoryList.querySelector("li.category-toggle:not([id^='rbac_cat_']), li[data-rbac-module='damageExplorer']:not([id^='rbac_cat_'])");
+      const hasPopulatedDamageCat = Boolean(existingDamageCat && existingDamageCat.querySelectorAll("ul.mechanisms > li").length > 0);
 
-      const defMod = DEFAULT_SIDEBAR_MODULES.find(d => normalizeSidebarModuleId(d.id) === canonId) || {};
-      const lMod = layoutMap.get(canonId) || {};
+      categoryList.innerHTML = "";
+      let damageCatAppended = false;
 
-      mergedModules.push({
-        ...defMod,
-        ...m,
-        id: canonId,
-        name: lMod.label || m.name || m.label || defMod.name || canonId,
-        label: lMod.label || m.label || m.name || defMod.name || canonId,
-        icon: lMod.icon || m.icon || defMod.icon || "",
-        visible: lMod.visible !== undefined ? lMod.visible !== false : (m.visible !== false),
-        subsections: Array.isArray(m.subsections) && m.subsections.length > 0
-          ? m.subsections
-          : (Array.isArray(defMod.subsections) ? defMod.subsections : []),
-        _sortOrder: lMod.orderIndex !== undefined ? lMod.orderIndex : (1000 + origIdx)
-      });
-    });
+      mergedModules.forEach(mod => {
+        if (!mod || !mod.id) return;
 
-    // Ensure damageExplorer has a slot in mergedModules so its configured position is respected
-    if (!seenNavIds.has("damageExplorer")) {
-      const lDmg = layoutMap.get("damageExplorer");
-      mergedModules.push({
-        id: "damageExplorer",
-        name: lDmg?.label || "API 571 Damage Mechanisms",
-        label: lDmg?.label || "API 571 Damage Mechanisms",
-        icon: lDmg?.icon || "🛡️",
-        visible: lDmg ? lDmg.visible !== false : true,
-        subsections: [],
-        _sortOrder: lDmg?.orderIndex !== undefined ? lDmg.orderIndex : -1
-      });
-      seenNavIds.add("damageExplorer");
-    }
-
-    mergedModules.sort((a, b) => a._sortOrder - b._sortOrder);
-
-    // Preserve open states of Level 1 and Level 2 accordions before re-rendering
-    const openStates = new Set();
-    categoryList.querySelectorAll("li[id^='rbac_cat_'], li.subcategory-item").forEach(li => {
-      const mainUl = li.querySelector("ul.mechanisms, ul");
-      if (mainUl && mainUl.style.display === "block") {
-        const stateKey = li.id || li.getAttribute("data-rbac-subcategory") || li.getAttribute("data-group-id");
-        if (stateKey) openStates.add(stateKey);
-      }
-    });
-
-    // Preserve existing API 571 Damage Mechanism item if present so it isn't lost on re-render
-    const existingDamageCat = categoryList.querySelector("li.category-toggle:not([id^='rbac_cat_']), li[data-rbac-module='damageExplorer']:not([id^='rbac_cat_'])");
-
-    categoryList.innerHTML = "";
-    let damageCatAppended = false;
-
-    mergedModules.forEach(mod => {
-      if (!mod || !mod.id) return;
-
-      if (mod.id === "damageExplorer") {
-        if (existingDamageCat) {
-          const titleSpan = existingDamageCat.querySelector(".category > .category-title");
-          if (titleSpan && mod.label) {
-            let cleanLabel = String(mod.label).trim();
-            if (mod.icon && cleanLabel.startsWith(mod.icon)) {
-              cleanLabel = cleanLabel.substring(mod.icon.length).trim();
+        if (mod.id === "damageExplorer") {
+          if (existingDamageCat) {
+            const titleSpan = existingDamageCat.querySelector(".category > .category-title");
+            if (titleSpan && mod.label) {
+              let cleanLabel = String(mod.label).trim();
+              if (mod.icon && cleanLabel.startsWith(mod.icon)) {
+                cleanLabel = cleanLabel.substring(mod.icon.length).trim();
+              }
+              titleSpan.textContent = `${mod.icon ? mod.icon + " " : ""}${cleanLabel}`.trim();
             }
-            titleSpan.textContent = `${mod.icon ? mod.icon + " " : ""}${cleanLabel}`.trim();
+            if (mod.visible === false) {
+              existingDamageCat.style.setProperty("display", "none", "important");
+              existingDamageCat.setAttribute("data-rbac-hidden", "true");
+            }
+            categoryList.appendChild(existingDamageCat);
+            damageCatAppended = true;
           }
-          if (mod.visible === false) {
-            existingDamageCat.style.setProperty("display", "none", "important");
-            existingDamageCat.setAttribute("data-rbac-hidden", "true");
+          return;
+        }
+
+        const li = document.createElement("li");
+        li.id = mod.id === "adminControlCenter" ? "rbac_cat_tools" : `rbac_cat_${mod.id}`;
+        li.setAttribute("data-rbac-module", mod.id);
+
+        let cleanModTitle = String(mod.label || mod.name || mod.id).trim();
+        if (mod.icon && cleanModTitle.startsWith(mod.icon)) {
+          cleanModTitle = cleanModTitle.substring(mod.icon.length).trim();
+        }
+        const iconStr = mod.icon ? `${mod.icon} ` : "";
+        const modTitle = cleanModTitle;
+        const isModOpen = openStates.has(li.id);
+        const arrowChar = isModOpen ? "▾" : "▸";
+        const displayStyle = isModOpen ? "block" : "none";
+
+        let subs = Array.isArray(mod.subsections) ? mod.subsections : [];
+        if (subs.length === 0 && (!window.RBAC || !window.RBAC.initialized)) {
+          const defMod = DEFAULT_SIDEBAR_MODULES.find(d => normalizeSidebarModuleId(d.id) === mod.id);
+          if (defMod && Array.isArray(defMod.subsections)) {
+            subs = defMod.subsections;
           }
-          categoryList.appendChild(existingDamageCat);
-          damageCatAppended = true;
         }
-        return;
-      }
 
-      const li = document.createElement("li");
-      li.id = mod.id === "adminControlCenter" ? "rbac_cat_tools" : `rbac_cat_${mod.id}`;
-      li.setAttribute("data-rbac-module", mod.id);
-
-      let cleanModTitle = String(mod.label || mod.name || mod.id).trim();
-      if (mod.icon && cleanModTitle.startsWith(mod.icon)) {
-        cleanModTitle = cleanModTitle.substring(mod.icon.length).trim();
-      }
-      const iconStr = mod.icon ? `${mod.icon} ` : "";
-      const modTitle = cleanModTitle;
-      const isModOpen = openStates.has(li.id);
-      const arrowChar = isModOpen ? "▾" : "▸";
-      const displayStyle = isModOpen ? "block" : "none";
-
-      let subs = Array.isArray(mod.subsections) ? mod.subsections : [];
-      if (subs.length === 0 && (!window.RBAC || !window.RBAC.initialized)) {
-        const defMod = DEFAULT_SIDEBAR_MODULES.find(d => normalizeSidebarModuleId(d.id) === mod.id);
-        if (defMod && Array.isArray(defMod.subsections)) {
-          subs = defMod.subsections;
-        }
-      }
-
-      if (subs.length === 0) {
-        // Level 1 single action item without sub-accordions
-        li.innerHTML = `
-          <span class="category" data-mod-id="${mod.id}" data-sub-id="${mod.id}" role="button" tabindex="0">
-            <a href="javascript:void(0)" data-mod-id="${mod.id}" data-sub-id="${mod.id}" class="sidebar-nav-link" style="color: inherit; text-decoration: none; display: flex; align-items: center; width: 100%; pointer-events: auto;">
+        if (subs.length === 0) {
+          // Level 1 single action item without sub-accordions
+          li.innerHTML = `
+            <span class="category" data-mod-id="${mod.id}" data-sub-id="${mod.id}" role="button" tabindex="0">
+              <a href="javascript:void(0)" data-mod-id="${mod.id}" data-sub-id="${mod.id}" class="sidebar-nav-link" style="color: inherit; text-decoration: none; display: flex; align-items: center; width: 100%; pointer-events: auto;">
+                <span class="category-title">${iconStr}${modTitle}</span>
+              </a>
+            </span>
+          `;
+        } else {
+          // Level 1 Accordion Header
+          let innerHTML = `
+            <span class="category" data-accordion-trigger="true" data-mod-id="${mod.id}" role="button" tabindex="0">
+              <span class="arrow toggle-arrow">${arrowChar}</span>
               <span class="category-title">${iconStr}${modTitle}</span>
-            </a>
-          </span>
-        `;
-      } else {
-        // Level 1 Accordion Header
-        let innerHTML = `
-          <span class="category" data-accordion-trigger="true" data-mod-id="${mod.id}" role="button" tabindex="0">
-            <span class="arrow toggle-arrow">${arrowChar}</span>
-            <span class="category-title">${iconStr}${modTitle}</span>
-          </span>
-        `;
+            </span>
+          `;
 
-        const groupsMap = {};
-        const directSubs = [];
+          const groupsMap = {};
+          const directSubs = [];
 
-        subs.forEach(sub => {
-          if (sub.isGroup || (Array.isArray(sub.children) && sub.children.length > 0)) {
-            const groupKey = sub.id || sub.name;
-            groupsMap[groupKey] = {
-              id: groupKey,
-              name: sub.name,
-              icon: sub.icon,
-              children: sub.children || []
-            };
-          } else if (sub.group || (sub.category && sub.category !== mod.category && sub.category !== mod.name && sub.category !== "General Risk" && sub.category !== "Tools")) {
-            const groupKey = sub.group || sub.category;
-            if (!groupsMap[groupKey]) {
+          subs.forEach(sub => {
+            if (sub.isGroup || (Array.isArray(sub.children) && sub.children.length > 0)) {
+              const groupKey = sub.id || sub.name;
               groupsMap[groupKey] = {
                 id: groupKey,
-                name: groupKey,
-                icon: sub.icon || "▸",
-                children: []
+                name: sub.name,
+                icon: sub.icon,
+                children: sub.children || []
               };
+            } else if (sub.group || (sub.category && sub.category !== mod.category && sub.category !== mod.name && sub.category !== "General Risk" && sub.category !== "Tools")) {
+              const groupKey = sub.group || sub.category;
+              if (!groupsMap[groupKey]) {
+                groupsMap[groupKey] = {
+                  id: groupKey,
+                  name: groupKey,
+                  icon: sub.icon || "▸",
+                  children: []
+                };
+              }
+              groupsMap[groupKey].children.push(sub);
+            } else {
+              directSubs.push(sub);
             }
-            groupsMap[groupKey].children.push(sub);
-          } else {
-            directSubs.push(sub);
-          }
-        });
+          });
 
-        let subItemsHtml = "";
+          let subItemsHtml = "";
 
-        // Level 2 Direct Leaf Items
-        directSubs.forEach(sub => {
-          const subIcon = sub.icon ? `${sub.icon} ` : "";
-          const tabAttr = sub.tabId ? ` data-tab-id="${sub.tabId}"` : "";
-          subItemsHtml += `
-            <li data-rbac-module="${mod.id}" data-rbac-sub="${sub.id}">
-              <a href="javascript:void(0)" data-mod-id="${mod.id}" data-sub-id="${sub.id}"${tabAttr} class="sidebar-nav-link" style="pointer-events: auto;">${subIcon}${sub.name}</a>
-            </li>
-          `;
-        });
-
-        // Level 2 Sub-Accordions (Groups) with Level 3 Leaf Items
-        Object.values(groupsMap).forEach(grp => {
-          let grpItemsHtml = "";
-          grp.children.forEach(child => {
-            const childIcon = child.icon ? `${child.icon} ` : "";
-            const toolAttr = child.tool ? ` data-tool-id="${child.tool}"` : "";
-            const tabAttr = child.tabId ? ` data-tab-id="${child.tabId}"` : "";
-            grpItemsHtml += `
-              <li data-rbac-module="${mod.id}" data-rbac-sub="${child.id}"${toolAttr}>
-                <a href="javascript:void(0)" data-mod-id="${mod.id}" data-sub-id="${child.id}"${tabAttr} class="sidebar-nav-link" style="pointer-events: auto;">${childIcon}${child.name}</a>
+          // Level 2 Direct Leaf Items
+          directSubs.forEach(sub => {
+            const subIcon = sub.icon ? `${sub.icon} ` : "";
+            const tabAttr = sub.tabId ? ` data-tab-id="${sub.tabId}"` : "";
+            subItemsHtml += `
+              <li data-rbac-module="${mod.id}" data-rbac-sub="${sub.id}">
+                <a href="javascript:void(0)" data-mod-id="${mod.id}" data-sub-id="${sub.id}"${tabAttr} class="sidebar-nav-link" style="pointer-events: auto;">${subIcon}${sub.name}</a>
               </li>
             `;
           });
 
-          const grpStateKey = grp.id || grp.name;
-          const isGrpOpen = openStates.has(grpStateKey);
-          const grpArrowChar = isGrpOpen ? "▾" : "▸";
-          const grpDisplayStyle = isGrpOpen ? "block" : "none";
-          const grpIconStr = grp.icon ? `${grp.icon} ` : "";
+          // Level 2 Sub-Accordions (Groups) with Level 3 Leaf Items
+          Object.values(groupsMap).forEach(grp => {
+            let grpItemsHtml = "";
+            grp.children.forEach(child => {
+              const childIcon = child.icon ? `${child.icon} ` : "";
+              const toolAttr = child.tool ? ` data-tool-id="${child.tool}"` : "";
+              const tabAttr = child.tabId ? ` data-tab-id="${child.tabId}"` : "";
+              grpItemsHtml += `
+                <li data-rbac-module="${mod.id}" data-rbac-sub="${child.id}"${toolAttr}>
+                  <a href="javascript:void(0)" data-mod-id="${mod.id}" data-sub-id="${child.id}"${tabAttr} class="sidebar-nav-link" style="pointer-events: auto;">${childIcon}${child.name}</a>
+                </li>
+              `;
+            });
 
-          subItemsHtml += `
-            <li data-rbac-subcategory="${grpStateKey}" data-group-id="${grpStateKey}" class="subcategory-item" style="list-style: none;">
-              <span class="subcategory" data-accordion-trigger="true" role="button" tabindex="0">
-                <span class="arrow toggle-arrow">${grpArrowChar}</span>
-                <span class="category-title">${grpIconStr}${grp.name}</span>
-              </span>
-              <ul class="mechanisms" style="display:${grpDisplayStyle};">
-                ${grpItemsHtml}
-              </ul>
-            </li>
+            const grpStateKey = grp.id || grp.name;
+            const isGrpOpen = openStates.has(grpStateKey);
+            const grpArrowChar = isGrpOpen ? "▾" : "▸";
+            const grpDisplayStyle = isGrpOpen ? "block" : "none";
+            const grpIconStr = grp.icon ? `${grp.icon} ` : "";
+
+            subItemsHtml += `
+              <li data-rbac-subcategory="${grpStateKey}" data-group-id="${grpStateKey}" class="subcategory-item" style="list-style: none;">
+                <span class="subcategory" data-accordion-trigger="true" role="button" tabindex="0">
+                  <span class="arrow toggle-arrow">${grpArrowChar}</span>
+                  <span class="category-title">${grpIconStr}${grp.name}</span>
+                </span>
+                <ul class="mechanisms" style="display:${grpDisplayStyle};">
+                  ${grpItemsHtml}
+                </ul>
+              </li>
+            `;
+          });
+
+          innerHTML += `
+            <ul class="mechanisms" style="display:${displayStyle};">
+              ${subItemsHtml}
+            </ul>
           `;
-        });
 
-        innerHTML += `
-          <ul class="mechanisms" style="display:${displayStyle};">
-            ${subItemsHtml}
-          </ul>
-        `;
+          li.innerHTML = innerHTML;
+        }
 
-        li.innerHTML = innerHTML;
+        if (mod.visible === false) {
+          li.style.setProperty("display", "none", "important");
+          li.setAttribute("data-rbac-hidden", "true");
+        }
+
+        categoryList.appendChild(li);
+      });
+
+      if (existingDamageCat && !damageCatAppended) {
+        categoryList.insertBefore(existingDamageCat, categoryList.firstChild);
       }
 
-      if (mod.visible === false) {
-        li.style.setProperty("display", "none", "important");
-        li.setAttribute("data-rbac-hidden", "true");
-      }
-
-      categoryList.appendChild(li);
-    });
-
-    if (existingDamageCat && !damageCatAppended) {
-      categoryList.insertBefore(existingDamageCat, categoryList.firstChild);
+      ensureAllSidebarArrows();
+    } finally {
+      window.__isApplyingSidebarLayout = false;
+      window.__sidebarRenderInProgress = false;
     }
 
-    ensureAllSidebarArrows();
+    const layoutCfgAfter = getActiveLayoutConfig();
+    const currentDamageCat = categoryList.querySelector("li.category-toggle:not([id^='rbac_cat_']), li[data-rbac-module='damageExplorer']:not([id^='rbac_cat_'])");
+    const damageAlreadyPopulated = Boolean(currentDamageCat && currentDamageCat.querySelectorAll("ul.mechanisms > li").length > 0);
 
-    if (window.data && window.data["Damage Mechanism"] && typeof window.loadCategories === "function") {
+    if (!damageAlreadyPopulated && window.data && window.data["Damage Mechanism"] && typeof window.loadCategories === "function") {
       window.loadCategories(window.data);
-    } else if (layoutCfg && typeof window.applyPublishedSidebarLayout === "function") {
-      window.applyPublishedSidebarLayout(layoutCfg);
+    } else if (layoutCfgAfter && typeof window.applyPublishedSidebarLayout === "function") {
+      window.applyPublishedSidebarLayout(layoutCfgAfter);
     }
   }
   window.renderServerDrivenSidebar = renderServerDrivenSidebar;
@@ -1139,25 +1087,29 @@ window.showRPTUDashboard = showRPTUDashboard;
     // 1. Ticker bar synchronization
     const scrollText = document.getElementById("scrollText");
     const scrollContainer = document.querySelector(".scroll-container");
-    if (scrollText && cfg.tickerText && cfg.tickerText.trim()) {
-      let rawUser = (window.RBAC && window.RBAC.userEmail) || (window.APP_SESSION && window.APP_SESSION.email) || (typeof sessionStorage !== "undefined" ? (sessionStorage.getItem("usernameUpper") || sessionStorage.getItem("loggedInUser")) : "") || "";
-      const uName = (rawUser.includes("@") ? rawUser.split("@")[0] : rawUser).trim().toUpperCase();
-      scrollText.textContent = (uName && /\{user(?:name)?\}/i.test(cfg.tickerText))
-        ? cfg.tickerText.replace(/\{user(?:name)?\}/gi, uName)
-        : cfg.tickerText;
-      if (cfg.tickerUrgency === "critical") {
-        scrollText.style.color = "#ef4444";
-        scrollText.style.fontWeight = "bold";
-      } else if (cfg.tickerUrgency === "urgent") {
-        scrollText.style.color = "#f59e0b";
-        scrollText.style.fontWeight = "bold";
+    if (scrollText) {
+      if (cfg && cfg.tickerText && cfg.tickerText.trim()) {
+        let rawUser = (window.RBAC && window.RBAC.userEmail) || (window.APP_SESSION && window.APP_SESSION.email) || (typeof sessionStorage !== "undefined" ? (sessionStorage.getItem("usernameUpper") || sessionStorage.getItem("loggedInUser")) : "") || "";
+        const uName = (rawUser.includes("@") ? rawUser.split("@")[0] : rawUser).trim().toUpperCase();
+        scrollText.textContent = (uName && /\{user(?:name)?\}/i.test(cfg.tickerText))
+          ? cfg.tickerText.replace(/\{user(?:name)?\}/gi, uName)
+          : cfg.tickerText;
+        if (cfg.tickerUrgency === "critical") {
+          scrollText.style.color = "#ef4444";
+          scrollText.style.fontWeight = "bold";
+        } else if (cfg.tickerUrgency === "urgent") {
+          scrollText.style.color = "#f59e0b";
+          scrollText.style.fontWeight = "bold";
+        } else {
+          scrollText.style.color = "";
+          scrollText.style.fontWeight = "";
+        }
       } else {
-        scrollText.style.color = "";
-        scrollText.style.fontWeight = "";
+        scrollText.textContent = "";
       }
     }
     if (scrollContainer) {
-      scrollContainer.style.display = cfg.tickerEnabled !== false ? "block" : "none";
+      scrollContainer.style.display = (cfg && cfg.tickerEnabled !== false && cfg.tickerText && cfg.tickerText.trim()) ? "block" : "none";
     }
 
     // 2. Reorder #categoryList and synchronize custom labels, icons, and visibility
@@ -1660,7 +1612,6 @@ window.injectAPI570Category = function() { renderServerDrivenSidebar(); };
 window.injectDesignThicknessCalculatorCategory = function() { renderServerDrivenSidebar(); };
 window.injectCrackingMechanismCategory = function() { renderServerDrivenSidebar(); };
 window.injectStressMaterialDataCategory = function() { renderServerDrivenSidebar(); };
-window.injectRPTUDashboardCategory = function() { renderServerDrivenSidebar(); };
 window.injectCCDAIPlatformCategory = function() { renderServerDrivenSidebar(); };
 window.injectChemicalSuiteCategory = function() { renderServerDrivenSidebar(); };
 window.injectStreamComparatorCategory = function() { renderServerDrivenSidebar(); };
@@ -1750,8 +1701,6 @@ function activateSidebarModule(modId, subId, autoCloseDrawer = true) {
       cduVdu: "showCDUVDUTab",
       msp: "showMSPTab",
       h2u: "showH2UTab",
-      rptuDashboard: "showRPTUDashboard",
-      rptu: "showRPTUDashboard",
       ccdAiPlatform: "showCCDAITab",
       ccdAI: "showCCDAITab"
     };

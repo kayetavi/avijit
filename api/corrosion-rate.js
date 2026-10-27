@@ -11,8 +11,10 @@
  * - CO2 Sweet Corrosion (de Waard-Milliams, Dew point Eq 2.B.25, Base rate Eq 2.B.26 & Glycol/Inhibitor mitigation)
  */
 
+import { getOrSeedEngineeringCatalog } from "./database.js";
+
 // ── 1. CUI Corrosion Table (API 581) ──
-const CUI_TABLE = [
+let CUI_TABLE = [
   { temp: -12, values: { Severe: 0, Moderate: 0, Mild: 0, Dry: 0 } },
   { temp: -8,  values: { Severe: 0.076, Moderate: 0.025, Mild: 0, Dry: 0 } },
   { temp: 6,   values: { Severe: 0.254, Moderate: 0.127, Mild: 0.076, Dry: 0.025 } },
@@ -39,7 +41,7 @@ const ALKALINE_SOUR_WATER_TABLE = {
   10: [0.51, 0.69, 0.89, 1.09, 1.27],
   15: [1.14, 1.78, 2.54, 3.81, 5.08]
 };
-const ALKALINE_VELOCITIES = [3.05, 4.57, 6.10, 7.62, 9.14];
+let ALKALINE_VELOCITIES = [3.05, 4.57, 6.10, 7.62, 9.14];
 
 // ── 4. Sulfidation Data Matrix ──
 const SULFIDATION_CS_DATA = {
@@ -310,12 +312,45 @@ function sanitizeNumber(val, fallback = NaN) {
   return Number.isFinite(n) ? n : fallback;
 }
 
-export default function handler(req, res) {
+async function ensureCorrosionRateCatalog() {
+  const cat = await getOrSeedEngineeringCatalog("corrosion_rate_tables", {
+    cuiTable: CUI_TABLE,
+    acidSourWaterTable: ACID_SOUR_WATER_TABLE,
+    alkalineSourWaterTable: ALKALINE_SOUR_WATER_TABLE,
+    alkalineVelocities: ALKALINE_VELOCITIES,
+    sulfidationCsData: SULFIDATION_CS_DATA,
+    sulfidationSsData: SULFIDATION_SS_DATA,
+    oxidationData: OXIDATION_DATA,
+    oxidationTempPoints: OXIDATION_TEMP_POINTS,
+    hclTempPoints: HCL_TEMP_POINTS,
+    hclCsTable: HCL_CS_TABLE,
+    hclSsTable: HCL_SS_TABLE,
+    hclAlloyTable: HCL_ALLOY_TABLE,
+    hclOxidantTable: HCL_OXIDANT_TABLE,
+    h2so4304ssTable: H2SO4_304SS_TABLE
+  });
+  if (cat && Array.isArray(cat.cuiTable) && cat.cuiTable.length > 0) {
+    CUI_TABLE = cat.cuiTable;
+  }
+  if (cat?.acidSourWaterTable) Object.assign(ACID_SOUR_WATER_TABLE, cat.acidSourWaterTable);
+  if (cat?.alkalineSourWaterTable) Object.assign(ALKALINE_SOUR_WATER_TABLE, cat.alkalineSourWaterTable);
+  if (cat?.sulfidationCsData) Object.assign(SULFIDATION_CS_DATA, cat.sulfidationCsData);
+  if (cat?.sulfidationSsData) Object.assign(SULFIDATION_SS_DATA, cat.sulfidationSsData);
+  if (cat?.oxidationData) Object.assign(OXIDATION_DATA, cat.oxidationData);
+  if (cat?.hclCsTable) Object.assign(HCL_CS_TABLE, cat.hclCsTable);
+  if (cat?.hclSsTable) Object.assign(HCL_SS_TABLE, cat.hclSsTable);
+  if (cat?.hclAlloyTable) Object.assign(HCL_ALLOY_TABLE, cat.hclAlloyTable);
+  if (cat?.hclOxidantTable) Object.assign(HCL_OXIDANT_TABLE, cat.hclOxidantTable);
+  if (cat?.h2so4304ssTable) Object.assign(H2SO4_304SS_TABLE, cat.h2so4304ssTable);
+}
+
+export default async function handler(req, res) {
   if (req.method !== "POST" && req.method !== "GET") {
     return res.status(405).json({ success: false, message: "Method Not Allowed" });
   }
 
   try {
+    await ensureCorrosionRateCatalog();
     const payload = req.method === "POST" ? (req.body || {}) : (req.query || {});
     const action = payload.action || "";
     const mechanism = payload.mechanism || payload.type || "";

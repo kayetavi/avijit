@@ -42,8 +42,6 @@ const filesToBundle = [
   "js/fluid-selector.js",
   "js/chatbot.js",
   "js/inventory.js",
-  "js/inventoryChart.js",
-  "js/cylinderviz.js",
   "js/inspectioncofidence.js",
   "js/pipeDataScript_883.js",
   "js/bk_stressData.js",
@@ -89,7 +87,10 @@ const filesToBundle = [
   "js/admin-panel.js",
 
   // 5. Dashboard Shell UI State & Controls
-  "js/dashboard-shell.js"
+  "js/dashboard-shell.js",
+
+  // 6. Enterprise APM Deep Router & Template Manager
+  "js/apm-router.js"
 ];
 
 async function minifySingle(srcFile, outFile) {
@@ -171,7 +172,7 @@ async function bundle() {
   // Also compile auxiliary standalone scripts so raw JS in /js/ is never exposed
   await minifySingle("js/login.js", path.resolve("assets/login.min.js"));
   await minifySingle("js/help.js", path.resolve("assets/help.min.js"));
-  await minifySingle("js/rptu.js", path.resolve("assets/rptu.min.js"));
+  await minifySingle("js/dashboard-preload.js", path.resolve("assets/dashboard-preload.min.js"));
 }
 
 bundle().catch(err => {

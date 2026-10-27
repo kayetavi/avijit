@@ -162,6 +162,16 @@ export default async function handler(req, res) {
       // Check A: Database userRoles password
       if (userRbac && userRbac.password && userRbac.password === password) {
         isPasswordCorrect = true;
+        try {
+          const clientAuth = getFirebaseAuth();
+          if (clientAuth) {
+            const cred = await signInWithEmailAndPassword(clientAuth, cleanEmail, password).catch(() => null);
+            if (cred && cred.user) {
+              authenticatedUid = cred.user.uid;
+              verifiedIdToken = await cred.user.getIdToken().catch(() => null);
+            }
+          }
+        } catch (e) {}
       }
 
       // Check B: Firebase Authentication REST API (primary cloud auth & password reset link sync)
@@ -173,11 +183,11 @@ export default async function handler(req, res) {
           authenticatedUid = authResult.uid;
           verifiedIdToken = authResult.idToken || null;
 
-          // Sign in server-side Firebase Client Auth so getFirestoreDb() is authenticated
+          // Sign in server-side Firebase Client Auth and await so getFirestoreDb() is authenticated before writes
           try {
             const clientAuth = getFirebaseAuth();
             if (clientAuth) {
-              signInWithEmailAndPassword(clientAuth, cleanEmail, password).catch(() => {});
+              await signInWithEmailAndPassword(clientAuth, cleanEmail, password).catch(() => {});
             }
           } catch (e) {}
 

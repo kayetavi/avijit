@@ -46,7 +46,6 @@
     
     // 🗺️ Diagram & Live Systems
     "PROCESSFLOWDIAGRAMSTab": { id: "PROCESSFLOWDIAGRAMSTab", title: "PFD Diagrams", icon: "🗺️", showFn: "showPROCESSFLOWDIAGRAMSTab" },
-    "rptuTab": { id: "rptuTab", title: "RPTU Dashboard", icon: "📈", showFn: "showRPTUDashboard" },
     "ccdAiTab": { id: "ccdAiTab", title: "CCD AI Platform", icon: "🤖", showFn: "showCCDAITab" },
     
     // ⚙️ Admin Control Panel
@@ -159,13 +158,21 @@
       if (typeof window.showMechanismDetails === "function" && !window.showMechanismDetails.__recentTabsHooked) {
         const origShowMech = window.showMechanismDetails;
         const wrappedMech = function (code, data, ...args) {
-          const title = (data && (data.title || data.name)) ? `${code} - ${data.title || data.name}` : `DM ${code}`;
-          const canOpen = self.recordTabOpen(`dm_${code}`, title, "🛠️", () => origShowMech.call(this, code, data, ...args));
+          const rawCode = String(code || "").trim();
+          const rawName = (data && (data.name || data.title)) ? String(data.name || data.title).trim() : "";
+          const mechName = rawName || rawCode;
+          if (!mechName) {
+            return origShowMech.apply(this, [code, data, ...args]);
+          }
+          const tabId = `dm_mech_${encodeURIComponent(mechName)}`;
+          const canOpen = self.recordTabOpen(tabId, mechName, "🔬", () => origShowMech.call(this, code, data, ...args));
           if (canOpen) {
             return origShowMech.apply(this, [code, data, ...args]);
           }
         };
         wrappedMech.__recentTabsHooked = true;
+        wrappedMech.__apmUrlSyncHooked = origShowMech.__apmUrlSyncHooked;
+        wrappedMech.__originalFn = origShowMech.__originalFn || origShowMech;
         window.showMechanismDetails = wrappedMech;
       }
     }
@@ -189,17 +196,6 @@
               self.recordTabOpen(tabId, meta.title, meta.icon);
             }
           });
-
-          // Check if it's an API 571 Damage Mechanism link
-          const parentMechLi = link.closest(".category-toggle li");
-          if (parentMechLi && !link.closest("[id^='rbac_cat_']")) {
-            const mechName = link.textContent.trim();
-            if (mechName) {
-              self.recordTabOpen(`dm_mech_${encodeURIComponent(mechName)}`, mechName, "🔬", () => {
-                link.click();
-              });
-            }
-          }
         }
       }, true);
     }
@@ -237,15 +233,27 @@
     recordTabOpen(tabId, title, icon, customAction = null) {
       if (!tabId) return true;
 
+      // Normalize any legacy dm_ ID to canonical dm_mech_ format
+      if (tabId.startsWith("dm_") && !tabId.startsWith("dm_mech_")) {
+        const cleanName = (title || decodeURIComponent(tabId.replace(/^dm_/, ""))).split(" - ")[0].trim();
+        tabId = `dm_mech_${encodeURIComponent(cleanName)}`;
+        title = cleanName;
+        icon = "🔬";
+      }
+
       const meta = TAB_CATALOG[tabId] || {};
       const tabTitle = title || meta.title || tabId;
       const tabIcon = icon || meta.icon || "📄";
 
-      // Check if already in list -> Keep exact position, just mark active
-      const existingIdx = this.tabs.findIndex(t => t.id === tabId);
+      // Check if already in list (by exact ID or matching title/damage mechanism title) -> Keep exact position, just mark active
+      const existingIdx = this.tabs.findIndex(t =>
+        t.id === tabId ||
+        t.title.trim().toLowerCase() === tabTitle.trim().toLowerCase() ||
+        (tabId.startsWith("dm_mech_") && t.id.startsWith("dm_") && t.title.trim().toLowerCase() === tabTitle.trim().toLowerCase())
+      );
 
       if (existingIdx !== -1) {
-        this.currentActiveTabId = tabId;
+        this.currentActiveTabId = this.tabs[existingIdx].id;
         this.render();
         return true;
       }

@@ -1,19 +1,13 @@
-export default function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method not allowed" });
-  }
+import { getAdminFirestore } from "./firebaseAdmin.js";
+import { getFirestoreDb } from "./firestoreClient.js";
+import { doc, getDoc } from "firebase/firestore";
+import { getOrSeedEngineeringCatalog } from "./database.js";
 
-  const { password } = req.body;
+const DEFAULT_FORMULAS_CATALOG = {
+  corrosion_rate: "CR = (t_initial - t_final) / (years_elapsed)   (mm/year)",
+  remaining_life: "years_remaining = (t_current - Tmin) / CR",
 
-  if (password !== "avijit123") {
-    return res.status(401).json({ message: "Incorrect password!" });
-  }
-
-  const data = {
-    corrosion_rate: "CR = (t_initial - t_final) / (years_elapsed)   (mm/year)",
-    remaining_life: "years_remaining = (t_current - Tmin) / CR",
-
-    b31_3: `
+  b31_3: `
 t_design = (P × D) / (2 × (S × E × W + P × Y))
 
 Where:
@@ -25,7 +19,7 @@ W = Weld / high-temperature factor
 Y = Coefficient from ASME B31.3 Table
     `,
 
-    asme_viii: `
+  asme_viii: `
 All inputs converted to base units before calculation:
 - Pressure → MPa
 - Lengths (D, R) → mm
@@ -51,7 +45,7 @@ S = allowable stress at design temperature (MPa)
 E = weld joint efficiency (0–1)
     `,
 
-    internal_corrosion_category: `
+  internal_corrosion_category: `
 Internal Corrosion Category (Based on CF and Wall Ratio)
 
 1. Wall Loss:
@@ -162,7 +156,7 @@ FWR = 0.5185
 Use ART tables with CR = 0.726, Age = 10, FWR = 0.51, along with number of inspections and confidence level (VH, H, M, L) to find the Damage Factor (DF).
     `,
 
-    mill_tolerance_text: `
+  mill_tolerance_text: `
 Mill Tolerance (API 5L, IS, Others):
 
 API 5L (Seamless):
@@ -180,37 +174,81 @@ API 5L (Welded):
 Mill_Tolerance = t_nominal × Mill_Tolerance - CA
     `,
 
-    mill_tolerance_table: [
-      { material: "A53", type: "%", value: "12.5%" },
-      { material: "A106", type: "%", value: "12.5%" },
-      { material: "A312/A312M", type: "%", value: "12.5%" },
-      { material: "A530", type: "%", value: "12.5%" },
-      { material: "A790", type: "%", value: "12.5%" },
-      { material: "A135 / A135M", type: "%", value: "12.5%" },
-      { material: "A358 / A358M", type: "mm", value: "0.3 mm" },
-      { material: "A409 / A409M", type: "mm", value: "0.46 mm" },
-      { material: "A451 / A451M", type: "mm", value: "0.3 mm" },
-      { material: "A524", type: "%", value: "12.5%" },
-      { material: "A587", type: "%", value: "12.5%" },
-      { material: "A671 / A671M", type: "mm", value: "0.3 mm" },
-      { material: "A672 / A672M", type: "mm", value: "0.3 mm" },
-      { material: "A691 / A691M", type: "mm", value: "0.3 mm" },
-      { material: "IS-3589 (SAW & Seamless Pipe)", type: "%", value: "12.5%" },
-      { material: "IS-3589 (ERW Pipe)", type: "%", value: "10%" },
-      { material: "IS-1239 (Welded: Light Tubes)", type: "%", value: "8%" },
-      { material: "IS-1239 (Welded: Medium/Heavy)", type: "%", value: "10%" },
-      { material: "IS-1239 (Seamless)", type: "%", value: "12.5%" }
-    ],
+  mill_tolerance_table: [
+    { material: "A53", type: "%", value: "12.5%" },
+    { material: "A106", type: "%", value: "12.5%" },
+    { material: "A312/A312M", type: "%", value: "12.5%" },
+    { material: "A530", type: "%", value: "12.5%" },
+    { material: "A790", type: "%", value: "12.5%" },
+    { material: "A135 / A135M", type: "%", value: "12.5%" },
+    { material: "A358 / A358M", type: "mm", value: "0.3 mm" },
+    { material: "A409 / A409M", type: "mm", value: "0.46 mm" },
+    { material: "A451 / A451M", type: "mm", value: "0.3 mm" },
+    { material: "A524", type: "%", value: "12.5%" },
+    { material: "A587", type: "%", value: "12.5%" },
+    { material: "A671 / A671M", type: "mm", value: "0.3 mm" },
+    { material: "A672 / A672M", type: "mm", value: "0.3 mm" },
+    { material: "A691 / A691M", type: "mm", value: "0.3 mm" },
+    { material: "IS-3589 (SAW & Seamless Pipe)", type: "%", value: "12.5%" },
+    { material: "IS-3589 (ERW Pipe)", type: "%", value: "10%" },
+    { material: "IS-1239 (Welded: Light Tubes)", type: "%", value: "8%" },
+    { material: "IS-1239 (Welded: Medium/Heavy)", type: "%", value: "10%" },
+    { material: "IS-1239 (Seamless)", type: "%", value: "12.5%" }
+  ],
 
-    volume_formulas: {
-      cylinder: "V = π × r² × L",
-      sphere: "V = (4/3) × π × r³",
-      frustum: "V = (1/3) × π × h × (R² + R × r + r²)",
-      hemispherical_head: "V = (2/3) × π × r³",
-      ellipsoidal_head: "V = (π / 24) × D³   (for 2:1 ellipsoidal head)",
-      torispherical_head: "V ≈ 0.9 × π × r² × (D / 4)"
-    }
-  };
+  volume_formulas: {
+    cylinder: "V = π × r² × L",
+    sphere: "V = (4/3) × π × r³",
+    frustum: "V = (1/3) × π × h × (R² + R × r + r²)",
+    hemispherical_head: "V = (2/3) × π × r³",
+    ellipsoidal_head: "V = (π / 24) × D³   (for 2:1 ellipsoidal head)",
+    torispherical_head: "V ≈ 0.9 × π × r² × (D / 4)"
+  }
+};
 
-  return res.status(200).json(data);
+async function getExpectedFormulaPassword() {
+  if (process.env.FORMULA_ACCESS_PASSWORD) {
+    return process.env.FORMULA_ACCESS_PASSWORD;
+  }
+  const adminDb = getAdminFirestore();
+  if (adminDb) {
+    try {
+      const snap = await adminDb.collection("systemSettings").doc("formulaAccess").get();
+      if (snap.exists && snap.data()?.password) {
+        return String(snap.data().password);
+      }
+    } catch (_) {}
+  }
+  const clientDb = getFirestoreDb();
+  if (clientDb) {
+    try {
+      const snap = await getDoc(doc(clientDb, "systemSettings", "formulaAccess"));
+      if (snap.exists() && snap.data()?.password) {
+        return String(snap.data().password);
+      }
+    } catch (_) {}
+  }
+  return null;
+}
+
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "Method not allowed" });
+  }
+
+  const { password } = req.body || {};
+  const expectedPassword = await getExpectedFormulaPassword();
+
+  if (!expectedPassword) {
+    return res.status(503).json({
+      message: "Formula access password is not configured in environment (FORMULA_ACCESS_PASSWORD) or Firestore (systemSettings/formulaAccess)."
+    });
+  }
+
+  if (!password || password !== expectedPassword) {
+    return res.status(401).json({ message: "Incorrect password!" });
+  }
+
+  const catalog = await getOrSeedEngineeringCatalog("formulas_catalog", DEFAULT_FORMULAS_CATALOG);
+  return res.status(200).json(catalog || DEFAULT_FORMULAS_CATALOG);
 }

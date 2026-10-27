@@ -60,7 +60,6 @@ export const DASHBOARD_MODULES = [
   { id: "fluidSelectorTab", title: "Representative Fluids Library (API 581)", nav: "showFluidSelectorTab()", desc: "Physical properties, NBP, MW, autoignition, toxicity groupings" },
   { id: "inspectionconfidenceTab", title: "Inspection Confidence & Bayesian RBI (IIC/AIC)", nav: "showINSPECTIONCONFIDENCETab()", desc: "Inspection effectiveness categories (A, B, C, D) & Bayesian failure updates" },
   { id: "simplePipingTab", title: "Pipe Dimensions & Schedules (ASME B36.10M)", nav: "showSimplePipingTab()", desc: "Standard NPS OD, schedule thicknesses and weight" },
-  { id: "rptuTab", title: "Catalyst & Reactor Tracker (RPTU)", nav: "showRPTUDashboard()", desc: "Reactor temperature profiling, pressure drops and catalyst activity" },
   { id: "adminPanelTab", title: "Admin Panel & Firestore RBAC Control", nav: "showAdminPanelTab()", desc: "User roles, active sessions and database management" }
 ];
 
@@ -332,7 +331,6 @@ CRITICAL INSTRUCTIONS & CORE OPERATING PRINCIPLES:
    - Representative Fluids Library (API 581) [ID: fluidSelectorTab] -> Function: showFluidSelectorTab()
    - Inspection Confidence Interval (IIC / AIC) [ID: inspectionconfidenceTab] -> Function: showINSPECTIONCONFIDENCETab()
    - Pipe Dimensions & Schedules (ASME B36.10M / B36.19M) [ID: simplePipingTab] -> Function: showSimplePipingTab()
-   - Reactor & Catalyst Performance Tracker (RPTU) [ID: rptuTab] -> Function: showRPTUDashboard()
    - Admin Panel & Firestore RBAC Control [ID: adminPanelTab] -> Function: showAdminPanelTab()
 
 2. ACTIVE USER CONTEXT:

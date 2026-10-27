@@ -98,9 +98,9 @@ function toggleCustomPercent() {
 }
 
 // =========================
-// ✅ Auto-fill Density (Hydrated from Backend /api/calculateInventory)
+// ✅ Auto-fill Density (Hydrated from Cloud Firestore via /api/calculateInventory)
 // =========================
-window.INVENTORY_FLUID_DENSITIES = { water: 1000, diesel: 832, crude: 850, ammonia: 682 };
+window.INVENTORY_FLUID_DENSITIES = {};
 async function hydrateInventoryMetadata() {
   try {
     const res = await fetch("/api/calculateInventory");
@@ -118,7 +118,7 @@ hydrateInventoryMetadata();
 
 function autoFillDensity() {
   const fluid = document.getElementById("fluidType")?.value;
-  const densities = window.INVENTORY_FLUID_DENSITIES || { water: 1000, diesel: 832, crude: 850, ammonia: 682 };
+  const densities = window.INVENTORY_FLUID_DENSITIES || {};
   const densityEl = document.getElementById("density");
   if (densityEl) densityEl.value = densities[fluid] || "";
 }

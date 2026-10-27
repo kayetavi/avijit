@@ -650,7 +650,7 @@
     const massB = Number(sB.massFlow) || 0;
     const deltaMass = massB - massA;
     if (Math.abs(deltaMass) > 100) {
-      insights.push(`<strong>Flow Split & Proportioning:</strong> Stream ${sA.streamNo} (${formatNum(massA)} kg/hr) vs Stream ${sB.streamNo} (${formatNum(massB)} kg/hr). In Numaligarh RPTU, the total VR Feed (Stream 100: 249,999 kg/hr) is allocated across branch trains 100B (34,875 kg/hr), 100C (184,499 kg/hr), and 100D (24,375 kg/hr), representing reactor multi-pass distribution.`);
+      insights.push(`<strong>Flow Split & Proportioning:</strong> Stream ${sA.streamNo} (${formatNum(massA)} kg/hr) vs Stream ${sB.streamNo} (${formatNum(massB)} kg/hr), representing a net mass flow delta of ${deltaMass >= 0 ? '+' : ''}${formatNum(deltaMass)} kg/hr across branch trains.`);
     }
 
     box.innerHTML = `

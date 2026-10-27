@@ -1,4 +1,4 @@
-import { getFirestoreDb, getActiveProjectConfig } from "./firestoreClient.js";
+import { getFirestoreDb, getActiveProjectConfig, isClientAuthSignedIn } from "./firestoreClient.js";
 import { getAdminFirestore, verifyServerIdentity } from "./sessionStore.js";
 import { collection, getDocs, doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
 import { getUserRbacData, verifyRequestRbac } from "./rbac.js";
@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
   const method = req.method;
   const adminDb = getAdminFirestore();
-  const clientDb = getFirestoreDb();
+  const clientDb = isClientAuthSignedIn() ? getFirestoreDb() : null;
 
   try {
     const activeProj = getActiveProjectConfig();

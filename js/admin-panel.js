@@ -4330,7 +4330,7 @@
       }
 
       container.style.display = "block";
-      if (countTag) countTag.textContent = `${dataset.streams.length} Streams (RPTU Certified HMB)`;
+      if (countTag) countTag.textContent = `${dataset.streams.length} Streams (Certified HMB)`;
 
       let html = "";
       dataset.streams.forEach((s, idx) => {
@@ -5629,11 +5629,15 @@
       const scrollContainer = document.querySelector(".scroll-container");
       const tickerRaw = (config && config.tickerText && config.tickerText.trim()) 
         ? config.tickerText 
-        : "Welcome to API 571 Damage Mechanism Dashboard & Industrial Digital Tools";
+        : "";
 
       if (scrollText) {
-        const uName = this.getFormattedUserPrefix();
-        scrollText.textContent = this.formatTickerTextWithUser(tickerRaw, uName);
+        if (tickerRaw) {
+          const uName = this.getFormattedUserPrefix();
+          scrollText.textContent = this.formatTickerTextWithUser(tickerRaw, uName);
+        } else {
+          scrollText.textContent = "";
+        }
         if (config && config.tickerUrgency === "critical") {
           scrollText.style.color = "#ef4444";
           scrollText.style.fontWeight = "bold";
@@ -5646,13 +5650,14 @@
         }
       }
       if (scrollContainer) {
-        scrollContainer.style.display = config.tickerEnabled !== false ? "block" : "none";
+        scrollContainer.style.display = (config.tickerEnabled !== false && tickerRaw) ? "block" : "none";
       }
 
       const isUserAdmin = this.isAdmin();
+      const canAccessTools = isUserAdmin || (window.RBAC && typeof window.RBAC.hasModuleAccess === "function" && window.RBAC.hasModuleAccess("adminControlCenter"));
 
-      // Ensure Tools category is injected if needed
-      if (typeof window.injectToolsCategory === "function" && !document.getElementById("rbac_cat_tools")) {
+      // Ensure Tools category is injected if needed and authorized
+      if (typeof window.injectToolsCategory === "function" && canAccessTools && !document.getElementById("rbac_cat_tools") && !window.__sidebarRenderInProgress) {
         window.injectToolsCategory();
       }
 

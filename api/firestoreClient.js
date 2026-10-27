@@ -7,7 +7,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { initializeApp, getApps, getApp, deleteApp } from "firebase/app";
-import { getFirestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc, setLogLevel } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import {
   getAdminApp,
@@ -15,6 +15,11 @@ import {
   isAdminConfigured,
   getAdminStatus
 } from "./firebaseAdmin.js";
+
+// Silence noisy internal @firebase/firestore gRPC stream logs (e.g. idle Listen disconnect & handled permission checks)
+try {
+  setLogLevel("silent");
+} catch (e) {}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -51,7 +56,6 @@ export const STANDARD_WORKSPACES = [
   { id: "ws_cdu_vdu", name: "Crude Distillation Unit (CDU / VDU)", unitType: "Refinery Crude Processing", defaultFluid: "Crude Oil (API 32)", streamCount: 24, status: "Active" },
   { id: "ws_hcu", name: "Hydrocracker Unit (HCU Complex)", unitType: "High Pressure Hydroprocessing", defaultFluid: "Sour Gas / Gas Oil", streamCount: 18, status: "Active" },
   { id: "ws_h2u", name: "Hydrogen Generation Unit (H2U)", unitType: "Steam Methane Reforming", defaultFluid: "Synthesis Gas (H2/CO)", streamCount: 12, status: "Active" },
-  { id: "ws_rptu", name: "Continuous Catalytic Reformer (CCR / RPTU)", unitType: "Catalytic Reforming", defaultFluid: "Naphtha / Reformate", streamCount: 15, status: "Active" },
   { id: "ws_msp", name: "Motor Spirit Plant (MSP Gasoline Pool)", unitType: "Gasoline Blending & Treatment", defaultFluid: "Motor Spirit Blend", streamCount: 8, status: "Active" }
 ];
 
@@ -244,6 +248,15 @@ export function getFirebaseAuth() {
   return authInstance;
 }
 
+export function isClientAuthSignedIn() {
+  try {
+    const auth = getFirebaseAuth();
+    return Boolean(auth && auth.currentUser);
+  } catch (e) {
+    return false;
+  }
+}
+
 export async function testProjectConnection(targetConfig) {
   const startTime = Date.now();
   const tempName = `test_conn_${Date.now()}`;
@@ -263,9 +276,12 @@ export async function testProjectConnection(targetConfig) {
       : null;
     const tempDb = dbId ? getFirestore(tempApp, dbId) : getFirestore(tempApp);
 
-    // Perform a lightweight probe
-    const probeDoc = doc(tempDb, "systemMeta", "stressDataMaster");
-    const snap = await getDoc(probeDoc).catch(() => null);
+    // Perform a lightweight probe only if authenticated, otherwise verify app init
+    let snap = null;
+    if (isClientAuthSignedIn()) {
+      const probeDoc = doc(tempDb, "systemMeta", "stressDataMaster");
+      snap = await getDoc(probeDoc).catch(() => null);
+    }
     const latencyMs = Date.now() - startTime;
 
     return {

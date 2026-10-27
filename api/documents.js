@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { getAdminFirestore } from "./firebaseAdmin.js";
-import { getFirestoreDb } from "./firestoreClient.js";
+import { getFirestoreDb, isClientAuthSignedIn } from "./firestoreClient.js";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { verifyRequestRbac } from "./rbac.js";
 
@@ -40,7 +40,7 @@ export default async function handler(req, res) {
 
   try {
     const adminDb = getAdminFirestore();
-    const clientDb = getFirestoreDb();
+    const clientDb = isClientAuthSignedIn() ? getFirestoreDb() : null;
     const method = req.method.toUpperCase();
 
     // GET /api/documents
@@ -48,9 +48,11 @@ export default async function handler(req, res) {
       if (adminDb) {
         try {
           const snapshot = await adminDb.collection("documents").get();
-          const docs = [];
-          snapshot.forEach((d) => docs.push({ id: d.id, ...d.data() }));
-          return res.status(200).json(docs);
+          if (!snapshot.empty) {
+            const docs = [];
+            snapshot.forEach((d) => docs.push({ id: d.id, ...d.data() }));
+            return res.status(200).json(docs);
+          }
         } catch (err) {
           console.warn("Admin Firestore documents fetch note:", err.message);
         }

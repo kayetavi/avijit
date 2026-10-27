@@ -71,7 +71,7 @@ app.use((req, res, next) => {
   res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
   res.setHeader("X-Permitted-Cross-Domain-Policies", "none");
   res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
-  res.setHeader("Content-Security-Policy", "default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'");
+  res.setHeader("Content-Security-Policy", "default-src 'self' https: wss: data: blob: 'unsafe-inline' 'unsafe-eval'; frame-src 'self' https://corrosion-control-document-management-system-544581869392.asia-southeast1.run.app https:;");
   next();
 });
 
@@ -183,8 +183,8 @@ app.use((req, res, next) => {
     });
   }
 
-  // 3. Block raw unbundled JavaScript files anywhere outside of /assets/
-  if (reqPath.endsWith(".js") && !reqPath.startsWith("/assets/")) {
+  // 3. Block raw unbundled JavaScript files anywhere outside of /assets/ and /ccd-platform/
+  if (reqPath.endsWith(".js") && !reqPath.startsWith("/assets/") && !reqPath.startsWith("/ccd-platform/")) {
     return res.status(403).json({
       error: "Access Denied: Protected Resource. Unbundled source code access is prohibited."
     });
@@ -219,12 +219,13 @@ app.use((req, res, next) => {
 // Serve image directory with cache headers
 app.use('/image', express.static(path.join(__dirname, 'image'), { maxAge: '7d', immutable: true }));
 
-// Serve organized static directories (public, /assets, /templates, /views) + root fallbacks
+// Serve organized static directories (public, /assets, /ccd-platform, /templates, /views) + root fallbacks
 // Note: '/js' static directory is intentionally NOT served to prevent source exposure in DevTools
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/views', express.static(path.join(__dirname, 'public', 'views')));
 app.use(express.static(path.join(__dirname, 'public', 'views')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use('/ccd-platform', express.static(path.join(__dirname, 'ccd-platform')));
 app.use(express.static(path.join(__dirname, 'assets', 'models')));
 app.use(express.static(path.join(__dirname, 'assets', 'css')));
 app.use('/templates', express.static(path.join(__dirname, 'templates')));

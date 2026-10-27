@@ -197,6 +197,12 @@ service cloud.firestore {
       allow write: if isLeadEngineerOrAdmin();
     }
 
+    // Centralized Engineering Catalogs (CCD Loops, Periodic Table, PFD Mechanisms, RBI Tables, Chemical Suite, Toxic Gases, Inventory, Formulas, Corrosion Rate Tables)
+    match /engineeringCatalog/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isLeadEngineerOrAdmin();
+    }
+
     // API 581 Annex D / API 574 Minimum Structural Thickness Tables
     match /structural_min_t_tables/{docId} {
       allow read: if isAuthenticated();

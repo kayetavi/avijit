@@ -12,10 +12,16 @@ function initCDUVDU() {
   const svgContainer = document.getElementById("cduvdu-svgContainer");
   if (!svgContainer) return;
 
+  const ensureMechs = typeof window.ensurePfdMechanismsLoaded === "function"
+    ? window.ensurePfdMechanismsLoaded()
+    : Promise.resolve();
+
   if (!svgContainer.querySelector("svg")) {
-    fetch("/assets/models/CDU-VDU-Model.svg")
-      .then(res => res.text())
-      .then(data => {
+    Promise.all([
+      ensureMechs,
+      fetch("/assets/models/CDU-VDU-Model.svg").then(res => res.text())
+    ])
+      .then(([, data]) => {
         svgContainer.innerHTML = data;
         setupCDUVDUSVGLogic(modal, svgContainer);
       })
@@ -23,7 +29,7 @@ function initCDUVDU() {
         console.error("Failed to load CDU/VDU SVG:", err);
       });
   } else {
-    setupCDUVDUSVGLogic(modal, svgContainer);
+    ensureMechs.then(() => setupCDUVDUSVGLogic(modal, svgContainer));
   }
 }
 

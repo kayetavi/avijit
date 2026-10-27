@@ -57,10 +57,14 @@ body:not(.login-page):not(.about-page) {
 
 
 /* ✅ Background image for login page */
+/* ✅ Background image for login page */
 html.login-html,
 html:has(body.login-page) {
   height: 100%;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
   background-color: #0f172a !important;
   background-image: url('/image/refinery.jpg') !important;
   background-size: cover !important;
@@ -75,6 +79,7 @@ body.login-page {
   width: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;
   position: relative;
   background-color: #0f172a !important;
   background-image: url('/image/refinery.jpg') !important;
@@ -467,10 +472,45 @@ body.login-page .login-container {
   border-radius: 4px;
   font-weight: bold;
   font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: opacity 0.3s ease;
 }
 
 .login-container button:hover {
   background-color: #0b5ed7;
+}
+
+#loginBtn .spinner {
+  display: none;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  position: absolute;
+  right: 15px;
+}
+
+#loginBtn.loading {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+#loginBtn.loading .btn-text {
+  opacity: 0.5;
+}
+
+#loginBtn.loading .spinner {
+  display: block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Error message */
@@ -508,6 +548,42 @@ body.login-page .login-container {
   z-index: 10000;   /* rakho high */
   overflow: visible; /* ✅ yaha change */
   gap: 10px;
+}
+
+.topbar-control-icon-btn,
+#headerHamburgerBtn,
+#headerHomeBtn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 38px !important;
+  height: 38px !important;
+  padding: 0 !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  transition: background 0.2s ease, transform 0.15s ease, border-color 0.2s ease !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15) !important;
+}
+
+.topbar-control-icon-btn:hover,
+#headerHamburgerBtn:hover,
+#headerHomeBtn:hover {
+  background: rgba(255, 255, 255, 0.35) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  transform: translateY(-1px) !important;
+  cursor: pointer !important;
+}
+
+.topbar-control-icon-btn:active,
+#headerHamburgerBtn:active,
+#headerHomeBtn:active {
+  transform: translateY(0) !important;
+  background: rgba(255, 255, 255, 0.4) !important;
 }
 
 .scroll-container {
@@ -971,6 +1047,65 @@ sidebar li:hover > a {
   display: block !important;
 }
 
+/* 🧭 Top-Bar Left Controls (Hamburger Menu & Home Button) */
+.topbar-left-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.topbar-control-icon-btn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  padding: 0;
+  margin: 0;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 8px;
+  cursor: pointer !important;
+  font-size: 18px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  user-select: none;
+  -webkit-appearance: none;
+  appearance: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.topbar-control-icon-btn span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  cursor: pointer !important;
+  pointer-events: none;
+}
+
+.topbar-control-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.34);
+  border-color: rgba(255, 255, 255, 0.85);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+}
+
+.topbar-control-icon-btn:active {
+  background: rgba(255, 255, 255, 0.42);
+  transform: translateY(0) scale(0.96);
+}
+
+.topbar-control-icon-btn:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
 /* ⚙️ Settings Dropdown */
 .settings-menu {
   position: relative;
@@ -979,24 +1114,36 @@ sidebar li:hover > a {
 }
 
 #settingsBtn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
   background: rgba(255, 255, 255, 0.2);
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.45);
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
+  padding: 0;
+  border-radius: 8px;
+  cursor: pointer !important;
+  font-size: 18px;
   line-height: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
   user-select: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
 #settingsBtn:hover {
-  background: rgba(255, 255, 255, 0.32);
-  border-color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.34);
+  border-color: rgba(255, 255, 255, 0.85);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+}
+
+#settingsBtn:active {
+  background: rgba(255, 255, 255, 0.42);
+  transform: translateY(0) scale(0.96);
 }
 
 .dropdown-content {
@@ -6244,6 +6391,17 @@ body.dark-mode .recent-tabs-count.limit-reached {
     padding: 6px 8px !important;
   }
 }
+
+/* 🛡️ Graceful cold-start stabilization for RBAC cards */
+body:not(.rbac-ready) #welcomePanel .info-card[data-rbac-module] {
+  opacity: 0.05;
+  transition: opacity 0.15s ease-in;
+}
+body.rbac-ready #welcomePanel .info-card[data-rbac-module],
+html.rbac-ready #welcomePanel .info-card[data-rbac-module] {
+  opacity: 1;
+}
+
 
 
 

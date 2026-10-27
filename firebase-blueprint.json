@@ -239,6 +239,14 @@
         "simpleStructuralThresholds": { "type": "object" },
         "updatedAt": { "type": "number" }
       }
+    },
+    "EngineeringCatalog": {
+      "title": "EngineeringCatalog",
+      "description": "Centralized cloud catalog documents for CCD loops, periodic table, PFD unit mechanisms, API 581 RBI tables, chemical reactivity, toxic gases, inventory densities, formulas, and corrosion rate tables",
+      "type": "object",
+      "properties": {
+        "updatedAt": { "type": "number" }
+      }
     }
   },
   "firestore": {
@@ -301,6 +309,10 @@
     "/b313Catalog/{catalogId}": {
       "schema": "B313Catalog",
       "description": "ASME B31.3 & ASME VIII Engineering Lookup Tables (Y-Factor, W-Factor, Joint Efficiencies, Mill Tolerances)"
+    },
+    "/engineeringCatalog/{docId}": {
+      "schema": "EngineeringCatalog",
+      "description": "Centralized engineering reference tables (CCD loops, Periodic Table, PFD unit mechanisms, API 581 RBI tables, Chemical Suite, Toxic Gases, Inventory Densities, Formulas, and Corrosion Rate lookup tables)"
     },
     "/structural_min_t_tables/{tableId}": {
       "schema": "B313Catalog",

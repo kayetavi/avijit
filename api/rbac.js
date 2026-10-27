@@ -17,7 +17,6 @@ export const DEFAULT_ROLE_MATRIX = {
     processFlow: true,
     crackingMechanism: true,
     bkStress: true,
-    rptu: true,
     ccdAI: true,
     chemicalSuite: true,
     streamComparator: true,
@@ -32,7 +31,6 @@ export const DEFAULT_ROLE_MATRIX = {
     processFlow: true,
     crackingMechanism: true,
     bkStress: true,
-    rptu: true,
     ccdAI: true,
     chemicalSuite: true,
     streamComparator: true,
@@ -47,7 +45,6 @@ export const DEFAULT_ROLE_MATRIX = {
     processFlow: true,
     crackingMechanism: true,
     bkStress: true,
-    rptu: false,
     ccdAI: false,
     chemicalSuite: true,
     streamComparator: false,
@@ -62,7 +59,6 @@ export const DEFAULT_ROLE_MATRIX = {
     processFlow: true,
     crackingMechanism: false,
     bkStress: false,
-    rptu: false,
     ccdAI: false,
     chemicalSuite: false,
     streamComparator: false,
@@ -187,24 +183,42 @@ function ensureDirExists(filePath) {
 
 export const AVAILABLE_MODULES = [
   {
-    id: "api581",
-    name: "Risk-Based Inspection Methodology",
-    category: "Risk-Based Inspection Methodology",
+    id: "damageExplorer",
+    name: "API 571 Damage Mechanisms",
+    category: "API 571 Damage Mechanisms",
     icon: "🛡️",
+    tabId: "damageExplorerTab",
+    launcherFunc: "showDamageMechanismTab",
+    subsections: [
+      {
+        id: "damageCatalog",
+        name: "Damage Mechanism Catalog",
+        category: "API 571 Damage Mechanisms",
+        icon: "📖",
+        tabId: "damageExplorerTab",
+        launcherFunc: "showDamageMechanismTab"
+      }
+    ]
+  },
+  {
+    id: "api581",
+    name: "API 581 Risk-Based Inspection",
+    category: "Risk-Based Inspection",
+    icon: "📊",
     tabId: "a571-criteriaTab",
     launcherFunc: "showCriteriaTab",
     subsections: [
       {
         id: "api571Criteria",
-        name: "Criteria of Finding Damage Mechanism",
+        name: "API 571 Damage Mechanism Screening",
         category: "General Risk",
-        icon: "🎯",
+        icon: "🔎",
         tabId: "a571-criteriaTab",
         launcherFunc: "showCriteriaTab"
       },
       {
         id: "corrosionRate",
-        name: "Damage Mechanism – Corrosion Rate Estimator",
+        name: "Corrosion Rate Estimator",
         category: "General Risk",
         icon: "📉",
         tabId: "corrosionFullTab",
@@ -212,7 +226,7 @@ export const AVAILABLE_MODULES = [
       },
       {
         id: "fluidSelector",
-        name: "Representative Fluid",
+        name: "Representative Fluid Selector",
         category: "General Risk",
         icon: "💧",
         tabId: "fluidSelectorTab",
@@ -220,7 +234,7 @@ export const AVAILABLE_MODULES = [
       },
       {
         id: "inventoryCalc",
-        name: "Inventory Calculator",
+        name: "Equipment Inventory Calculator",
         category: "General Risk",
         icon: "🛢️",
         tabId: "inventoryTab",
@@ -228,26 +242,26 @@ export const AVAILABLE_MODULES = [
       },
       {
         id: "inspectionConfidence",
-        name: "Inspection Confidence",
+        name: "Inspection Confidence & Effectiveness",
         category: "General Risk",
-        icon: "🔍",
+        icon: "🎯",
         tabId: "inspectionconfidenceTab",
         launcherFunc: "showINSPECTIONCONFIDENCETab"
       },
       {
         id: "toxicCalc",
-        name: "Toxic % Calculation",
+        name: "Toxic Fluid Consequence (% Calculation)",
         category: "General Risk",
-        icon: "☣️",
+        icon: "☠️",
         tabId: "TOXIC_CALCULATIONTab",
         launcherFunc: "showTOXIC_CALCULATIONTab"
       },
       {
-        id: "quantitative",
+        id: "quantitativeGroup",
         name: "Quantitative",
         isGroup: true,
         category: "Quantitative",
-        icon: "📊",
+        icon: "📐",
         children: [
           {
             id: "cofCalculator",
@@ -268,11 +282,11 @@ export const AVAILABLE_MODULES = [
         ]
       },
       {
-        id: "semiQuantitative",
+        id: "semiQuantitativeGroup",
         name: "Semi Quantitative",
         isGroup: true,
         category: "Semi Quantitative",
-        icon: "🧮",
+        icon: "⚖️",
         children: [
           {
             id: "corrosionCalc",
@@ -288,42 +302,35 @@ export const AVAILABLE_MODULES = [
   },
   {
     id: "api570",
-    name: "Thickness Data Evaluation & Analysis",
-    category: "Thickness Data Evaluation & Analysis",
-    icon: "📈",
+    name: "API 570 Remaining Life",
+    category: "Integrity & Piping",
+    icon: "⏱️",
     tabId: "remainingLifeTab",
     launcherFunc: "showRemainingLifeTab",
     subsections: [
-      {
-        id: "statisticalAnalysis",
-        name: "Statistical Analysis",
-        category: "Thickness Data Evaluation & Analysis",
-        icon: "⏱️",
-        tabId: "remainingLifeTab",
-        launcherFunc: "showRemainingLifeTab"
-      }
+      { id: "remainingLifeCalc", name: "Remaining Life Calculator", category: "Integrity & Piping", icon: "⏱️", tabId: "remainingLifeTab", launcherFunc: "showRemainingLifeTab" }
     ]
   },
   {
     id: "thicknessCalc",
-    name: "Design Thickness Calculator",
-    category: "Design Thickness Calculator",
+    name: "Design Thickness (ASME)",
+    category: "Mechanical Design",
     icon: "📐",
     tabId: "ASMEB31_3Tab",
     launcherFunc: "showASMEB31_3Tab",
     subsections: [
       {
-        id: "processPiping",
+        id: "processPipingGroup",
         name: "Process Piping",
         isGroup: true,
         category: "Process Piping",
-        icon: "📐",
+        icon: "🔧",
         children: [
           {
             id: "asmeB31_3",
-            name: "ASME B31.3 (Advanced)",
+            name: "ASME B31.3 Advanced",
             category: "Process Piping",
-            icon: "📐",
+            icon: "⚙️",
             tabId: "ASMEB31_3Tab",
             launcherFunc: "showASMEB31_3Tab"
           },
@@ -331,7 +338,7 @@ export const AVAILABLE_MODULES = [
             id: "simplePiping",
             name: "Simple Formula (PD / 2SE)",
             category: "Process Piping",
-            icon: "🧮",
+            icon: "📏",
             tabId: "simplePipingTab",
             launcherFunc: "showSimplePipingTab"
           }
@@ -339,220 +346,114 @@ export const AVAILABLE_MODULES = [
       },
       {
         id: "asmeSectionVIII",
-        name: "Pressure Vessel",
-        category: "Design Thickness Calculator",
+        name: "Pressure Vessel (ASME Sec VIII Div 1)",
+        category: "Mechanical Design",
         icon: "🛢️",
         tabId: "ASMESECTIONVIIIDIV1Tab",
         launcherFunc: "showASMESECTIONVIIIDIV1Tab"
       },
       {
         id: "pipeThickness",
-        name: "Piping Thickness Chart",
-        category: "Design Thickness Calculator",
-        icon: "📊",
+        name: "Piping Schedule & Thickness Chart",
+        category: "Mechanical Design",
+        icon: "📋",
         tabId: "pipeThicknessTab",
         launcherFunc: "showpipeThicknessTab"
       },
       {
         id: "structuralThickness",
-        name: "Structural Thickness Lookup (API 574 / 581)",
-        category: "Design Thickness Calculator",
-        icon: "📏",
+        name: "Structural Minimum Thickness (API 574)",
+        category: "Mechanical Design",
+        icon: "🏗️",
         tabId: "structuralThicknessTab",
         launcherFunc: "showStructuralThicknessTab"
       }
     ]
   },
   {
-    id: "damageExplorer",
-    name: "API 571 Damage Mechanisms",
-    category: "API 571 Damage Mechanisms",
-    icon: "🔬",
-    tabId: "damageExplorerTab",
-    launcherFunc: "showDamageMechanismTab",
-    subsections: [
-      {
-        id: "damageCatalog",
-        name: "Damage Mechanism Catalog",
-        category: "API 571 Damage Mechanisms",
-        icon: "📖",
-        tabId: "damageExplorerTab",
-        launcherFunc: "showDamageMechanismTab"
-      }
-    ]
-  },
-  {
     id: "crackingMechanism",
-    name: "Cracking Mechanism Finder",
-    category: "Cracking Mechanism Finder",
-    icon: "🔍",
+    name: "Cracking Mechanism Analysis",
+    category: "Damage Screening",
+    icon: "⚡",
     tabId: "crackingMechanismTab",
     launcherFunc: "showCrackingMechanismTab",
     subsections: [
-      {
-        id: "crackingFinder",
-        name: "Open Finder",
-        category: "Cracking Mechanism Finder",
-        icon: "⚡",
-        tabId: "crackingMechanismTab",
-        launcherFunc: "showCrackingMechanismTab"
-      }
+      { id: "crackingFinder", name: "Cracking Mechanism Finder", category: "Damage Screening", icon: "⚡", tabId: "crackingMechanismTab", launcherFunc: "showCrackingMechanismTab" }
     ]
   },
   {
     id: "bkStress",
-    name: "Allowable Stress Lookup",
-    category: "Allowable Stress Lookup",
+    name: "Allowable Stress & Material Data",
+    category: "Materials",
     icon: "🧮",
     tabId: "bkStressTab",
     launcherFunc: "showbkStressTab",
     subsections: [
-      {
-        id: "stressLookup",
-        name: "Allowable Stress & Material Data",
-        category: "Allowable Stress Lookup",
-        icon: "🔍",
-        tabId: "bkStressTab",
-        launcherFunc: "showbkStressTab"
-      }
+      { id: "stressLookup", name: "Allowable Stress & Material Data", category: "Materials", icon: "🧮", tabId: "bkStressTab", launcherFunc: "showbkStressTab" }
     ]
   },
   {
     id: "streamComparator",
     name: "Stream Comparator (HMB)",
-    category: "Stream Comparator (HMB)",
+    category: "Process Engineering",
     icon: "🔄",
     tabId: "streamComparatorTab",
     launcherFunc: "showStreamComparatorTab",
     subsections: [
-      {
-        id: "streamComparatorMain",
-        name: "Process Stream & Material Balance Comparator",
-        category: "Stream Comparator (HMB)",
-        icon: "📊",
-        tabId: "streamComparatorTab",
-        launcherFunc: "showStreamComparatorTab"
-      }
+      { id: "streamComparatorMain", name: "Stream Data Comparator (HMB)", category: "Process Engineering", icon: "🔄", tabId: "streamComparatorTab", launcherFunc: "showStreamComparatorTab" }
     ]
   },
   {
     id: "chemicalSuite",
     name: "Chemistry & Chemical Suite",
-    category: "Chemistry & Chemical Suite",
+    category: "Process Engineering",
     icon: "⚗️",
     tabId: "chemicalSuiteTab",
     launcherFunc: "showChemicalSuiteTab",
     subsections: [
-      {
-        id: "chemicalSafetySuite",
-        name: "Chemical & HAZMAT Safety Suite",
-        category: "Chemistry & Chemical Suite",
-        icon: "🦺",
-        tabId: "chemicalSuiteTab",
-        launcherFunc: "showChemicalSuiteTab"
-      }
+      { id: "chemicalSafetySuite", name: "Chemistry & Chemical Suite", category: "Process Engineering", icon: "⚗️", tabId: "chemicalSuiteTab", launcherFunc: "showChemicalSuiteTab" }
     ]
   },
   {
     id: "unitConverter",
-    name: "Unit Converters",
-    category: "Unit Converters",
+    name: "Plant & Integrity Unit Converters",
+    category: "Utilities",
     icon: "📐",
     tabId: "unitConverterTab",
     launcherFunc: "showUnitConverterTab",
     subsections: [
-      {
-        id: "unitConverterMain",
-        name: "Plant & Integrity Units",
-        category: "Unit Converters",
-        icon: "⚡",
-        tabId: "unitConverterTab",
-        launcherFunc: "showUnitConverterTab"
-      }
+      { id: "unitConverterMain", name: "Plant & Integrity Unit Converters", category: "Utilities", icon: "📐", tabId: "unitConverterTab", launcherFunc: "showUnitConverterTab" }
     ]
   },
   {
     id: "processFlow",
-    name: "Corrosion Diagrams",
-    category: "Corrosion Diagrams",
-    icon: "📊",
+    name: "Process Flow Diagrams (PFD)",
+    category: "Diagrams",
+    icon: "🗺️",
     tabId: "processFlowModal",
     launcherFunc: "showPROCESSFLOWDIAGRAMSTab",
     subsections: [
-      {
-        id: "atmospheric",
-        name: "HYDROPROCESSING",
-        category: "Corrosion Diagrams",
-        icon: "🗺️",
-        tabId: "processFlowModal",
-        launcherFunc: "showPROCESSFLOWDIAGRAMSTab"
-      },
-      {
-        id: "cduVdu",
-        name: "CDU / VDU",
-        category: "Corrosion Diagrams",
-        icon: "🗺️",
-        tabId: "cduVduModal",
-        launcherFunc: "showCDUVDUTab"
-      },
-      {
-        id: "msp",
-        name: "MSP",
-        category: "Corrosion Diagrams",
-        icon: "🗺️",
-        tabId: "mspModal",
-        launcherFunc: "showMSPTab"
-      },
-      {
-        id: "h2u",
-        name: "H2U",
-        category: "Corrosion Diagrams",
-        icon: "🗺️",
-        tabId: "h2uModal",
-        launcherFunc: "showH2UTab"
-      }
-    ]
-  },
-  {
-    id: "rptu",
-    name: "RPTU Dashboard",
-    category: "RPTU Dashboard",
-    icon: "📱",
-    tabId: "rptuDashboard",
-    launcherFunc: "showRPTUDashboard",
-    subsections: [
-      {
-        id: "rptuDashboard",
-        name: "Open Dashboard",
-        category: "RPTU Dashboard",
-        icon: "📈",
-        tabId: "rptuDashboard",
-        launcherFunc: "showRPTUDashboard"
-      }
+      { id: "cduVdu", name: "CDU / VDU Distillation Unit", category: "Diagrams", icon: "🛢️", tabId: "cduVduModal", launcherFunc: "showCDUVDUTab" },
+      { id: "atmospheric", name: "Hydroprocessing Unit (HCU)", category: "Diagrams", icon: "🔥", tabId: "processFlowModal", launcherFunc: "showPROCESSFLOWDIAGRAMSTab" },
+      { id: "msp", name: "Motor Spirit Production (MSP)", category: "Diagrams", icon: "⛽", tabId: "mspModal", launcherFunc: "showMSPTab" },
+      { id: "h2u", name: "Hydrogen Generation Unit (H2U)", category: "Diagrams", icon: "💨", tabId: "h2uModal", launcherFunc: "showH2UTab" }
     ]
   },
   {
     id: "ccdAI",
     name: "CCD AI Platform",
-    category: "CCD AI Platform",
+    category: "Integrity Management",
     icon: "🤖",
     tabId: "ccdAiTab",
     launcherFunc: "showCCDAITab",
     subsections: [
-      {
-        id: "ccdAiPlatform",
-        name: "Open CCD AI Platform",
-        category: "CCD AI Platform",
-        icon: "🤖",
-        tabId: "ccdAiTab",
-        launcherFunc: "showCCDAITab"
-      }
+      { id: "ccdAiPlatform", name: "CCD AI Platform", icon: "🤖", tabId: "ccdAiTab", launcherFunc: "showCCDAITab" }
     ]
   },
   {
     id: "adminControlCenter",
-    name: "Tools",
-    category: "Tools",
+    name: "Admin & Engineering Tools",
+    category: "Governance & Tools",
     icon: "🛠️",
     tabId: "adminPanelTab",
     launcherFunc: "openTool",
@@ -807,7 +708,6 @@ export function buildRolePermissions(role, customModules = {}, customSubsections
       chemicalSuite: true,
       unitConverter: true,
       processFlow: true,
-      rptu: false,
       ccdAI: false,
       adminControlCenter: false
     };
@@ -817,9 +717,6 @@ export function buildRolePermissions(role, customModules = {}, customSubsections
     }
     if (baseSubsections.streamComparator) {
       Object.keys(baseSubsections.streamComparator).forEach(k => baseSubsections.streamComparator[k] = false);
-    }
-    if (baseSubsections.rptu) {
-      Object.keys(baseSubsections.rptu).forEach(k => baseSubsections.rptu[k] = false);
     }
     if (baseSubsections.ccdAI) {
       Object.keys(baseSubsections.ccdAI).forEach(k => baseSubsections.ccdAI[k] = false);
@@ -836,7 +733,6 @@ export function buildRolePermissions(role, customModules = {}, customSubsections
       chemicalSuite: false,
       unitConverter: true,
       processFlow: true,
-      rptu: false,
       ccdAI: false,
       adminControlCenter: false
     };

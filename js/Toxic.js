@@ -278,28 +278,10 @@ window.calculateToxic_Toxic = calculateToxic_Toxic;
 
 // --- Gas Composition Calculator JS ---
 
-// Initial gases with molar masses (Hydrated from Backend /api/toxic)
-const molarMasses = {
-  c1: 16.04,
-  c2: 30.07,
-  c3: 44.10,
-  c4: 58.12,
-  c5: 72.15,
-  h2s: 34.08,
-  co: 28.01,
-  co2: 44.01
-};
-
-const gasNames = {
-  c1: "C1 (Methane)",
-  c2: "C2 (Ethane)",
-  c3: "C3 (Propane)",
-  c4: "C4 (Butane)",
-  c5: "C5 (Pentane)",
-  h2s: "H2S",
-  co: "CO",
-  co2: "CO2"
-};
+// Initial gases with molar masses (Hydrated from Cloud Firestore via /api/toxic)
+const molarMasses = {};
+const gasNames = {};
+const TOXIC_GAS_MAP = [];
 
 async function hydrateToxicMetadata() {
   try {
@@ -309,7 +291,7 @@ async function hydrateToxicMetadata() {
       if (data.success) {
         if (data.molarMasses) Object.assign(molarMasses, data.molarMasses);
         if (data.gasNames) Object.assign(gasNames, data.gasNames);
-        if (Array.isArray(data.toxicGasMap) && data.toxicGasMap.length > 0 && typeof TOXIC_GAS_MAP !== "undefined") {
+        if (Array.isArray(data.toxicGasMap) && data.toxicGasMap.length > 0) {
           TOXIC_GAS_MAP.splice(0, TOXIC_GAS_MAP.length, ...data.toxicGasMap);
         }
         populateGasDropdown();
@@ -319,6 +301,7 @@ async function hydrateToxicMetadata() {
     console.warn("Toxic metadata hydration notice:", err);
   }
 }
+hydrateToxicMetadata();
 
 let gasData = [];
 
@@ -542,19 +525,6 @@ function initToxicCalculator() {
 
 window.toxic_CURRENT_STREAMS = [];
 window.toxic_LOADED_UNITS = [];
-
-// Standard Toxic Gas Catalog Mapping
-const TOXIC_GAS_MAP = [
-  { key: "h2s", name: "H₂S (Hydrogen Sulfide)", mw: 34.08, aliases: ["h2s", "h₂s", "hydrogensulfide", "hydrogen sulfide", "sour"] },
-  { key: "co", name: "CO (Carbon Monoxide)", mw: 28.01, aliases: ["co", "carbonmonoxide", "carbon monoxide"] },
-  { key: "co2", name: "CO₂ (Carbon Dioxide)", mw: 44.01, aliases: ["co2", "co₂", "carbondioxide", "carbon dioxide"] },
-  { key: "nh3", name: "NH₃ (Ammonia)", mw: 17.03, aliases: ["nh3", "nh₃", "ammonia"] },
-  { key: "so2", name: "SO₂ (Sulfur Dioxide)", mw: 64.06, aliases: ["so2", "so₂", "sulfurdioxide", "sulfur dioxide"] },
-  { key: "no", name: "NO (Nitric Oxide)", mw: 30.01, aliases: ["no", "nitricoxide", "nitric oxide"] },
-  { key: "no2", name: "NO₂ (Nitrogen Dioxide)", mw: 46.01, aliases: ["no2", "no₂", "nitrogendioxide", "nitrogen dioxide"] },
-  { key: "cl2", name: "Cl₂ (Chlorine)", mw: 70.90, aliases: ["cl2", "cl₂", "chlorine"] },
-  { key: "hcn", name: "HCN (Hydrogen Cyanide)", mw: 27.03, aliases: ["hcn", "hydrogencyanide", "hydrogen cyanide"] }
-];
 
 function toxic_escapeHTML(str) {
   if (typeof str !== "string") return String(str || "");

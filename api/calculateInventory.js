@@ -1,4 +1,5 @@
 // api/calculateInventory.js
+import { getOrSeedEngineeringCatalog } from "./database.js";
 
 export const LV_MAP = {
   COLTOP: 0.25, COLMID: 0.25, COLBTM: 0.37,
@@ -20,7 +21,14 @@ function sanitizeNum(val, fallback = 0) {
   return Number.isFinite(n) ? n : fallback;
 }
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
+  const catalog = await getOrSeedEngineeringCatalog("inventory_defaults", {
+    LV_MAP,
+    FLUID_DENSITIES
+  });
+  const lvMap = catalog?.LV_MAP || LV_MAP;
+  const fluidDensities = catalog?.FLUID_DENSITIES || FLUID_DENSITIES;
+
   // =========================
   // ✅ GET: Default Liquid Volume % & Fluid Densities Metadata
   // =========================
@@ -28,9 +36,9 @@ export default function handler(req, res) {
     const equipmentType = req.query.defaultLV;
     return res.status(200).json({
       success: true,
-      lvPercent: LV_MAP[equipmentType] || 0,
-      lvMap: LV_MAP,
-      fluidDensities: FLUID_DENSITIES
+      lvPercent: lvMap[equipmentType] || 0,
+      lvMap,
+      fluidDensities
     });
   }
 
@@ -56,7 +64,7 @@ export default function handler(req, res) {
       const headCount = sanitizeNum(item?.headCount, 2);
       const equipmentType = item?.equipmentType || "";
       const customPercent = sanitizeNum(item?.customPercent, 0);
-      const density = sanitizeNum(item?.density, FLUID_DENSITIES[item?.fluidType] || 0);
+      const density = sanitizeNum(item?.density, fluidDensities[item?.fluidType] || 0);
       const flowRate = sanitizeNum(item?.flowRate, 0);
       const flowRateUnit = item?.flowRateUnit || "kg/s";
       const residenceTime = sanitizeNum(item?.residenceTime, 0);
@@ -96,7 +104,7 @@ export default function handler(req, res) {
 
       // Liquid
       if (phase === "liquid" || phase === "both") {
-        const percent = (equipmentType === "custom") ? customPercent : (LV_MAP[equipmentType] || 0);
+        const percent = (equipmentType === "custom") ? customPercent : (lvMap[equipmentType] || 0);
 
         if (!density || density <= 0) message = "⚠️ Missing density for liquid calculation.";
         else if (equipmentType === "custom" && percent === 0) message = "⚠️ Missing custom liquid %.";

@@ -92,7 +92,6 @@ window.kayetBotNavigate = function(tabId) {
     "simplePipingTab": window.showSimplePipingTab,
     "pipeThicknessTab": window.showpipeThicknessTab,
     "adminPanelTab": window.showAdminPanelTab,
-    "rptuTab": window.showRPTUDashboard,
     "chemicalSuiteTab": window.showChemicalSuiteTab,
     "streamComparatorTab": window.showStreamComparatorTab,
     "unitConverterTab": window.showUnitConverterTab

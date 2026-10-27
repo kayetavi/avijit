@@ -12,10 +12,16 @@ function initH2U() {
   const svgContainer = document.getElementById("h2u-svgContainer");
   if (!svgContainer) return;
 
+  const ensureMechs = typeof window.ensurePfdMechanismsLoaded === "function"
+    ? window.ensurePfdMechanismsLoaded()
+    : Promise.resolve();
+
   if (!svgContainer.querySelector("svg")) {
-    fetch("/assets/models/H2U-Model.svg")
-      .then(res => res.text())
-      .then(data => {
+    Promise.all([
+      ensureMechs,
+      fetch("/assets/models/H2U-Model.svg").then(res => res.text())
+    ])
+      .then(([, data]) => {
         svgContainer.innerHTML = data;
         setupH2USVGLogic(modal, svgContainer);
       })
@@ -23,7 +29,7 @@ function initH2U() {
         console.error("Failed to load H2U SVG:", err);
       });
   } else {
-    setupH2USVGLogic(modal, svgContainer);
+    ensureMechs.then(() => setupH2USVGLogic(modal, svgContainer));
   }
 }
 

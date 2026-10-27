@@ -484,6 +484,43 @@ if (typeof window !== "undefined") {
 
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+  // Hydrate PFD Unit Damage Mechanism Lists from Backend/Firestore
+  let _pfdMechsPromise = null;
+  window.ensurePfdMechanismsLoaded = function() {
+    const hcuList = document.getElementById("dm-list");
+    if (hcuList && hcuList.children.length > 0) return Promise.resolve();
+    if (_pfdMechsPromise) return _pfdMechsPromise;
+
+    _pfdMechsPromise = fetch("/api/database?type=pfd-mechanisms")
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (!data || !data.units) return;
+        const unitMap = [
+          { key: "hcu", listId: "dm-list", fnName: "openAPI571Details" },
+          { key: "cduvdu", listId: "cduvdu-dm-list", fnName: "openAPI571Details" },
+          { key: "msp", listId: "msp-dm-list", fnName: "openAPI571Details" },
+          { key: "h2u", listId: "h2u-dm-list", fnName: "openAPI571Details" }
+        ];
+        unitMap.forEach(({ key, listId }) => {
+          const ul = document.getElementById(listId);
+          const items = data.units[key];
+          if (!ul || !Array.isArray(items) || ul.children.length > 0) return;
+          ul.innerHTML = items.map(item => {
+            const code = String(item.code || "").trim();
+            const name = String(item.name || "").trim();
+            const safeUnit = key === "hcu" ? "hcu" : key;
+            return `<li data-dm="${code}">${code} – ${name} <button class="details-btn" onclick="event.stopPropagation(); openAPI571Details('${code}', '${safeUnit}')">Details</button></li>`;
+          }).join("");
+        });
+      })
+      .catch(err => {
+        console.warn("[PFD] Failed to hydrate PFD unit mechanisms:", err);
+      })
+      .finally(() => {
+        _pfdMechsPromise = null;
+      });
+    return _pfdMechsPromise;
+  };
 }
 
 // ── 3. HCU Process Flow Logic ──
@@ -494,11 +531,17 @@ function initProcessFlow() {
   const svgContainer = document.getElementById("svgContainer");
   if (!svgContainer) return;
 
+  const ensureMechs = typeof window.ensurePfdMechanismsLoaded === "function"
+    ? window.ensurePfdMechanismsLoaded()
+    : Promise.resolve();
+
   // Load SVG if not loaded
   if (!svgContainer.querySelector("svg")) {
-    fetch("/assets/models/HCU-Model-Final.svg")
-      .then(res => res.text())
-      .then(data => {
+    Promise.all([
+      ensureMechs,
+      fetch("/assets/models/HCU-Model-Final.svg").then(res => res.text())
+    ])
+      .then(([, data]) => {
         svgContainer.innerHTML = data;
         setupHCUSVGLogic(modal, svgContainer);
       })
@@ -506,7 +549,7 @@ function initProcessFlow() {
         console.error("Failed to load HCU SVG:", err);
       });
   } else {
-    setupHCUSVGLogic(modal, svgContainer);
+    ensureMechs.then(() => setupHCUSVGLogic(modal, svgContainer));
   }
 }
 

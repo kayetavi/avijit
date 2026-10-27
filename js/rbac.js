@@ -775,7 +775,6 @@
         { func: "showCDUVDUTab", modId: "processFlow", subId: "cduVdu", name: "Corrosion Diagrams - CDU / VDU" },
         { func: "showMSPTab", modId: "processFlow", subId: "msp", name: "Corrosion Diagrams - MSP" },
         { func: "showH2UTab", modId: "processFlow", subId: "h2u", name: "Corrosion Diagrams - H2U" },
-        { func: "showRPTUDashboard", modId: "rptu", subId: "rptuDashboard", name: "RPTU Dashboard" },
         { func: "openCCDAIPlatform", modId: "ccdAI", subId: "ccdAiPlatform", name: "CCD AI Platform" },
         { func: "showCCDAITab", modId: "ccdAI", subId: "ccdAiPlatform", name: "CCD AI Platform" },
         { func: "showChemicalSuiteTab", modId: "chemicalSuite", subId: "chemicalSafetySuite", name: "Chemistry & Chemical Suite" },
@@ -1000,9 +999,10 @@
 
       try {
         const isAdmin = this.isSuperAdmin || this.role === "admin";
+        const canAccessTools = isAdmin || this.hasModuleAccess("adminControlCenter");
 
-        // Ensure Tools category is present
-        if (typeof window.injectToolsCategory === "function" && !document.getElementById("rbac_cat_tools")) {
+        // Ensure Tools category is present only if user is authorized for Tools/Admin
+        if (typeof window.injectToolsCategory === "function" && canAccessTools && !document.getElementById("rbac_cat_tools") && !window.__sidebarRenderInProgress) {
           window.injectToolsCategory();
         }
 
@@ -1229,7 +1229,6 @@
           { id: "rbac_cat_chemicalSuite", mod: "chemicalSuite" },
           { id: "rbac_cat_streamComparator", mod: "streamComparator" },
           { id: "rbac_cat_unitConverter", mod: "unitConverter" },
-          { id: "rbac_cat_rptu", mod: "rptu" },
           { id: "rbac_cat_ccdAI", mod: "ccdAI" },
           { id: "rbac_cat_tools", mod: "adminControlCenter" }
         ];

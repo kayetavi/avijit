@@ -130,38 +130,41 @@ function loadCategories(data) {
 
   const existingDamageCat = categoryListEl.querySelector("li.category-toggle:not([id^='rbac_cat_']), li[data-rbac-module='damageExplorer']");
   const firstInjectedCat = categoryListEl.querySelector("li[id^='rbac_cat_']");
+  const wasExpanded = Boolean(existingDamageCat && existingDamageCat.querySelector("ul.mechanisms")?.style.display === "block");
 
-  Object.entries(data).forEach(([category, mechanisms]) => {
-    const categoryItem = document.createElement("li");
-    categoryItem.classList.add("category-toggle");
-    categoryItem.setAttribute("data-rbac-module", "damageExplorer");
+  window.__isApplyingSidebarLayout = true;
+  try {
+    Object.entries(data).forEach(([category, mechanisms]) => {
+      const categoryItem = document.createElement("li");
+      categoryItem.classList.add("category-toggle");
+      categoryItem.setAttribute("data-rbac-module", "damageExplorer");
 
-    const layoutCfg = (typeof window.getActiveLayoutConfig === "function" ? window.getActiveLayoutConfig() : null) || window.layoutConfig || (window.adminPanel && window.adminPanel.layoutConfig) || null;
-    const modConfig = layoutCfg && Array.isArray(layoutCfg.sidebarModules)
-      ? layoutCfg.sidebarModules.find(m => m && ((typeof window.normalizeSidebarModuleId === "function" ? window.normalizeSidebarModuleId(m.id) : m.id) === "damageExplorer" || m.id === "damageMechanisms"))
-      : null;
-    const customIcon = modConfig && modConfig.icon ? String(modConfig.icon).trim() : "🛡️";
-    let customLabel = modConfig && modConfig.label ? String(modConfig.label).trim() : "API 571 Damage Mechanisms";
-    if (customIcon && customLabel.startsWith(customIcon)) {
-      customLabel = customLabel.substring(customIcon.length).trim();
-    }
-    const displayTitle = (customIcon ? (customIcon + " ") : "") + customLabel;
+      const layoutCfg = (typeof window.getActiveLayoutConfig === "function" ? window.getActiveLayoutConfig() : null) || window.layoutConfig || (window.adminPanel && window.adminPanel.layoutConfig) || null;
+      const modConfig = layoutCfg && Array.isArray(layoutCfg.sidebarModules)
+        ? layoutCfg.sidebarModules.find(m => m && ((typeof window.normalizeSidebarModuleId === "function" ? window.normalizeSidebarModuleId(m.id) : m.id) === "damageExplorer" || m.id === "damageMechanisms"))
+        : null;
+      const customIcon = modConfig && modConfig.icon ? String(modConfig.icon).trim() : "🛡️";
+      let customLabel = modConfig && modConfig.label ? String(modConfig.label).trim() : "API 571 Damage Mechanisms";
+      if (customIcon && customLabel.startsWith(customIcon)) {
+        customLabel = customLabel.substring(customIcon.length).trim();
+      }
+      const displayTitle = (customIcon ? (customIcon + " ") : "") + customLabel;
 
-    const isHidden = (modConfig && modConfig.visible === false) || (layoutCfg && typeof window.isModuleLayoutVisible === "function" && !window.isModuleLayoutVisible("damageExplorer", layoutCfg));
-    const hasRbac = !window.RBAC || typeof window.RBAC.hasModuleAccess !== "function" || window.RBAC.isSuperAdmin || window.RBAC.role === "admin" || window.RBAC.hasModuleAccess("damageExplorer");
-    if (isHidden || !hasRbac) {
-      categoryItem.style.setProperty("display", "none", "important");
-      categoryItem.setAttribute("data-rbac-hidden", "true");
-    }
+      const isHidden = (modConfig && modConfig.visible === false) || (layoutCfg && typeof window.isModuleLayoutVisible === "function" && !window.isModuleLayoutVisible("damageExplorer", layoutCfg));
+      const hasRbac = !window.RBAC || typeof window.RBAC.hasModuleAccess !== "function" || window.RBAC.isSuperAdmin || window.RBAC.role === "admin" || window.RBAC.hasModuleAccess("damageExplorer");
+      if (isHidden || !hasRbac) {
+        categoryItem.style.setProperty("display", "none", "important");
+        categoryItem.setAttribute("data-rbac-hidden", "true");
+      }
 
-    const span = document.createElement("span");
-    span.classList.add("category");
-    span.innerHTML = `<span class="arrow" style="margin-right: 6px; font-size: 11px; display: inline-block;">▸</span><span class="category-title">${displayTitle}</span>`;
-    categoryItem.appendChild(span);
+      const span = document.createElement("span");
+      span.classList.add("category");
+      span.innerHTML = `<span class="arrow" style="margin-right: 6px; font-size: 11px; display: inline-block;">${wasExpanded ? "▾" : "▸"}</span><span class="category-title">${displayTitle}</span>`;
+      categoryItem.appendChild(span);
 
-    const mechList = document.createElement("ul");
-    mechList.classList.add("mechanisms");
-    mechList.style.display = "none";
+      const mechList = document.createElement("ul");
+      mechList.classList.add("mechanisms");
+      mechList.style.display = wasExpanded ? "block" : "none";
 
     if (category === "Damage Mechanism") {
       const inlineInput = document.createElement("input");
@@ -316,15 +319,18 @@ function loadCategories(data) {
 
     categoryItem.appendChild(mechList);
 
-    // Atomically replace existing placeholder to prevent shifting or jitter
-    if (existingDamageCat && existingDamageCat.parentNode) {
-      existingDamageCat.replaceWith(categoryItem);
-    } else if (firstInjectedCat) {
-      categoryListEl.insertBefore(categoryItem, firstInjectedCat);
-    } else {
-      categoryListEl.appendChild(categoryItem);
-    }
-  });
+      // Atomically replace existing placeholder to prevent shifting or jitter
+      if (existingDamageCat && existingDamageCat.parentNode) {
+        existingDamageCat.replaceWith(categoryItem);
+      } else if (firstInjectedCat) {
+        categoryListEl.insertBefore(categoryItem, firstInjectedCat);
+      } else {
+        categoryListEl.appendChild(categoryItem);
+      }
+    });
+  } finally {
+    window.__isApplyingSidebarLayout = false;
+  }
 
   if (typeof window.applyPublishedSidebarLayout === "function") {
     window.applyPublishedSidebarLayout();

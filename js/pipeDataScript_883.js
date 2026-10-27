@@ -254,7 +254,7 @@
 
     selectNPS883.disabled = false;
     const currentNps = selectNPS883.value;
-    selectNPS883.innerHTML = `<option value="">-- Select NPS Size --</option>`;
+    selectNPS883.innerHTML = `<option value="">-- Select NPS --</option>`;
 
     const odMap = window.pipeOD883 || {};
     const npsItems = activeNpsList.length > 0 ? activeNpsList : Object.keys(odMap);
@@ -263,20 +263,12 @@
       // Avoid duplicate decimal values in main dropdown
       if (nps.includes(".") && !["0.125", "0.25", "0.375"].includes(nps)) return;
 
-      const od = odMap[nps];
       const opt = document.createElement("option");
       opt.value = nps;
-      opt.textContent = od
-        ? `NPS ${nps}" (OD: ${od} mm / ${(od / 25.4).toFixed(3)}")`
-        : `NPS ${nps}"`;
+      opt.textContent = nps;
       if (nps === currentNps) opt.selected = true;
       selectNPS883.appendChild(opt);
     });
-
-    // If nothing selected yet, default to standard NPS 2"
-    if (!selectNPS883.value && npsItems.includes("2")) {
-      selectNPS883.value = "2";
-    }
 
     if (selectNPS883.value) {
       updateScheduleOptions(selectNPS883.value);
@@ -284,7 +276,7 @@
       const selectSCH883 = document.getElementById("select_sch_883");
       if (selectSCH883) {
         selectSCH883.disabled = false;
-        selectSCH883.innerHTML = `<option value="">-- Select NPS First --</option>`;
+        selectSCH883.innerHTML = `<option value="">-- Select SCH --</option>`;
       }
       renderPipeResults(null);
     }
@@ -298,7 +290,12 @@
     if (!selectSCH883) return;
 
     selectSCH883.disabled = false;
-    selectSCH883.innerHTML = `<option value="">-- Select Schedule (SCH) --</option>`;
+    selectSCH883.innerHTML = `<option value="">-- Select SCH --</option>`;
+
+    if (!nps) {
+      renderPipeResults(null);
+      return;
+    }
 
     const master = window.pipeDataMaster883 || {};
     const schedules = master[nps] || master[DECIMAL_MAP[nps]] || {};
@@ -307,34 +304,24 @@
     if (schKeys.length === 0) {
       const opt = document.createElement("option");
       opt.value = "";
-      opt.textContent = "-- No schedules defined for this size --";
+      opt.textContent = "-- No schedules --";
       selectSCH883.appendChild(opt);
       renderPipeResults(null);
       return;
     }
 
     schKeys.forEach(sch => {
-      const wt = schedules[sch];
       const opt = document.createElement("option");
       opt.value = sch;
-      opt.textContent = wt
-        ? `${sch} — (WT: ${wt} mm / ${(wt / 25.4).toFixed(3)}")`
-        : sch;
+      opt.textContent = sch;
       selectSCH883.appendChild(opt);
     });
 
-    // Auto-select standard schedule (SCH 40, SCH STD, SCH 40S, or first)
-    if (schKeys.includes("SCH 40")) {
-      selectSCH883.value = "SCH 40";
-    } else if (schKeys.includes("SCH STD")) {
-      selectSCH883.value = "SCH STD";
-    } else if (schKeys.includes("SCH 40S")) {
-      selectSCH883.value = "SCH 40S";
-    } else if (schKeys.length > 0) {
-      selectSCH883.value = schKeys[0];
+    if (selectSCH883.value) {
+      calculateAndRender(nps, selectSCH883.value);
+    } else {
+      renderPipeResults(null);
     }
-
-    calculateAndRender(nps, selectSCH883.value);
   }
 
   /**
@@ -391,7 +378,7 @@
 
     if (!calc) {
       if (resultThickness) {
-        resultThickness.innerHTML = `<span style="color: #cbd5e1; font-size: 16px; font-weight: normal;">Please select an NPS size and Schedule above.</span>`;
+        resultThickness.innerHTML = "";
       }
       if (resultOD) resultOD.innerHTML = "";
       if (resultCirc) resultCirc.innerHTML = "";

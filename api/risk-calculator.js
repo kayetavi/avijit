@@ -4,6 +4,7 @@ import { getAdminFirestore } from "./firebaseAdmin.js";
 import { getFirestoreDb } from "./firestoreClient.js";
 import { doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore";
 import { verifyRequestRbac } from "./rbac.js";
+import { getOrSeedEngineeringCatalog } from "./database.js";
 
 const SECURE_DIR = path.join(process.cwd(), "data", "secure");
 const WORKSPACE_FILE = path.join(SECURE_DIR, "rbi_workspace.json");
@@ -1125,6 +1126,177 @@ export function calculateInspectionAIC(countsInput = {}) {
   };
 }
 
+export const COF_RELEASE_ADJUSTMENT = { "A_A": 0.25, "A_B": 0.20, "A_C": 0.10, "B_B": 0.15, "C_C": 0.00 };
+
+export const BENCHMARK_ASSET = {
+  id: "04-VV-00-001 ~ RAW FEED SURGE DRUM",
+  tag: "04-VV-00-001",
+  name: "RAW FEED SURGE DRUM",
+  equipmentCategory: "Pressure Vessel",
+  unitService: "Hydrocracker Unit Raw Feed Surge",
+  functionalLocation: "NRL-FMT-HCU-MEC",
+  facilityName: "Refinery Complex Plant 1",
+  designCode: "ASME Sec VIII Div 1",
+  designPressure_kgcm2: 25.0,
+  designTemp_C: 85.0,
+  operatingPressure_kgcm2: 19.8,
+  operatingTemp_C: 40.0,
+  materialOfConstruction: "SA516-PLATE-Legacy Gr. 70",
+  corrosionAllowance_mm: 3.0,
+  insulationType: "None",
+  processFluid: "C4 (Butane)",
+  commissionDate: "2015-06-16",
+  scenarioId: "Evergreening 2026",
+  scenarioReferenceDate: "2026-06-16",
+  isDatasheetLocked: true,
+  datasheetSavedAt: "Protected (Sample Benchmark)"
+};
+
+export const BENCHMARK_COMPONENT = {
+  id: "04-VV-00-001-SHELL",
+  fullName: "RAW FEED SURGE DRUM SHELL",
+  equipmentType: "Pressure Vessel",
+  materialSpec: "SA516-PLATE-Legacy Gr. 70",
+  isSaved: true,
+  hasUnsavedChanges: false,
+  technicalData: {
+    scenarioId: "Evergreening 2026",
+    scenarioReferenceDate: "2026-06-16",
+    dateInService: "2000-06-19",
+    processFluid: "C4 (Butane)",
+    operatingPressure_kgcm2: 17,
+    operatingTemp_C: 40,
+    initialFluidPhase: "Liquid",
+    fluidValidFor581: true,
+    toxicMixture: false,
+    toxicFluid: "",
+    percentToxic: 0,
+    toxicFluidValidFor581: false,
+    inventory_kg: 11166.09,
+    inventoryGroup: "",
+    calculatedInventory_kg: 11166.09,
+    isolationTime_min: 10,
+    detectionTime_min: 10,
+    areaHumidity: "Low",
+    designPressure_kgcm2: 27.6,
+    designTemp_C: 200,
+    insideDiameter_mm: 457,
+    length_mm: 4200,
+    nominalThickness_mm: 14.0,
+    insulated: false,
+    insulationType: "None",
+    pwht: false,
+    stressLookupTable: "Pressure Vessels",
+    constructionCode: "ASME VIII DIV 1",
+    codeYear: "1995",
+    materialSpec: "SA516-PLATE-Legacy",
+    materialGrade: "70",
+    weldJointEfficiency: 0.85,
+    isEntryPossible: "Yes (Y)",
+    specifiedTmin_mm: 10.8,
+    sourceOfCalculatedCorrosionRates: "Asset",
+    estimatedInternalCorrosionRate_mm_yr: 0.025,
+    estimatedExternalCorrosionRate_mm_yr: 0.076,
+    measuredExternalCorrosionRate_mm_yr: 0,
+    internalCorrosionType: "General",
+    predictableIntCorrLocation: false,
+    corrosiveProduct: "",
+    susceptibleToCUI: "No (N)",
+    lostProductionCategory: "B"
+  },
+  analyses: [
+    {
+      id: "Evergreening 2026",
+      name: "04-VV-00-001-SHELL ~ Evergreening 2026",
+      type: "581",
+      isCalculated: true,
+      dateCriticalityCalculated: "2026-06-16 10:30:00",
+      internalInputs: {
+        equipmentType: "Pressure Vessel",
+        tInit_mm: 14.0,
+        diameter_mm: 457,
+        designPressure_bar: 27.06,
+        designTemp_C: 200,
+        allowableStress_MPa: 137.9,
+        yearsInService: 26,
+        corrosionRate_mm_yr: 0.025,
+        numberOfInspections: 6,
+        inspectionConfidence: "High",
+        dateInService: "2000-06-19",
+        specifiedTmin_mm: 10.8
+      },
+      externalInputs: {
+        operatingTemp_C: 40,
+        isInsulated: false,
+        materialIsCarbonSteel: true,
+        coatingType: "Average - Two Part Industrial (5 yr)",
+        insulationType: "N/A (Default)",
+        insulationCondition: "Good",
+        humidityLevel: "Low",
+        nearCoolingTower: false,
+        isPiping: false,
+        pipingPenetrations: 0,
+        pipingTerminations: 0,
+        pipingVerticalRuns: 0,
+        pipingLength_m: 0,
+        numberOfInspections: 2,
+        inspectionConfidence: "Medium",
+        dateInService: "2000-06-19",
+        nominalThickness_mm: 14.0,
+        specifiedTmin_mm: 10.8
+      },
+      consequenceInputs: {
+        fluidId: "C4",
+        operatingPressure_bar: 16.67,
+        operatingTemp_C: 40,
+        ambientTemp_C: 25,
+        inventory_kg: 11166.09,
+        equipmentType: "Pressure Vessel",
+        detectionTime_min: 10,
+        isolationTime_min: 10,
+        lostProductionCategory: "B",
+        initialFluidPhase: "Liquid"
+      },
+      headerData: {
+        assetId: "04-VV-00-001",
+        analysisId: "Evergreening 2026",
+        functionalLocation: "NRL-FMT-HCU-MEC",
+        genericFailureFrequency: "3.06E-05 (Failures/Year)",
+        criticalityItemType: "Pressure Vessel",
+        scenarioId: "Evergreening 2026",
+        scenarioReferenceDate: "2026-06-16",
+        dateCriticalityCalculated: "2026-06-16 10:30:00",
+        effectiveDateForRiskAnalysis: "2026-06-16",
+        analysisStartDate: "2026-06-16 10:00:00"
+      },
+      mechanisms: [
+        { id: "internal", name: "Criticality Calculator Internal Corrosion", damageFactor: 1, probabilityOfFailure: 4, consequenceOfFailure: "B", inspectionPriority: 15 },
+        { id: "external", name: "Criticality Calculator External Corrosion", damageFactor: 1, probabilityOfFailure: 4, consequenceOfFailure: "B", inspectionPriority: 15 }
+      ]
+    }
+  ]
+};
+
+async function getRbiReferenceCatalog() {
+  return await getOrSeedEngineeringCatalog("rbi_reference_tables", {
+    artTable: ART_TABLE,
+    structuralMinThickness: STRUCTURAL_MIN_THICKNESS,
+    leakAreas: EQUIPMENT_LEAK_AREAS,
+    fluidsDatabase: FLUIDS_DATABASE,
+    priorityMatrix: PRIORITY_NUMBER_MATRIX,
+    riskMatrix: RISK_LEVEL_MATRIX,
+    cofFluidProperties: COF_FLUID_PROPERTIES,
+    cofFluidLabels: COF_FLUID_LABELS,
+    cofLiquidFluids: COF_LIQUID_FLUIDS,
+    cofGasFluids: COF_GAS_FLUIDS,
+    cofReleaseAdjustment: COF_RELEASE_ADJUSTMENT,
+    equivalenceFactorsAic: EQUIVALENCE_FACTORS_AIC,
+    methodsAic: METHODS_AIC,
+    benchmarkAsset: BENCHMARK_ASSET,
+    benchmarkComponent: BENCHMARK_COMPONENT
+  });
+}
+
 function enrichWorkspaceWithCalculations(ws) {
   if (!ws || typeof ws !== "object") return ws;
   const compsByAsset = ws.componentsByAsset || {};
@@ -1161,24 +1333,27 @@ export default async function handler(req, res) {
     // 0. BACKEND POF, COF, AIC & RBI CALCULATION ENGINE ENDPOINTS
     // ----------------------------------------------------
     if (action === "art_table" || action === "get_art_table" || action === "metadata") {
+      const cat = await getRbiReferenceCatalog();
       return res.status(200).json({
         success: true,
-        artTable: ART_TABLE,
-        structuralMinThickness: STRUCTURAL_MIN_THICKNESS,
-        leakAreas: EQUIPMENT_LEAK_AREAS,
-        fluidsDatabase: FLUIDS_DATABASE,
-        priorityMatrix: PRIORITY_NUMBER_MATRIX,
-        riskMatrix: RISK_LEVEL_MATRIX
+        artTable: cat?.artTable || ART_TABLE,
+        structuralMinThickness: cat?.structuralMinThickness || STRUCTURAL_MIN_THICKNESS,
+        leakAreas: cat?.leakAreas || EQUIPMENT_LEAK_AREAS,
+        fluidsDatabase: cat?.fluidsDatabase || FLUIDS_DATABASE,
+        priorityMatrix: cat?.priorityMatrix || PRIORITY_NUMBER_MATRIX,
+        riskMatrix: cat?.riskMatrix || RISK_LEVEL_MATRIX
       });
     }
 
     if (action === "cof_level2_metadata") {
+      const cat = await getRbiReferenceCatalog();
       return res.status(200).json({
         success: true,
-        fluidProperties: COF_FLUID_PROPERTIES,
-        fluidLabels: COF_FLUID_LABELS,
-        liquidFluids: COF_LIQUID_FLUIDS,
-        gasFluids: COF_GAS_FLUIDS
+        fluidProperties: cat?.cofFluidProperties || COF_FLUID_PROPERTIES,
+        fluidLabels: cat?.cofFluidLabels || COF_FLUID_LABELS,
+        liquidFluids: cat?.cofLiquidFluids || COF_LIQUID_FLUIDS,
+        gasFluids: cat?.cofGasFluids || COF_GAS_FLUIDS,
+        releaseAdjustment: cat?.cofReleaseAdjustment || COF_RELEASE_ADJUSTMENT
       });
     }
 
@@ -1193,10 +1368,11 @@ export default async function handler(req, res) {
     }
 
     if (action === "aic_metadata") {
+      const cat = await getRbiReferenceCatalog();
       return res.status(200).json({
         success: true,
-        equivalenceFactors: EQUIVALENCE_FACTORS_AIC,
-        methods: METHODS_AIC
+        equivalenceFactors: cat?.equivalenceFactorsAic || EQUIVALENCE_FACTORS_AIC,
+        methods: cat?.methodsAic || METHODS_AIC
       });
     }
 
@@ -1264,7 +1440,7 @@ export default async function handler(req, res) {
       if (adminDb) {
         try {
           const snap = await adminDb.collection("semi_quantitative_rbi_workspace").doc("current_workspace").get();
-          if (snap.exists) {
+          if (snap.exists && snap.data()?.assets?.length > 0) {
             return res.status(200).json({
               success: true,
               source: "firestore",
@@ -1279,7 +1455,7 @@ export default async function handler(req, res) {
       if (clientDb) {
         try {
           const snap = await getDoc(doc(clientDb, "semi_quantitative_rbi_workspace", "current_workspace"));
-          if (snap.exists()) {
+          if (snap.exists() && snap.data()?.assets?.length > 0) {
             return res.status(200).json({
               success: true,
               source: "firestore",
@@ -1291,17 +1467,28 @@ export default async function handler(req, res) {
         }
       }
       const localWs = loadJsonFile(WORKSPACE_FILE, null);
-      if (localWs) {
+      if (localWs && localWs.assets?.length > 0) {
         return res.status(200).json({
           success: true,
           source: "local_cache",
           workspace: enrichWorkspaceWithCalculations(localWs)
         });
       }
+      const cat = await getRbiReferenceCatalog();
+      const bAsset = cat?.benchmarkAsset || BENCHMARK_ASSET;
+      const bComp = cat?.benchmarkComponent || BENCHMARK_COMPONENT;
+      const defaultWorkspace = enrichWorkspaceWithCalculations({
+        functionalLocations: [],
+        assets: [JSON.parse(JSON.stringify(bAsset))],
+        componentsByAsset: {
+          [bAsset.id]: [JSON.parse(JSON.stringify(bComp))]
+        },
+        lastUpdated: new Date().toISOString()
+      });
       return res.status(200).json({
         success: true,
-        source: "default",
-        workspace: { functionalLocations: [], assets: [], componentsByAsset: {}, lastUpdated: new Date().toISOString() }
+        source: "firestore_benchmark_catalog",
+        workspace: defaultWorkspace
       });
     }
 

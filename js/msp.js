@@ -12,10 +12,16 @@ function initMSP() {
   const svgContainer = document.getElementById("msp-svgContainer");
   if (!svgContainer) return;
 
+  const ensureMechs = typeof window.ensurePfdMechanismsLoaded === "function"
+    ? window.ensurePfdMechanismsLoaded()
+    : Promise.resolve();
+
   if (!svgContainer.querySelector("svg")) {
-    fetch("/assets/models/MSP-Model.svg")
-      .then(res => res.text())
-      .then(data => {
+    Promise.all([
+      ensureMechs,
+      fetch("/assets/models/MSP-Model.svg").then(res => res.text())
+    ])
+      .then(([, data]) => {
         svgContainer.innerHTML = data;
         setupMSPSVGLogic(modal, svgContainer);
       })
@@ -23,7 +29,7 @@ function initMSP() {
         console.error("Failed to load MSP SVG:", err);
       });
   } else {
-    setupMSPSVGLogic(modal, svgContainer);
+    ensureMechs.then(() => setupMSPSVGLogic(modal, svgContainer));
   }
 }
 

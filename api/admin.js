@@ -104,17 +104,16 @@ function getDefaultLayoutConfig() {
     sidebarModules: [
       { id: "damageExplorer", label: "API 571 Damage Mechanisms", icon: "🛡️", visible: true, order: 1, group: "Damage & Integrity", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "damageExplorerTab", launcherFunc: "showDamageMechanismTab" },
       { id: "api581", label: "API 581 Risk-Based Inspection", icon: "📊", visible: true, order: 2, group: "RBI & Assessment", roles: ["admin", "lead_engineer"], tabId: "a571-criteriaTab", launcherFunc: "showCriteriaTab" },
-      { id: "api570", label: "API 570 Piping Inspection", icon: "⏱️", visible: true, order: 3, group: "RBI & Assessment", roles: ["admin", "lead_engineer"], tabId: "remainingLifeTab", launcherFunc: "showRemainingLifeTab" },
+      { id: "api570", label: "API 570 Remaining Life", icon: "⏱️", visible: true, order: 3, group: "RBI & Assessment", roles: ["admin", "lead_engineer"], tabId: "remainingLifeTab", launcherFunc: "showRemainingLifeTab" },
       { id: "thicknessCalc", label: "Design Thickness (ASME)", icon: "📐", visible: true, order: 4, group: "Engineering Calculations", roles: ["admin", "lead_engineer", "inspector"], tabId: "ASMEB31_3Tab", launcherFunc: "showASMEB31_3Tab" },
       { id: "crackingMechanism", label: "Cracking Mechanism Analysis", icon: "⚡", visible: true, order: 5, group: "Damage & Integrity", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "crackingMechanismTab", launcherFunc: "showCrackingMechanismTab" },
-      { id: "bkStress", label: "Allowable Stress DB", icon: "🧮", visible: true, order: 6, group: "Engineering Calculations", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "bkStressTab", launcherFunc: "showbkStressTab" },
-      { id: "streamComparator", label: "Stream Data Comparator", icon: "🔄", visible: true, order: 7, group: "Process & Fluids", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "streamComparatorTab", launcherFunc: "showStreamComparatorTab" },
-      { id: "chemicalSuite", label: "Chemical Suite", icon: "⚗️", visible: true, order: 8, group: "Process & Fluids", roles: ["admin", "lead_engineer", "inspector"], tabId: "chemicalSuiteTab", launcherFunc: "showChemicalSuiteTab" },
-      { id: "unitConverter", label: "Unit Converters", icon: "📐", visible: true, order: 9, group: "Utilities", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "unitConverterTab", launcherFunc: "showUnitConverterTab" },
+      { id: "bkStress", label: "Allowable Stress & Material Data", icon: "🧮", visible: true, order: 6, group: "Engineering Calculations", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "bkStressTab", launcherFunc: "showbkStressTab" },
+      { id: "streamComparator", label: "Stream Comparator (HMB)", icon: "🔄", visible: true, order: 7, group: "Process & Fluids", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "streamComparatorTab", launcherFunc: "showStreamComparatorTab" },
+      { id: "chemicalSuite", label: "Chemistry & Chemical Suite", icon: "⚗️", visible: true, order: 8, group: "Process & Fluids", roles: ["admin", "lead_engineer", "inspector"], tabId: "chemicalSuiteTab", launcherFunc: "showChemicalSuiteTab" },
+      { id: "unitConverter", label: "Plant & Integrity Unit Converters", icon: "📐", visible: true, order: 9, group: "Utilities", roles: ["admin", "lead_engineer", "inspector", "viewer"], tabId: "unitConverterTab", launcherFunc: "showUnitConverterTab" },
       { id: "processFlow", label: "Process Flow Diagrams (PFD)", icon: "🗺️", visible: true, order: 10, group: "Plant Operations", roles: ["admin", "lead_engineer"], tabId: "processFlowModal", launcherFunc: "showPROCESSFLOWDIAGRAMSTab" },
-      { id: "rptu", label: "RPTU Dashboard", icon: "📈", visible: true, order: 11, group: "Monitoring", roles: ["admin", "lead_engineer"], tabId: "rptuDashboard", launcherFunc: "showRPTUDashboard" },
-      { id: "ccdAI", label: "CCD AI Platform", icon: "🤖", visible: true, order: 12, group: "External Platforms", roles: ["admin", "lead_engineer"], tabId: "ccdAiTab", launcherFunc: "showCCDAITab" },
-      { id: "adminControlCenter", label: "Tools", icon: "🛠️", visible: true, order: 13, group: "Governance & Tools", roles: ["admin"], tabId: "adminPanelTab", launcherFunc: "openTool" }
+      { id: "ccdAI", label: "CCD AI Platform", icon: "🤖", visible: true, order: 11, group: "External Platforms", roles: ["admin", "lead_engineer"], tabId: "ccdAiTab", launcherFunc: "showCCDAITab" },
+      { id: "adminControlCenter", label: "Admin & Engineering Tools", icon: "🛠️", visible: true, order: 12, group: "Governance & Tools", roles: ["admin"], tabId: "adminPanelTab", launcherFunc: "openTool" }
     ],
     welcomeCards: [
       { id: "card_damageExplorer", title: "API 571 Damage Mechanisms", subtitle: "Comprehensive catalog of 90+ damage mechanisms from API RP 571.", icon: "🔬", targetTab: "damageExplorer", enabled: true },
@@ -127,7 +126,6 @@ function getDefaultLayoutConfig() {
       { id: "card_chemicalSuite", title: "Chemical Suite", subtitle: "Corrosion & Chemistry Prediction, SDS & HAZMAT PPE Matrix.", icon: "⚗️", targetTab: "chemicalSuite", enabled: true },
       { id: "card_unitConverter", title: "Unit Converters", subtitle: "Plant & Integrity Unit Converters for corrosion, pressure, temp & flow.", icon: "📐", targetTab: "unitConverter", enabled: true },
       { id: "card_processFlow", title: "Process Flow Diagrams (PFD)", subtitle: "Corrosion loops & degradation maps for Atmospheric Distillation, CDU/VDU, MSP, and H2U units..", icon: "🗺️", targetTab: "processFlow", enabled: true },
-      { id: "card_rptu", title: "RPTU Dashboard", subtitle: "Live process telemetry monitoring and Integrity Operating Window (IOW) exceedance alarms.", icon: "📈", targetTab: "rptu", enabled: true },
       { id: "card_ccdAI", title: "CCD AI Platform", subtitle: "AI-powered degradation rate modeling & neural network damage mechanism classifier.", icon: "🤖", targetTab: "ccdAI", enabled: true },
       { id: "card_api571Criteria", title: "API 571 Screening Matrix", subtitle: "Input process conditions to screen and evaluate 17 core damage mechanisms using smart rules.", icon: "🎯", targetTab: "api571Criteria", enabled: true },
       { id: "card_fluidSelector", title: "Representative Fluids (API 581)", subtitle: "Access API 581 Table 4.1 chemical library with thermodynamic properties & flammability limits.", icon: "💧", targetTab: "fluidSelector", enabled: true }
