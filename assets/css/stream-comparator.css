@@ -100,6 +100,15 @@ body.dark-mode .stream-ingestion-card #streamDocTitle {
   border-color: #475569 !important;
 }
 
+body.dark-mode .stream-ingestion-card .stream-hub-divider {
+  border-top-color: #334155 !important;
+}
+
+body.dark-mode .stream-ingestion-card #streamModeToggleWrap {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
 body.dark-mode #streamIngestModal .rbac-modal-card {
   background: #1e293b !important;
   color: #f8fafc !important;
@@ -300,6 +309,25 @@ body.dark-mode .stream-select {
   background: #0f172a;
   border-color: #334155;
   color: #f1f5f9;
+}
+
+#streamScopeSelect,
+#matrixCaseSelect {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  height: 26px !important;
+  padding: 2px 24px 2px 8px !important;
+  border-radius: 5px !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #334155 !important;
+  background-color: #ffffff !important;
+}
+
+body.dark-mode #streamScopeSelect,
+body.dark-mode #matrixCaseSelect {
+  background-color: #1e293b !important;
+  border-color: #475569 !important;
+  color: #f1f5f9 !important;
 }
 
 /* KPI Summary Cards */
@@ -765,34 +793,281 @@ body.dark-mode .stream-global-spinner-subtitle {
   color: #94a3b8;
 }
 
-/* Matrix Stream Chips */
-.matrix-stream-chip {
+/* Compact Matrix Controls Container & Floating Stream Dropdown Popover */
+#matrixControlsContainer {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+body.dark-mode #matrixControlsContainer {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+.matrix-stream-dropdown-trigger {
+  flex: 1;
+  min-width: 0;
+  height: 27px;
+  padding: 0 9px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 6px 13px;
-  background: #ffffff;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 20px;
-  font-size: 13px;
+  justify-content: space-between;
+  font-size: 12px;
   font-weight: 600;
-  color: #334155;
+  color: #1e293b;
   cursor: pointer;
+  outline: none;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.matrix-stream-dropdown-trigger:hover {
+  border-color: #818cf8;
+  background: #fdfcff;
+}
+
+body.dark-mode .matrix-stream-dropdown-trigger {
+  background: #1e293b;
+  border-color: #475569;
+  color: #f1f5f9;
+}
+
+/* Floating Popover Menu (#matrixStreamChips) */
+.matrix-stream-chips-box {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  width: 460px;
+  max-width: min(92vw, 500px);
+  max-height: 265px !important;
+  z-index: 1200;
+  background: #ffffff;
+  border: 1.5px solid #c084fc;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.22), 0 4px 10px -2px rgba(15, 23, 42, 0.08);
+}
+
+body.dark-mode .matrix-stream-chips-box {
+  background: #0f172a;
+  border-color: #7c3aed;
+  box-shadow: 0 14px 32px -4px rgba(0, 0, 0, 0.65);
+}
+
+.matrix-chips-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 6px 8px;
+  background: #faf5ff;
+  border-bottom: 1px solid #e9d5ff;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+}
+
+body.dark-mode .matrix-chips-toolbar {
+  background: #1e1b4b;
+  border-bottom-color: #312e81;
+}
+
+.matrix-chips-search-wrap {
+  position: relative;
+  flex: 1 1 150px;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+}
+
+.matrix-chips-search-icon {
+  position: absolute;
+  left: 7px;
+  font-size: 11px;
+  color: #9333ea;
+  pointer-events: none;
+  line-height: 1;
+}
+
+.matrix-chips-search-input {
+  width: 100%;
+  height: 25px;
+  padding: 2px 22px 2px 24px;
+  font-size: 11.5px;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #d8b4fe;
+  border-radius: 5px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.matrix-chips-search-input:focus {
+  border-color: #9333ea;
+  box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.15);
+}
+
+body.dark-mode .matrix-chips-search-input {
+  background: #0f172a;
+  border-color: #4c1d95;
+  color: #f8fafc;
+}
+
+.matrix-chips-search-clear {
+  position: absolute;
+  right: 4px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 10.5px;
+  cursor: pointer;
+  padding: 2px 4px;
+  line-height: 1;
+  border-radius: 4px;
+  visibility: hidden;
+}
+
+.matrix-chips-search-clear:hover {
+  color: #475569;
+  background: #f1f5f9;
+}
+
+body.dark-mode .matrix-chips-search-clear:hover {
+  color: #e2e8f0;
+  background: #334155;
+}
+
+.matrix-chips-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.matrix-toolbar-btn {
+  height: 24px;
+  padding: 0 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
   transition: all 0.15s ease;
   user-select: none;
 }
 
+.matrix-toolbar-btn-all {
+  background: #f3e8ff;
+  color: #7e22ce;
+  border: 1px solid #d8b4fe;
+}
+
+.matrix-toolbar-btn-all:hover,
+.matrix-toolbar-btn-all.active {
+  background: #f3e8ff;
+  color: #6b21a8;
+  border-color: #c084fc;
+}
+
+.matrix-toolbar-btn-none {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.matrix-toolbar-btn-none:hover,
+.matrix-toolbar-btn-none.active {
+  background: #e2e8f0;
+  color: #1e293b;
+  border-color: #94a3b8;
+}
+
+.matrix-toolbar-btn-clear {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.matrix-toolbar-btn-clear:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+.matrix-toolbar-btn-done {
+  background: #7c3aed;
+  color: #ffffff;
+  border: 1px solid #6d28d9;
+}
+
+.matrix-toolbar-btn-done:hover {
+  background: #6d28d9;
+}
+
+body.dark-mode .matrix-toolbar-btn-all {
+  background: rgba(124, 58, 237, 0.2);
+  color: #d8b4fe;
+  border-color: rgba(168, 85, 247, 0.4);
+}
+
+body.dark-mode .matrix-toolbar-btn-none {
+  background: #334155;
+  color: #cbd5e1;
+  border-color: #475569;
+}
+
+body.dark-mode .matrix-toolbar-btn-clear {
+  background: rgba(220, 38, 38, 0.18);
+  color: #fca5a5;
+  border-color: rgba(248, 113, 113, 0.35);
+}
+
+/* Scrollable Single-Column Stream Rows List inside Floating Popover */
+.matrix-stream-chips-list {
+  max-height: 215px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  scrollbar-width: thin;
+  flex: 1 1 auto;
+}
+
+.matrix-stream-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  user-select: none;
+  min-width: 0;
+}
+
 .matrix-stream-chip:hover {
-  border-color: #2563eb;
+  border-color: #93c5fd;
   background: #eff6ff;
-  color: #1d4ed8;
 }
 
 .matrix-stream-chip.active {
-  background: #2563eb;
-  border-color: #1d4ed8;
-  color: #ffffff;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1e3a8a;
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.08);
 }
 
 .matrix-stream-chip input[type="checkbox"] {
@@ -800,45 +1075,70 @@ body.dark-mode .stream-global-spinner-subtitle {
   margin: 0;
   width: 14px;
   height: 14px;
+  accent-color: #2563eb;
+  flex-shrink: 0;
+}
+
+.matrix-stream-chip-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.matrix-stream-chip-meta {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.matrix-stream-meta-pill {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 10.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.matrix-stream-chip.active .matrix-stream-meta-pill {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-color: #93c5fd;
 }
 
 body.dark-mode .matrix-stream-chip {
   background: #1e293b;
-  border-color: #475569;
-  color: #cbd5e1;
+  border-color: #334155;
+  color: #e2e8f0;
 }
 
 body.dark-mode .matrix-stream-chip:hover {
   border-color: #3b82f6;
-  background: #1e3a8a;
-  color: #93c5fd;
+  background: #172554;
 }
 
 body.dark-mode .matrix-stream-chip.active {
-  background: #2563eb;
-  border-color: #60a5fa;
-  color: #ffffff;
+  background: rgba(37, 99, 235, 0.22);
+  border-color: #3b82f6;
+  color: #f8fafc;
 }
 
-/* Scrollable Container for Matrix Stream Numbers */
-.matrix-stream-chips-box {
-  max-height: 120px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 8px 10px;
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  scrollbar-width: thin;
-}
-
-body.dark-mode .matrix-stream-chips-box {
+body.dark-mode .matrix-stream-meta-pill {
   background: #0f172a;
+  color: #94a3b8;
   border-color: #334155;
+}
+
+body.dark-mode .matrix-stream-chip.active .matrix-stream-meta-pill {
+  background: #1e3a8a;
+  color: #bfdbfe;
+  border-color: #3b82f6;
 }
 
 /* Cloud Datasets Modal Button */

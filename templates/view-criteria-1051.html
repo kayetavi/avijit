@@ -21,19 +21,21 @@
         </div>
       </div>
       
-      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-        <span style="font-size: 12px; font-weight: 700; color: #475569;">Screening Mode:</span>
-        <div style="display: inline-flex; background: #f1f5f9; padding: 3px; border-radius: 8px; border: 1px solid #cbd5e1; gap: 3px;">
-          <button type="button" id="a571-modeSingleBtn" onclick="if (typeof a571_setScreeningMode === 'function') a571_setScreeningMode('single');" style="padding: 5px 13px; font-size: 12px; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; background: #2563eb; color: #fff; transition: all 0.2s;">Single Stream</button>
-          <button type="button" id="a571-modeEnvelopeBtn" onclick="if (typeof a571_setScreeningMode === 'function') a571_setScreeningMode('envelope');" style="padding: 5px 13px; font-size: 12px; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; background: transparent; color: #475569; transition: all 0.2s;">⚡ Multi-Stream Envelope</button>
+      <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+        <span style="font-size: 11.5px; font-weight: 700; color: #475569;">Screening Mode:</span>
+        <div style="display: inline-flex; background: #f1f5f9; padding: 2px; border-radius: 6px; border: 1px solid #cbd5e1; gap: 2px;">
+          <button type="button" id="a571-modeSingleBtn" onclick="if (typeof a571_setScreeningMode === 'function') a571_setScreeningMode('single');" style="padding: 4px 11px; font-size: 11.5px; font-weight: 700; border: none; border-radius: 5px; cursor: pointer; background: #2563eb; color: #fff; transition: all 0.2s;">Single Stream</button>
+          <button type="button" id="a571-modeEnvelopeBtn" onclick="if (typeof a571_setScreeningMode === 'function') a571_setScreeningMode('envelope');" style="padding: 4px 11px; font-size: 11.5px; font-weight: 700; border: none; border-radius: 5px; cursor: pointer; background: transparent; color: #475569; transition: all 0.2s;">⚡ Multi-Stream Envelope</button>
         </div>
       </div>
     </div>
 
-    <!-- Controls Row: Grid of Selects + Aligned Action Toolbar -->
+    <!-- Controls Row: Compact Single-Line Grid of Selects + Aligned Action Toolbar -->
     <div class="a571-autoload-controls">
       <div class="a571-autoload-select-wrap a571-unit-wrap">
-        <label for="a571-unitSelector" class="a571-select-label">🏢 Operating Unit</label>
+        <div class="a571-label-row">
+          <label for="a571-unitSelector" class="a571-select-label">🏢 Operating Unit</label>
+        </div>
         <select id="a571-unitSelector" class="a571-stream-select" onchange="if (typeof a571_onUnitSelectionChange === 'function') a571_onUnitSelectionChange(this.value);">
           <option value="">-- Select Unit --</option>
         </select>
@@ -41,7 +43,9 @@
 
       <!-- Auto-Detected Operating Case Selector -->
       <div class="a571-autoload-select-wrap a571-case-wrap" id="a571-caseWrap" style="display: none;">
-        <label for="a571-caseSelector" class="a571-select-label">⚙️ Operating Case</label>
+        <div class="a571-label-row">
+          <label for="a571-caseSelector" class="a571-select-label">⚙️ Operating Case</label>
+        </div>
         <select id="a571-caseSelector" class="a571-stream-select" onchange="if (typeof a571_onCaseSelectionChange === 'function') a571_onCaseSelectionChange(this.value);">
           <option value="all">-- All Cases --</option>
         </select>
@@ -49,25 +53,49 @@
 
       <!-- Single Stream Mode Container -->
       <div class="a571-autoload-select-wrap a571-stream-wrap" id="a571-singleStreamWrap">
-        <label for="a571-streamPresetSelector" class="a571-select-label">🌊 Process Stream</label>
+        <div class="a571-label-row">
+          <label for="a571-streamPresetSelector" class="a571-select-label">🌊 Process Stream</label>
+          <input type="text" id="a571-singleStreamSearch" placeholder="🔍 Filter..." oninput="if(typeof a571_filterSingleStreamDropdown==='function') a571_filterSingleStreamDropdown(this.value);" style="height: 17px; font-size: 10.5px; padding: 0 5px; border: 1px solid #cbd5e1; border-radius: 4px; width: 105px; background: #fff; outline: none;" title="Type to filter stream dropdown list">
+        </div>
         <select id="a571-streamPresetSelector" class="a571-stream-select" disabled onchange="if (typeof a571_onPresetSelectionChange === 'function') a571_onPresetSelectionChange(this.value);">
           <option value="">-- Select Process Stream --</option>
         </select>
       </div>
 
-      <!-- Multi-Stream Envelope Mode Container (Hidden by default) -->
-      <div class="a571-autoload-select-wrap" id="a571-envelopeStreamWrap" style="display: none;">
-        <label class="a571-select-label">🌊 Select Process Streams</label>
-        <div id="a571-envelopeStreamContainer" style="border: 1.5px solid #c084fc; background: #faf5ff; border-radius: 8px; max-height: 130px; overflow-y: auto; padding: 6px 10px;">
-          <div style="color: #94a3b8; font-size: 12px; text-align: center; padding: 10px;">-- Select a Unit first --</div>
+      <!-- Multi-Stream Envelope Mode Container (Compact Inline Dropdown with Floating Popover) -->
+      <div class="a571-autoload-select-wrap a571-stream-wrap" id="a571-envelopeStreamWrap" style="display: none; position: relative;">
+        <div class="a571-label-row">
+          <label class="a571-select-label" style="color: #6b21a8;">🌊 Process Streams</label>
+          <span id="a571-envelopeSelectedCount" style="font-size: 10px; color: #7c3aed; font-weight: 700; background: #f3e8ff; padding: 0px 6px; border-radius: 10px; border: 1px solid #d8b4fe; line-height: 15px;">0 selected</span>
         </div>
-        <div style="display: flex; gap: 6px; margin-top: 6px; font-size: 11.5px; align-items: center;">
-          <button type="button" onclick="if (typeof a571_envelopeSelectAll === 'function') a571_envelopeSelectAll(true);" style="background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; padding: 3px 10px; border-radius: 5px; cursor: pointer; font-weight: 700; transition: all 0.2s;">Select All</button>
-          <button type="button" onclick="if (typeof a571_envelopeSelectAll === 'function') a571_envelopeSelectAll(false);" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 3px 10px; border-radius: 5px; cursor: pointer; font-weight: 700; transition: all 0.2s;">Deselect All</button>
-          <span id="a571-envelopeSelectedCount" style="margin-left: auto; color: #7c3aed; font-weight: 700; background: #f3e8ff; padding: 2px 8px; border-radius: 12px; border: 1px solid #d8b4fe;">0 selected</span>
+
+        <!-- Compact 32px Dropdown Trigger -->
+        <button type="button" id="a571-envDropdownTrigger" class="a571-env-dropdown-trigger" onclick="if (typeof a571_toggleEnvelopeDropdown === 'function') a571_toggleEnvelopeDropdown(event);">
+          <span id="a571-envDropdownLabel" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">-- Select a Unit first --</span>
+          <span id="a571-envDropdownArrow" style="font-size: 10px; color: #7c3aed; margin-left: 6px; flex-shrink: 0; transition: transform 0.2s;">▼</span>
+        </button>
+
+        <!-- Floating Popover Menu -->
+        <div id="a571-envDropdownMenu" class="a571-env-dropdown-menu" style="display: none;" onclick="event.stopPropagation();">
+          <div class="a571-env-menu-toolbar">
+            <div style="position: relative; flex: 1; min-width: 130px;">
+              <input type="text" id="a571-envelopeStreamSearch" placeholder="Search streams..." oninput="if(typeof a571_filterEnvelopeStreams==='function') a571_filterEnvelopeStreams(this.value);" style="width: 100%; height: 24px; padding: 1px 20px 1px 22px; font-size: 11px; border: 1px solid #d8b4fe; border-radius: 4px; background: #ffffff; outline: none;">
+              <span style="position: absolute; left: 6px; top: 4px; font-size: 10px; color: #a855f7; pointer-events: none;">🔍</span>
+              <button type="button" onclick="if(typeof a571_clearEnvelopeSearch==='function') a571_clearEnvelopeSearch();" style="position: absolute; right: 4px; top: 3px; border: none; background: transparent; cursor: pointer; color: #94a3b8; font-size: 10px;" title="Clear search">✕</button>
+            </div>
+            <button type="button" onclick="if (typeof a571_envelopeSelectAll === 'function') a571_envelopeSelectAll(true);" style="background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; padding: 2px 7px; border-radius: 4px; cursor: pointer; font-size: 10.5px; font-weight: 700; white-space: nowrap;">All</button>
+            <button type="button" onclick="if (typeof a571_envelopeSelectAll === 'function') a571_envelopeSelectAll(false);" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 2px 7px; border-radius: 4px; cursor: pointer; font-size: 10.5px; font-weight: 700; white-space: nowrap;">None</button>
+            <button type="button" onclick="if (typeof a571_closeEnvelopeDropdown === 'function') a571_closeEnvelopeDropdown();" style="background: #7c3aed; color: #ffffff; border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 10.5px; font-weight: 700; white-space: nowrap;">Done</button>
+          </div>
+
+          <div id="a571-envelopeStreamContainer" class="a571-envelope-container">
+            <div style="color: #94a3b8; font-size: 11.5px; text-align: center; padding: 8px;">-- Select a Unit first --</div>
+          </div>
+          <div id="a571-envSearchNoResults" style="display: none; color: #dc2626; font-size: 11px; text-align: center; padding: 6px; font-weight: 600;">No streams match your search query.</div>
         </div>
       </div>
 
+      <!-- Primary Action Buttons Row -->
       <div class="a571-btn-group">
         <button type="button" class="a571-load-btn" onclick="if (typeof a571_loadSelectedStream === 'function') a571_loadSelectedStream();" id="a571-btnLoadStream">
           📥 Load Stream

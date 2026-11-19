@@ -5,36 +5,53 @@
         <h2><span>🔄</span> Process Stream & Material Balance Comparator</h2>
       </div>
 
-      <!-- Executive Ingestion Telemetry & Action Hub -->
-      <div class="stream-card stream-ingestion-card" style="border: 1px solid #e2e8f0; border-top: 3px solid #2563eb; border-radius: 12px; box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04); background: #ffffff; padding: 14px 18px; margin-bottom: 16px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-          <!-- Left: Telemetry & Loaded State -->
-          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">
-              <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);"></span>
-              Active Dataset:
-            </div>
-            <span id="streamDocTitle" style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 13.5px; font-weight: 700; color: #0f172a; background: #f8fafc; padding: 4px 12px; border-radius: 6px; border: 1px solid #cbd5e1;">Loading...</span>
-            <span id="streamDocMetaBadge" style="font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;">Ready</span>
-            <span id="streamSaveBadge" style="display: none; font-size: 11px; padding: 3px 8px; border-radius: 9999px; background: #dcfce7; color: #15803d; font-weight: 600; border: 1px solid #bbf7d0;">☁️ Saved in Firestore</span>
+      <!-- Unified Single-Row Dataset Telemetry, View Tabs, Scope & Actions Component -->
+      <div id="streamViewScopeBar" class="stream-card stream-ingestion-card" style="border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04); background: #ffffff; padding: 6px 10px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
+        <!-- View Mode Navigation Tabs -->
+        <div style="display: flex; align-items: center; gap: 5px; flex-wrap: wrap;">
+          <button type="button" id="tabBtnPairwise" class="stream-filter-btn active" style="padding: 4px 9px; font-size: 11.5px; height: 28px; display: inline-flex; align-items: center;" onclick="window.StreamComparator.switchView('pairwise')" title="Stream A vs Stream B Differential Comparison">
+            <span class="btn-spinner-icon" style="display: none;"></span>
+            <span class="btn-text-label">🔍 Stream A vs B</span>
+          </button>
+          <button type="button" id="tabBtnMatrix" class="stream-filter-btn" style="padding: 4px 9px; font-size: 11.5px; height: 28px; display: inline-flex; align-items: center;" onclick="window.StreamComparator.switchView('matrix')" title="Multi-Stream Matrix View (All Streams)">
+            <span class="btn-spinner-icon" style="display: none;"></span>
+            <span class="btn-text-label">📋 Matrix View</span>
+          </button>
+          <button type="button" id="tabBtnTieIn" class="stream-filter-btn" style="padding: 4px 9px; font-size: 11.5px; height: 28px; display: inline-flex; align-items: center;" onclick="window.StreamComparator.switchView('tiein')" title="Injection & Mixing Point Hub (NACE SP0114)">
+            <span class="btn-spinner-icon" style="display: none;"></span>
+            <span class="btn-text-label">💉 Injection & Mixing</span>
+          </button>
+        </div>
+
+        <!-- Scope Mode Selector Dropdown -->
+        <div id="streamModeToggleWrap" style="display: flex; gap: 5px; background: #f8fafc; padding: 2px 7px; border-radius: 6px; border: 1px solid #e2e8f0; align-items: center; height: 28px; box-sizing: border-box;">
+          <label for="streamScopeSelect" style="font-size: 11.5px; font-weight: 600; color: #64748b; display: flex; align-items: center; margin: 0; white-space: nowrap; cursor: pointer;">
+            Scope:
+          </label>
+          <select id="streamScopeSelect" style="padding: 1px 22px 1px 6px; font-size: 11.5px; font-weight: 600; color: #334155; background: #ffffff url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%2210%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20fill%3D%22%2364748b%22%20d%3D%22M5.293%207.293a1%201%200%20011.414%200L10%2010.586l3.293-3.293a1%201%200%20111.414%201.414l-4%204a1%201%200%2001-1.414%200l-4-4a1%201%200%20010-1.414z%22%2F%3E%3C%2Fsvg%3E') no-repeat right 6px center; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; outline: none; height: 22px; line-height: 20px; appearance: none; -webkit-appearance: none;" onchange="window.StreamComparator.setMode(this.value)">
+            <option value="combined" id="optScopeCombined">🔗 Both (Props + Comps)</option>
+            <option value="properties" id="optScopeProps">⚡ Properties</option>
+            <option value="components" id="optScopeComps">🧪 Components</option>
+          </select>
+        </div>
+
+        <!-- Active Dataset Badge & Consolidated Action Buttons -->
+        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-left: auto;">
+          <div style="display: inline-flex; align-items: center; gap: 5px; background: #f8fafc; padding: 2px 8px; border-radius: 6px; border: 1px solid #cbd5e1; height: 28px; box-sizing: border-box;" title="Active Loaded Dataset">
+            <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25); flex-shrink: 0;"></span>
+            <span id="streamDocTitle" style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11.5px; font-weight: 700; color: #0f172a; max-width: 155px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Loading...</span>
           </div>
 
-          <!-- Right: Consolidated Quick Action Toolbar -->
-          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-            <button type="button" id="btnIngestStreamSheet" class="stream-btn" style="padding: 7px 12px; font-size: 12.5px; background: #2563eb; color: #ffffff; border: 1px solid #1d4ed8; border-radius: 8px; font-weight: 600;" onclick="(window.adminPanel && typeof window.adminPanel.openStreamUploadModal === 'function') ? window.adminPanel.openStreamUploadModal() : (window.StreamComparator && typeof window.StreamComparator.openIngestModal === 'function' ? window.StreamComparator.openIngestModal() : null)" title="Ingest new process stream flow sheet (.xlsx, .csv, PDF, Image)">
-              📥 Ingest Sheet
-            </button>
-            <button type="button" id="btnSavedStreamsModal" class="stream-btn" style="padding: 7px 14px; font-size: 12.5px; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 1px 2px rgba(37, 99, 235, 0.08); transition: all 0.2s ease;" onclick="window.StreamComparator.openSavedDatasetsModal()" title="View and load saved datasets from Firestore">
-              <span>☁️ Cloud Datasets</span>
-              <span id="savedDatasetsCount" style="background: #2563eb; color: #ffffff; padding: 1px 7px; border-radius: 12px; font-size: 11px; font-weight: 700; margin-left: 2px;">...</span>
-            </button>
-            <button type="button" class="stream-btn" style="padding: 7px 12px; font-size: 12.5px; background: #059669; color: #ffffff; border: 1px solid #047857; border-radius: 8px; font-weight: 600;" onclick="window.StreamComparator.exportFullDatasetToExcel()" title="Export all streams to Excel (.xlsx)">
-              📊 Export All (.xlsx)
-            </button>
-            <button type="button" id="btnClearStreamDataset" class="stream-btn" style="padding: 7px 11px; font-size: 12.5px; background: #fff5f5; color: #dc2626; border: 1px solid #fecaca; border-radius: 8px; font-weight: 600;" onclick="window.StreamComparator.clearDataset()" title="Clear active dataset">
-              🗑️ Clear
-            </button>
-          </div>
+          <button type="button" id="btnIngestStreamSheet" class="stream-btn" style="padding: 0 9px; height: 28px; font-size: 11.5px; background: #2563eb; color: #ffffff; border: 1px solid #1d4ed8; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; white-space: nowrap;" onclick="(window.adminPanel && typeof window.adminPanel.openStreamUploadModal === 'function') ? window.adminPanel.openStreamUploadModal() : (window.StreamComparator && typeof window.StreamComparator.openIngestModal === 'function' ? window.StreamComparator.openIngestModal() : null)" title="Ingest new process stream flow sheet (.xlsx, .csv, PDF, Image)">
+            📥 Ingest Sheet
+          </button>
+          <button type="button" id="btnSavedStreamsModal" class="stream-btn" style="padding: 0 9px; height: 28px; font-size: 11.5px; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;" onclick="window.StreamComparator.openSavedDatasetsModal()" title="View and load saved datasets from Firestore">
+            <span>☁️ Cloud Datasets</span>
+            <span id="savedDatasetsCount" style="background: #2563eb; color: #ffffff; padding: 0 5px; border-radius: 8px; font-size: 10px; font-weight: 700; line-height: 15px;">...</span>
+          </button>
+          <button type="button" id="btnClearStreamDataset" class="stream-btn" style="padding: 0 8px; height: 28px; font-size: 11.5px; background: #fff5f5; color: #dc2626; border: 1px solid #fecaca; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; white-space: nowrap;" onclick="window.StreamComparator.clearDataset()" title="Clear active dataset">
+            🗑️ Clear
+          </button>
         </div>
       </div>
 
@@ -46,38 +63,6 @@
             <div id="streamGlobalSpinnerTitle" class="stream-global-spinner-title">Loading Stream Data...</div>
             <div id="streamGlobalSpinnerSubtitle" class="stream-global-spinner-subtitle">Fetching live records from Firestore database...</div>
           </div>
-        </div>
-      </div>
-
-      <!-- View & Scope Toggle Bar -->
-      <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; justify-content: space-between; align-items: center;">
-        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-          <button type="button" id="tabBtnPairwise" class="stream-filter-btn active" onclick="window.StreamComparator.switchView('pairwise')">
-            <span class="btn-spinner-icon" style="display: none;"></span>
-            <span class="btn-text-label">🔍 Stream A vs Stream B Deep Differential</span>
-          </button>
-          <button type="button" id="tabBtnMatrix" class="stream-filter-btn" onclick="window.StreamComparator.switchView('matrix')">
-            <span class="btn-spinner-icon" style="display: none;"></span>
-            <span class="btn-text-label">📋 Multi-Stream Matrix View (All Streams)</span>
-          </button>
-          <button type="button" id="tabBtnTieIn" class="stream-filter-btn" onclick="window.StreamComparator.switchView('tiein')">
-            <span class="btn-spinner-icon" style="display: none;"></span>
-            <span class="btn-text-label">💉 Injection & Mixing Point Hub (NACE SP0114)</span>
-          </button>
-        </div>
-
-        <!-- Scope Mode Selector: Both | Properties | Components -->
-        <div id="streamModeToggleWrap" style="display: flex; gap: 6px; background: #f8fafc; padding: 4px 6px; border-radius: 8px; border: 1px solid #e2e8f0; align-items: center;">
-          <span style="font-size: 12px; font-weight: 600; color: #64748b;">Scope:</span>
-          <button type="button" id="modeBtnCombined" class="stream-filter-btn active" style="padding: 4px 10px; font-size: 12px;" onclick="window.StreamComparator.setMode('combined')">
-            🔗 Both (Properties + Components)
-          </button>
-          <button type="button" id="modeBtnProps" class="stream-filter-btn" style="padding: 4px 10px; font-size: 12px;" onclick="window.StreamComparator.setMode('properties')">
-            ⚡ Properties
-          </button>
-          <button type="button" id="modeBtnComps" class="stream-filter-btn" style="padding: 4px 10px; font-size: 12px;" onclick="window.StreamComparator.setMode('components')">
-            🧪 Components
-          </button>
         </div>
       </div>
 
@@ -224,56 +209,75 @@
             <span style="font-size: 13px; color: #64748b;">Customizable Multi-Stream or Side-by-Side Comparison</span>
           </div>
 
-          <!-- Stream Selection Controls for Matrix View -->
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 18px; margin-bottom: 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
-              <div style="font-size: 13.5px; font-weight: 600; color: #334155; display: flex; align-items: center; gap: 8px;">
-                <span>🎯 Select Streams to Display in Matrix:</span>
-                <span id="matrixStreamCountBadge" style="font-size: 12px; background: #e0e7ff; color: #3730a3; padding: 2px 9px; border-radius: 12px; font-weight: 600;">All Selected</span>
+          <!-- Compact Single-Row Stream & Case Selection Toolbar for Matrix View -->
+          <div id="matrixControlsContainer" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+            <!-- 1. Operating Case / Run Filter (Inline Left) -->
+            <div id="matrixCaseFilterBar" style="display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+              <label for="matrixCaseSelect" id="matrixCaseFilterLabel" style="font-size: 11.5px; font-weight: 700; color: #475569; display: inline-flex; align-items: center; gap: 4px; margin: 0; cursor: pointer; white-space: nowrap;">
+                <span>⚙️ Case:</span>
+              </label>
+              <div id="matrixCasePills" style="display: inline-flex; gap: 5px; flex-wrap: wrap; align-items: center;">
+                <!-- Dynamic Case Dropdown or Single State Badge -->
               </div>
-              <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-                <input type="text" id="matrixStreamFilterInput" placeholder="🔍 Filter stream..." style="padding: 4px 10px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; width: 140px;" oninput="window.StreamComparator.filterMatrixChips(this.value)" />
-                <button type="button" class="stream-filter-btn active" id="btnMatrixSelectAll" style="padding: 5px 12px; font-size: 12.5px;" onclick="window.StreamComparator.selectAllMatrixStreams()">
-                  ✓ Select All
-                </button>
-                <button type="button" class="stream-filter-btn" id="btnMatrixCompare2" style="padding: 5px 12px; font-size: 12.5px; background: #eef2ff; border-color: #c7d2fe; color: #4338ca;" onclick="window.StreamComparator.selectComparePairMatrix()">
-                  ⚖️ Compare Selected 2 Streams (A vs B)
-                </button>
-                <button type="button" class="stream-filter-btn" id="btnMatrixClear" style="padding: 5px 12px; font-size: 12.5px;" onclick="window.StreamComparator.clearMatrixStreams()">
-                  ✕ Clear All
-                </button>
-                <button type="button" class="stream-filter-btn" style="padding: 5px 12px; font-size: 12.5px; background: #ecfdf5; border-color: #6ee7b7; color: #065f46;" onclick="window.StreamComparator.exportFullDatasetToExcel()" title="Export all streams to multi-sheet Excel (.xlsx)">
-                  📊 Export Matrix (.xlsx)
-                </button>
-              </div>
+              <button type="button" class="stream-filter-btn" id="btnMatrixCompareSorEor" style="display: none; font-size: 11px; padding: 2px 8px; height: 26px; background: #fef3c7; border-color: #fde68a; color: #92400e; font-weight: 600;" onclick="window.StreamComparator.compareCasesInMatrix('SOR', 'EOR')" title="Compare matching streams side-by-side between Start of Run (SOR) and End of Run (EOR)">
+                ⚖️ SOR vs EOR
+              </button>
+              <button type="button" class="stream-filter-btn" id="btnMatrixCompareCases" style="display: none; font-size: 11px; padding: 2px 8px; height: 26px; background: #e0f2fe; border-color: #bae6fd; color: #0369a1; font-weight: 600;" onclick="window.StreamComparator.compareCasesInMatrix('Case 1', 'Case 2')" title="Compare matching streams side-by-side between operating cases">
+                ⚖️ Case 1 vs 2
+              </button>
+              <button type="button" class="stream-filter-btn" id="btnMatrixMultiCaseStream" style="display: none; font-size: 11px; padding: 2px 8px; height: 26px; background: #f3e8ff; border-color: #e9d5ff; color: #6b21a8; font-weight: 600;" onclick="window.StreamComparator.promptSelectStreamAcrossCases()" title="View one stream across all operating cases">
+                🔄 Across Cases
+              </button>
             </div>
-            
-            <!-- Operating Case / Run Filter Bar (Auto-Detected from uploaded dataset or file) -->
-            <div id="matrixCaseFilterBar" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; padding: 9px 12px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);">
-              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <span id="matrixCaseFilterLabel" style="font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 4px;">
-                  <span>⚙️ Operating Cases:</span>
+
+            <!-- 2. Compact Multi-Stream Dropdown Trigger & Floating Popover (Inline Center) -->
+            <div id="matrixStreamDropdownWrap" style="position: relative; display: inline-flex; align-items: center; gap: 6px; flex: 1; min-width: 240px; max-width: 440px;">
+              <span style="font-size: 11.5px; font-weight: 700; color: #334155; white-space: nowrap;">🎯 Streams:</span>
+              <button type="button" id="matrixStreamDropdownTrigger" class="matrix-stream-dropdown-trigger" onclick="window.StreamComparator.toggleMatrixStreamDropdown(event)">
+                <span id="matrixStreamDropdownLabel" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Select Streams...</span>
+                <span style="display: inline-flex; align-items: center; gap: 5px; margin-left: 6px; flex-shrink: 0;">
+                  <span id="matrixStreamCountBadge" style="font-size: 10.5px; background: #e0e7ff; color: #3730a3; padding: 1px 7px; border-radius: 10px; font-weight: 700; line-height: 15px;">All Selected</span>
+                  <span id="matrixStreamDropdownArrow" style="font-size: 10px; color: #6366f1; transition: transform 0.2s;">▼</span>
                 </span>
-                <div id="matrixCasePills" style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
-                  <!-- Dynamic Case Pills auto-detected: [All Cases] [Case 1] [Case 2] [SOR] [EOR] or Single State Badge -->
+              </button>
+
+              <!-- Floating Popover Menu (#matrixStreamChips) matching screenshot -->
+              <div id="matrixStreamChips" class="matrix-stream-chips-box" style="display: none;" onclick="event.stopPropagation()">
+                <div class="matrix-chips-toolbar">
+                  <div class="matrix-chips-search-wrap">
+                    <span class="matrix-chips-search-icon">🔍</span>
+                    <input type="text" id="matrixStreamFilterInput" class="matrix-chips-search-input" placeholder="Search streams..." oninput="window.StreamComparator.filterMatrixChips(this.value)" />
+                    <button type="button" id="btnMatrixSearchClear" class="matrix-chips-search-clear" onclick="window.StreamComparator.clearMatrixSearch()" title="Clear search text">✕</button>
+                  </div>
+                  <div class="matrix-chips-actions">
+                    <button type="button" class="matrix-toolbar-btn matrix-toolbar-btn-all active" id="btnMatrixSelectAll" onclick="window.StreamComparator.selectAllMatrixStreams(true)" title="Select all streams">
+                      All
+                    </button>
+                    <button type="button" class="matrix-toolbar-btn matrix-toolbar-btn-none" id="btnMatrixSelectNone" onclick="window.StreamComparator.clearMatrixStreams()" title="Select none">
+                      None
+                    </button>
+                    <button type="button" class="matrix-toolbar-btn matrix-toolbar-btn-clear" id="btnMatrixClear" onclick="window.StreamComparator.resetMatrixSearchAndSelection()" title="Clear search & selection">
+                      Clear
+                    </button>
+                    <button type="button" class="matrix-toolbar-btn matrix-toolbar-btn-done" onclick="window.StreamComparator.closeMatrixStreamDropdown()" title="Close stream selector">
+                      Done
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                <button type="button" class="stream-filter-btn" id="btnMatrixCompareSorEor" style="display: none; font-size: 12px; padding: 4px 10px; background: #fef3c7; border-color: #fde68a; color: #92400e; font-weight: 600;" onclick="window.StreamComparator.compareCasesInMatrix('SOR', 'EOR')" title="Compare matching streams side-by-side between Start of Run (SOR) and End of Run (EOR)">
-                  ⚖️ Compare SOR vs EOR
-                </button>
-                <button type="button" class="stream-filter-btn" id="btnMatrixCompareCases" style="display: none; font-size: 12px; padding: 4px 10px; background: #e0f2fe; border-color: #bae6fd; color: #0369a1; font-weight: 600;" onclick="window.StreamComparator.compareCasesInMatrix('Case 1', 'Case 2')" title="Compare matching streams side-by-side between operating cases">
-                  ⚖️ Compare Case 1 vs Case 2
-                </button>
-                <button type="button" class="stream-filter-btn" id="btnMatrixMultiCaseStream" style="display: none; font-size: 12px; padding: 4px 10px; background: #f3e8ff; border-color: #e9d5ff; color: #6b21a8; font-weight: 600;" onclick="window.StreamComparator.promptSelectStreamAcrossCases()" title="View one stream across all operating cases">
-                  🔄 Stream Across All Cases
-                </button>
+                <div id="matrixStreamChipsList" class="matrix-stream-chips-list">
+                  <!-- Dynamically populated stream checkboxes / rows -->
+                </div>
               </div>
             </div>
 
-            <!-- Checkbox Chips Bar with fixed max-height & internal scrolling -->
-            <div id="matrixStreamChips" class="matrix-stream-chips-box">
-              <!-- Dynamically populated stream checkboxes / toggle pills -->
+            <!-- 3. Quick Matrix Action Buttons (Inline Right) -->
+            <div style="display: inline-flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-left: auto;">
+              <button type="button" class="stream-filter-btn" id="btnMatrixCompare2" style="padding: 0 9px; font-size: 11.5px; background: #eef2ff; border-color: #c7d2fe; color: #4338ca; height: 27px; border-radius: 6px;" onclick="window.StreamComparator.selectComparePairMatrix()" title="Compare 2 streams side-by-side (A vs B)">
+                ⚖️ Compare 2 (A vs B)
+              </button>
+              <button type="button" class="stream-filter-btn" style="padding: 0 9px; font-size: 11.5px; background: #ecfdf5; border-color: #6ee7b7; color: #065f46; height: 27px; border-radius: 6px;" onclick="window.StreamComparator.exportFullDatasetToExcel()" title="Export all streams to multi-sheet Excel (.xlsx)">
+                📊 Export (.xlsx)
+              </button>
             </div>
           </div>
 

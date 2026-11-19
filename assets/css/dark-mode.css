@@ -1231,6 +1231,58 @@ body.dark-mode #a571-criteriaTab .a571-alert-badge {
   color: #a7f3d0 !important;
 }
 
+html:not(.light-mode) #a571-criteriaTab .a571-env-dropdown-trigger,
+html.dark-mode #a571-criteriaTab .a571-env-dropdown-trigger,
+body.dark-mode #a571-criteriaTab .a571-env-dropdown-trigger {
+  background: #1e1b4b !important;
+  color: #e9d5ff !important;
+  border-color: #9333ea !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-env-dropdown-menu,
+html.dark-mode #a571-criteriaTab .a571-env-dropdown-menu,
+body.dark-mode #a571-criteriaTab .a571-env-dropdown-menu {
+  background: #0f172a !important;
+  border-color: #7c3aed !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-envelope-container,
+html.dark-mode #a571-criteriaTab .a571-envelope-container,
+body.dark-mode #a571-criteriaTab .a571-envelope-container {
+  background: #0f172a !important;
+  border-color: #4c1d95 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-env-item,
+html.dark-mode #a571-criteriaTab .a571-env-item,
+body.dark-mode #a571-criteriaTab .a571-env-item {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-env-item:hover,
+html.dark-mode #a571-criteriaTab .a571-env-item:hover,
+body.dark-mode #a571-criteriaTab .a571-env-item:hover {
+  background: #2e1065 !important;
+  border-color: #9333ea !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab .a571-env-item-selected,
+html.dark-mode #a571-criteriaTab .a571-env-item-selected,
+body.dark-mode #a571-criteriaTab .a571-env-item-selected {
+  background: #3b0764 !important;
+  border-color: #a855f7 !important;
+}
+
+html:not(.light-mode) #a571-criteriaTab #a571-envelopeStreamSearch,
+html.dark-mode #a571-criteriaTab #a571-envelopeStreamSearch,
+body.dark-mode #a571-criteriaTab #a571-envelopeStreamSearch {
+  background: #14181e !important;
+  color: #f1f5f9 !important;
+  border-color: #7c3aed !important;
+}
+
 html:not(.light-mode) #a571-criteriaTab .a571-kpi-box,
 html.dark-mode #a571-criteriaTab .a571-kpi-box,
 body.dark-mode #a571-criteriaTab .a571-kpi-box {

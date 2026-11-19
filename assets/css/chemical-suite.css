@@ -3,9 +3,17 @@
    Complies with industrial asset integrity UI, dark/light theme, and WCAG AA
 ============================================================================ */
 
+#chemicalSuiteTab {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
 .chem-suite-container {
-  max-width: 1300px;
-  margin: 0 auto 40px auto;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 0 40px 0;
+  box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: #1e293b;
 }
@@ -17,6 +25,9 @@ body.dark-mode .chem-suite-container {
 
 /* Header Banner */
 .chem-suite-header {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0369a1 100%);
   color: #ffffff;
   padding: 24px 28px;

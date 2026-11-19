@@ -800,7 +800,16 @@ async function a571_applyStreamDataToForm(p, unitId) {
     }
 
     // Display Stream Operating Parameters & Critical Constituents Summary Card
-    a571_displayStreamSummaryCard(p, { unitId, isEnvelope: (p.streamNo === "ENVELOPE") });
+    a571_displayStreamSummaryCard(p, {
+        unitId,
+        isEnvelope: (p.streamNo === "ENVELOPE"),
+        minPress: p.minPress,
+        maxPress: p.maxPress,
+        minTemp: p.minTemp,
+        maxTemp: p.maxTemp,
+        streamCount: p.streamCount,
+        streamIds: p.streamIds
+    });
 
     // Trigger auto screening evaluation
     const filterForm = document.getElementById("a571-filterForm");
@@ -961,12 +970,12 @@ function a571_convertStreamToPreset(st) {
 
     const getNum = (...keys) => {
         for (const k of keys) {
-            if (st[k] !== undefined && st[k] !== null && st[k] !== "") {
-                const v = parseFloat(st[k]);
-                if (Number.isFinite(v)) return v;
-            }
             if (p[k] !== undefined && p[k] !== null && p[k] !== "") {
                 const v = parseFloat(p[k]);
+                if (Number.isFinite(v)) return v;
+            }
+            if (st[k] !== undefined && st[k] !== null && st[k] !== "") {
+                const v = parseFloat(st[k]);
                 if (Number.isFinite(v)) return v;
             }
             if (c[k] !== undefined && c[k] !== null && c[k] !== "") {
@@ -979,13 +988,13 @@ function a571_convertStreamToPreset(st) {
 
     const getStr = (...keys) => {
         for (const k of keys) {
-            if (st[k] !== undefined && st[k] !== null && st[k] !== "") {
-                if (typeof st[k] === "boolean") return st[k] ? "Y" : "N";
-                return String(st[k]).trim();
-            }
             if (p[k] !== undefined && p[k] !== null && p[k] !== "") {
                 if (typeof p[k] === "boolean") return p[k] ? "Y" : "N";
                 return String(p[k]).trim();
+            }
+            if (st[k] !== undefined && st[k] !== null && st[k] !== "") {
+                if (typeof st[k] === "boolean") return st[k] ? "Y" : "N";
+                return String(st[k]).trim();
             }
             if (c[k] !== undefined && c[k] !== null && c[k] !== "") {
                 if (typeof c[k] === "boolean") return c[k] ? "Y" : "N";
@@ -995,13 +1004,15 @@ function a571_convertStreamToPreset(st) {
         return "";
     };
 
-    const temp = getNum("temp", "tempC", "Temperature (°C)", "Temperature");
-    const press = getNum("pressure", "pressKgCm2", "Pressure (kg/cm2 (g))", "Pressure (kg/cm²g)", "Pressure (barg)", "Pressure");
-    const flow = getNum("massFlow", "Flow Mass (kg/hr)", "Mass Flow (kg/hr)", "Flow Mass", "Mass Flow");
-    const dens = getNum("density", "liquidDensity", "vaporDensity", "Liquid Density (kg/m3)", "Vapor Density (kg/m3)", "Density (kg/m3)", "Density");
-    const pipeD = getNum("pipeDiameter", "Pipe Diameter (mm)", "Pipe Diameter");
+    const rawTemp = getNum("Temperature (°C)", "Temperature (C)", "Temperature", "temp", "tempC");
+    const rawPress = getNum("Pressure (kg/cm²g)", "Pressure (kg/cm2 (g))", "Pressure (kg/cm2_g)", "Pressure (barg)", "Pressure", "pressure", "pressKgCm2");
+    const temp = rawTemp !== null ? Math.abs(rawTemp) : null;
+    const press = rawPress !== null ? Math.abs(rawPress) : null;
+    const flow = getNum("Flow Mass (kg/hr)", "Mass Flow (kg/hr)", "Flow Mass", "Mass Flow", "massFlow");
+    const dens = getNum("Liquid Density (kg/m3)", "Vapor Density (kg/m3)", "Density (kg/m3)", "Density", "density", "liquidDensity", "vaporDensity");
+    const pipeD = getNum("Pipe Diameter (mm)", "Pipe Diameter", "pipeDiameter");
 
-    const phase = getStr("phase", "Phase");
+    const phase = getStr("Phase", "phase");
 
     const h2 = getNum("h2", "H2", "Hydrogen");
     const h2MolFrac = getNum("h2MolFrac", "H2_MOL", "H2_VOL", "H2 (mol%)", "H2 (vol%)", "h2_mol");
@@ -1323,6 +1334,79 @@ function a571_extractStreamConstituent(data, names = []) {
 }
 
 // =================================================================
+// HELPER TO EXTRACT OPERATING PRESSURE FROM PROCESS STREAM RECORD
+// =================================================================
+function a571_extractStreamMetricPressure(s) {
+    if (!s) return null;
+    const containers = [s.properties, s, s.constituents, s.components];
+    const keys = [
+        "Pressure (kg/cm²g)",
+        "Pressure (kg/cm2 (g))",
+        "Pressure (kg/cm2_g)",
+        "Pressure (kg/cm2 g)",
+        "Pressure (kg/cm2)",
+        "Operating Pressure (kg/cm2 g)",
+        "Operating Pressure",
+        "Pressure (barg)",
+        "Pressure",
+        "pressure",
+        "pressKgCm2"
+    ];
+    for (const k of keys) {
+        for (const c of containers) {
+            if (c && c[k] !== undefined && c[k] !== null && c[k] !== "") {
+                const v = parseFloat(c[k]);
+                if (Number.isFinite(v)) return Math.abs(v);
+            }
+        }
+    }
+    for (const c of containers) {
+        if (!c || typeof c !== "object") continue;
+        for (const [ck, cv] of Object.entries(c)) {
+            if (/crit|vap|diff|drop/i.test(ck)) continue;
+            if (/press/i.test(ck) && cv !== undefined && cv !== null && cv !== "") {
+                const v = parseFloat(cv);
+                if (Number.isFinite(v)) return Math.abs(v);
+            }
+        }
+    }
+    return null;
+}
+
+// =================================================================
+// HELPER TO EXTRACT OPERATING TEMPERATURE FROM PROCESS STREAM RECORD
+// =================================================================
+function a571_extractStreamMetricTemperature(s) {
+    if (!s) return null;
+    const containers = [s.properties, s, s.constituents, s.components];
+    const keys = [
+        "Temperature (°C)",
+        "Temperature (C)",
+        "Temperature",
+        "temp",
+        "tempC"
+    ];
+    for (const k of keys) {
+        for (const c of containers) {
+            if (c && c[k] !== undefined && c[k] !== null && c[k] !== "") {
+                const v = parseFloat(c[k]);
+                if (Number.isFinite(v)) return Math.abs(v);
+            }
+        }
+    }
+    for (const c of containers) {
+        if (!c || typeof c !== "object") continue;
+        for (const [ck, cv] of Object.entries(c)) {
+            if (/temp/i.test(ck) && cv !== undefined && cv !== null && cv !== "") {
+                const v = parseFloat(cv);
+                if (Number.isFinite(v)) return Math.abs(v);
+            }
+        }
+    }
+    return null;
+}
+
+// =================================================================
 // DISPLAY STREAM OPERATING PARAMETERS & CRITICAL CONSTITUENTS SUMMARY CARD
 // =================================================================
 function a571_displayStreamSummaryCard(data, options = {}) {
@@ -1335,13 +1419,79 @@ function a571_displayStreamSummaryCard(data, options = {}) {
     const phase = a571_getValue("a571-phase") || (data ? data.phase : "Mixed");
     const hasNum = (v) => v !== null && v !== undefined && v !== "" && !isNaN(Number(v));
     const tempRaw = a571_getValue("a571-temperature");
-    const temp = hasNum(tempRaw) ? Number(tempRaw) : (data && hasNum(data.temp) ? Number(data.temp) : (data && hasNum(data.tempC) ? Number(data.tempC) : null));
+    const tempValRaw = hasNum(tempRaw) ? Number(tempRaw) : (data ? a571_extractStreamMetricTemperature(data) : null);
+    const temp = tempValRaw !== null ? Math.abs(tempValRaw) : null;
     const pressRaw = a571_getValue("a571-pressure");
-    const pressure = hasNum(pressRaw) ? Number(pressRaw) : (data && hasNum(data.pressure) ? Number(data.pressure) : (data && hasNum(data.pressKgCm2) ? Number(data.pressKgCm2) : null));
+    const pressValRaw = hasNum(pressRaw) ? Number(pressRaw) : (data ? a571_extractStreamMetricPressure(data) : null);
+    const pressure = pressValRaw !== null ? Math.abs(pressValRaw) : null;
     
-    let tempRangeStr = temp !== null ? `${temp.toFixed(1)}°C` : "-";
-    if (options.isEnvelope && hasNum(options.minTemp) && hasNum(options.maxTemp)) {
-        tempRangeStr = `${Number(options.minTemp).toFixed(1)}°C to ${Number(options.maxTemp).toFixed(1)}°C`;
+    const checkedBoxes = typeof document !== "undefined" ? Array.from(document.querySelectorAll(".a571-env-checkbox:checked")) : [];
+    const checkedCount = checkedBoxes.length;
+
+    const isEnv = Boolean(
+        options.isEnvelope || 
+        (data && data.streamNo === "ENVELOPE") || 
+        (options.streamCount && options.streamCount > 1) || 
+        (data && data.streamCount && data.streamCount > 1) ||
+        (window.a571_screeningMode === "envelope" && checkedCount > 1)
+    );
+
+    let minTempVal = hasNum(options.minTemp) ? Math.abs(Number(options.minTemp)) : (data && hasNum(data.minTemp) ? Math.abs(Number(data.minTemp)) : null);
+    let maxTempVal = hasNum(options.maxTemp) ? Math.abs(Number(options.maxTemp)) : (data && hasNum(data.maxTemp) ? Math.abs(Number(data.maxTemp)) : temp);
+    let minPressVal = hasNum(options.minPress) ? Math.abs(Number(options.minPress)) : (data && hasNum(data.minPress) ? Math.abs(Number(data.minPress)) : null);
+    let maxPressVal = hasNum(options.maxPress) ? Math.abs(Number(options.maxPress)) : (data && hasNum(data.maxPress) ? Math.abs(Number(data.maxPress)) : pressure);
+
+    // If multi-stream mode is active and min/max pressure or temperature are missing, compute across checked streams
+    if (isEnv && (minPressVal === null || maxPressVal === null || minTempVal === null || maxTempVal === null)) {
+        const allStreams = window.a571_CURRENT_STREAMS || window.a571_ALL_UNIT_STREAMS || [];
+        const checkedIds = checkedBoxes.map(cb => String(cb.value).trim());
+        const matched = allStreams.filter(s => checkedIds.includes(String(s.id || s.streamNo)));
+        if (matched.length > 0) {
+            const pArr = matched.map(s => a571_extractStreamMetricPressure(s)).filter(v => v !== null && Number.isFinite(v));
+            if (pArr.length > 0) {
+                if (minPressVal === null) minPressVal = Math.min(...pArr);
+                if (maxPressVal === null) maxPressVal = Math.max(...pArr);
+            }
+            const tArr = matched.map(s => a571_extractStreamMetricTemperature(s)).filter(v => v !== null && Number.isFinite(v));
+            if (tArr.length > 0) {
+                if (minTempVal === null) minTempVal = Math.min(...tArr);
+                if (maxTempVal === null) maxTempVal = Math.max(...tArr);
+            }
+        }
+    }
+
+    // Ensure low to high ordering and strictly positive values
+    if (minPressVal !== null && maxPressVal !== null) {
+        const p1 = Math.abs(minPressVal);
+        const p2 = Math.abs(maxPressVal);
+        minPressVal = Math.min(p1, p2);
+        maxPressVal = Math.max(p1, p2);
+    }
+    if (minTempVal !== null && maxTempVal !== null) {
+        const t1 = Math.abs(minTempVal);
+        const t2 = Math.abs(maxTempVal);
+        minTempVal = Math.min(t1, t2);
+        maxTempVal = Math.max(t1, t2);
+    }
+
+    let tempRangeStr = temp !== null ? `${temp.toFixed(1)}°C` : "N/A";
+    if (isEnv) {
+        const tLow = minTempVal !== null ? minTempVal : temp;
+        const tHigh = maxTempVal !== null ? maxTempVal : temp;
+        if (tLow !== null && tHigh !== null) {
+            tempRangeStr = `Min: ${Math.min(tLow, tHigh).toFixed(1)}°C to Max: ${Math.max(tLow, tHigh).toFixed(1)}°C`;
+        }
+    }
+
+    let pressRangeStr = pressure !== null ? `${pressure.toFixed(1)} kg/cm² g` : "N/A";
+    if (isEnv) {
+        const pLow = minPressVal !== null ? minPressVal : pressure;
+        const pHigh = maxPressVal !== null ? maxPressVal : pressure;
+        if (pLow !== null && pHigh !== null) {
+            const low = Math.min(pLow, pHigh);
+            const high = Math.max(pLow, pHigh);
+            pressRangeStr = `Min: ${low.toFixed(1)} to Max: ${high.toFixed(1)} kg/cm² g`;
+        }
     }
 
     // Dynamic constituent extraction from database record or form fields
@@ -1369,8 +1519,10 @@ function a571_displayStreamSummaryCard(data, options = {}) {
     const nitrogen = getConstituentVal(["nitrogen", "Nitrogen", "n2", "N2"], "a571-nitrogen");
     const amine = getConstituentVal(["amine", "Amine", "mdea", "MDEA", "amineFlow", "DEA", "MEA"], "a571-amineFlow");
 
+    const envStreamCount = options.streamCount || (data && data.streamCount) || 0;
+    const envStreamIds = options.streamIds || (data && data.streamIds) || "";
     const processFluid = data && (data.fluid || data.fluidClass) ? (data.fluid || data.fluidClass) : (h2 > 0 || h2MolFrac > 10 ? "Hydrocarbon / Hydrogen-rich" : "Process Hydrocarbon Stream");
-    const streamNos = options.isEnvelope && options.streamCount ? `Streams: ${options.streamIds || options.streamCount}` : (streamName.includes("Stream") ? streamName : `Stream ${streamName}`);
+    const streamNos = isEnv && envStreamCount ? `Streams: ${Array.isArray(envStreamIds) ? envStreamIds.join(", ") : (envStreamIds || envStreamCount)}` : (streamName.includes("Stream") ? streamName : `Stream ${streamName}`);
     const referencePFD = data && (data.pfd || data.caseTag) ? (data.pfd || data.caseTag) : (options.unitId ? `Unit ${options.unitId} / PFD-REF-01` : "Refinery PFD Tag - Design Case");
 
     const fmtVal = (val, unit = "kg/h") => {
@@ -1662,7 +1814,7 @@ function a571_displayStreamSummaryCard(data, options = {}) {
                     📋 Stream Operating Envelope & Critical Constituents Summary
                 </h4>
                 <span class="a571-status-pill" style="background: #dbeafe; color: #1e40af; font-weight: 700; font-size: 11.5px; padding: 3px 10px; border-radius: 6px;">
-                    ${options.isEnvelope ? `⚡ ENVELOPE MODE (${options.streamCount || 'Multi'} Streams)` : `🔍 SINGLE STREAM`}
+                    ${isEnv ? `⚡ ENVELOPE MODE (${envStreamCount || 'Multi'} Streams)` : `🔍 SINGLE STREAM`}
                 </span>
             </div>
 
@@ -1672,7 +1824,7 @@ function a571_displayStreamSummaryCard(data, options = {}) {
                     <div style="font-weight: 700; font-size: 13px; color: #334155; margin-bottom: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px;">1. Operating Parameters</div>
                     <table style="width: 100%; font-size: 12.5px; border-collapse: collapse;">
                         <tr style="border-bottom: 1px solid #f8fafc;"><td style="color: #64748b; padding: 4px 0; width: 55%;">Operating Temperature:</td><td style="font-weight: 600; color: #0f172a; text-align: right;">${tempRangeStr}</td></tr>
-                        <tr style="border-bottom: 1px solid #f8fafc;"><td style="color: #64748b; padding: 4px 0;">Operating Pressure:</td><td style="font-weight: 600; color: #0f172a; text-align: right;">${pressure !== null ? `${pressure.toFixed(1)} kg/cm² g` : "-"}</td></tr>
+                        <tr style="border-bottom: 1px solid #f8fafc;"><td style="color: #64748b; padding: 4px 0;">Operating Pressure:</td><td style="font-weight: 600; color: #0f172a; text-align: right;">${pressRangeStr}</td></tr>
                                                 <tr><td style="color: #64748b; padding: 4px 0;">Stream Phase:</td><td style="font-weight: 600; color: #0f172a; text-align: right;">${phase ? `${a571_escapeHTML(phase)} Phase` : "-"}</td></tr>
                     </table>
                 </div>
@@ -1955,88 +2107,6 @@ function a571_displayResults(stream, results, rawData, kpis) {
 
     let fullHTML = `
         <div class="a571-result-container">
-            <!-- Header Bar -->
-            <div class="a571-matrix-header">
-                <div>
-                    <h3 style="margin: 0; font-size: 20px; font-weight: 700; color: var(--text, #1e293b);">
-                        🛡️ API 571 Damage Mechanism Screening Matrix
-                    </h3>
-                    <p style="margin: 4px 0 0 0; font-size: 13.5px; color: var(--text-light, #64748b);">
-                        Active Stream: <strong>${a571_escapeHTML(stream)}</strong> (Screened against 17 API 571 Mechanisms)
-                    </p>
-                </div>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button type="button" class="a571-export-btn" onclick="a571_exportMatrixPDF()" title="Export PDF Screening Report">
-                        📄 Export PDF Report
-                    </button>
-                    <button type="button" class="a571-export-btn" onclick="a571_exportMatrixExcel()" title="Export Excel / CSV Matrix">
-                        📊 Export Excel Matrix
-                    </button>
-                </div>
-            </div>
-
-            <!-- KPI Summary Cards -->
-            <div class="a571-kpi-row">
-                <div class="a571-kpi-box">
-                    <span class="a571-kpi-title">TOTAL MECHANISMS</span>
-                    <span class="a571-kpi-val" style="color: #2563eb;">${results.length}</span>
-                    <span class="a571-kpi-sub">API 571 Standard Rules</span>
-                </div>
-                <div class="a571-kpi-box" style="cursor: pointer;" onclick="a571_filterMatrixCategory('applicable')" title="Filter to show applicable only">
-                    <span class="a571-kpi-title">ACTIVE / APPLICABLE</span>
-                    <span class="a571-kpi-val" style="color: #dc2626;">${applicableCount}</span>
-                    <span class="a571-kpi-sub">Immediate Inspection Threats</span>
-                </div>
-                <div class="a571-kpi-box">
-                    <span class="a571-kpi-title">CONDITIONAL / CHECK</span>
-                    <span class="a571-kpi-val" style="color: #d97706;">${conditionalCount}</span>
-                    <span class="a571-kpi-sub">Secondary Verification</span>
-                </div>
-                <div class="a571-kpi-box">
-                    <span class="a571-kpi-title">SAFE / NOT APPLICABLE</span>
-                    <span class="a571-kpi-val" style="color: #16a34a;">${notApplicableCount}</span>
-                    <span class="a571-kpi-sub">Outside Damage Boundaries</span>
-                </div>
-                <div class="a571-kpi-box" style="flex: 1.3;">
-                    <span class="a571-kpi-title">PRIMARY ACTIVE THREAT</span>
-                    <span class="a571-kpi-val" style="font-size: 15px; color: #4f46e5; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
-                        ${a571_escapeHTML(dominantThreat)}
-                    </span>
-                    <span class="a571-kpi-sub">Governing Mechanism for Inspection Circuit</span>
-                </div>
-            </div>
-
-            <!-- Matrix Category Filter Pills -->
-            <div class="a571-filter-bar">
-                <span style="font-size: 12.5px; font-weight: 700; color: var(--text, #334155); margin-right: 4px;">Filter Matrix:</span>
-                <button type="button" class="a571-filter-chip active" id="a571-chip-all" onclick="a571_filterMatrixCategory('all')">
-                    All Mechanisms (${results.length})
-                </button>
-                <button type="button" class="a571-filter-chip" id="a571-chip-applicable" onclick="a571_filterMatrixCategory('applicable')">
-                    🔴 Applicable Only (${applicableCount})
-                </button>
-                <button type="button" class="a571-filter-chip" id="a571-chip-high-temperature-degradation" onclick="a571_filterMatrixCategory('high-temperature-degradation')">
-                    🔥 High Temp & Nelson (4)
-                </button>
-                <button type="button" class="a571-filter-chip" id="a571-chip-environmental-cracking" onclick="a571_filterMatrixCategory('environmental-cracking')">
-                    💥 Environmental Cracking (4)
-                </button>
-                <button type="button" class="a571-filter-chip" id="a571-chip-aqueous---acid-thinning" onclick="a571_filterMatrixCategory('aqueous---acid-thinning')">
-                    🧪 Acid & Sour Thinning (5)
-                </button>
-                <button type="button" class="a571-filter-chip" id="a571-chip-flow--velocity---erosion" onclick="a571_filterMatrixCategory('flow--velocity---erosion')">
-                    🌪️ Flow & Velocity (2)
-                </button>
-                <button type="button" class="a571-filter-chip" id="a571-chip-external---cui" onclick="a571_filterMatrixCategory('external---cui')">
-                    🌧️ External & CUI (1)
-                </button>
-            </div>
-
-            <!-- Visual Matrix Cards Grid -->
-            <div class="a571-matrix-grid" id="a571MatrixGrid">
-                ${matrixCardsHTML}
-            </div>
-
             <!-- Combined Inspection Summary Panel -->
             <div id="a571-inspectionSummaryPanel">
                 ${inspectionSummaryHTML}
@@ -2225,6 +2295,7 @@ function a571_setScreeningMode(mode) {
         if (envelopeBtn) { envelopeBtn.style.background = "transparent"; envelopeBtn.style.color = "#475569"; }
         if (singleWrap) singleWrap.style.display = "block";
         if (envelopeWrap) envelopeWrap.style.display = "none";
+        if (typeof a571_closeEnvelopeDropdown === "function") a571_closeEnvelopeDropdown();
         if (loadStreamBtn) loadStreamBtn.style.display = "inline-flex";
         if (loadEnvelopeBtn) loadEnvelopeBtn.style.display = "none";
         if (helpText) helpText.textContent = "Standard single-stream evaluation mode.";
@@ -2243,14 +2314,52 @@ function a571_setScreeningMode(mode) {
     }
 }
 
+function a571_toggleEnvelopeDropdown(event) {
+    if (event) event.stopPropagation();
+    const menu = document.getElementById("a571-envDropdownMenu");
+    const arrow = document.getElementById("a571-envDropdownArrow");
+    if (!menu) return;
+    const isHidden = menu.style.display === "none" || !menu.style.display;
+    menu.style.display = isHidden ? "block" : "none";
+    if (arrow) {
+        arrow.style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
+    }
+    if (isHidden) {
+        const searchInput = document.getElementById("a571-envelopeStreamSearch");
+        if (searchInput) setTimeout(() => searchInput.focus(), 30);
+    }
+}
+
+function a571_closeEnvelopeDropdown() {
+    const menu = document.getElementById("a571-envDropdownMenu");
+    const arrow = document.getElementById("a571-envDropdownArrow");
+    if (menu) menu.style.display = "none";
+    if (arrow) arrow.style.transform = "rotate(0deg)";
+}
+
+if (typeof document !== "undefined" && !window._a571EnvDropdownOutsideBound) {
+    window._a571EnvDropdownOutsideBound = true;
+    document.addEventListener("click", function(e) {
+        const wrap = document.getElementById("a571-envelopeStreamWrap");
+        const menu = document.getElementById("a571-envDropdownMenu");
+        if (menu && menu.style.display === "block" && wrap && !wrap.contains(e.target)) {
+            a571_closeEnvelopeDropdown();
+        }
+    });
+}
+
 function a571_populateEnvelopeStreamCheckboxes(streams) {
     const container = document.getElementById("a571-envelopeStreamContainer");
     const countEl = document.getElementById("a571-envelopeSelectedCount");
+    const noResultsEl = document.getElementById("a571-envSearchNoResults");
+    const triggerLabel = document.getElementById("a571-envDropdownLabel");
     if (!container) return;
 
     if (!streams || streams.length === 0) {
-        container.innerHTML = '<div style="color: #94a3b8; font-size: 12px; text-align: center; padding: 10px;">-- No streams available in selected Unit/Case --</div>';
+        container.innerHTML = '<div style="color: #94a3b8; font-size: 11.5px; text-align: center; padding: 8px;">-- No streams available in selected Unit/Case --</div>';
         if (countEl) countEl.textContent = "0 selected";
+        if (triggerLabel) triggerLabel.textContent = "-- Select a Unit first --";
+        if (noResultsEl) noResultsEl.style.display = "none";
         return;
     }
 
@@ -2258,21 +2367,94 @@ function a571_populateEnvelopeStreamCheckboxes(streams) {
     streams.forEach((s, idx) => {
         const id = s.id || s.streamNo || `stream_${idx}`;
         const name = s.name || (s.streamName ? `Stream ${s.streamNo} - ${s.streamName}` : `Stream ${s.streamNo || s.id}`);
-        const temp = s.temp !== undefined ? s.temp : (s.tempC !== undefined ? s.tempC : (s.properties?.['Temperature (°C)'] ?? s.properties?.['Temperature (C)'] ?? "-"));
-        const press = s.pressure !== undefined ? s.pressure : (s.pressKgCm2 !== undefined ? s.pressKgCm2 : (s.properties?.['Pressure (kg/cm2 (g))'] ?? s.properties?.['Pressure (kg/cm2_g)'] ?? "-"));
-        const flow = s.massFlow || s.flowMass || (s.properties?.['Flow Mass (kg/hr)'] ?? 0);
+        const rawT = s.properties?.['Temperature (°C)'] ?? s.properties?.['Temperature (C)'] ?? s.temp ?? s.tempC;
+        const temp = (rawT !== undefined && rawT !== null && rawT !== "" && !isNaN(Number(rawT))) ? Math.abs(Number(rawT)) : "N/A";
+        const rawP = s.properties?.['Pressure (kg/cm²g)'] ?? s.properties?.['Pressure (kg/cm2 (g))'] ?? s.properties?.['Pressure (kg/cm2_g)'] ?? s.pressure ?? s.pressKgCm2;
+        const press = (rawP !== undefined && rawP !== null && rawP !== "" && !isNaN(Number(rawP))) ? Math.abs(Number(rawP)) : "N/A";
+        const flow = s.properties?.['Flow Mass (kg/hr)'] ?? s.massFlow ?? s.flowMass ?? 0;
         const caseTag = s.detectedCase ? `[${s.detectedCase}] ` : "";
+        const searchKeywords = `${caseTag} ${name} ${temp} ${press} ${flow} stream ${id}`.toLowerCase();
+
         html += `
-            <label style="display: flex; align-items: center; gap: 8px; padding: 5px 8px; margin-bottom: 3px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; font-size: 12.5px; font-weight: 500; min-height: unset;">
-                <input type="checkbox" class="a571-env-checkbox" value="${a571_escapeHTML(id)}" onchange="a571_updateEnvelopeCount()" style="width: 16px; height: 16px; accent-color: #7c3aed;">
-                <span style="font-weight: 700; color: #1e293b;">${caseTag}${a571_escapeHTML(name)}</span>
-                <span style="margin-left: auto; color: #64748b; font-size: 11.5px;">${temp}°C | ${press} kg/cm² | ${Number(flow).toLocaleString()} kg/h</span>
+            <label class="a571-env-item" data-search="${a571_escapeHTML(searchKeywords)}">
+                <input type="checkbox" class="a571-env-checkbox" value="${a571_escapeHTML(id)}" onchange="a571_onEnvelopeCheckboxChange(this)" style="width: 14px; height: 14px; accent-color: #7c3aed; cursor: pointer; flex-shrink: 0;">
+                <span style="font-weight: 700; color: #1e293b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;" title="${a571_escapeHTML(name)}">${caseTag}${a571_escapeHTML(name)}</span>
+                <span style="margin-left: auto; color: #64748b; font-size: 10.5px; white-space: nowrap; display: inline-flex; gap: 3px; align-items: center;">
+                    <span style="background: #f1f5f9; padding: 1px 4px; border-radius: 4px; border: 1px solid #e2e8f0;">${temp}°C</span>
+                    <span style="background: #f1f5f9; padding: 1px 4px; border-radius: 4px; border: 1px solid #e2e8f0;">${press} kg</span>
+                </span>
             </label>
         `;
     });
 
     container.innerHTML = html;
+    if (noResultsEl) noResultsEl.style.display = "none";
+
+    // Reapply search filter if user previously typed
+    const searchInput = document.getElementById("a571-envelopeStreamSearch");
+    if (searchInput && searchInput.value.trim().length > 0) {
+        a571_filterEnvelopeStreams(searchInput.value);
+    }
+
     a571_updateEnvelopeCount();
+}
+
+function a571_onEnvelopeCheckboxChange(checkbox) {
+    if (checkbox) {
+        const item = checkbox.closest(".a571-env-item") || checkbox.parentElement;
+        if (item) {
+            if (checkbox.checked) item.classList.add("a571-env-item-selected");
+            else item.classList.remove("a571-env-item-selected");
+        }
+    }
+    a571_updateEnvelopeCount();
+}
+
+function a571_filterEnvelopeStreams(query) {
+    const q = (query || "").trim().toLowerCase();
+    const items = document.querySelectorAll("#a571-envelopeStreamContainer .a571-env-item");
+    const noResultsEl = document.getElementById("a571-envSearchNoResults");
+    let matchCount = 0;
+
+    items.forEach(item => {
+        const searchText = item.getAttribute("data-search") || item.textContent.toLowerCase();
+        if (!q || searchText.includes(q)) {
+            item.style.display = "flex";
+            matchCount++;
+        } else {
+            item.style.display = "none";
+        }
+    });
+
+    if (noResultsEl) {
+        noResultsEl.style.display = (items.length > 0 && matchCount === 0) ? "block" : "none";
+    }
+}
+
+function a571_clearEnvelopeSearch() {
+    const searchInput = document.getElementById("a571-envelopeStreamSearch");
+    if (searchInput) {
+        searchInput.value = "";
+        a571_filterEnvelopeStreams("");
+    }
+}
+
+function a571_filterSingleStreamDropdown(query) {
+    const q = (query || "").trim().toLowerCase();
+    const select = document.getElementById("a571-streamPresetSelector");
+    if (!select) return;
+
+    Array.from(select.options).forEach((opt, idx) => {
+        if (idx === 0) return; // Keep placeholder option
+        const text = opt.textContent.toLowerCase();
+        if (!q || text.includes(q)) {
+            opt.hidden = false;
+            opt.style.display = "";
+        } else {
+            opt.hidden = true;
+            opt.style.display = "none";
+        }
+    });
 }
 
 function a571_updateEnvelopeCount() {
@@ -2281,16 +2463,79 @@ function a571_updateEnvelopeCount() {
     if (countEl) {
         countEl.textContent = `${checkboxes.length} selected`;
     }
+
+    const triggerLabel = document.getElementById("a571-envDropdownLabel");
+    if (triggerLabel) {
+        const allCbs = document.querySelectorAll(".a571-env-checkbox");
+        if (allCbs.length === 0) {
+            triggerLabel.textContent = "-- Select a Unit first --";
+        } else if (checkboxes.length === 0) {
+            triggerLabel.textContent = `-- Select Streams (${allCbs.length} available) --`;
+        } else {
+            const ids = Array.from(checkboxes).map(cb => cb.value);
+            const preview = ids.slice(0, 3).join(", ") + (ids.length > 3 ? ` +${ids.length - 3}` : "");
+            triggerLabel.textContent = `⚡ ${checkboxes.length} Selected (${preview})`;
+        }
+    }
+
+    const summaryCard = document.getElementById("a571-streamSummaryCard");
+    if (summaryCard && summaryCard.style.display !== "none" && checkboxes.length > 1) {
+        const allStreams = window.a571_CURRENT_STREAMS || window.a571_ALL_UNIT_STREAMS || [];
+        const selectedIds = Array.from(checkboxes).map(cb => cb.value);
+        const selectedStreams = allStreams.filter(s => selectedIds.includes(String(s.id || s.streamNo)));
+        if (selectedStreams.length > 1) {
+            const pArr = selectedStreams.map(s => a571_extractStreamMetricPressure(s)).filter(v => v !== null && Number.isFinite(v));
+            const tArr = selectedStreams.map(s => a571_extractStreamMetricTemperature(s)).filter(v => v !== null && Number.isFinite(v));
+            const minPress = pArr.length > 0 ? Math.min(...pArr) : null;
+            const maxPress = pArr.length > 0 ? Math.max(...pArr) : null;
+            const minTemp = tArr.length > 0 ? Math.min(...tArr) : null;
+            const maxTemp = tArr.length > 0 ? Math.max(...tArr) : null;
+            const streamNosList = selectedStreams.map(s => s.streamNo || s.id).filter(Boolean);
+            const liveEnvelope = {
+                streamNo: "ENVELOPE",
+                name: `Worst-Case Envelope (${streamNosList.join(", ")})`,
+                streamName: `Worst-Case Envelope (${streamNosList.join(", ")})`,
+                streamCount: selectedStreams.length,
+                streamIds: streamNosList,
+                minPress,
+                maxPress,
+                minTemp,
+                maxTemp,
+                pressure: maxPress,
+                temp: maxTemp
+            };
+            a571_displayStreamSummaryCard(liveEnvelope, {
+                isEnvelope: true,
+                streamCount: selectedStreams.length,
+                streamIds: streamNosList,
+                minPress,
+                maxPress,
+                minTemp,
+                maxTemp
+            });
+        }
+    }
 }
 
 function a571_envelopeSelectAll(select) {
+    const searchInput = document.getElementById("a571-envelopeStreamSearch");
+    const hasSearch = searchInput && searchInput.value.trim().length > 0;
+
     document.querySelectorAll(".a571-env-checkbox").forEach(cb => {
-        cb.checked = select;
+        const item = cb.closest(".a571-env-item") || cb.parentElement;
+        if (!select || !hasSearch || (item && item.style.display !== "none")) {
+            cb.checked = select;
+            if (item) {
+                if (select) item.classList.add("a571-env-item-selected");
+                else item.classList.remove("a571-env-item-selected");
+            }
+        }
     });
     a571_updateEnvelopeCount();
 }
 
 async function a571_loadEnvelopeStreams() {
+    a571_closeEnvelopeDropdown();
     const checkedCheckboxes = document.querySelectorAll(".a571-env-checkbox:checked");
     const alertBox = document.getElementById("a571-autoloadAlert");
     const loadBtn = document.getElementById("a571-btnLoadEnvelope");
@@ -2332,11 +2577,44 @@ async function a571_loadEnvelopeStreams() {
     }
 
     try {
-        const temps = selectedStreams.map(s => Number(s.temp !== undefined ? s.temp : (s.tempC !== undefined ? s.tempC : (s.properties?.['Temperature (°C)'] ?? s.properties?.['Temperature (C)'] ?? 0))));
+        const extractStreamMetric = (s, keys, fuzzyRegex) => {
+            if (!s) return null;
+            // Prioritize authoritative Firestore properties map (s.properties) before top-level fields
+            const containers = [s.properties, s, s.constituents, s.components];
+            for (const k of keys) {
+                for (const c of containers) {
+                    if (c && c[k] !== undefined && c[k] !== null && c[k] !== "") {
+                        const v = parseFloat(c[k]);
+                        if (Number.isFinite(v)) return Math.abs(v);
+                    }
+                }
+            }
+            if (fuzzyRegex) {
+                for (const c of containers) {
+                    if (!c || typeof c !== "object") continue;
+                    for (const [ck, cv] of Object.entries(c)) {
+                        if (/crit|vap|diff|drop/i.test(ck)) continue;
+                        if (fuzzyRegex.test(ck) && cv !== undefined && cv !== null && cv !== "") {
+                            const v = parseFloat(cv);
+                            if (Number.isFinite(v)) return Math.abs(v);
+                        }
+                    }
+                }
+            }
+            return null;
+        };
+
+        const temps = selectedStreams
+            .map(s => extractStreamMetric(s, ["Temperature (°C)", "Temperature (C)", "Temperature", "temp", "tempC"], /temp/i))
+            .filter(v => v !== null && Number.isFinite(v));
         const maxTemp = temps.length > 0 ? Math.max(...temps) : 0;
         const minTemp = temps.length > 0 ? Math.min(...temps) : 0;
-        const pressures = selectedStreams.map(s => Number(s.pressure !== undefined ? s.pressure : (s.pressKgCm2 !== undefined ? s.pressKgCm2 : (s.properties?.['Pressure (kg/cm2 (g))'] ?? s.properties?.['Pressure (kg/cm2_g)'] ?? 0))));
+
+        const pressures = selectedStreams
+            .map(s => extractStreamMetric(s, ["Pressure (kg/cm²g)", "Pressure (kg/cm2 (g))", "Pressure (kg/cm2_g)", "Pressure (barg)", "Pressure", "pressure", "pressKgCm2"], /press/i))
+            .filter(v => v !== null && Number.isFinite(v));
         const maxPress = pressures.length > 0 ? Math.max(...pressures) : 0;
+        const minPress = pressures.length > 0 ? Math.min(...pressures) : 0;
 
         // Fully dynamic component and constituent extraction across all selected streams for worst-case envelope
         const envCompsMap = new Map();
@@ -2403,6 +2681,10 @@ async function a571_loadEnvelopeStreams() {
             minTemp: minTemp,
             maxTemp: maxTemp,
             pressure: maxPress,
+            minPress: minPress,
+            maxPress: maxPress,
+            streamCount: selectedStreams.length,
+            streamIds: streamNosList,
             h2: maxH2,
             h2MolFrac: maxH2Mol,
             h2s: maxH2S,
@@ -2454,7 +2736,9 @@ async function a571_loadEnvelopeStreams() {
             streamCount: selectedStreams.length,
             streamIds: streamNosList,
             minTemp,
-            maxTemp
+            maxTemp,
+            minPress,
+            maxPress
         });
 
         if (alertBox) {
@@ -2465,12 +2749,13 @@ async function a571_loadEnvelopeStreams() {
                     <div>
                         <strong>Multi-Stream Envelope Mode Active:</strong> Populated worst-case parameters across <strong>${selectedStreams.length}</strong> process streams.
                         <div style="font-size:11.5px; margin-top:2px;">
-                            Temp Range: ${minTemp}°C - ${maxTemp}°C | Max Press: ${maxPress} kg/cm² | Max Flow: ${Number(maxFlow).toLocaleString()} kg/h | Max H₂S: ${Number(maxH2S).toLocaleString()} kg/h | Max NH₃: ${Number(maxNH3).toLocaleString()} kg/h
+                            Temp Range: Min: ${Math.min(minTemp, maxTemp).toFixed(1)}°C to Max: ${Math.max(minTemp, maxTemp).toFixed(1)}°C | Press Range: Min: ${Math.min(minPress, maxPress).toFixed(1)} to Max: ${Math.max(minPress, maxPress).toFixed(1)} kg/cm² g | Max Flow: ${Number(maxFlow).toLocaleString()} kg/h | Max H₂S: ${Number(maxH2S).toLocaleString()} kg/h | Max NH₃: ${Number(maxNH3).toLocaleString()} kg/h
                         </div>
                     </div>
                     <button type="button" onclick="this.parentElement.parentElement.style.display='none'" style="margin-left:auto; background:none; border:none; color:inherit; cursor:pointer; font-size:16px;">&times;</button>
                 </div>
             `;
+            window.a571_lastEnvelopeAlertHTML = alertBox.innerHTML;
         }
     } catch (err) {
         console.error("[API 571] Envelope load error:", err);
@@ -2496,3 +2781,9 @@ window.a571_envelopeSelectAll = a571_envelopeSelectAll;
 window.a571_loadEnvelopeStreams = a571_loadEnvelopeStreams;
 window.a571_updateEnvelopeCount = a571_updateEnvelopeCount;
 window.a571_displayStreamSummaryCard = a571_displayStreamSummaryCard;
+window.a571_onEnvelopeCheckboxChange = a571_onEnvelopeCheckboxChange;
+window.a571_filterEnvelopeStreams = a571_filterEnvelopeStreams;
+window.a571_clearEnvelopeSearch = a571_clearEnvelopeSearch;
+window.a571_filterSingleStreamDropdown = a571_filterSingleStreamDropdown;
+window.a571_toggleEnvelopeDropdown = a571_toggleEnvelopeDropdown;
+window.a571_closeEnvelopeDropdown = a571_closeEnvelopeDropdown;

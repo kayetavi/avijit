@@ -161,40 +161,166 @@
     isMergeUpload: false
   };
 
+  const STORAGE_KEY_ACTIVE_DATASET = "sc_active_stream_dataset_v1";
+
+  function persistActiveDatasetState() {
+    try {
+      if (!state.currentDataset || !Array.isArray(state.currentDataset.streams) || state.currentDataset.streams.length === 0) {
+        return;
+      }
+      const snapshot = {
+        dataset: state.currentDataset,
+        streamANo: state.streamA ? state.streamA.streamNo : null,
+        streamBNo: state.streamB ? state.streamB.streamNo : null,
+        selectedMatrixStreams: Array.isArray(state.selectedMatrixStreams) ? state.selectedMatrixStreams : [],
+        selectedMatrixCase: state.selectedMatrixCase || "all",
+        caseFilterA: state.caseFilterA || "all",
+        caseFilterB: state.caseFilterB || "all",
+        activeMode: state.activeMode || "auto",
+        activeView: state.activeView || "pairwise"
+      };
+      const serialized = JSON.stringify(snapshot);
+      try { sessionStorage.setItem(STORAGE_KEY_ACTIVE_DATASET, serialized); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY_ACTIVE_DATASET, serialized); } catch (e) {}
+    } catch (err) {
+      try {
+        if (state.currentDataset && state.currentDataset.id) {
+          const minSnapshot = JSON.stringify({
+            datasetId: state.currentDataset.id,
+            streamANo: state.streamA ? state.streamA.streamNo : null,
+            streamBNo: state.streamB ? state.streamB.streamNo : null,
+            selectedMatrixStreams: Array.isArray(state.selectedMatrixStreams) ? state.selectedMatrixStreams : [],
+            selectedMatrixCase: state.selectedMatrixCase || "all",
+            caseFilterA: state.caseFilterA || "all",
+            caseFilterB: state.caseFilterB || "all",
+            activeMode: state.activeMode || "auto",
+            activeView: state.activeView || "pairwise"
+          });
+          try { sessionStorage.setItem(STORAGE_KEY_ACTIVE_DATASET, minSnapshot); } catch (e2) {}
+          try { localStorage.setItem(STORAGE_KEY_ACTIVE_DATASET, minSnapshot); } catch (e2) {}
+        }
+      } catch (e3) {}
+    }
+  }
+
+  function readPersistedDatasetState() {
+    try {
+      const raw = (typeof sessionStorage !== "undefined" && sessionStorage.getItem(STORAGE_KEY_ACTIVE_DATASET)) ||
+                  (typeof localStorage !== "undefined" && localStorage.getItem(STORAGE_KEY_ACTIVE_DATASET));
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function clearPersistedDatasetState() {
+    try { sessionStorage.removeItem(STORAGE_KEY_ACTIVE_DATASET); } catch (e) {}
+    try { localStorage.removeItem(STORAGE_KEY_ACTIVE_DATASET); } catch (e) {}
+  }
+
   // Initialize
   function init() {
-    clearDataset(true); // Start empty; data loads only when user uploads or selects sample
     setupDropzone();
     fetchSavedDatasetsCount();
 
     // Modal backdrop click and Escape key listeners for streamIngestModal
     const ingestModal = document.getElementById("streamIngestModal");
-    if (ingestModal) {
+    if (ingestModal && !ingestModal.dataset.scModalBound) {
+      ingestModal.dataset.scModalBound = "true";
       ingestModal.addEventListener("click", (e) => {
         if (e.target === ingestModal) closeIngestModal();
       });
     }
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        closeIngestModal();
-        closeSavedDatasetsModal();
+    if (!state._escapeKeyBound) {
+      state._escapeKeyBound = true;
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          closeIngestModal();
+          closeSavedDatasetsModal();
+        }
+      });
+    }
+
+    // Preserve active dataset across tab switches! Never auto-clear if a dataset is already loaded.
+    if (state.currentDataset && Array.isArray(state.currentDataset.streams) && state.currentDataset.streams.length > 0) {
+      const titleEl = document.getElementById("streamDocTitle");
+      const isDomFresh = titleEl && (!titleEl.textContent || titleEl.textContent.includes("No Dataset Loaded"));
+      if (isDomFresh) {
+        loadDataset(state.currentDataset, {
+          streamANo: state.streamA ? state.streamA.streamNo : null,
+          streamBNo: state.streamB ? state.streamB.streamNo : null,
+          selectedMatrixStreams: state.selectedMatrixStreams,
+          selectedMatrixCase: state.selectedMatrixCase,
+          caseFilterA: state.caseFilterA,
+          caseFilterB: state.caseFilterB,
+          activeMode: state.activeMode,
+          activeView: state.activeView
+        });
+      } else {
+        if (state.chartComparison && typeof state.chartComparison.resize === "function") {
+          try { state.chartComparison.resize(); } catch (e) {}
+        }
+        if (state.chartDelta && typeof state.chartDelta.resize === "function") {
+          try { state.chartDelta.resize(); } catch (e) {}
+        }
       }
-    });
+      return;
+    }
+
+    // Restore persisted dataset from sessionStorage/localStorage if present
+    const persisted = readPersistedDatasetState();
+    if (persisted) {
+      const tabMounted = !!document.getElementById("streamComparatorTab");
+      if (persisted.dataset && Array.isArray(persisted.dataset.streams) && persisted.dataset.streams.length > 0) {
+        if (tabMounted) {
+          loadDataset(persisted.dataset, persisted);
+        } else {
+          state.currentDataset = enrichDatasetWithCases(persisted.dataset);
+          state.selectedMatrixStreams = Array.isArray(persisted.selectedMatrixStreams) ? persisted.selectedMatrixStreams : [];
+          state.selectedMatrixCase = persisted.selectedMatrixCase || "all";
+          state.caseFilterA = persisted.caseFilterA || "all";
+          state.caseFilterB = persisted.caseFilterB || "all";
+          state.activeMode = persisted.activeMode || "auto";
+          state.activeView = persisted.activeView || "pairwise";
+          if (persisted.streamANo) {
+            state.streamA = state.currentDataset.streams.find(s => String(s.streamNo) === String(persisted.streamANo)) || null;
+          }
+          if (persisted.streamBNo) {
+            state.streamB = state.currentDataset.streams.find(s => String(s.streamNo) === String(persisted.streamBNo)) || null;
+          }
+        }
+        return;
+      } else if (persisted.datasetId && tabMounted && !state._restoringById) {
+        state._restoringById = true;
+        loadSavedDataset(persisted.datasetId).finally(() => {
+          state._restoringById = false;
+        });
+        return;
+      }
+    }
+
+    clearDataset(true); // Start empty only when no dataset is loaded or persisted
   }
 
   // Load Dataset into State & UI
-  function loadDataset(dataset) {
+  function loadDataset(dataset, restoredState = null) {
     if (!dataset || !dataset.streams || dataset.streams.length === 0) return;
     dataset = enrichDatasetWithCases(dataset);
     state.currentDataset = dataset;
 
     const distinctCases = Array.from(new Set(dataset.streams.map(s => s.caseName).filter(Boolean)));
-    state.selectedMatrixCase = "all";
-    state.caseFilterA = "all";
-    state.caseFilterB = "all";
+    state.selectedMatrixCase = (restoredState && restoredState.selectedMatrixCase) ? restoredState.selectedMatrixCase : "all";
+    state.caseFilterA = (restoredState && restoredState.caseFilterA) ? restoredState.caseFilterA : "all";
+    state.caseFilterB = (restoredState && restoredState.caseFilterB) ? restoredState.caseFilterB : "all";
 
-    // Matrix Stream Selection: Start unselected so user chooses streams manually
-    state.selectedMatrixStreams = [];
+    // Matrix Stream Selection: Restore if provided, otherwise start unselected so user chooses streams manually
+    if (restoredState && Array.isArray(restoredState.selectedMatrixStreams)) {
+      const validNos = new Set(dataset.streams.map(s => String(s.streamNo)));
+      state.selectedMatrixStreams = restoredState.selectedMatrixStreams.filter(no => validNos.has(String(no)));
+    } else {
+      state.selectedMatrixStreams = [];
+    }
 
     const titleEl = document.getElementById("streamDocTitle");
     if (titleEl) {
@@ -233,7 +359,9 @@
     const hasProps = dataset.streams.some(s => s.properties && Object.keys(s.properties).length > 0);
     const hasComps = dataset.streams.some(s => s.components && Object.keys(s.components).length > 0);
 
-    if (hasProps && hasComps) {
+    if (restoredState && restoredState.activeMode && ["combined", "properties", "components"].includes(restoredState.activeMode)) {
+      state.activeMode = restoredState.activeMode;
+    } else if (hasProps && hasComps) {
       state.activeMode = "combined";
     } else if (hasProps && !hasComps) {
       state.activeMode = "properties";
@@ -251,10 +379,18 @@
     renderMatrixChips();
     updateMatrixButtonsState();
 
-    // Default select first two streams (or matching pairs across cases if multi-case)
+    // Select streams (restore previous streamA/streamB if valid, else default to first two streams)
     const selA = document.getElementById("streamSelectA");
     const selB = document.getElementById("streamSelectB");
-    if (selA && selB && dataset.streams.length >= 2) {
+    const restoredA = restoredState && restoredState.streamANo ? dataset.streams.find(s => String(s.streamNo) === String(restoredState.streamANo)) : null;
+    const restoredB = restoredState && restoredState.streamBNo ? dataset.streams.find(s => String(s.streamNo) === String(restoredState.streamBNo)) : null;
+
+    if (restoredA && restoredB) {
+      state.streamA = restoredA;
+      state.streamB = restoredB;
+      if (selA) selA.value = restoredA.streamNo;
+      if (selB) selB.value = restoredB.streamNo;
+    } else if (selA && selB && dataset.streams.length >= 2) {
       if (distinctCases.length >= 2) {
         const c1 = distinctCases[0];
         const c2 = distinctCases[1];
@@ -281,6 +417,14 @@
     runComparison();
     renderMatrixTable();
     scanPlantTieIns();
+
+    if (restoredState && restoredState.activeView && ["pairwise", "matrix", "tiein"].includes(restoredState.activeView)) {
+      if (restoredState.activeView !== state.activeView) {
+        switchView(restoredState.activeView);
+      }
+    }
+
+    persistActiveDatasetState();
   }
 
   function updateModeToggleUI(hasComps, hasProps) {
@@ -294,22 +438,33 @@
     }
 
     const modeWrap = document.getElementById("streamModeToggleWrap");
+    const scopeSelect = document.getElementById("streamScopeSelect");
+    const optCombined = document.getElementById("optScopeCombined");
+    const optProps = document.getElementById("optScopeProps");
+    const optComps = document.getElementById("optScopeComps");
+
+    if (scopeSelect) {
+      if (hasProps && hasComps) {
+        if (optCombined) { optCombined.disabled = false; optCombined.style.display = ""; }
+        if (optProps) { optProps.disabled = false; optProps.style.display = ""; }
+        if (optComps) { optComps.disabled = false; optComps.style.display = ""; }
+      } else {
+        if (optCombined) { optCombined.disabled = true; optCombined.style.display = "none"; }
+        if (optProps) { optProps.disabled = !hasProps; optProps.style.display = hasProps ? "" : "none"; }
+        if (optComps) { optComps.disabled = !hasComps; optComps.style.display = hasComps ? "" : "none"; }
+      }
+      scopeSelect.value = state.activeMode;
+    }
+
     const btnCombined = document.getElementById("modeBtnCombined");
     const btnProps = document.getElementById("modeBtnProps");
     const btnComps = document.getElementById("modeBtnComps");
 
     if (modeWrap) {
-      if (hasProps && hasComps) {
-        modeWrap.style.display = "flex";
-        if (btnCombined) btnCombined.style.display = "inline-block";
-        if (btnProps) btnProps.style.display = "inline-block";
-        if (btnComps) btnComps.style.display = "inline-block";
-      } else {
-        modeWrap.style.display = "flex";
-        if (btnCombined) btnCombined.style.display = "none";
-        if (btnProps) btnProps.style.display = hasProps ? "inline-block" : "none";
-        if (btnComps) btnComps.style.display = hasComps ? "inline-block" : "none";
-      }
+      modeWrap.style.display = "flex";
+      if (btnCombined) btnCombined.style.display = (hasProps && hasComps) ? "inline-block" : "none";
+      if (btnProps) btnProps.style.display = hasProps ? "inline-block" : "none";
+      if (btnComps) btnComps.style.display = hasComps ? "inline-block" : "none";
     }
 
     if (btnCombined) btnCombined.classList.toggle("active", state.activeMode === "combined");
@@ -319,11 +474,16 @@
 
   function setMode(mode) {
     state.activeMode = mode;
+    const scopeSelect = document.getElementById("streamScopeSelect");
+    if (scopeSelect && scopeSelect.value !== mode) {
+      scopeSelect.value = mode;
+    }
     const hasProps = state.currentDataset?.streams.some(s => s.properties && Object.keys(s.properties).length > 0);
     const hasComps = state.currentDataset?.streams.some(s => s.components && Object.keys(s.components).length > 0);
     updateModeToggleUI(hasComps, hasProps);
     runComparison();
     renderMatrixTable();
+    persistActiveDatasetState();
   }
 
   // Populate Dropdown Menus with Operating Case awareness
@@ -431,6 +591,7 @@
     state.streamB = state.currentDataset.streams.find(s => s.streamNo === selB.value);
 
     runComparison();
+    persistActiveDatasetState();
   }
 
   // Main Comparison Calculation
@@ -1755,49 +1916,38 @@
     // Auto-detect: if no multiple cases are detected (e.g. RPTU single run, or standard sheet without case column)
     if (distinctCases.length <= 1) {
       state.selectedMatrixCase = "all";
-      if (bar) bar.style.display = "flex";
+      if (bar) bar.style.display = "inline-flex";
       if (label) {
-        label.innerHTML = '<span>⚡ Operating State:</span>';
+        label.innerHTML = '<span>⚙️ Case:</span>';
       }
       if (btnCompareSorEor) btnCompareSorEor.style.display = "none";
       if (btnCompareCases) btnCompareCases.style.display = "none";
       if (btnMultiCase) btnMultiCase.style.display = "none";
 
-      const caseTitle = distinctCases.length === 1 ? distinctCases[0] : "Single Operating State";
+      const caseTitle = distinctCases.length === 1 ? distinctCases[0] : "Single Run";
       container.innerHTML = `
-        <div style="display: inline-flex; align-items: center; gap: 7px; padding: 4px 11px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; font-size: 11.5px; color: #166534;">
-          <span style="font-weight: 700; color: #15803d;">✓ Auto-Detected:</span>
-          <span>${escapeHtml(caseTitle)}</span>
-          <span style="background: #dcfce7; padding: 1px 7px; border-radius: 10px; font-size: 10.5px; font-weight: 700; color: #166534;">${streams.length} Streams</span>
-          <span style="color: #64748b; font-size: 11px;">(No case variations in file)</span>
+        <div style="display: inline-flex; align-items: center; gap: 5px; height: 27px; padding: 0 9px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; font-size: 11.5px; color: #166534; box-sizing: border-box;">
+          <span style="font-weight: 700; color: #15803d;">✓ ${escapeHtml(caseTitle)}</span>
+          <span style="background: #dcfce7; padding: 0 6px; border-radius: 10px; font-size: 10.5px; font-weight: 700; color: #166534; line-height: 16px;">${streams.length} Streams</span>
         </div>
       `;
       return;
     }
 
     // MULTIPLE CASES DETECTED! (e.g. Case 1, Case 2, Case 3, or SOR, EOR)
-    if (bar) bar.style.display = "flex";
+    if (bar) bar.style.display = "inline-flex";
     if (label) {
-      label.innerHTML = '<span>⚙️ Operating Cases:</span>';
+      label.innerHTML = '<span>⚙️ Case:</span>';
     }
 
     const activeCase = state.selectedMatrixCase || "all";
     const totalCount = streams.length;
 
-    container.innerHTML = "";
-
-    // 1. All Cases Pill
-    const allBtn = document.createElement("button");
-    allBtn.type = "button";
-    allBtn.className = `matrix-case-pill ${activeCase === 'all' ? 'active' : ''}`;
-    allBtn.innerHTML = `
-      <span>🌐 All Cases</span>
-      <span style="font-size: 10px; background: rgba(0,0,0,0.08); padding: 1px 6px; border-radius: 10px; font-weight: 700;">${totalCount}</span>
+    let selectHtml = `
+      <select id="matrixCaseSelect" style="padding: 2px 24px 2px 8px; font-size: 12px; font-weight: 600; color: #334155; background: #ffffff url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%2210%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20fill%3D%22%2364748b%22%20d%3D%22M5.293%207.293a1%201%200%20011.414%200L10%2010.586l3.293-3.293a1%201%200%20111.414%201.414l-4%204a1%201%200%2001-1.414%200l-4-4a1%201%200%20010-1.414z%22%2F%3E%3C%2Fsvg%3E') no-repeat right 7px center; border: 1px solid #cbd5e1; border-radius: 5px; cursor: pointer; outline: none; height: 26px; line-height: 22px; appearance: none; -webkit-appearance: none; box-shadow: 0 1px 2px rgba(0,0,0,0.03); min-width: 155px;" onchange="window.StreamComparator.setMatrixCaseFilter(this.value)">
+        <option value="all" ${activeCase === 'all' ? 'selected' : ''}>🌐 All Cases (${totalCount} Streams)</option>
     `;
-    allBtn.onclick = () => setMatrixCaseFilter("all");
-    container.appendChild(allBtn);
 
-    // 2. Individual Case Pills
     distinctCases.forEach(cName => {
       const count = caseMap.get(cName);
       const isAct = activeCase.toUpperCase() === cName.toUpperCase();
@@ -1811,16 +1961,13 @@
       else if (upper.includes('TURNDOWN')) icon = '📉';
       else if (upper.includes('DESIGN')) icon = '📐';
 
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = `matrix-case-pill ${isAct ? 'active' : ''}`;
-      btn.innerHTML = `
-        <span>${icon} ${escapeHtml(cName)}</span>
-        <span style="font-size: 10px; background: rgba(0,0,0,0.08); padding: 1px 6px; border-radius: 10px; font-weight: 700;">${count}</span>
+      selectHtml += `
+        <option value="${escapeHtml(cName)}" ${isAct ? 'selected' : ''}>${icon} ${escapeHtml(cName)} (${count} Streams)</option>
       `;
-      btn.onclick = () => setMatrixCaseFilter(cName);
-      container.appendChild(btn);
     });
+
+    selectHtml += `</select>`;
+    container.innerHTML = selectHtml;
 
     // 3. Dynamically configure quick compare buttons based on actual detected cases
     const hasSor = distinctCases.some(c => c.toUpperCase() === 'SOR');
@@ -1866,19 +2013,50 @@
     renderMatrixChips();
     updateMatrixButtonsState();
     renderMatrixTable();
+    persistActiveDatasetState();
+  }
+
+  function ensureMatrixChipsStructure() {
+    const outer = document.getElementById("matrixStreamChips");
+    if (!outer) return null;
+    let listEl = document.getElementById("matrixStreamChipsList");
+    if (!listEl) {
+      outer.innerHTML = `
+        <div class="matrix-chips-toolbar">
+          <div class="matrix-chips-search-wrap">
+            <span class="matrix-chips-search-icon">🔍</span>
+            <input type="text" id="matrixStreamFilterInput" class="matrix-chips-search-input" placeholder="Search streams..." oninput="window.StreamComparator.filterMatrixChips(this.value)" />
+            <button type="button" id="btnMatrixSearchClear" class="matrix-chips-search-clear" onclick="window.StreamComparator.clearMatrixSearch()" title="Clear search text">✕</button>
+          </div>
+          <div class="matrix-chips-actions">
+            <button type="button" class="matrix-toolbar-btn matrix-toolbar-btn-all active" id="btnMatrixSelectAll" onclick="window.StreamComparator.selectAllMatrixStreams(true)" title="Select all streams">All</button>
+            <button type="button" class="matrix-toolbar-btn matrix-toolbar-btn-none" id="btnMatrixSelectNone" onclick="window.StreamComparator.clearMatrixStreams()" title="Select none">None</button>
+            <button type="button" class="matrix-toolbar-btn matrix-toolbar-btn-clear" id="btnMatrixClear" onclick="window.StreamComparator.resetMatrixSearchAndSelection()" title="Clear search & selection">Clear</button>
+            <button type="button" class="matrix-toolbar-btn matrix-toolbar-btn-done" onclick="window.StreamComparator.closeMatrixStreamDropdown()" title="Close stream selector">Done</button>
+          </div>
+        </div>
+        <div id="matrixStreamChipsList" class="matrix-stream-chips-list"></div>
+      `;
+      listEl = document.getElementById("matrixStreamChipsList");
+    }
+    return listEl;
   }
 
   function renderMatrixChips(filterText = "") {
-    const container = document.getElementById("matrixStreamChips");
+    const listContainer = ensureMatrixChipsStructure();
     const badge = document.getElementById("matrixStreamCountBadge");
-    if (!container) return;
+    const dropdownLabel = document.getElementById("matrixStreamDropdownLabel");
+    if (!listContainer) return;
 
     if (!state.currentDataset || !state.currentDataset.streams || state.currentDataset.streams.length === 0) {
-      container.innerHTML = '<span style="font-size: 13px; color: #94a3b8; padding: 4px;">No streams loaded. Please upload a file above.</span>';
+      listContainer.innerHTML = '<div style="font-size: 12px; color: #94a3b8; padding: 10px; text-align: center; width: 100%;">No streams loaded. Please upload a file above.</div>';
       if (badge) {
         badge.textContent = "0 Streams";
         badge.style.background = "#f1f5f9";
         badge.style.color = "#64748b";
+      }
+      if (dropdownLabel) {
+        dropdownLabel.textContent = "-- No Streams Loaded --";
       }
       return;
     }
@@ -1898,25 +2076,46 @@
     if (badge) {
       const caseSuffix = selectedCase !== "all" ? ` [${selectedCase}]` : "";
       if (selectedInCaseCount === totalCount && totalCount > 0) {
-        badge.textContent = `All ${totalCount} Streams Displayed${caseSuffix}`;
+        badge.textContent = `All ${totalCount}${caseSuffix}`;
         badge.style.background = "#e0e7ff";
         badge.style.color = "#3730a3";
       } else if (state.selectedMatrixStreams.length === 2) {
-        badge.textContent = `⚖️ 2 Streams (Direct Differential Mode)`;
+        badge.textContent = `2 Selected`;
         badge.style.background = "#dcfce7";
         badge.style.color = "#166534";
       } else if (selectedInCaseCount === 0) {
-        badge.textContent = `0 Streams Selected${caseSuffix}`;
+        badge.textContent = `0 Selected`;
         badge.style.background = "#fee2e2";
         badge.style.color = "#991b1b";
       } else {
-        badge.textContent = `${selectedInCaseCount} of ${totalCount} Streams Selected${caseSuffix}`;
+        badge.textContent = `${selectedInCaseCount} / ${totalCount}`;
         badge.style.background = "#f1f5f9";
         badge.style.color = "#334155";
       }
     }
 
-    const q = (typeof filterText === "string" ? filterText : (state.matrixChipFilter || "")).trim().toLowerCase();
+    if (dropdownLabel) {
+      if (totalCount === 0) {
+        dropdownLabel.textContent = "-- No Streams Loaded --";
+      } else if (selectedInCaseCount === totalCount) {
+        dropdownLabel.textContent = `All ${totalCount} Streams Displayed`;
+      } else if (selectedInCaseCount === 0) {
+        dropdownLabel.textContent = `-- Select Streams (${totalCount} available) --`;
+      } else {
+        const selectedNos = caseFilteredStreams
+          .filter(s => selectedSet.has(String(s.streamNo)))
+          .map(s => s.baseStreamNo || s.streamNo);
+        const preview = selectedNos.slice(0, 3).join(", ") + (selectedNos.length > 3 ? ` +${selectedNos.length - 3}` : "");
+        dropdownLabel.textContent = `Streams: ${preview}`;
+      }
+    }
+
+    const q = (typeof filterText === "string" && filterText !== "" ? filterText : (state.matrixChipFilter || "")).trim().toLowerCase();
+    const clearSearchBtn = document.getElementById("btnMatrixSearchClear");
+    if (clearSearchBtn) {
+      clearSearchBtn.style.visibility = q ? "visible" : "hidden";
+    }
+
     const visibleStreams = q
       ? caseFilteredStreams.filter(s => 
           String(s.streamNo).toLowerCase().includes(q) || 
@@ -1927,7 +2126,7 @@
       : caseFilteredStreams;
 
     if (visibleStreams.length === 0) {
-      container.innerHTML = `<span style="font-size: 12.5px; color: #94a3b8; padding: 6px;">No streams matching "${escapeHtml(filterText)}" in ${selectedCase !== 'all' ? selectedCase : 'dataset'}</span>`;
+      listContainer.innerHTML = `<div style="font-size: 12px; color: #dc2626; font-weight: 600; padding: 10px; text-align: center; width: 100%;">No streams matching "${escapeHtml(q)}" in ${selectedCase !== 'all' ? selectedCase : 'dataset'}</div>`;
       return;
     }
 
@@ -1943,29 +2142,72 @@
       const caseBadge = (selectedCase === "all" && cName) ? `<span class="stream-case-badge stream-case-badge-${cType}">${escapeHtml(cName)}</span>` : '';
       const displayTag = selectedCase !== "all" ? escapeHtml(s.baseStreamNo || s.streamNo) : escapeHtml(s.streamNo);
 
+      const rawT = s.tempC ?? s.properties?.["Temperature (°C)"] ?? s.properties?.["Temperature (C)"] ?? s.properties?.["Temperature"];
+      const hasT = rawT !== undefined && rawT !== null && rawT !== "" && !isNaN(Number(rawT));
+      const tempVal = hasT ? Math.round(Number(rawT)) : null;
+
+      const rawP = s.pressKgCm2 ?? s.properties?.["Pressure (kg/cm2 (g))"] ?? s.properties?.["Pressure (kg/cm²g)"] ?? s.properties?.["Pressure"];
+      const hasP = rawP !== undefined && rawP !== null && rawP !== "" && !isNaN(Number(rawP));
+      const pressVal = hasP ? (Number(rawP) % 1 === 0 ? Number(rawP) : Number(rawP).toFixed(1)) : null;
+
+      const rawM = s.massFlow ?? s.properties?.["Flow Mass (kg/hr)"];
+      const hasM = rawM !== undefined && rawM !== null && rawM !== "" && !isNaN(Number(rawM)) && Number(rawM) > 0;
+
+      let metaBadgesHtml = "";
+      if (tempVal !== null) {
+        metaBadgesHtml += `<span class="matrix-stream-meta-pill">${tempVal}°C</span>`;
+      }
+      if (pressVal !== null) {
+        metaBadgesHtml += `<span class="matrix-stream-meta-pill">${pressVal} kg</span>`;
+      } else if (hasM) {
+        metaBadgesHtml += `<span class="matrix-stream-meta-pill">${formatNum(Number(rawM), 0)} kg/h</span>`;
+      }
+
+      const fullTitle = `Stream ${displayTag}${desc ? ` - ${desc}` : ''}`;
+
       return `
-        <label class="matrix-stream-chip ${isChecked ? 'active' : ''}">
+        <label class="matrix-stream-chip ${isChecked ? 'active' : ''}" title="${escapeHtml(fullTitle)}">
           <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="window.StreamComparator.toggleMatrixStream('${escapeHtml(s.streamNo)}')" />
-          <span><strong>Stream ${displayTag}</strong>${caseBadge}${desc ? ` (${escapeHtml(desc)})` : ''}</span>
+          <span class="matrix-stream-chip-title"><strong>Stream ${displayTag}${desc ? ` - ${escapeHtml(desc)}` : ''}</strong>${caseBadge}</span>
+          ${metaBadgesHtml ? `<span class="matrix-stream-chip-meta">${metaBadgesHtml}</span>` : ''}
         </label>
       `;
     }).join("");
 
     if (hasMoreChips) {
-      chipsHtml += `<span style="font-size: 12px; color: #64748b; padding: 5px 10px; align-self: center; background: #f1f5f9; border-radius: 6px;">+ ${visibleStreams.length - CHIP_RENDER_LIMIT} more streams (use filter 🔍 above to locate specific streams)</span>`;
+      chipsHtml += `<div style="font-size: 11.5px; color: #64748b; padding: 6px 10px; text-align: center; background: #f1f5f9; border-radius: 6px; grid-column: 1 / -1;">+ ${visibleStreams.length - CHIP_RENDER_LIMIT} more streams (use search box above to locate specific streams)</div>`;
     }
 
-    container.innerHTML = chipsHtml;
+    listContainer.innerHTML = chipsHtml;
   }
 
   function filterMatrixChips(query) {
-    state.matrixChipFilter = query;
-    renderMatrixChips(query);
+    state.matrixChipFilter = query || "";
+    renderMatrixChips(state.matrixChipFilter);
+  }
+
+  function clearMatrixSearch() {
+    const input = document.getElementById("matrixStreamFilterInput");
+    if (input) input.value = "";
+    state.matrixChipFilter = "";
+    renderMatrixChips("");
+  }
+
+  function resetMatrixSearchAndSelection() {
+    const input = document.getElementById("matrixStreamFilterInput");
+    if (input) input.value = "";
+    state.matrixChipFilter = "";
+    state.selectedMatrixStreams = [];
+    updateMatrixButtonsState();
+    renderMatrixChips("");
+    renderMatrixTable();
+    persistActiveDatasetState();
   }
 
   function updateMatrixButtonsState() {
     const btnSelectAll = document.getElementById("btnMatrixSelectAll");
-    if (btnSelectAll && state.currentDataset && state.currentDataset.streams) {
+    const btnSelectNone = document.getElementById("btnMatrixSelectNone");
+    if (state.currentDataset && state.currentDataset.streams) {
       const selectedCase = state.selectedMatrixCase || "all";
       const targetStreams = (selectedCase !== "all")
         ? state.currentDataset.streams.filter(s => String(s.caseName || "").toUpperCase() === selectedCase.toUpperCase())
@@ -1975,17 +2217,58 @@
       const targetNos = targetStreams.map(s => s.streamNo);
       const selectedSet = new Set(state.selectedMatrixStreams.map(String));
       const allSelected = total > 0 && targetNos.every(no => selectedSet.has(String(no)));
+      const noneSelected = state.selectedMatrixStreams.length === 0;
 
-      if (total > 0 && allSelected) {
-        btnSelectAll.classList.add("active");
-        btnSelectAll.innerHTML = "✓ Deselect All";
-        btnSelectAll.title = "Click to unselect all streams in matrix";
-      } else {
-        btnSelectAll.classList.remove("active");
-        btnSelectAll.innerHTML = "✓ Select All";
-        btnSelectAll.title = "Click to select all streams in matrix";
+      if (btnSelectAll) {
+        if (total > 0 && allSelected) {
+          btnSelectAll.classList.add("active");
+        } else {
+          btnSelectAll.classList.remove("active");
+        }
+        btnSelectAll.innerHTML = "All";
+      }
+      if (btnSelectNone) {
+        if (noneSelected) {
+          btnSelectNone.classList.add("active");
+        } else {
+          btnSelectNone.classList.remove("active");
+        }
       }
     }
+  }
+
+  function toggleMatrixStreamDropdown(event) {
+    if (event) event.stopPropagation();
+    const menu = document.getElementById("matrixStreamChips");
+    const arrow = document.getElementById("matrixStreamDropdownArrow");
+    if (!menu) return;
+    const isHidden = menu.style.display === "none" || !menu.style.display;
+    menu.style.display = isHidden ? "flex" : "none";
+    if (arrow) {
+      arrow.style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
+    }
+    if (isHidden) {
+      const searchInput = document.getElementById("matrixStreamFilterInput");
+      if (searchInput) setTimeout(() => searchInput.focus(), 30);
+    }
+  }
+
+  function closeMatrixStreamDropdown() {
+    const menu = document.getElementById("matrixStreamChips");
+    const arrow = document.getElementById("matrixStreamDropdownArrow");
+    if (menu) menu.style.display = "none";
+    if (arrow) arrow.style.transform = "rotate(0deg)";
+  }
+
+  if (typeof document !== "undefined" && !window._matrixStreamDropdownOutsideBound) {
+    window._matrixStreamDropdownOutsideBound = true;
+    document.addEventListener("click", function(e) {
+      const wrap = document.getElementById("matrixStreamDropdownWrap");
+      const menu = document.getElementById("matrixStreamChips");
+      if (menu && menu.style.display !== "none" && wrap && !wrap.contains(e.target)) {
+        closeMatrixStreamDropdown();
+      }
+    });
   }
 
   function toggleMatrixStream(streamNo) {
@@ -1999,31 +2282,44 @@
     updateMatrixButtonsState();
     renderMatrixChips();
     renderMatrixTable();
+    persistActiveDatasetState();
   }
 
-  function selectAllMatrixStreams() {
+  function selectAllMatrixStreams(forceSelect = false) {
     if (!state.currentDataset || !state.currentDataset.streams) return;
     const selectedCase = state.selectedMatrixCase || "all";
-    const targetStreams = (selectedCase !== "all")
+    const caseStreams = (selectedCase !== "all")
       ? state.currentDataset.streams.filter(s => String(s.caseName || "").toUpperCase() === selectedCase.toUpperCase())
       : state.currentDataset.streams;
+
+    const q = (state.matrixChipFilter || "").trim().toLowerCase();
+    const targetStreams = q
+      ? caseStreams.filter(s =>
+          String(s.streamNo).toLowerCase().includes(q) ||
+          String(s.baseStreamNo || "").toLowerCase().includes(q) ||
+          String(s.content || s.streamName || "").toLowerCase().includes(q) ||
+          String(s.caseName || "").toLowerCase().includes(q)
+        )
+      : caseStreams;
 
     const targetNos = targetStreams.map(s => s.streamNo);
     const selectedSet = new Set(state.selectedMatrixStreams.map(String));
     const allTargetSelected = targetNos.length > 0 && targetNos.every(no => selectedSet.has(String(no)));
 
-    if (allTargetSelected) {
-      // Toggle off target streams
+    if (!forceSelect && allTargetSelected) {
+      // Toggle off target streams when called without forceSelect
       state.selectedMatrixStreams = state.selectedMatrixStreams.filter(no => !targetNos.includes(no));
       updateMatrixButtonsState();
       renderMatrixChips();
       renderMatrixTable();
+      persistActiveDatasetState();
     } else {
       // Add missing target streams
       const newSet = new Set([...state.selectedMatrixStreams, ...targetNos]);
       state.selectedMatrixStreams = Array.from(newSet);
       updateMatrixButtonsState();
       renderMatrixChips();
+      persistActiveDatasetState();
 
       if (targetNos.length > 8) {
         showLoadingState(true, "Building Stream Matrix...", `Rendering ${state.selectedMatrixStreams.length} selected streams...`);
@@ -2047,6 +2343,7 @@
     updateMatrixButtonsState();
     renderMatrixChips();
     renderMatrixTable();
+    persistActiveDatasetState();
   }
 
   function selectComparePairMatrix() {
@@ -2064,6 +2361,7 @@
     updateMatrixButtonsState();
     renderMatrixChips();
     renderMatrixTable();
+    persistActiveDatasetState();
   }
 
   function compareCasesInMatrix(caseA = "SOR", caseB = "EOR") {
@@ -2781,6 +3079,8 @@
     const dropzone = document.getElementById("streamDropzone");
     const fileInput = document.getElementById("streamFileInput");
     if (!dropzone || !fileInput) return;
+    if (dropzone.dataset.scBound === "true") return;
+    dropzone.dataset.scBound = "true";
 
     dropzone.addEventListener("click", () => fileInput.click());
 
@@ -4030,6 +4330,7 @@
       return;
     }
     state.activeView = viewName;
+    persistActiveDatasetState();
     const pairPane = document.getElementById("streamPairwisePane");
     const matrixPane = document.getElementById("streamMatrixPane");
     const tieInPane = document.getElementById("streamTieInPane");
@@ -4508,6 +4809,7 @@
 
       state.currentDataset.id = json.id;
       state.currentDataset.title = titleToSave;
+      persistActiveDatasetState();
 
       const titleEl = document.getElementById("streamDocTitle");
       if (titleEl) titleEl.textContent = titleToSave;
@@ -4546,6 +4848,7 @@
       }
 
       if (!proceed) return;
+      clearPersistedDatasetState();
     }
 
     state.currentDataset = null;
@@ -4612,8 +4915,15 @@
     const matrixTable = document.getElementById("streamMatrixTable");
     if (matrixTable) matrixTable.innerHTML = '<tbody><tr><td colspan="4" style="padding: 30px; text-align: center; color: #94a3b8;">No stream data loaded. Upload an H&MB document above to view the multi-stream matrix.</td></tr></tbody>';
 
-    const matrixChips = document.getElementById("matrixStreamChips") || document.getElementById("streamMatrixChips");
-    if (matrixChips) matrixChips.innerHTML = '<div style="color: #94a3b8; font-size: 13px; padding: 6px;">No streams available. Upload a file above.</div>';
+    const matrixChipsList = ensureMatrixChipsStructure();
+    if (matrixChipsList) {
+      matrixChipsList.innerHTML = '<div style="color: #94a3b8; font-size: 12px; padding: 10px; text-align: center;">No streams available. Upload a file above.</div>';
+    }
+
+    const dropdownLabel = document.getElementById("matrixStreamDropdownLabel");
+    if (dropdownLabel) {
+      dropdownLabel.textContent = "-- No Streams Loaded --";
+    }
 
     const matrixBadge = document.getElementById("matrixStreamCountBadge");
     if (matrixBadge) {
@@ -4964,6 +5274,10 @@
     toggleMatrixStream,
     selectAllMatrixStreams,
     clearMatrixStreams,
+    clearMatrixSearch,
+    resetMatrixSearchAndSelection,
+    toggleMatrixStreamDropdown,
+    closeMatrixStreamDropdown,
     selectComparePairMatrix,
     renderMatrixChips,
     filterMatrixChips,

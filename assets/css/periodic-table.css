@@ -69,22 +69,31 @@
 
 .ptable-search-box {
   position: relative;
-  min-width: 240px;
+  width: 280px;
+  max-width: 100%;
+  flex: 1 1 240px;
+  box-sizing: border-box;
 }
 
-.ptable-search-input {
-  width: 100%;
+.ptable-search-input,
+#ptableSearchInput {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  margin: 0 !important;
   background: #1f2735;
   border: 1px solid #334155;
   border-radius: 8px;
-  padding: 8px 12px 8px 34px;
+  padding: 8px 12px 8px 36px !important;
   color: #ffffff;
   font-size: 13.5px;
+  line-height: 1.4;
+  height: 38px;
   outline: none;
   transition: all 0.2s ease;
 }
 
-.ptable-search-input:focus {
+.ptable-search-input:focus,
+#ptableSearchInput:focus {
   border-color: #38bdf8;
   box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
   background: #253042;
@@ -98,9 +107,17 @@
   color: #94a3b8;
   font-size: 14px;
   pointer-events: none;
+  z-index: 2;
 }
 
-.ptable-btn-fullscreen {
+.ptable-btn-fullscreen,
+#ptableBtnFullscreen {
+  box-sizing: border-box !important;
+  width: auto !important;
+  margin: 0 !important;
+  flex-shrink: 0;
+  white-space: nowrap;
+  height: 38px;
   background: #1e293b;
   color: #e2e8f0;
   border: 1px solid #3b4d6b;
@@ -111,11 +128,13 @@
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 7px;
   transition: all 0.2s ease;
 }
 
-.ptable-btn-fullscreen:hover {
+.ptable-btn-fullscreen:hover,
+#ptableBtnFullscreen:hover {
   background: #2a374f;
   color: #ffffff;
   border-color: #38bdf8;

@@ -937,10 +937,11 @@ async function seed() {
   const cfg = JSON.parse(fs.readFileSync(cfgPath, "utf8"));
 
   const app = initializeApp(cfg, "seederApp");
-  const dbId = (!cfg.firestoreDatabaseId || cfg.firestoreDatabaseId === "(default)") ? null : cfg.firestoreDatabaseId;
+  const rawDbId = cfg.firestoreDatabaseId;
+  const dbId = (!rawDbId || rawDbId === "(default)" || rawDbId.startsWith("ai-studio-")) ? null : rawDbId;
   const db = dbId ? getFirestore(app, dbId) : getFirestore(app);
 
-  console.log(`Connecting to Firestore database: ${cfg.firestoreDatabaseId}`);
+  console.log(`Connecting to Firestore database: ${dbId || "(default)"}`);
 
   // 1. Write to local secure file
   const localFile = path.resolve(__dirname, "../data/secure/damage_mechanisms.json");

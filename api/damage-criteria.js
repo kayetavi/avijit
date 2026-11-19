@@ -891,15 +891,15 @@ function normalizeStreamRecord(st, index) {
   const content = String(st.content || st.streamName || "").trim();
   const name = content ? `Stream ${streamNo} - ${content}` : `Stream ${streamNo}`;
 
-  // Helper to extract numeric value from st, p, or c
+  // Helper to extract numeric value prioritizing authoritative properties map (p) over top-level st fields
   const getNumVal = (...keys) => {
     for (const k of keys) {
-      if (st[k] !== undefined && st[k] !== null && st[k] !== "") {
-        const v = parseFloat(st[k]);
-        if (Number.isFinite(v)) return v;
-      }
       if (p[k] !== undefined && p[k] !== null && p[k] !== "") {
         const v = parseFloat(p[k]);
+        if (Number.isFinite(v)) return v;
+      }
+      if (st[k] !== undefined && st[k] !== null && st[k] !== "") {
+        const v = parseFloat(st[k]);
         if (Number.isFinite(v)) return v;
       }
       if (c[k] !== undefined && c[k] !== null && c[k] !== "") {
@@ -910,16 +910,16 @@ function normalizeStreamRecord(st, index) {
     return null;
   };
 
-  // Helper to extract string/dropdown value from st, p, or c
+  // Helper to extract string/dropdown value from p, st, or c
   const getStrVal = (...keys) => {
     for (const k of keys) {
-      if (st[k] !== undefined && st[k] !== null && st[k] !== "") {
-        if (typeof st[k] === "boolean") return st[k] ? "Y" : "N";
-        return String(st[k]).trim();
-      }
       if (p[k] !== undefined && p[k] !== null && p[k] !== "") {
         if (typeof p[k] === "boolean") return p[k] ? "Y" : "N";
         return String(p[k]).trim();
+      }
+      if (st[k] !== undefined && st[k] !== null && st[k] !== "") {
+        if (typeof st[k] === "boolean") return st[k] ? "Y" : "N";
+        return String(st[k]).trim();
       }
       if (c[k] !== undefined && c[k] !== null && c[k] !== "") {
         if (typeof c[k] === "boolean") return c[k] ? "Y" : "N";
@@ -929,13 +929,15 @@ function normalizeStreamRecord(st, index) {
     return "";
   };
 
-  const temp = getNumVal("tempC", "Temperature (°C)", "Temperature", "temp");
-  const pressure = getNumVal("pressKgCm2", "Pressure (kg/cm²g)", "Pressure (kg/cm2 (g))", "Pressure (barg)", "Pressure", "pressure");
-  const massFlow = getNumVal("massFlow", "Flow Mass (kg/hr)", "Mass Flow (kg/hr)", "Mass Flow", "Flow Mass");
-  const density = getNumVal("liquidDensity", "vaporDensity", "density", "Liquid Density (kg/m3)", "Vapor Density (kg/m3)", "Density (kg/m3)", "Density");
-  const pipeDiameter = getNumVal("pipeDiameter", "Pipe Diameter (mm)", "Pipe Diameter");
+  const rawTemp = getNumVal("Temperature (°C)", "Temperature (C)", "Temperature", "temp", "tempC");
+  const rawPressure = getNumVal("Pressure (kg/cm²g)", "Pressure (kg/cm2 (g))", "Pressure (kg/cm2_g)", "Pressure (barg)", "Pressure", "pressure", "pressKgCm2");
+  const temp = rawTemp !== null ? Math.abs(rawTemp) : null;
+  const pressure = rawPressure !== null ? Math.abs(rawPressure) : null;
+  const massFlow = getNumVal("Flow Mass (kg/hr)", "Mass Flow (kg/hr)", "Mass Flow", "Flow Mass", "massFlow");
+  const density = getNumVal("Liquid Density (kg/m3)", "Vapor Density (kg/m3)", "Density (kg/m3)", "Density", "liquidDensity", "vaporDensity", "density");
+  const pipeDiameter = getNumVal("Pipe Diameter (mm)", "Pipe Diameter", "pipeDiameter");
 
-  const phase = getStrVal("phase", "Phase");
+  const phase = getStrVal("Phase", "phase");
 
   // Helper to extract constituents from component/properties maps
   const getCompVal = (...names) => {
@@ -1033,7 +1035,9 @@ function normalizeStreamRecord(st, index) {
     content,
     phase,
     temp,
+    tempC: temp,
     pressure,
+    pressKgCm2: pressure,
     massFlow,
     density,
     pipeDiameter,
@@ -1070,7 +1074,11 @@ function normalizeStreamRecord(st, index) {
     description: content,
     components: { ...c, ...constituentsMap },
     constituents: constituentsMap,
-    properties: p
+    properties: {
+      ...p,
+      ...(temp !== null ? { "Temperature (°C)": temp } : {}),
+      ...(pressure !== null ? { "Pressure (kg/cm²g)": pressure, "Pressure (kg/cm2 (g))": pressure } : {})
+    }
   };
 }
 

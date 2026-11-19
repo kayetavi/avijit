@@ -131,6 +131,9 @@ export function getActiveProjectConfig() {
     if (fs.existsSync(ACTIVE_PROJECT_FILE)) {
       const saved = JSON.parse(fs.readFileSync(ACTIVE_PROJECT_FILE, "utf8"));
       if (saved && saved.projectId) {
+        if (!saved.firestoreDatabaseId || saved.firestoreDatabaseId.startsWith("ai-studio-")) {
+          saved.firestoreDatabaseId = "(default)";
+        }
         return saved;
       }
     }
@@ -234,8 +237,9 @@ export function getFirestoreDb() {
     return dbInstance;
   }
   const app = getFirebaseApp();
-  const dbId = active.firestoreDatabaseId && active.firestoreDatabaseId !== "(default)"
-    ? active.firestoreDatabaseId
+  const rawDbId = active.firestoreDatabaseId;
+  const dbId = (rawDbId && rawDbId !== "(default)" && !rawDbId.startsWith("ai-studio-"))
+    ? rawDbId
     : null;
   dbInstance = dbId ? getFirestore(app, dbId) : getFirestore(app);
   return dbInstance;
@@ -271,8 +275,9 @@ export async function testProjectConnection(targetConfig) {
       appId: targetConfig.appId
     }, tempName);
 
-    const dbId = targetConfig.firestoreDatabaseId && targetConfig.firestoreDatabaseId !== "(default)"
-      ? targetConfig.firestoreDatabaseId
+    const rawTargetDbId = targetConfig.firestoreDatabaseId;
+    const dbId = (rawTargetDbId && rawTargetDbId !== "(default)" && !rawTargetDbId.startsWith("ai-studio-"))
+      ? rawTargetDbId
       : null;
     const tempDb = dbId ? getFirestore(tempApp, dbId) : getFirestore(tempApp);
 
